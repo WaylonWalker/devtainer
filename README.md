@@ -1,4 +1,7 @@
-<h1 align='center'><span aria-role='img' aria-label='whale'>🐳</span> devtainer</h1>
+<p align='center'>
+<img src='devtainer.png' align='center'/>
+</p>
+<h1 align='center'>devtainer</h1>
 My personal development docker container base image
 
 # Motivation
