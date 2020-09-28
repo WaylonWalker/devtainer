@@ -1,0 +1,15 @@
+
+alias vim=nvim
+alias cat=bat
+
+lsn () {
+    if [ -z $1 ]
+        then
+            ls -laht | head -n 10
+        else
+            ls -laht | head -n $1
+    fi
+}
+
+alias ignore='curl https://www.gitignore.io/api/vim,node,data,emacs,python,pycharm,executable,sublimetext,visualstudio,visualstudiocode > .gitignore'
+

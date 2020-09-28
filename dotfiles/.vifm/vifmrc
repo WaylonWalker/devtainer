@@ -1,0 +1,9 @@
+set vicmd=nvim
+set trashdir=~/.vifmtrash
+
+map H za
+map O :mkdir<space>
+map o :touch<space>
+map <C-q> :q<cr>
+map <C-c> :q<cr>
+
