@@ -1,5 +1,5 @@
 <p align='center'>
-<img src='devtainer.png' align='center'/>
+<img src='artwork/devtainer.png' align='center'/>
 </p>
 <h1 align='center'>devtainer</h1>
 My personal development docker container base image
@@ -15,6 +15,14 @@ Editors like VScode are great for editing full projects, but often I just want
 to quickly browse through a project with all of my favorite tools handy.  Even
 though this container is a bit bulky its startup performance has been superior
 to VSCode and even neovim inside of wsl.
+
+---
+
+# Screenshot September 30, 2020
+
+<p align='center'>
+<img src='artwork/devtainer_sept_30_2020.png.png' align='center'/>
+</p>
 
 ---
 
@@ -72,7 +80,14 @@ tmux () {
  -v $HOME/.gitconfig:/root/.gitconfig \
  -v $HOME/.ipython:/root/.ipython \
  waylonwalker/devtainer 
- bash -c "tmux new-session -t 'editor' -d; tmux send-keys 'pip install -e . --no-deps &' Enter; tmux split-window -v 'zsh'; tmux send-keys nvim Space /src/ Space +GFiles C-m;tmux rotate-window; tmux select-pane -U; tmux -2 attach-session -d"
+ bash -c "tmux new-session -t 'editor' -d;\
+    tmux send-keys 'echo hello' Enter;\
+    tmux split-window -v 'zsh';
+    tmux send-keys nvim Space /src/ Space +GFiles C-m; \
+    tmux rotate-window; \
+    tmux select-pane -U; \
+    tmux -2 attach-session -d
+    "
 }
 ```
 
@@ -87,7 +102,7 @@ tmux () {
 * diff-so-fancy
 * flake8
 * forgit
- git
+* git
 * gitui
 * glow
 * interrogate
