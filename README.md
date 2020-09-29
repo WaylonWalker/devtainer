@@ -63,7 +63,7 @@ vim () {
 Open with a specific tmux layout.
 
 ``` bash
-vim () {
+tmux () {
  docker run -it --rm \
  -v "$(wwd)":/src \
  -v $HOME/.aws:/root/.aws \
@@ -72,7 +72,7 @@ vim () {
  -v $HOME/.gitconfig:/root/.gitconfig \
  -v $HOME/.ipython:/root/.ipython \
  waylonwalker/devtainer 
- bash -c "tmux new-session -t 'editor' -d; tmux send-keys 'pip install -e . --no-deps &' Enter; tmux split-window -v 'zsh'; tmux send-keys /squashfs-root/usr/bin/nvim Space /src/ Space +GFiles C-m;tmux rotate-window; tmux select-pane -U; tmux -2 attach-session -d"
+ bash -c "tmux new-session -t 'editor' -d; tmux send-keys 'pip install -e . --no-deps &' Enter; tmux split-window -v 'zsh'; tmux send-keys nvim Space /src/ Space +GFiles C-m;tmux rotate-window; tmux select-pane -U; tmux -2 attach-session -d"
 }
 ```
 
