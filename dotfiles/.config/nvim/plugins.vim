@@ -48,6 +48,7 @@ Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
 Plug 'ambv/black'
 Plug 'amix/vim-zenroom2'
+Plug 'davidhalter/jedi-vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'epilande/vim-es2015-snippets', {'for': 'javascript'}
 Plug 'epilande/vim-react-snippets', {'for': 'javascript'}
@@ -64,6 +65,7 @@ Plug 'rakr/vim-one'
 Plug 'ryanoasis/vim-devicons'
 Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/syntastic' 
+Plug 'sheerun/vim-polyglot'
 Plug 'terryma/vim-smooth-scroll'
 Plug 'thinca/vim-visualstar'
 Plug 'tpope/vim-commentary'
@@ -75,6 +77,4 @@ Plug 'valloric/youcompleteme', {'do': './install.py'}
 Plug 'vim-scripts/AutoComplPop'
 Plug 'w0rp/ale'
 Plug 'wellle/targets.vim'
-Plug 'sheerun/vim-polyglot'
-Plug 'davidhalter/jedi-vim'
 call plug#end()
