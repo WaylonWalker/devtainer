@@ -96,7 +96,10 @@ nnoremap zb zb<C-e><C-e><C-e>
 
 " navigation
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+command! -bang -nargs=? -complete=dir HFiles
+  \ call fzf#vim#files(<q-args>, {'source': 'ag --hidden --ignore .git -g ""'}, <bang>0)
 nnoremap <leader>p :GFiles<cr>
+nnoremap <leader>P :HFiles<cr>
 nnoremap <C-p> :GFiles<cr>
 nnoremap <leader>t :Files<cr>
 nnoremap <C-S-P> :Maps<cr>
@@ -106,6 +109,7 @@ nnoremap <cr> :Buffers<cr>
 nnoremap <leader>m :Marks<cr>
 
 nnoremap <leader>n :b#<cr>
+nnoremap \ :b#<cr>
 nnoremap <leader>s :sp<cr>
 nnoremap <leader>v :vsp<cr>
 nnoremap <D-A-LEFT> <C-W>h
