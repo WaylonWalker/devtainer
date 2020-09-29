@@ -76,4 +76,5 @@ Plug 'vim-scripts/AutoComplPop'
 Plug 'w0rp/ale'
 Plug 'wellle/targets.vim'
 Plug 'sheerun/vim-polyglot'
+Plug 'davidhalter/jedi-vim'
 call plug#end()
