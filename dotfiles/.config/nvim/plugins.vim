@@ -75,4 +75,5 @@ Plug 'valloric/youcompleteme', {'do': './install.py'}
 Plug 'vim-scripts/AutoComplPop'
 Plug 'w0rp/ale'
 Plug 'wellle/targets.vim'
+Plug 'sheerun/vim-polyglot'
 call plug#end()
