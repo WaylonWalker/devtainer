@@ -21,7 +21,7 @@ to VSCode and even neovim inside of wsl.
 # Screenshot September 30, 2020
 
 <p align='center'>
-<img src='artwork/devtainer_sept_30_2020.png.png' align='center'/>
+<img src='artwork/devtainer_sept_30_2020.png' align='center'/>
 </p>
 
 ---
