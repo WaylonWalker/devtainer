@@ -71,7 +71,6 @@ nnoremap <silent><leader>gc :Gcommit<cr>
 nnoremap <silent><leader>w :w<cr>
 nnoremap <silent><leader>q :q<cr>
 nnoremap <silent><leader>x :x<cr>
-nnoremap <c-h> <c-w><c-h>
 
 " formatting
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
@@ -110,8 +109,6 @@ nnoremap <leader>m :Marks<cr>
 
 nnoremap <leader>n :b#<cr>
 nnoremap \ :b#<cr>
-nnoremap <leader>s :sp<cr>
-nnoremap <leader>v :vsp<cr>
 nnoremap <D-A-LEFT> <C-W>h
 nnoremap <D-A-DOWN> <C-W>j
 nnoremap <D-A-UP> <C-W>k
@@ -122,12 +119,15 @@ nnoremap <leader>h <C-W>h
 nnoremap <leader>j <C-W>j
 nnoremap <leader>k <C-W>k
 nnoremap <leader>l <C-W>l
-nnoremap <leader>H :vsp<cr><c-w>h
-nnoremap <leader>J :sp<cr>
-nnoremap <leader>K :sp<cr><c-w>k
-nnoremap <leader>L :vsp<cr>
-nnoremap <leader>i :TagbarToggle<CR>
 
+nnoremap <leader>s :sp<cr>
+nnoremap <leader>v :vsp<cr>
+
+nnoremap <leader>H <c-w>H
+nnoremap <leader>J <c-w>J
+nnoremap <leader>K <c-w>K
+nnoremap <leader>L <c-w>L
+nnoremap <leader>i :TagbarToggle<CR>
 
 " interface
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
