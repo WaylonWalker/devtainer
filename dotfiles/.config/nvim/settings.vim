@@ -81,7 +81,7 @@ let g:syntastic_javascript_eslint_exe = 'eslint % --fix'
 
 autocmd bufwritepost *.js asyncrun -post=checktime eslint --fix %
 " autocmd bufwritepre *.js execute ':!eslint --fix %'
-autocmd bufwritepre *.py execute ':black'
+autocmd bufwritepre *.py execute ':Black'
 autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
 autocmd bufwritepost init.vim execute ':source %'
 
