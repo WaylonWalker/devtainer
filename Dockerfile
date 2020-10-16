@@ -153,7 +153,7 @@ RUN GLOW_VERSION=$(curl --silent https://github.com/charmbracelet/glow/releases/
     #" \
     wget https://github.com/charmbracelet/glow/releases/download/v${GLOW_VERSION}/glow_${GLOW_VERSION}_linux_x86_64.tar.gz -q && \
         mkdir /downloads/glow && \
-        tar -zxf glow_0.2.0_linux_x86_64.tar.gz --directory /downloads/glow && \
+        tar -zxf glow_${GLOW_VERSION}_linux_x86_64.tar.gz --directory /downloads/glow && \
         mv /downloads/glow/glow /usr/bin/
 
 # oh-my=zsh
