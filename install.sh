@@ -251,7 +251,7 @@ install_gitui () {
 install_node () {
     _install_node () {
         curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash -
-        sudo apt-get install nodejs
+        sudo apt-get install nodejs -y
         npm i -g diff-so-fancy
         npm i -g markserv
         npm i -g neovim
