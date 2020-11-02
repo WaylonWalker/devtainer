@@ -1,5 +1,5 @@
 <p align='center'>
-<img src='artwork/devtainer.png' align='center'/>
+<img src='artwork/devtainer.png' align='center' width='200'/>
 </p>
 <h1 align='center'>devtainer</h1>
 My personal development docker container base image
