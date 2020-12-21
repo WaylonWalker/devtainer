@@ -10,6 +10,7 @@ ENV \
 ENV \
     HOME="/${UNAME}" \
     SHELL="/bin/zsh" \
+    EDITOR="nvim"\
     # WORKSPACE=$HOME \
     # GIT_VERSION=2.28.0 \
     # BAT_VERSION=0.15.4 \
