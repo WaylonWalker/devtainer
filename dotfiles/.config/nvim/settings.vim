@@ -7,8 +7,17 @@
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 
 let g:python_lint_config = '~/pylint.rc'
-let g:python3_host_prog = '/usr/local/bin/python'
-let g:python_host_prog = '/usr/bin/python'
+let g:python3_host_prog = '~/miniconda3/bin/python'
+let g:python3_host_prog = '~/miniconda3/envs/nvim3/bin/python'
+
+let g:VtrStripLeadingWhitespace = 0
+let g:VtrClearEmptyLines = 0
+let g:VtrAppendNewline = 1 
+
+nnoremap <leader>a :VtrAttachToPane<CR>
+vnoremap <leader>a :'<,'>VtrSendLinesToRunner<CR>
+
+
 " general stuff
 
 set autoread
@@ -67,7 +76,7 @@ let g:ultisnipsexpandtrigger="<c-l>"
 let g:syntastic_javascript_checkers = ['eslint']
 
 set statusline+=%#warningmsg#
-set statusline+=%{syntasticstatuslineflag()}
+set statusline+=%{SyntasticStatuslineflag()}
 set statusline+=%*
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
@@ -79,13 +88,11 @@ let g:syntastic_javascript_eslint_exe = 'eslint % --fix'
 
 
 
-autocmd bufwritepost *.js asyncrun -post=checktime eslint --fix %
+" autocmd bufwritepost *.js asyncrun -post=checktime eslint --fix %
 " autocmd bufwritepre *.js execute ':!eslint --fix %'
 autocmd bufwritepre *.py execute ':Black'
 autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
-autocmd bufwritepost init.vim execute ':source %'
-
-
+autocmd bufwritepost *.vim execute ':source %'
 
 " set runtimepath^=~/.vim/bundle/ctrlp.vim
 let g:ctrl_map   = '<c-p>'
@@ -194,9 +201,10 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 silent! color one
 " Fix highlighting issues
 " on my terminal pop up menus disapper into the background
-hi Visual ctermbg=magenta ctermfg=black
+"
+" hi Visual ctermbg=magenta ctermfg=black
 hi Normal guibg=NONE ctermbg=NONE
-hi Pmenu ctermbg=magenta guibg=magenta
+hi Pmenu ctermbg=None guibg=None ctermfg=magenta guifg=magenta
 hi CursorLineNr ctermbg=NONE guibg=NONE 
 hi LineNr ctermbg=NONE guibg=NONE 
 hi SignColumn ctermbg=NONE guibg=NONE 
@@ -214,4 +222,10 @@ function ExpandSnippetOrCarriageReturn()
     endif
 endfunction
 inoremap <expr> <CR> pumvisible() ?  "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
+
+" WhichKey
+autocmd FileType which_key highlight WhichKey ctermbg=12 ctermfg=7
+autocmd FileType which_key highlight WhichKeySeperator ctermbg=12 ctermfg=7
+autocmd FileType which_key highlight WhichKeyGroup cterm=bold ctermbg=12 ctermfg=7
+autocmd FileType which_key highlight WhichKeyDesc ctermbg=12 ctermfg=7
 

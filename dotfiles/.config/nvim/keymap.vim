@@ -6,33 +6,46 @@
 "                |___/                |_|                     
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 
-nnoremap <tab> :bnext<cr>
-nnoremap <s-tab> :bprevious<cr>
+nnoremap <tab> :bnext<cr>                       # Next Buffej
+nnoremap <s-tab> :bprevious<cr>                 # Previous Buffer
 
-map <c-w> :q<cr>
-map <c-c> :qall<cr>
-map <c-n> :NERDTreeToggle<cr>
-map <c-/> :Commentary
-inoremap <c-/> :Commentary
-map <c-s> :w<cr>
+map <c-w> :q<cr>                                # quit
+map <c-c> :qall<cr>                             # quit all
+map <c-x> :xall<cr>                             # quit all
+map <c-n> :NERDTreeToggle<cr>                   # sidebar
+map <c-/> :Commentary                           # comment
+inoremap <c-/> :Commentary                      # comment
+map <c-s> :w<cr>                                # comment
+
+nnoremap <leader>so :source %<CR>
+nnoremap gso :source %<CR>
+nnoremap gek :e ~/.config/nvim/keymap.vim<CR>   # edit keymap
+nnoremap gep :e ~/.config/nvim/plugins.vim<CR>  # edit plugins
+nnoremap gpi :PlugInstall<CR>                   # install plugins
+nnoremap gpc :PlugClean<CR>                     # clean plugins
+nnoremap ges :e ~/.config/nvim/settings.vim<CR> # edit settings
+
+nnoremap gp :Maps<CR>
+
 
 " insert mode mappings
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 imap jj <esc>
-imap jj <esc>
-imap jj <esc>
-imap jj <esc>
+imap jk <esc>
+imap JJ <esc>
+imap jJ <esc>
+imap Jj <esc>
 imap <c-_> <esc>:Commentary<cr>i
 
 " normal mode mappings
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <c-/> :Commentary
+nnoremap <c-/> :Commentary                     # comment
 " nnoremap <tab> :undotreetoggle
-nnoremap <c-_> :Commentary<cr>
+nnoremap <c-_> :Commentary<cr>                 # comment
 nnoremap ` '
 nnoremap ' `
-noremap q @@
-nnoremap <silent> <c-s> :<c-u>update<cr>
+noremap Q @@                                   # run last macro
+nnoremap <silent> <c-s> :<c-u>update<cr>       # save
 
 
 " <c-w> commands without <c-w>
@@ -45,19 +58,61 @@ nnoremap <c-h> <c-w><c-h>
 
 " Replace Mappings
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <c-r> :%s///g<Left><Left><Left><C-R>/<Right> " replace visual star
-nnoremap <c-R> :%s///g<Left><Left><Left>
-vnoremap <c-r> :s///g<Left><Left><Left><C-R>/<Right> " replace visual star
-vnoremap <c-R> :s///g<Left><Left><Left>
+nnoremap <c-r> :%s/<C-R>////g<Left><Left>
+vnoremap <c-r> :s///g<Left><Left><Left><C-R>/<Right>  # replace visual star
+" replace visual star
+vnoremap <c-r> :s/<C-R>//g<Left><Left>
+" vnoremap <c-R> :s///g<Left><Left><Left>
 " type a replacement term and press . to repeat the replacement on the next
 " match.
 nnoremap <silent> s* :let @/='\<'.expand('<cword>').'\>'<cr>cgn
 xnoremap <silent> s* "sy: let @/=@s<cr>cgn
 
 " leader keys
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 let mapleader = " "
-nnoremap <silent> <leader> :whichkey '<space>'<cr>
+let g:maplocalleader = ','
+" nnoremap <silent> <leader> :whichkey '<Space>'<cr>
+
+nnoremap <silent> <leader>      :<c-u>WhichKey '<Space>'<CR>
+nnoremap <silent> <localleader> :<c-u>WhichKey  ','<CR>
+
+" generic
+"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+nnoremap <silent> <leader>d :put =strftime('%Y-%m-%dT%H:%M:%S')<CR>
+let s:pastemode = 0
+function! s:TogglePasteMode()
+    if s:pastemode  == 1
+        let s:pastemode = 0
+        set nopaste
+    else
+        let s:pastemode = 1
+        set paste
+    endif
+endfunction
+nnoremap <silent> <leader>y :call s:TogglePasteMode()<CR>
+
+:command! TogglePasteMode :call s:TogglePasteMode()
+nnoremap gtp :TogglePasteMode<CR>
+
+
+" ToggleLocationList
+"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+let s:syntastic_auto_loc_list = 1
+function! s:ToggleLocationList()
+    if s:syntastic_auto_loc_list == 1
+        let s:syntastic_auto_loc_list = 0
+        let syntastic_auto_loc_list = 0
+        :lclose
+    else
+        let s:syntastic_auto_loc_list = 1
+        let syntastic_auto_loc_list = 1
+        :lopen
+    endif
+endfunction
+
+:command! ToggleLocationList :call s:ToggleLocationList()
+nnoremap gtl :ToggleLocationList<CR>
 
 
 " git
@@ -65,6 +120,8 @@ nnoremap <silent> <leader> :whichkey '<space>'<cr>
 nnoremap <silent><leader>gd :Gdiff<cr>
 nnoremap <silent><leader>gs :Gstatus<cr>
 nnoremap <silent><leader>gc :Gcommit<cr>
+nnoremap <silent><c-]> :GitGutterNextHunk<cr>
+nnoremap <silent><c-[> :GitGutterPrevHunk<cr>
 
 " shortcuts
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
@@ -74,10 +131,15 @@ nnoremap <silent><leader>x :x<cr>
 
 " formatting
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <leader><leader>p :!prettier % --write l<cr>
+" nnoremap <leader><leader>p :!prettier % --write l<cr>
 nnoremap <leader>f :black<cr>
 nnoremap <leader>c :Commentary<cr>
 nnoremap <leader>u gu
+
+" visual mode remap
+"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+command! Vb normal! <C-v>
+nnoremap <leader>b :Vb<CR>
 
 " retain visual selection after indent
 " > indent
@@ -102,6 +164,7 @@ nnoremap <leader>P :HFiles<cr>
 nnoremap <C-p> :GFiles<cr>
 nnoremap <leader>t :Files<cr>
 nnoremap <C-S-P> :Maps<cr>
+nnoremap <C-S-P> :CocList<cr>
 nnoremap <leader>r :Rg<cr>
 " nnoremap <C-R> :Rg<cr>
 nnoremap <cr> :Buffers<cr>
@@ -180,6 +243,8 @@ vmap <C-j> xp`[V`]
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 nnoremap gd :YcmCompleter GoTo<CR>
 nnoremap gh :YcmCompleter GetDoc<CR>
+
+nmap <silent> gd <Plug>(coc-definition)
 
 " swapped smooth-scroll for comfortable-motion
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
