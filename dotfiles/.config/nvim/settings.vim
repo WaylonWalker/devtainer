@@ -204,7 +204,7 @@ silent! color one
 "
 " hi Visual ctermbg=magenta ctermfg=black
 hi Normal guibg=NONE ctermbg=NONE
-hi Pmenu ctermbg=None guibg=None ctermfg=magenta guifg=magenta
+hi Pmenu ctermbg=NONE guibg=NONE ctermfg=magenta guifg=magenta
 hi CursorLineNr ctermbg=NONE guibg=NONE 
 hi LineNr ctermbg=NONE guibg=NONE 
 hi SignColumn ctermbg=NONE guibg=NONE 
