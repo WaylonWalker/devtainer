@@ -167,7 +167,7 @@ RUN GITUI_VERSION=$(curl --silent https://github.com/extrawurst/gitui/releases/l
 # fd-find
 RUN FD_FIND_VERSION=$(curl --silent https://github.com/sharkdp/fd/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//'); \
     # "\
-    wget https://github.com/sharkdp/fd/releases/download/v8.1.1/fd-v${FD_FIND_VERSION}-x86_64-unknown-linux-musl.tar.gz -O- -q | tar -zxf - -C /usr/bin/
+    wget https://github.com/sharkdp/fd/releases/download/v${FD_FIND_VERSION}/fd-v${FD_FIND_VERSION}-x86_64-unknown-linux-musl.tar.gz -O- -q | tar -zxf - -C /usr/bin/
 
 
 # end manual installs
