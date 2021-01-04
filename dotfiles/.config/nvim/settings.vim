@@ -152,6 +152,7 @@ set showcmd                " Show already typed keys when more are expected.
 
 set incsearch              " Highlight while searching with / or ?.
 set hlsearch               " Keep matches highlighted.
+set inccommand=nosplit     " Live highlighting of search term during substitution
 
 set ttyfast                " Faster redrawing.
 set lazyredraw             " Only redraw when necessary.
