@@ -68,6 +68,7 @@ vnoremap <c-r> :s/<C-R>//g<Left><Left>
 nnoremap <silent> s* :let @/='\<'.expand('<cword>').'\>'<cr>cgn
 xnoremap <silent> s* "sy: let @/=@s<cr>cgn
 
+nnoremap <leader>prw :CocSearch <C-R>=expand("<cword>")<CR><CR>
 " leader keys
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 let mapleader = " "
