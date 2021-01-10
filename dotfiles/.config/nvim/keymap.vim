@@ -26,6 +26,7 @@ nnoremap gpc :PlugClean<CR>                     # clean plugins
 nnoremap ges :e ~/.config/nvim/settings.vim<CR> # edit settings
 
 nnoremap gp :Maps<CR>
+nnoremap gwc vap:'<,'>w !wc -c<CR>
 
 
 " insert mode mappings
