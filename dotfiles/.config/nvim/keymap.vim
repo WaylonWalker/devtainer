@@ -28,6 +28,7 @@ nnoremap gpi :PlugInstall<CR>                   # install plugins
 nnoremap gpc :PlugClean<CR>                     # clean plugins
 
 nnoremap gp :Maps<CR>
+nnoremap gwc vap:'<,'>w !wc -c<CR>
 
 
 " insert mode mappings
@@ -70,6 +71,7 @@ vnoremap <c-r> :s/<C-R>//g<Left><Left>
 nnoremap <silent> s* :let @/='\<'.expand('<cword>').'\>'<cr>cgn
 xnoremap <silent> s* "sy: let @/=@s<cr>cgn
 
+nnoremap <leader>prw :CocSearch <C-R>=expand("<cword>")<CR><CR>
 " leader keys
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 let mapleader = " "
