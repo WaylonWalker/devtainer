@@ -21,9 +21,11 @@ nnoremap <leader>so :source %<CR>
 nnoremap gso :source %<CR>
 nnoremap gek :e ~/.config/nvim/keymap.vim<CR>   # edit keymap
 nnoremap gep :e ~/.config/nvim/plugins.vim<CR>  # edit plugins
+nnoremap ges :e ~/.config/nvim/settings.vim<CR> # edit settings
+nnoremap get :e ~/.tmux.conf<CR> # edit settings
+
 nnoremap gpi :PlugInstall<CR>                   # install plugins
 nnoremap gpc :PlugClean<CR>                     # clean plugins
-nnoremap ges :e ~/.config/nvim/settings.vim<CR> # edit settings
 
 nnoremap gp :Maps<CR>
 
@@ -241,8 +243,11 @@ vmap <C-j> xp`[V`]
 
 " Navigate to definition
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap gd :YcmCompleter GoTo<CR>
-nnoremap gh :YcmCompleter GetDoc<CR>
+" nnoremap gd :YcmCompleter GoTo<CR>
+" nnoremap gh :YcmCompleter GetDoc<CR>
+
+nnoremap gd :call CocActionAsync('jumpDefinition')<CR>
+nnoremap gd :call CocActionAsync('doHover')<CR>
 
 nmap <silent> gd <Plug>(coc-definition)
 
@@ -252,3 +257,8 @@ noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 1)<CR>
 noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 1)<CR>
 noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
 noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
+
+
+" something hijacked escape to escape and scroll up
+"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+map <esc> <esc>

@@ -35,7 +35,6 @@ call plug#begin('~/.local/share/nvim/plugged')
 " Plug 'rking/ag.vim'
 " Plug 'ryanoasis/vim-devicons'
 " Plug 'ryanoasis/vim-devicons'
-" Plug 'scrooloose/syntastic' 
 " Plug 'shime/livedown'
 " Plug 'skywind3000/asyncrun.vim'
 " Plug 'styled-components/vim-styled-components'
@@ -52,8 +51,6 @@ Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
 Plug 'ambv/black'
 Plug 'amix/vim-zenroom2'
-Plug 'christoomey/vim-quicklink'
-Plug 'christoomey/vim-tmux-runner'
 Plug 'easymotion/vim-easymotion'
 Plug 'epilande/vim-es2015-snippets', {'for': 'javascript'}
 Plug 'epilande/vim-react-snippets', {'for': 'javascript'}
@@ -70,6 +67,7 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rakr/vim-one'
 Plug 'scrooloose/nerdtree'
+" Plug 'scrooloose/syntastic' 
 Plug 'sheerun/vim-polyglot'
 Plug 'terryma/vim-smooth-scroll'
 Plug 'thinca/vim-visualstar'
@@ -79,18 +77,25 @@ Plug 'tpope/vim-surround'
 Plug 'valloric/matchtagalways'
 Plug 'w0rp/ale'
 Plug 'wellle/targets.vim'
-Plug 'zxqfl/tabnine-vim'
+Plug 'christoomey/vim-tmux-runner'
+Plug 'christoomey/vim-quicklink'
+Plug 'kana/vim-fakeclip'
+Plug 'voldikss/vim-floaterm'
+" Plug 'zxqfl/tabnine-vim'
+Plug 'wfxr/minimap.vim'
 call plug#end()
 
 let g:coc_global_extensions = [
-    \'coc-explorer',
-    \'coc-fzf-preview',
-    \'coc-git'
-    \'coc-highlight',
-    \'coc-json', 
-    \'coc-markdownlint',
     \'coc-marketplace',
-    \'coc-python',
-    \'coc-tabnine',
+    \'coc-fzf-preview',
     \'coc-tsserver',
+    \'coc-markdownlint',
+    \'coc-highlight',
+    \'coc-python',
+    \'coc-explorer',
+    \'coc-json', 
+    \'coc-git',
+    \'coc-snippets'
     \]
+    " \'coc-pyright',
+    " \'coc-tabnine',
