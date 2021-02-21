@@ -9,7 +9,7 @@
 
 # fzf mappings
 #―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-source "/root/.local/share/nvim/plugged/fzf/shell/key-bindings.zsh"
+source ~/.fzf/shell/key-bindings.zsh
 source ~/.fzf.zsh
 
 # vim mode
