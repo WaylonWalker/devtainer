@@ -308,6 +308,16 @@ install_neovim () {
     runner _install_neovim
 }
 
+install_docker() {
+    sudo apt update
+    sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    sudo apt update
+    apt-cache policy docker-ce
+    sudo apt install docker-ce -y
+    sudo systemctl status docker
+}
 
 install_main () {
     install_apt
@@ -326,4 +336,9 @@ install_main () {
     install_oh_my_zsh
 
     install_neovim
+}
+
+setup_droplet () {
+    install_docker
+    install_main
 }
