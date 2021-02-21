@@ -90,6 +90,7 @@ RUN python3 -m pip install --upgrade pip && \
         mypy \
         pre-commit \
         pynvim \
+        rich \
         visidata
         # end pip install
 
