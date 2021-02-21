@@ -82,7 +82,7 @@ Plug 'christoomey/vim-quicklink'
 Plug 'kana/vim-fakeclip'
 Plug 'voldikss/vim-floaterm'
 " Plug 'zxqfl/tabnine-vim'
-Plug 'wfxr/minimap.vim'
+" Plug 'wfxr/minimap.vim'
 call plug#end()
 
 let g:coc_global_extensions = [
