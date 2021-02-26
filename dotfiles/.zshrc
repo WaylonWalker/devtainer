@@ -18,11 +18,6 @@ source $ZSH/oh-my-zsh.sh
 source ~/.alias
 
 
-### 
-# C-R was not loading running contents of .fzf.zsh here seems to resolve the issue
-# Start ~/.fzf.zsh
-# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-###
 # Setup fzf
 # ---------
 if [[ ! "$PATH" == */root/.local/share/nvim/plugged/fzf/bin* ]]; then
@@ -34,3 +29,9 @@ fi
 [[ $- == *i* ]] && source "/root/.local/share/nvim/plugged/fzf/shell/completion.zsh" 2> /dev/null
 
 source ~/.keymap.sh
+
+### 
+# C-R was not loading running contents of .fzf.zsh here seems to resolve the issue
+# Start ~/.fzf.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+###
