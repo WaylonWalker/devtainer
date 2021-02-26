@@ -50,7 +50,6 @@ RUN apt-get update; \
     libevent-dev \
     libexpat1-dev \
     libfuse2 \
-    libghc-zlib-dev \
     libncurses5-dev \
     libssl-dev \
     m4 \
@@ -70,17 +69,17 @@ RUN apt-get update; \
     tzdata \
     universal-ctags \
     unzip \
-    unzip \
     wget \
-    zsh \
- && rm -rf /var/lib/apt/lists/*
+    zsh; \
+    rm -rf /var/lib/apt/lists/*; \
+    echo done
 
 WORKDIR /downloads
 
 
 
-RUN python3 -m pip install --upgrade pip && \
-    python3 -m pip install \
+RUN python3 -m pip install --no-cache-dir --upgrade pip && \
+    python3 -m pip install --no-cache-dir\
         # start pip installs
         awscli \
         black \
@@ -91,17 +90,17 @@ RUN python3 -m pip install --upgrade pip && \
         pre-commit \
         pynvim \
         rich \
-        visidata
-        # end pip install
+        visidata && \
+        rm -rf /root/.cache/pip;
 
 # start manual installs
 # git
-RUN export GIT_VERSION=$(curl --silent https://github.com/git/git/releases/ | grep git/git/releases/tag | grep -v rc | head -n 1 | sed 's/^.*tag\///' | sed 's/".*//'); \
-    #" \
-    wget https://github.com/git/git/archive/${GIT_VERSION}.tar.gz -q -O- - | tar xz && \
-    cd git-* && \
-    make prefix=/usr/local all && \
-    make prefix=/usr/local install
+#RUN export GIT_VERSION=$(curl --silent https://github.com/git/git/releases/ | grep git/git/releases/tag | grep -v rc | head -n 1 | sed 's/^.*tag\///' | sed 's/".*//'); \
+#    #" \
+#    wget https://github.com/git/git/archive/${GIT_VERSION}.tar.gz -q -O- - | tar xz && \
+#    cd git-* && \
+#    make prefix=/usr/local all && \
+#    make prefix=/usr/local install
 
 # bat
 RUN BAT_VERSION=$(curl --silent https://github.com/sharkdp/bat/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//'); \
@@ -131,7 +130,8 @@ RUN NEOVIM_VERSION=$(curl --silent https://github.com/neovim/neovim/releases/lat
         mv /downloads/squashfs-root/* ~/.local/share/neovim; \
         rm /usr/bin/nvim; \
         ln -s ~/.local/share/neovim/AppRun /usr/bin/nvim; \
-        ln -s ~/.local/share/neovim/AppRun /usr/bin/vim
+        ln -s ~/.local/share/neovim/AppRun /usr/bin/vim; \
+        rm -rf /downloads;
 
 # fzf
 RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
@@ -156,7 +156,8 @@ RUN GLOW_VERSION=$(curl --silent https://github.com/charmbracelet/glow/releases/
     wget https://github.com/charmbracelet/glow/releases/download/v${GLOW_VERSION}/glow_${GLOW_VERSION}_linux_x86_64.tar.gz -q && \
         mkdir /downloads/glow && \
         tar -zxf glow_${GLOW_VERSION}_linux_x86_64.tar.gz --directory /downloads/glow && \
-        mv /downloads/glow/glow /usr/bin/
+        mv /downloads/glow/glow /usr/bin/; \
+        rm -rf /downloads;
 
 # oh-my=zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null
@@ -175,13 +176,13 @@ RUN FD_FIND_VERSION=$(curl --silent https://github.com/sharkdp/fd/releases/lates
 # end manual installs
 
 RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - && \
-    apt-get install nodejs
+    apt-get install nodejs && \
+    rm -rf /var/lib/apt/lists/*; \
 
 RUN npm i -g diff-so-fancy && \
-    # mdv
-    npm i -g markserv && \
-    # neovim
-    npm i -g neovim
+    npm i -g markserv; \
+    npm i -g neovim; \
+    rm -rf /root/.npm/_cacache;
 
 
 RUN chsh -s /usr/bin/zsh
@@ -193,7 +194,8 @@ RUN chsh -s /usr/bin/zsh
 # 
 
 RUN python -m venv ~/.local/share/nvim/black; \
-    ~/.local/share/nvim/black/bin/pip install -U -q --no-cache-dir --disable-pip-version-check black;
+    ~/.local/share/nvim/black/bin/pip install -U -q --no-cache-dir --disable-pip-version-check black; \
+    rm -rf /root/.cache/pip;
 
 
 COPY dotfiles/ $HOME
@@ -209,11 +211,10 @@ RUN apt-get install -y --no-install-recommends vim; \
     rm -rf ~/.vim; \
     apt-get remove vim -y;
 
-RUN rm -rf /downloads; \
-    rm -rf /root/.npm/_cacache; \
-    rm -rf /root/.cache/pip; \
-    rm -rf /usr/lib/ghc */; \
-    chmod 0750 ~/.local/share/nvim/; \
+    # rm -rf /downloads; \
+    # rm -rf /root/.cache/pip; \
+    # rm -rf /usr/lib/ghc */; \
+RUN chmod 0750 ~/.local/share/nvim/; \
     mkdir ~/.local/share/nvim/backup/; \
     mkdir ~/.local/share/nvim/swap/; \
     mkdir ~/.local/share/nvim/undo/;
