@@ -16,6 +16,7 @@ plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
 source ~/.alias
+source ~/.alias.local
 
 
 # Setup fzf
