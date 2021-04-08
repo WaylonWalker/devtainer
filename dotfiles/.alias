@@ -5,7 +5,9 @@ alias cat=bat
 alias new-post=~/git/waylonwalkerv2/new-post
 alias np=~/git/waylonwalkerv2/new-post
 alias pid="ps -aux | grep -v grep | grep "
+alias upload="chrome.exe https://github.com/WaylonWalker/images.waylonwalker.com/upload/main/static"
 
+alias ta="tmux attach"
 switch_session() {
   local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
   { tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
@@ -62,7 +64,7 @@ lsn () {
 
 alias ignore='curl https://www.gitignore.io/api/vim,node,data,emacs,python,pycharm,executable,sublimetext,visualstudio,visualstudiocode > .gitignore'
 
-alias todo='cd ~/projects/todo && nvim -O backlog.md doing.md done.md'
+alias todo='cd ~/work/todo && nvim -O backlog.md doing.md done.md'
 
 a () {
     source activate "$(conda info --envs | fzf --prompt select-env❯ | awk '{print $1}')"
@@ -77,3 +79,5 @@ local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
   | cut -d':' -f1 \
   | xargs tmux switch-client -t
 }
+
+
