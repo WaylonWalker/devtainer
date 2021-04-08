@@ -283,7 +283,9 @@ install_neovim () {
         mkif ~/downloads
         cd ~/downloads
 
-        NEOVIM_VERSION=$(curl --silent https://github.com/neovim/neovim/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+        NEOVIM_LATEST_VERSION=$(curl --silent https://github.com/neovim/neovim/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+        NEOVIM_NIGHTLY_VERSION=$(curl --silent https://github.com/neovim/neovim/releases/nightly | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+        NEOVIM_VERSION=$NEOVIM_NIGHTLY_VERSION
         curl --silent -LO https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim.appimage
         sudo chmod u+x nvim.appimage
         ./nvim.appimage --appimage-extract > nvim-extract.log 2>&1
