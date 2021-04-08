@@ -6,28 +6,48 @@
 "                |___/                |_|                     
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 
-nnoremap <tab> :bnext<cr>                       # Next Buffej
-nnoremap <s-tab> :bprevious<cr>                 # Previous Buffer
+nnoremap <tab> :bnext<cr>
+nnoremap <s-tab> :bprevious<cr>
 
-map <c-w> :q<cr>                                # quit
-map <c-c> :qall<cr>                             # quit all
-map <c-x> :xall<cr>                             # quit all
-map <c-n> :NERDTreeToggle<cr>                   # sidebar
-map <c-/> :Commentary                           # comment
-inoremap <c-/> :Commentary                      # comment
-map <c-s> :w<cr>                                # comment
+nmap <Leader>g :call TermOpen('gitui', 't')<CR>
+nmap gtg :call TermOpen('gitui', 't')<CR>
+nmap gtg :call TermOpen('gitui', 'v')<CR><C-w>H:vertical resize 160<CR>i
+nmap gtf :call TermOpen('vifm', 'v')<CR><C-w>H:vertical resize 80<CR>i
 
+nnoremap <leader><leader>d "_d
+vnoremap <leader>d "_d
+
+" map <c-w> :q<cr>
+map <c-c> :qall<cr>
+map <c-x> :xall<cr>
+map <c-n> :NERDTreeToggle<cr>
+map <c-/> :Commentary
+inoremap <c-/> :Commentary
+map <c-s> :w<cr>
+
+" edit things
+"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+" source current file
 nnoremap <leader>so :source %<CR>
 nnoremap gso :source %<CR>
-nnoremap gek :e ~/.config/nvim/keymap.vim<CR>   # edit keymap
-nnoremap gep :e ~/.config/nvim/plugins.vim<CR>  # edit plugins
-nnoremap ges :e ~/.config/nvim/settings.vim<CR> # edit settings
+" edit nvim dotfiles
+nnoremap gek :e ~/.config/nvim/keymap.vim<CR>
+nnoremap gep :e ~/.config/nvim/plugins.vim<CR>
+nnoremap ges :e ~/.config/nvim/settings.vim<CR>
+" edit tmuux config
 nnoremap get :e ~/.tmux.conf<CR> # edit settings
+" edit from parent directory
+set wcm=<C-Z>
+nnoremap <leader>e :e %:h<C-Z>
+cnoremap <C-f> %<C-Z>
+cnoremap <C-p> %:h<C-Z>
 
-nnoremap gpi :PlugInstall<CR>                   # install plugins
-nnoremap gpc :PlugClean<CR>                     # clean plugins
+" Plug
+"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+nnoremap gpi :PlugInstall<CR>
+nnoremap gpc :PlugClean<CR>
 
-nnoremap gp :Maps<CR>
+" nnoremap gp :Maps<CR>
 nnoremap gwc vap:'<,'>w !wc -c<CR>
 
 
@@ -51,12 +71,12 @@ noremap Q @@                                   # run last macro
 nnoremap <silent> <c-s> :<c-u>update<cr>       # save
 
 
-" <c-w> commands without <c-w>
+" <c-w> cavemmands without <c-w>
 " i commonly use cmder on windows which uses <c-w> to close a tab
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <c-j> <c-w><c-j>
+" nnoremap <c-j> <c-w><c-j>
 nnoremap <c-k> <c-w><c-k>
-nnoremap <c-l> <c-w><c-l>
+" nnoremap <c-l> <c-w><c-l>
 nnoremap <c-h> <c-w><c-h>
 
 " Replace Mappings
@@ -99,10 +119,29 @@ nnoremap <silent> <leader>y :call s:TogglePasteMode()<CR>
 :command! TogglePasteMode :call s:TogglePasteMode()
 nnoremap gtp :TogglePasteMode<CR>
 
+function! s:PyPreSave()
+    Black
+    " Isort
+    " call flake8#Flake8()
+endfunction
+
+:command! PyPreSave :call s:PyPreSave()
+
+
+function! s:NoBg()
+    highlight Normal ctermbg=NONE
+    highlight CursorLineNr ctermbg=NONE guibg=NONE 
+    highlight SignColumn ctermbg=NONE guibg=NONE 
+endfunction
+
+:command! NoBg :call s:NoBg()
+nnoremap <silent> <leader><cr> :NoBg<cr>:noh<cr>
 
 " ToggleLocationList
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-let s:syntastic_auto_loc_list = 1
+let s:syntastic_auto_loc_list = 0
+let syntastic_auto_loc_list = 0
+
 function! s:ToggleLocationList()
     if s:syntastic_auto_loc_list == 1
         let s:syntastic_auto_loc_list = 0
@@ -117,7 +156,40 @@ endfunction
 
 :command! ToggleLocationList :call s:ToggleLocationList()
 nnoremap gtl :ToggleLocationList<CR>
+nnoremap glp :lprevious<CR>
+nnoremap gln :lnext<CR>
 
+nnoremap <c-s-j> :GitGutterNextHunk<CR>
+nnoremap <c-s-k> :GitGutterPrevHunk<CR>
+
+
+" quickfix
+"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+nnoremap <c-j> :copen<cr>:cnext<CR>
+nnoremap <c-k> :copen<cr>:cprev<CR>
+
+let s:cisopen = 0
+
+function! s:ToggleQuickFix()
+
+    if s:cisopen  == 1
+        let s:cisopen = 0
+        :bel copen
+        :wincmd k
+
+    else
+        let s:cisopen = 1
+        :cclose
+    endif
+endfunction
+
+:command! ToggleQuickFix :call s:ToggleQuickFix()
+nnoremap gtj :ToggleQuickFix<CR>
+
+nnoremap <silent> <leader>c :ToggleQuickFix<CR>
+
+
+" nnoremap <C-S-L> :cnext<CR>
 
 " git
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
@@ -126,6 +198,12 @@ nnoremap <silent><leader>gs :Gstatus<cr>
 nnoremap <silent><leader>gc :Gcommit<cr>
 nnoremap <silent><c-]> :GitGutterNextHunk<cr>
 nnoremap <silent><c-[> :GitGutterPrevHunk<cr>
+
+nnoremap gpg :GitGutterPrevHunk<CR>
+nnoremap gng :GitGutterNextHunk<CR>
+nnoremap gfg :GitGutterFold<CR>
+nnoremap gcg :GitGutterQuickFix<CR>:copen<CR><C-w>L
+
 
 " shortcuts
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
@@ -136,9 +214,10 @@ nnoremap <silent><leader>x :x<cr>
 " formatting
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 " nnoremap <leader><leader>p :!prettier % --write l<cr>
-nnoremap <leader>f :black<cr>
-nnoremap <leader>c :Commentary<cr>
-nnoremap <leader>u gu
+" nnoremap <leader>f :black<cr>
+" nnoremap <leader>c :Commentary<cr>
+" nnoremap <leader>u gu
+nnoremap <leader>f8 :call flake8#Flake8()<cr>
 
 " visual mode remap
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
@@ -149,26 +228,37 @@ nnoremap <leader>b :Vb<CR>
 " > indent
 " < unindent
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-vnoremap < <gv
-vnoremap > >gv
+" vnoremap < <gv
+" vnoremap > >gv
 
 " give a few extra lines after zt/zb
 " zt scroll current line to top
 " zb scroll current line to bottom
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap zt zt<C-Y><C-Y><C-Y>
-nnoremap zb zb<C-e><C-e><C-e>
+" corrected with scrolloff
+" nnoremap zt zt<C-Y><C-Y><C-Y>
+" nnoremap zb zb<C-e><C-e><C-e>
 
 " navigation
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 command! -bang -nargs=? -complete=dir HFiles
-  \ call fzf#vim#files(<q-args>, {'source': 'ag --hidden --ignore .git -g ""'}, <bang>0)
+  " \ call fzf#vim#files(<q-args>, {'source': 'ag --hidden --ignore .git -g ""'}, <bang>0)
 nnoremap <leader>p :GFiles<cr>
+nnoremap <leader>p :Telescope find_files<cr>
+nnoremap <leader>F :Telescope<cr>
+nnoremap <leader>ff :Telescope find_files<cr>
+nnoremap <leader>fb :Telescope file_browser<cr>
+nnoremap <leader>fg :Telescope git_files<cr>
+nnoremap <leader>fs :Telescope grep_string<cr>
+nnoremap <leader>fh :Telescope old_files<cr>
+
+
 nnoremap <leader>P :HFiles<cr>
 nnoremap <C-p> :GFiles<cr>
 nnoremap <leader>t :Files<cr>
 nnoremap <C-S-P> :Maps<cr>
 nnoremap <C-S-P> :CocList<cr>
+nnoremap <C-S-P> :Commands<cr>
 nnoremap <leader>r :Rg<cr>
 " nnoremap <C-R> :Rg<cr>
 nnoremap <cr> :Buffers<cr>
@@ -200,7 +290,7 @@ nnoremap <leader>i :TagbarToggle<CR>
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 nnoremap <silent> <leader><leader>l :Limelight!!<cr>
 nnoremap <silent><leader>o :CtrlSpace O<CR>
-map <silent> <leader><cr> :noh<cr>
+" map <silent> <leader><cr> :noh<cr>
 nnoremap <silent> <leader>\ :highlight LineNr ctermfg=8 ctermbg=black<cr> :highlight CursorLineNr ctermfg=red<cr> :highlight Visual ctermbg=8<cr>
 
 " Zen Mode
@@ -215,7 +305,7 @@ function! ToggleHiddenAll()
         set noshowcmd
         set nonumber
         set norelativenumber
-        :GitGutterDisable<CR>
+        GitGutterDisable
     else
         let s:hidden_all = 0
         set showmode
@@ -224,7 +314,7 @@ function! ToggleHiddenAll()
         set showcmd
         set number
         set relativenumber
-        :GitGutterEnable<CR>
+        GitGutterEnable
     endif
 endfunction
 nnoremap <silent> <leader>z :call ToggleHiddenAll()<CR>
@@ -237,8 +327,8 @@ nnoremap <F5> :buffers<CR>:buffer<Space>
 
 " bubbling
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nmap <C-k> ddkP
-nmap <C-j> ddp
+" nmap <C-k> ddkP
+" nmap <C-j> ddp
 
 vmap <C-k> xkP`[V`]
 vmap <C-j> xp`[V`]
@@ -253,10 +343,17 @@ nnoremap gd :call CocActionAsync('doHover')<CR>
 
 nmap <silent> gd <Plug>(coc-definition)
 
+" ALE
+nnoremap <leader>at :ALEToggle<CR>
+nnoremap <leader>ah :ALEHover<CR>
+nnoremap <leader>ad :ALEGoToDefinition<CR>
+nnoremap <leader>ar :ALEFindReferences<CR>
+nnoremap <leader>a/ :ALESymbolSearch <c-r>=expand("<cword>")<cr><cr>
+
 " swapped smooth-scroll for comfortable-motion
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 1)<CR>
-noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 1)<CR>
+" noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 1)<CR>
+" noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 1)<CR>
 noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
 noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
 
@@ -264,3 +361,15 @@ noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
 " something hijacked escape to escape and scroll up
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 map <esc> <esc>
+
+" Saga
+
+" -- code action
+nnoremap <silent><leader>ca <cmd>lua require('lspsaga.codeaction').code_action()<CR>
+vnoremap <silent><leader>ca <cmd>'<,'>lua require('lspsaga.codeaction').range_code_action()<CR>
+" -- or use command
+nnoremap <silent><leader>ca :Lspsaga code_action<CR>
+vnoremap <silent><leader>ca :<C-U>Lspsaga range_code_action<CR>
+
+
+

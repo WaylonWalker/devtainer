@@ -7,6 +7,7 @@
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 
 let g:python_lint_config = '~/pylint.rc'
+let g:python_lint_config = '~/pylint.rc'
 let g:python3_host_prog = '~/miniconda3/bin/python'
 let g:python3_host_prog = '~/miniconda3/envs/nvim3/bin/python'
 
@@ -14,12 +15,27 @@ let g:VtrStripLeadingWhitespace = 0
 let g:VtrClearEmptyLines = 0
 let g:VtrAppendNewline = 1 
 
+let g:ale_fixers = {'python': ['isort', 'black', 'remove_trailing_lines', 'trim_whitespace']}
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+
+lua << EOF
+require'lspconfig'.pyright.setup{}
+require'lspconfig'.bashls.setup{}
+require'lualine'.setup{
+options = {  section_separators = {'>', '>>'},  component_separators = {'|', '||'}}
+
+}
+EOF
+" require'nvim-biscuits'.setup{}
+
 nnoremap <leader>a :VtrAttachToPane<CR>
 vnoremap <leader>a :'<,'>VtrSendLinesToRunner<CR>
 
 
 " general stuff
 
+set noerrorbells
 set autoread
 au CursorHold * checktime
 set shortmess=iot
@@ -41,6 +57,8 @@ set noswapfile
 set backupdir=~/.local/share/nvim/backup//
 set directory=~/.local/share/nvim/swap//
 set undodir=~/.local/share/nvim/undo//
+set undofile
+set scrolloff=8
 
 
 set fillchars+=vert:\│
@@ -52,7 +70,7 @@ autocmd filetype javascript setlocal ts=2 sts=2 sw=2
 " let $path = 'c:/python+/64bit/envs/adhoc/;c:/python+/64bit/envs/adhoc/lib;c:/python+/64bit/envs/adhoc/lib/site-packaes/;' . $path
 " let $pythonpath = 'c:/python+/64bit/envs/adhoc/;c:/python+/64bit/envs/adhoc/dlls;c:/python+/64bit/envs/adhoc/lib;c:/python+/64bit/envs/adhoc/lib/site-packages/'
 let g:pymode_lint_config='~/pylint.rc'
-" let g:black_virtualenv='/usr/local/bin/black'
+let g:black_virtualenv='/usr/local/bin/black'
 
 " jsx
 let g:jsx_ext_required = 0
@@ -76,7 +94,7 @@ let g:ultisnipsexpandtrigger="<c-l>"
 let g:syntastic_javascript_checkers = ['eslint']
 
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineflag()}
+" set statusline+=%{SyntasticStatuslineflag()}
 set statusline+=%*
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
@@ -90,7 +108,7 @@ let g:syntastic_javascript_eslint_exe = 'eslint % --fix'
 
 " autocmd bufwritepost *.js asyncrun -post=checktime eslint --fix %
 " autocmd bufwritepre *.js execute ':!eslint --fix %'
-autocmd bufwritepre *.py execute ':Black'
+autocmd bufwritepre *.py execute 'PyPreSave'
 autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
 autocmd bufwritepost *.vim execute ':source %'
 
@@ -105,8 +123,17 @@ let g:ale_fixers = {'javascript': ['eslint']}
 " autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
 
 let g:lightline = {
-  \ 'colorscheme': 'one',
+  \ 'colorscheme': 'gruvbox',
   \ }
+
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_invert_selection='0'
+set background=dark
+
+if exists('+termguicolors')
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
 
 " map <C-p> :CtrlSpace O<CR>
 set encoding=utf-8
@@ -122,7 +149,8 @@ set encoding=utf-8
 " highlight LineNr ctermfg=grey ctermbg=black
 " highlight CursorLineNr ctermfg=red
 " hi clear LineNr
-highlight Visual ctermbg=8
+" highlight Visual ctermbg=8
+hi SignColumn ctermbg=3
 
 "
 " A (not so) minimal vimrc.
@@ -201,15 +229,22 @@ let g:airline_powerline_fonts=1
 " keep nerdtree open when opening files with nerdtree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-silent! color one
+let g:gruvbox_contrast_dark = 'soft'
+set background=dark
+let g:gruvbox_invert_selection='0'
+" silent! color one
+silent! color gruvbox
+highlight Normal ctermbg=NONE
+
 " Fix highlighting issues
 " on my terminal pop up menus disapper into the background
 "
 " hi Visual ctermbg=magenta ctermfg=black
-hi Normal guibg=NONE ctermbg=NONE
-hi Pmenu ctermbg=NONE guibg=NONE ctermfg=magenta guifg=magenta
+"
+" hi Normal guibg=NONE ctermbg=NONE
+" hi Pmenu ctermbg=NONE guibg=NONE ctermfg=magenta guifg=magenta
+" hi LineNr ctermbg=NONE guibg=NONE 
 hi CursorLineNr ctermbg=NONE guibg=NONE 
-hi LineNr ctermbg=NONE guibg=NONE 
 hi SignColumn ctermbg=NONE guibg=NONE 
 
 " Get UltiSnipsExpandTrigger to work
@@ -235,7 +270,10 @@ autocmd FileType which_key highlight WhichKeyDesc ctermbg=12 ctermfg=7
 " --------------------------------------------------------
 " SETTINGS START
 
-set completeopt=longest,menuone
+" set completeopt=longest,menuone
+set completeopt=menuone,noinsert,noselect
+set signcolumn=yes
+" set colorcolumn=88
 
 " SETTINGS END
 " --------------------------------------------------------
@@ -246,11 +284,11 @@ set completeopt=longest,menuone
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" inoremap <silent><expr> <TAB>
+"       \ pumvisible() ? "\<C-n>" :
+"       \ <SID>check_back_space() ? "\<TAB>" :
+"       \ coc#refresh()
+" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -258,11 +296,11 @@ function! s:check_back_space() abort
 endfunction
 
 " Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
+" if has('nvim')
+"   inoremap <silent><expr> <c-space> coc#refresh()
+" else
+"   inoremap <silent><expr> <c-@> coc#refresh()
+" endif
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
 " position. Coc only does snippet and additional edit on confirm.
@@ -276,3 +314,32 @@ endif
 " COC-VIM TAB SETTINGS END
 " --------------------------------------------------------
 
+" if has('wsl')
+if system('uname -r') =~ "Microsoft"
+    augroup Yank
+        autocmd!
+        autocmd TextYankPost * :call system('clip.exe ',@")
+        augroup END
+endif
+
+" lua << EOF
+" do
+"   local method = "textDocument/publishDiagnostics"
+"   local default_handler = vim.lsp.handlers[method]
+"   vim.lsp.handlers[method] = function(err, method, result, client_id, bufnr, config)
+"     default_handler(err, method, result, client_id, bufnr, config)
+"     local diagnostics = vim.lsp.diagnostic.get_all()
+"     local qflist = {}
+"     for bufnr, diagnostic in pairs(diagnostics) do
+"       for _, d in ipairs(diagnostic) do
+"         d.bufnr = bufnr
+"         d.lnum = d.range.start.line + 1
+"         d.col = d.range.start.character + 1
+"         d.text = d.message
+"         table.insert(qflist, d)
+"       end
+"     end
+"     vim.lsp.util.set_qflist(qflist)
+"   end
+" end
+" EOF

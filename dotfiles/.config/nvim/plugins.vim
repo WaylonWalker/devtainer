@@ -3,7 +3,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " Plug 'TaDaa/vimade'
 " Plug 'VundleVim/Vundle.vim'
-" Plug 'bling/vim-airline'
+" Plug 'bling/vim-airl1ne'
 " Plug 'captbaritone/repo-vimrc'
 " Plug 'ctrlpvim/ctrlp.vim'
 " Plug 'davidhalter/jedi-vim'
@@ -12,7 +12,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 " Plug 'digitaltoad/vim-pug'
 " Plug 'djoshea/vim-autoread'
 " Plug 'flazz/vim-colorschemes'
-" Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 " Plug 'jlanzarotta/bufexplorer'
 " Plug 'joshdick/onedark.vim'
 " Plug 'josudoey/vim-eslint-fix'
@@ -55,7 +55,7 @@ Plug 'easymotion/vim-easymotion'
 Plug 'epilande/vim-es2015-snippets', {'for': 'javascript'}
 Plug 'epilande/vim-react-snippets', {'for': 'javascript'}
 Plug 'honza/vim-snippets'
-Plug 'itchyny/lightline.vim'
+" Plug 'itchyny/lightline.vim'
 Plug 'junegunn/fzf', { 'do': 'yes \| ./install'  }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'
@@ -64,7 +64,7 @@ Plug 'justinmk/vim-sneak'
 Plug 'liuchengxu/vim-which-key'
 Plug 'mbbill/undotree'
 Plug 'michaeljsmith/vim-indent-object'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rakr/vim-one'
 Plug 'scrooloose/nerdtree'
 " Plug 'scrooloose/syntastic' 
@@ -83,7 +83,32 @@ Plug 'kana/vim-fakeclip'
 Plug 'voldikss/vim-floaterm'
 " Plug 'zxqfl/tabnine-vim'
 " Plug 'wfxr/minimap.vim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-compe'
+Plug 'glepnir/lspsaga.nvim'
+Plug 'smitajit/bufutils.vim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} 
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-lua/lsp_extensions.nvim'
+Plug 'gruvbox-community/gruvbox'
+Plug 'joshdick/onedark.vim'
+Plug 'fabi1cazenave/termopen.vim'
+Plug 'ThePrimeagen/harpoon'
+Plug 'sainnhe/sonokai'
+Plug 'stsewd/isort.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'code-biscuits/nvim-biscuits'
+Plug 'hoob3rt/lualine.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'ryanoasis/vim-devicons'
+" Plug 'romainl/vim-qf'
+" Plug 'nvie/vim-flake8'
+" Plug 'flebel/vim-mypy', { 'for': 'python', 'branch': 'bugfix/fast_parser_is_default_and_only_parser' }
+Plug 'jeetsukumaran/vim-pythonsense'
 call plug#end()
+
+
 
 let g:coc_global_extensions = [
     \'coc-marketplace',
