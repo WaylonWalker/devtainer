@@ -259,14 +259,6 @@ install_node () {
     runner _install_node
 }
 
-install_configure () {
-    _install_configure () {
-        sudo chsh -s /usr/bin/zsh
-        git clone https://github.com/WaylonWalker/devtainer.git ~/downloads/devtainer
-        cp -r ~/downloads/devtainer/dotfiles/*(D) ~/ # include dotfiles
-    }
-    runner _install_configure
-}
 
 install_neovim () {
     _install_neovim () {
