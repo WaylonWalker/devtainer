@@ -199,6 +199,7 @@ RUN python -m venv ~/.local/share/nvim/black; \
 
 
 COPY dotfiles/ $HOME
+COPY bin/ $HOME/.local/bin/ta
 
 # install vim in order to run PlugInstall, neovim cannot run PlugInstall unattended
 RUN apt-get install -y --no-install-recommends vim; \

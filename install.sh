@@ -274,6 +274,7 @@ install_configure () {
         sudo chsh -s /usr/bin/zsh
         git clone https://github.com/WaylonWalker/devtainer.git ~/downloads/devtainer
         cp -r ~/downloads/devtainer/dotfiles/*(D) ~/ # include dotfiles
+        cp -r ~/downloads/devtainer/bin ~/.local.bin
     }
     runner _install_configure
 }
