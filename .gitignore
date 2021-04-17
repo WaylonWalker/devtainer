@@ -852,3 +852,14 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/vim,node,data,emacs,python,pycharm,executable,sublimetext,visualstudio,visualstudiocode
+dotfiles/.config/BraveSoftware/Brave-Browser/NativeMessagingHosts/firenvim.json
+dotfiles/.config/Thunar/accels.scm
+dotfiles/.config/evolution
+dotfiles/.config/dconf/user
+dotfiles/.config/google-chrome/NativeMessagingHosts/firenvim.json
+dotfiles/.config/pulse/ae9c91afeec3f759b4f3319360381e1d-runtime
+dotfiles/.config/user-dirs.dirs
+dotfiles/.config/user-dirs.locale
+dotfiles/.config/xfce4
+dotfiles/.vifm
+dotfiles/.vifm/vifminfo
