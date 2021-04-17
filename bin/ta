@@ -62,10 +62,11 @@ fi
 if [ "$DIR" == "--start" ]; then
     echo "starting"
     path_name="$(basename "$PWD" | tr . -)"
-    session_name=$path_name
+    session_name=${path_name//./_}
 else
     # ask the user which directory to start in
-    session_name=$(cd $DIR && ls -d */ | sed  "s|/||g" | fzy -p "$(basename $DIR) >" -l 40)
+    _session_name=$(cd $DIR && ls -d */ | sed  "s|/||g" | fzy -p "$(basename $DIR) >" -l 40)
+    session_name=${_session_name//./_}
     path_name=$DIR/$session_name
 fi
 
@@ -91,7 +92,7 @@ else
     (TMUX='' 
     tmux new-session -Ad -s "$session_name" -c $path_name;
     tmux split-window -vb -t "$session_name" -c $path_name -p 70;
-    tmux send-keys -t "$session_name" "nvim +Telescope find_files" Enter;
+    tmux send-keys -t "$session_name" "nvim '+Telescope find_files'" Enter;
     )
 fi
  }
