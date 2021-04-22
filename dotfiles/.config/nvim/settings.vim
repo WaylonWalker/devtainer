@@ -19,20 +19,15 @@ let g:ale_fixers = {'python': ['isort', 'black', 'remove_trailing_lines', 'trim_
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
 
-lua << EOF
-require'lspconfig'.pyright.setup{}
-require'lspconfig'.bashls.setup{}
-require'lualine'.setup{
-options = {  section_separators = {'>', '>>'},  component_separators = {'|', '||'}}
-
-}
-EOF
+luafile ~/.config/nvim/plugins.lua
 " require'nvim-biscuits'.setup{}
 
-nnoremap <leader>a :VtrAttachToPane<CR>
-vnoremap <leader>a :'<,'>VtrSendLinesToRunner<CR>
+nnoremap <leader>vat :VtrAttachToPane<CR>
+vnoremap <leader>vs :'<,'>VtrSendLinesToRunner<CR>
+nnoremap <leader>vs :VtrSendLinesToRunner<CR>
+nnoremap <leader>vpy :VtrSendCommandToRunner ipython<CR>
 
-
+nnoremap <leader>vpy VtrOpenRunner {'orientation': 'h', 'percentage': 50, 'cmd': 'ipython'}
 " general stuff
 
 set noerrorbells
@@ -43,7 +38,6 @@ set guioptions-=m
 set guioptions-=t
 set guioptions-=r
 set guioptions-=l
-set guifont=inconsolata_nf:h11
 syntax on
 filetype plugin on
 set path+=**
@@ -93,7 +87,7 @@ let g:ultisnipsexpandtrigger="<c-l>"
 
 let g:syntastic_javascript_checkers = ['eslint']
 
-set statusline+=%#warningmsg#
+" set statusline+=%#warningmsg#
 " set statusline+=%{SyntasticStatuslineflag()}
 set statusline+=%*
 let g:syntastic_always_populate_loc_list = 1
@@ -122,12 +116,12 @@ let g:ale_fixers = {'javascript': ['eslint']}
 
 " autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
 
-let g:lightline = {
-  \ 'colorscheme': 'gruvbox',
-  \ }
+" let g:lightline = {
+"   \ 'colorscheme': 'gruvbox',
+"   \ }
 
-let g:gruvbox_contrast_dark = 'hard'
-let g:gruvbox_invert_selection='0'
+" let g:gruvbox_contrast_dark = 'hard'
+" let g:gruvbox_invert_selection='0'
 set background=dark
 
 if exists('+termguicolors')
@@ -229,11 +223,11 @@ let g:airline_powerline_fonts=1
 " keep nerdtree open when opening files with nerdtree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-let g:gruvbox_contrast_dark = 'soft'
+" let g:gruvbox_contrast_dark = 'soft'
 set background=dark
-let g:gruvbox_invert_selection='0'
+" let g:gruvbox_invert_selection='0'
 " silent! color one
-silent! color gruvbox
+silent! lua require('colorbuddy').colorscheme('onebuddy')
 highlight Normal ctermbg=NONE
 
 " Fix highlighting issues
@@ -241,7 +235,7 @@ highlight Normal ctermbg=NONE
 "
 " hi Visual ctermbg=magenta ctermfg=black
 "
-" hi Normal guibg=NONE ctermbg=NONE
+hi Normal guibg=NONE ctermbg=NONE
 " hi Pmenu ctermbg=NONE guibg=NONE ctermfg=magenta guifg=magenta
 " hi LineNr ctermbg=NONE guibg=NONE 
 hi CursorLineNr ctermbg=NONE guibg=NONE 
@@ -318,28 +312,7 @@ endif
 if system('uname -r') =~ "Microsoft"
     augroup Yank
         autocmd!
-        autocmd TextYankPost * :call system('clip.exe ',@")
+        autocmd TextYankPost * :call system('/mnt/c/windows/system32/clip.exe ',@")
         augroup END
 endif
 
-" lua << EOF
-" do
-"   local method = "textDocument/publishDiagnostics"
-"   local default_handler = vim.lsp.handlers[method]
-"   vim.lsp.handlers[method] = function(err, method, result, client_id, bufnr, config)
-"     default_handler(err, method, result, client_id, bufnr, config)
-"     local diagnostics = vim.lsp.diagnostic.get_all()
-"     local qflist = {}
-"     for bufnr, diagnostic in pairs(diagnostics) do
-"       for _, d in ipairs(diagnostic) do
-"         d.bufnr = bufnr
-"         d.lnum = d.range.start.line + 1
-"         d.col = d.range.start.character + 1
-"         d.text = d.message
-"         table.insert(qflist, d)
-"       end
-"     end
-"     vim.lsp.util.set_qflist(qflist)
-"   end
-" end
-" EOF
