@@ -39,6 +39,8 @@ nmap gtf :call TermOpen('vifm', 'v')<CR><C-w>H:vertical resize 80<CR>i
 nnoremap <leader><leader>d "_d
 vnoremap <leader>d "_d
 
+nnoremap <leader>ghw :h <C-R>=expand("<cword>")<CR><CR>
+
 " map <c-w> :q<cr>
 map <c-c> :qall<cr>
 map <c-x> :xall<cr>
