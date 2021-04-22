@@ -106,10 +106,19 @@ nnoremap <c-h> <c-w><c-h>
 
 " Replace Mappings
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <c-r> :%s/<C-R>////g<Left><Left>
-vnoremap <c-r> :s///g<Left><Left><Left><C-R>/<Right>  # replace visual star
+nnoremap <c-r>r :%s/<C-R>////g<Left><Left>
+nnoremap <c-r><space> :%s/\<<C-r><C-w>\>//gI<Left><Left><Left>
+nnoremap <c-r>w :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
+nnoremap <c-r>r :%s/\<<C-r><C-/>\>//gI<Left><Left><Left>
+nnoremap <c-r><c-r> :%s/\<<C-r><C-/>\>/<C-r><C-/>/gI<Left><Left><Left>
+
+nnoremap <c-r><c-p><c-r> :vim <c-r><c-/> **/*%:e<cr>:cdo s/\<<c-r><c-/>\>//gc<Left><Left><Left>
+nnoremap <c-r>pr :vim <c-r><c-/> **/*<cr>:cdo s/\<<c-r><c-/>\>/<c-r><c-/>/gc<Left><Left><Left>
+
 " replace visual star
-vnoremap <c-r> :s/<C-R>//g<Left><Left>
+vnoremap <c-r><space> :s/<C-R>///g<Left><Left>
+vnoremap <c-r>r :s/<C-R>//<C-R>//g<Left><Left>
+
 " vnoremap <c-R> :s///g<Left><Left><Left>
 " type a replacement term and press . to repeat the replacement on the next
 " match.
