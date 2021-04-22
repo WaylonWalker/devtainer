@@ -5,7 +5,7 @@
 "   |___/\___|\__|\__|_|_| |_|\__, |___(_)_/ |_|_| |_| |_|
 "                             |___/                       
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-
+set termguicolors
 let g:python_lint_config = '~/pylint.rc'
 let g:python_lint_config = '~/pylint.rc'
 let g:python3_host_prog = '~/miniconda3/bin/python'
