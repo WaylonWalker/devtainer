@@ -178,7 +178,7 @@ endfunction
 
 
 function! s:NoBg()
-    highlight Normal ctermbg=NONE
+    highlight Normal guibg=None ctermbg=NONE
     highlight CursorLineNr ctermbg=NONE guibg=NONE 
     highlight SignColumn ctermbg=NONE guibg=NONE 
 endfunction
@@ -234,6 +234,7 @@ endfunction
 
 :command! ToggleQuickFix :call s:ToggleQuickFix()
 nnoremap gtj :ToggleQuickFix<CR>
+nnoremap <c-q> :ToggleQuickFix<CR>
 
 nnoremap <silent> <leader>c :ToggleQuickFix<CR>
 
@@ -295,11 +296,20 @@ command! -bang -nargs=? -complete=dir HFiles
 nnoremap <leader>p :GFiles<cr>
 nnoremap <leader>p :Telescope find_files<cr>
 nnoremap <leader>F :Telescope<cr>
+nnoremap <leader>o :Telescope old_files<cr>
+nnoremap <leader>q :Telescope lsp_document_diagnostics<cr>
 nnoremap <leader>ff :Telescope find_files<cr>
-nnoremap <leader>fb :Telescope file_browser<cr>
+nnoremap <leader>fb :Telescope buffers<cr>
+nnoremap <leader>fc :Telescope colorscheme<cr>
 nnoremap <leader>fg :Telescope git_files<cr>
 nnoremap <leader>fs :Telescope grep_string<cr>
 nnoremap <leader>fh :Telescope old_files<cr>
+nnoremap <leader>fr :Telescope lsp_references<cr>
+nnoremap <leader>fq :Telescope quickfix<cr>
+nnoremap gr :Telescope lsp_references<cr>
+nnoremap gd :Telescope lsp_definitions<cr>
+nnoremap gb :Telescope git_branches<cr>
+nnoremap gs :Git<cr>
 
 
 nnoremap <leader>P :HFiles<cr>
@@ -310,7 +320,7 @@ nnoremap <C-S-P> :CocList<cr>
 nnoremap <C-S-P> :Commands<cr>
 nnoremap <leader>r :Rg<cr>
 " nnoremap <C-R> :Rg<cr>
-nnoremap <cr> :Buffers<cr>
+" nnoremap <cr> :Buffers<cr>
 nnoremap <leader>m :Marks<cr>
 
 nnoremap <leader>n :b#<cr>
@@ -338,7 +348,7 @@ nnoremap <leader>i :TagbarToggle<CR>
 " interface
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 nnoremap <silent> <leader><leader>l :Limelight!!<cr>
-nnoremap <silent><leader>o :CtrlSpace O<CR>
+" nnoremap <silent><leader>o :CtrlSpace O<CR>
 " map <silent> <leader><cr> :noh<cr>
 nnoremap <silent> <leader>\ :highlight LineNr ctermfg=8 ctermbg=black<cr> :highlight CursorLineNr ctermfg=red<cr> :highlight Visual ctermbg=8<cr>
 
@@ -387,10 +397,10 @@ vmap <C-j> xp`[V`]
 " nnoremap gd :YcmCompleter GoTo<CR>
 " nnoremap gh :YcmCompleter GetDoc<CR>
 
-nnoremap gd :call CocActionAsync('jumpDefinition')<CR>
-nnoremap gd :call CocActionAsync('doHover')<CR>
+" nnoremap gd :call CocActionAsync('jumpDefinition')<CR>
+" nnoremap gd :call CocActionAsync('doHover')<CR>
 
-nmap <silent> gd <Plug>(coc-definition)
+" nmap <silent> gd <Plug>(coc-definition)
 
 " ALE
 nnoremap <leader>at :ALEToggle<CR>
