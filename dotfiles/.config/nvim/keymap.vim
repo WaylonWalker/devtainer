@@ -132,8 +132,8 @@ let mapleader = " "
 let g:maplocalleader = ','
 " nnoremap <silent> <leader> :whichkey '<Space>'<cr>
 
-nnoremap <silent> <leader>      :<c-u>WhichKey '<Space>'<CR>
-nnoremap <silent> <localleader> :<c-u>WhichKey  ','<CR>
+" nnoremap <silent> <leader>      :<c-u>WhichKey '<Space>'<CR>
+" nnoremap <silent> <localleader> :<c-u>WhichKey  ','<CR>
 
 " generic
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
