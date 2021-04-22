@@ -6,6 +6,28 @@
 "                |___/                |_|                     
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 
+"unsorted
+
+"stupid Terminals map <c-^> to other things
+nnoremap <leader>6 <c-^>
+inoremap gqq <esc>gqqA
+
+autocmd TermOpen * setlocal nonumber norelativenumber
+
+
+" window shortcuts
+tnoremap <c-\><c-\> <c-\><c-n>
+tnoremap <c-h> <c-\><c-n><c-w>h
+tnoremap <c-l> <c-\><c-n><c-w>l
+nnoremap <c-l> <c-w>l
+nnoremap <c-h> <c-w>h
+
+" Vtr
+nnoremap <leader>vat :VtrAttachToPane<CR>
+vnoremap <leader>vs :'<,'>VtrSendLinesToRunner<CR>
+nnoremap <leader>vs :VtrSendLinesToRunner<CR>
+nnoremap <leader>vv :VtrSendCommandToRunner 
+
 nnoremap <tab> :bnext<cr>
 nnoremap <s-tab> :bprevious<cr>
 
