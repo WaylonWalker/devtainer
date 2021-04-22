@@ -153,6 +153,21 @@ nnoremap <silent> <leader>y :call s:TogglePasteMode()<CR>
 :command! TogglePasteMode :call s:TogglePasteMode()
 nnoremap gtp :TogglePasteMode<CR>
 
+let s:winmax = 0
+function! s:ToggleWinMax()
+
+    if s:winmax  == 1
+        let s:winmax = 0
+        exe "normal \<c-w>\|\<c-w>_"
+    else
+        let s:winmax = 1
+        exe "normal \<c-w>="
+    endif
+endfunction
+
+:command! ToggleWinMax :call s:ToggleWinMax()
+nnoremap <c-w><c-w> :ToggleWinMax<CR>
+
 function! s:PyPreSave()
     Black
     " Isort
