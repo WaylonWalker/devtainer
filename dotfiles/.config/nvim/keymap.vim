@@ -59,7 +59,9 @@ nnoremap gek :e ~/.config/nvim/keymap.vim<CR>
 nnoremap gep :e ~/.config/nvim/plugins.vim<CR>
 nnoremap ges :e ~/.config/nvim/settings.vim<CR>
 " edit tmuux config
-nnoremap get :e ~/.tmux.conf<CR> # edit settings
+nnoremap get :e ~/.tmux.conf<CR>
+" edit zshrc
+nnoremap gez :e ~/.zshrc<CR>
 " edit from parent directory
 set wcm=<C-Z>
 nnoremap <leader>e :e %:h<C-Z>
