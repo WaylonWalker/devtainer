@@ -88,13 +88,12 @@ imap <c-_> <esc>:Commentary<cr>i
 
 " normal mode mappings
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <c-/> :Commentary                     # comment
-" nnoremap <tab> :undotreetoggle
-nnoremap <c-_> :Commentary<cr>                 # comment
+nnoremap <c-/> :Commentary
+nnoremap <c-_> :Commentary<cr>
 nnoremap ` '
 nnoremap ' `
-noremap Q @@                                   # run last macro
-nnoremap <silent> <c-s> :<c-u>update<cr>       # save
+noremap Q @@
+nnoremap <silent> <c-s> :<c-u>update<cr>
 
 
 " <c-w> cavemmands without <c-w>
