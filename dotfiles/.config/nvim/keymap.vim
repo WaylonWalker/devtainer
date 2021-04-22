@@ -364,12 +364,29 @@ map <esc> <esc>
 
 " Saga
 
-" -- code action
-nnoremap <silent><leader>ca <cmd>lua require('lspsaga.codeaction').code_action()<CR>
-vnoremap <silent><leader>ca <cmd>'<,'>lua require('lspsaga.codeaction').range_code_action()<CR>
-" -- or use command
 nnoremap <silent><leader>ca :Lspsaga code_action<CR>
 vnoremap <silent><leader>ca :<C-U>Lspsaga range_code_action<CR>
 
+
+" Harpoon
+
+nnoremap <TAB> :lua require("harpoon.ui").nav_next()<CR>
+nnoremap <S-TAB> :lua require("harpoon.ui").nav_prev()<CR>
+nnoremap <CR>b :Telescope buffers<CR>
+nnoremap <CR>a :lua require("harpoon.ui").nav_file(1)<CR>
+nnoremap <CR>s :lua require("harpoon.ui").nav_file(2)<CR>
+nnoremap <CR>d :lua require("harpoon.ui").nav_file(3)<CR>
+nnoremap <CR>f :lua require("harpoon.ui").nav_file(4)<CR>
+nnoremap <CR>g :lua require("harpoon.ui").toggle_quick_menu()<CR>
+nnoremap <CR>n :lua require("harpoon.ui").nav_next()<CR>
+nnoremap <CR>p :lua require("harpoon.ui").nav_prev()<CR>
+
+
+nnoremap <CR><CR> :lua require("harpoon.mark").toggle_file()<CR>
+nnoremap <CR>c :lua require("harpoon.mark").rm_file()<CR>
+nnoremap <CR>C :lua require("harpoon.mark").clear_all()<CR>
+" nnoremap <CR>S :lua require("harpoon.mark").add_file()<CR>
+" nnoremap <CR>D :lua require("harpoon.mark").add_file()<CR>
+" nnoremap <CR>F :lua require("harpoon.mark").add_file()<CR>
 
 
