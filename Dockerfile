@@ -40,6 +40,7 @@ RUN apt-get update; \
     curl \
     figlet \
     fuse \
+    fzy \
     g++ \
     gettext \
     git  \
