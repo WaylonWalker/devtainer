@@ -122,9 +122,7 @@ RUN VIFM_VERSION=$(curl --silent https://github.com/vifm/vifm/releases/latest | 
         cd ..
 
 # neovim
-RUN NEOVIM_VERSION=$(curl --silent https://github.com/neovim/neovim/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//'); \
-    #" \
-    curl --silent -LO https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim.appimage; \
+curl --silent -LO https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage; \
         chmod u+x nvim.appimage; \
         ./nvim.appimage --appimage-extract; \
         mkdir ~/.local/share/neovim -p; \
