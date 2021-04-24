@@ -130,10 +130,6 @@ nnoremap <leader>prw :CocSearch <C-R>=expand("<cword>")<CR><CR>
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 let mapleader = " "
 let g:maplocalleader = ','
-" nnoremap <silent> <leader> :whichkey '<Space>'<cr>
-
-" nnoremap <silent> <leader>      :<c-u>WhichKey '<Space>'<CR>
-" nnoremap <silent> <localleader> :<c-u>WhichKey  ','<CR>
 
 " generic
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
@@ -166,7 +162,7 @@ function! s:ToggleWinMax()
 endfunction
 
 :command! ToggleWinMax :call s:ToggleWinMax()
-nnoremap <c-w><c-w> :ToggleWinMax<CR>
+nnoremap <silent> <c-w><c-w> :ToggleWinMax<CR>
 
 function! s:PyPreSave()
     Black
@@ -175,16 +171,6 @@ function! s:PyPreSave()
 endfunction
 
 :command! PyPreSave :call s:PyPreSave()
-
-
-function! s:NoBg()
-    highlight Normal guibg=None ctermbg=NONE
-    highlight CursorLineNr ctermbg=NONE guibg=NONE 
-    highlight SignColumn ctermbg=NONE guibg=NONE 
-endfunction
-
-:command! NoBg :call s:NoBg()
-nnoremap <silent> <leader><cr> :NoBg<cr>:noh<cr>
 
 " ToggleLocationList
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
@@ -308,6 +294,7 @@ nnoremap <leader>fr :Telescope lsp_references<cr>
 nnoremap <leader>fq :Telescope quickfix<cr>
 nnoremap gr :Telescope lsp_references<cr>
 nnoremap gd :Telescope lsp_definitions<cr>
+nnoremap gh :Lspsaga hover_doc<cr>
 nnoremap gb :Telescope git_branches<cr>
 nnoremap gs :Git<cr>
 
@@ -350,7 +337,6 @@ nnoremap <leader>i :TagbarToggle<CR>
 nnoremap <silent> <leader><leader>l :Limelight!!<cr>
 " nnoremap <silent><leader>o :CtrlSpace O<CR>
 " map <silent> <leader><cr> :noh<cr>
-nnoremap <silent> <leader>\ :highlight LineNr ctermfg=8 ctermbg=black<cr> :highlight CursorLineNr ctermfg=red<cr> :highlight Visual ctermbg=8<cr>
 
 " Zen Mode
 nnoremap <silent> <leader><leader>z :Goyo<CR>
@@ -449,3 +435,4 @@ nnoremap <CR>C :lua require("harpoon.mark").clear_all()<CR>
 " nnoremap <CR>F :lua require("harpoon.mark").add_file()<CR>
 
 
+nnoremap <c-i> <c-i>
