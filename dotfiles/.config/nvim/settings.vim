@@ -5,7 +5,68 @@
 "   |___/\___|\__|\__|_|_| |_|\__, |___(_)_/ |_|_| |_| |_|
 "                             |___/                       
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-set termguicolors
+function! s:Sleep()
+    sleep 1000m " sleep 100s
+endfunction
+
+:command! Sleep :call s:Sleep()
+lua <<EOF
+
+do
+  local method = "textDocument/publishDiagnostics"
+  local default_handler = vim.lsp.handlers[method]
+  vim.lsp.handlers[method] = function(err, method, result, client_id, bufnr, config)
+    default_handler(err, method, result, client_id, bufnr, config)
+    local diagnostics = vim.lsp.diagnostic.get_all()
+    local qflist = {}
+    for bufnr, diagnostic in pairs(diagnostics) do
+      for _, d in ipairs(diagnostic) do
+        d.bufnr = bufnr
+        d.lnum = d.range.start.line + 1
+        d.col = d.range.start.character + 1
+        d.text = d.message
+        table.insert(qflist, d)
+      end
+    end
+    vim.lsp.util.set_qflist(qflist)
+  end
+end
+
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true
+  },
+  playground = {
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false -- Whether the query persists across vim sessions
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner",
+        ["aB"] = "@block.outer",
+        ["iB"] = "@block.inner",
+
+        -- Or you can define your own textobjects like this
+        ["iF"] = {
+          python = "(function_definition) @function",
+          cpp = "(function_definition) @function",
+          c = "(function_definition) @function",
+          java = "(method_declaration) @function",
+        },
+      },
+    },
+  },
+}
+EOF
+
 let g:python_lint_config = '~/pylint.rc'
 let g:python_lint_config = '~/pylint.rc'
 let g:python3_host_prog = '~/miniconda3/bin/python'
@@ -67,36 +128,36 @@ let g:pymode_lint_config='~/pylint.rc'
 let g:black_virtualenv='/usr/local/bin/black'
 
 " jsx
-let g:jsx_ext_required = 0
-let g:mta_filetypes = {
-    \ 'javascript.jsx': 1,
-    \}
-let g:closetag_filenames = "*html,*.xhtml,*.phtml,*.php,*.js,*.jsx"
+" let g:jsx_ext_required = 0
+" let g:mta_filetypes = {
+"     \ 'javascript.jsx': 1,
+"     \}
+" let g:closetag_filenames = "*html,*.xhtml,*.phtml,*.php,*.js,*.jsx"
 " let g:prettier#config#parser = 'babylon'
 " let g:user_emmet_leader_key='<c-l>'
-let g:user_emmet_settings = {
-    \ 'javascript.jsx' : {
-    \     'extends' : 'jsx',
-    \ },
-    \}
+" let g:user_emmet_settings = {
+"     \ 'javascript.jsx' : {
+"     \     'extends' : 'jsx',
+"     \ },
+"     \}
 
 " let g:ultisnipsexpandtrigger="<tab>"
-let g:ultisnipsjumpforwardtrigger="<c-b>"
-let g:ultisnipsjumpbackwardtrigger="<c-z>"
-let g:ultisnipsexpandtrigger="<c-l>"
+" let g:ultisnipsjumpforwardtrigger="<c-b>"
+" let g:ultisnipsjumpbackwardtrigger="<c-z>"
+" let g:ultisnipsexpandtrigger="<c-l>"
 
-let g:syntastic_javascript_checkers = ['eslint']
+" let g:syntastic_javascript_checkers = ['eslint']
 
 " set statusline+=%#warningmsg#
 " set statusline+=%{SyntasticStatuslineflag()}
-set statusline+=%*
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_javascript_eslint_exe = 'npm run lint --'
-let g:syntastic_javascript_eslint_exe = 'eslint % --fix'
+" set statusline+=%*
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
+" let g:syntastic_javascript_checkers = ['eslint']
+" let g:syntastic_javascript_eslint_exe = 'npm run lint --'
+" let g:syntastic_javascript_eslint_exe = 'eslint % --fix'
 
 
 
@@ -122,12 +183,6 @@ let g:ale_fixers = {'javascript': ['eslint']}
 
 " let g:gruvbox_contrast_dark = 'hard'
 " let g:gruvbox_invert_selection='0'
-set background=dark
-
-if exists('+termguicolors')
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
 
 " map <C-p> :CtrlSpace O<CR>
 set encoding=utf-8
@@ -137,14 +192,6 @@ set encoding=utf-8
 :set number relativenumber
 
 
-" :set LineNr ctermfg=65
-" :set CursorLineNr ctermfg=109
-" :highlight LineNr ctermfg=5
-" highlight LineNr ctermfg=grey ctermbg=black
-" highlight CursorLineNr ctermfg=red
-" hi clear LineNr
-" highlight Visual ctermbg=8
-hi SignColumn ctermbg=3
 
 "
 " A (not so) minimal vimrc.
@@ -218,48 +265,11 @@ if executable("ag")
     let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""' 
 endif
 
-let g:airline_powerline_fonts=1
+" let g:airline_powerline_fonts=1
 
 " keep nerdtree open when opening files with nerdtree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-" let g:gruvbox_contrast_dark = 'soft'
-set background=dark
-" let g:gruvbox_invert_selection='0'
-" silent! color one
-silent! lua require('colorbuddy').colorscheme('onebuddy')
-highlight Normal ctermbg=NONE
-
-" Fix highlighting issues
-" on my terminal pop up menus disapper into the background
-"
-" hi Visual ctermbg=magenta ctermfg=black
-"
-hi Normal guibg=NONE ctermbg=NONE
-" hi Pmenu ctermbg=NONE guibg=NONE ctermfg=magenta guifg=magenta
-" hi LineNr ctermbg=NONE guibg=NONE 
-hi CursorLineNr ctermbg=NONE guibg=NONE 
-hi SignColumn ctermbg=NONE guibg=NONE 
-
-" Get UltiSnipsExpandTrigger to work
-" https://github.com/ycm-core/YouCompleteMe/issues/420
-let g:UltiSnipsExpandTrigger = "<nop>"
-let g:ulti_expand_or_jump_res = 0
-function ExpandSnippetOrCarriageReturn()
-    let snippet = UltiSnips#ExpandSnippetOrJump()
-    if g:ulti_expand_or_jump_res > 0
-        return snippet
-    else
-        return "\<CR>"
-    endif
-endfunction
-inoremap <expr> <CR> pumvisible() ?  "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
-
-" WhichKey
-autocmd FileType which_key highlight WhichKey ctermbg=12 ctermfg=7
-autocmd FileType which_key highlight WhichKeySeperator ctermbg=12 ctermfg=7
-autocmd FileType which_key highlight WhichKeyGroup cterm=bold ctermbg=12 ctermfg=7
-autocmd FileType which_key highlight WhichKeyDesc ctermbg=12 ctermfg=7
 
 " --------------------------------------------------------
 " SETTINGS START
