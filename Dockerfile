@@ -122,7 +122,7 @@ RUN VIFM_VERSION=$(curl --silent https://github.com/vifm/vifm/releases/latest | 
         cd ..
 
 # neovim
-curl --silent -LO https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage; \
+RUN curl --silent -LO https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage; \
         chmod u+x nvim.appimage; \
         ./nvim.appimage --appimage-extract; \
         mkdir ~/.local/share/neovim -p; \
@@ -181,8 +181,10 @@ RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - && \
 RUN npm i -g diff-so-fancy && \
     npm i -g markserv; \
     npm i -g neovim; \
+    npm i -g tree-sitter-cli; \
     rm -rf /root/.npm/_cacache;
 
+RUN 
 
 RUN chsh -s /usr/bin/zsh
 
@@ -197,23 +199,38 @@ RUN python -m venv ~/.local/share/nvim/black; \
     rm -rf /root/.cache/pip;
 
 
+RUN wget https://github.com/tree-sitter/tree-sitter/releases/download/v0.19.4/tree-sitter-linux-x64.gz; \
+    gzip -d tree-sitter-linux-x64.gz; \
+    chmod +x tree-sitter-linux-x64; \
+    mv tree-sitter-linux-x64 /usr/bin/tree-sitter
+
+
 COPY dotfiles/ $HOME
-COPY bin/ $HOME/.local/bin/ta
+COPY bin/ta $HOME/.local/bin/ta
 
 # install vim in order to run PlugInstall, neovim cannot run PlugInstall unattended
-RUN apt-get install -y --no-install-recommends vim; \
-    rm -rf /var/lib/apt/lists/*; \
-    cp ~/.config/nvim/init.vim ~/.vimrc; \
+RUN echo "starting pluginstall step"; \
+    # apt-get update; \
+    # apt-get install -y --no-install-recommends vim; \
+    # rm -rf /var/lib/apt/lists/*; \
+    # cp ~/.config/nvim/plugins.vim ~/.vimrc; \
+    npm i -g tree-sitter-cli; \
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim; \
-    /usr/bin/vim +PlugInstall +qall +enter +silent; \
-    rm ~/.vimrc; \
-    rm -rf ~/.vim; \
-    apt-get remove vim -y;
+    echo "running pluginstall"; \
+    /usr/bin/nvim -u ~/.config/nvim/plugins.vim +PlugInstall +qall +enter +silent;\
+    echo "running TSInstall "; \
+    /usr/bin/nvim +TSUpdate "+TSInstall all" +Sleep +qall +enter +silent; \
+    # rm ~/.vimrc; \
+    # rm -rf ~/.vim; \
+    # apt-get remove vim -y;
 
     # rm -rf /downloads; \
     # rm -rf /root/.cache/pip; \
     # rm -rf /usr/lib/ghc */; \
+    echo "done with pluginstalls"
+
+
 RUN chmod 0750 ~/.local/share/nvim/; \
     mkdir ~/.local/share/nvim/backup/; \
     mkdir ~/.local/share/nvim/swap/; \
