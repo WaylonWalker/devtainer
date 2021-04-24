@@ -3,6 +3,7 @@
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+# export TERM="screen-256"
 
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
 export PATH="$HOME/.local/bin:$PATH"
