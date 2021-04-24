@@ -12,6 +12,9 @@ autoload -U bashcompinit
 bashcompinit
 eval "$(dircolors -b ~/.dircolors.256dark)"
 eval "$(starship init zsh)"
+eval "$(direnv hook zsh)"
+export DIRENV_WARN_TIMEOUT=100s
+export DIRENV_LOG_FORMAT=
 
 plugins=(git)
 
