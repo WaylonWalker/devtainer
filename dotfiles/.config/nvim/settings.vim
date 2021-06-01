@@ -5,67 +5,11 @@
 "   |___/\___|\__|\__|_|_| |_|\__, |___(_)_/ |_|_| |_| |_|
 "                             |___/                       
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+let g:instant_username = "walkews"
 function! s:Sleep()
-    sleep 1000m " sleep 100s
+    sleep 100000m " sleep 100s
 endfunction
 
-:command! Sleep :call s:Sleep()
-lua <<EOF
-
-do
-  local method = "textDocument/publishDiagnostics"
-  local default_handler = vim.lsp.handlers[method]
-  vim.lsp.handlers[method] = function(err, method, result, client_id, bufnr, config)
-    default_handler(err, method, result, client_id, bufnr, config)
-    local diagnostics = vim.lsp.diagnostic.get_all()
-    local qflist = {}
-    for bufnr, diagnostic in pairs(diagnostics) do
-      for _, d in ipairs(diagnostic) do
-        d.bufnr = bufnr
-        d.lnum = d.range.start.line + 1
-        d.col = d.range.start.character + 1
-        d.text = d.message
-        table.insert(qflist, d)
-      end
-    end
-    vim.lsp.util.set_qflist(qflist)
-  end
-end
-
-require'nvim-treesitter.configs'.setup {
-  highlight = {
-    enable = true
-  },
-  playground = {
-    enable = true,
-    disable = {},
-    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-    persist_queries = false -- Whether the query persists across vim sessions
-  },
-  textobjects = {
-    select = {
-      enable = true,
-      keymaps = {
-        -- You can use the capture groups defined in textobjects.scm
-        ["af"] = "@function.outer",
-        ["if"] = "@function.inner",
-        ["ac"] = "@class.outer",
-        ["ic"] = "@class.inner",
-        ["aB"] = "@block.outer",
-        ["iB"] = "@block.inner",
-
-        -- Or you can define your own textobjects like this
-        ["iF"] = {
-          python = "(function_definition) @function",
-          cpp = "(function_definition) @function",
-          c = "(function_definition) @function",
-          java = "(method_declaration) @function",
-        },
-      },
-    },
-  },
-}
-EOF
 
 let g:python_lint_config = '~/pylint.rc'
 let g:python_lint_config = '~/pylint.rc'
@@ -80,7 +24,6 @@ let g:ale_fixers = {'python': ['isort', 'black', 'remove_trailing_lines', 'trim_
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
 
-luafile ~/.config/nvim/plugins.lua
 " require'nvim-biscuits'.setup{}
 
 nnoremap <leader>vat :VtrAttachToPane<CR>
@@ -122,52 +65,13 @@ autocmd filetype html setlocal ts=2 sts=2 sw=2
 autocmd filetype javascript setlocal ts=2 sts=2 sw=2
 
 
-" let $path = 'c:/python+/64bit/envs/adhoc/;c:/python+/64bit/envs/adhoc/lib;c:/python+/64bit/envs/adhoc/lib/site-packaes/;' . $path
-" let $pythonpath = 'c:/python+/64bit/envs/adhoc/;c:/python+/64bit/envs/adhoc/dlls;c:/python+/64bit/envs/adhoc/lib;c:/python+/64bit/envs/adhoc/lib/site-packages/'
 let g:pymode_lint_config='~/pylint.rc'
 let g:black_virtualenv='/usr/local/bin/black'
 
-" jsx
-" let g:jsx_ext_required = 0
-" let g:mta_filetypes = {
-"     \ 'javascript.jsx': 1,
-"     \}
-" let g:closetag_filenames = "*html,*.xhtml,*.phtml,*.php,*.js,*.jsx"
-" let g:prettier#config#parser = 'babylon'
-" let g:user_emmet_leader_key='<c-l>'
-" let g:user_emmet_settings = {
-"     \ 'javascript.jsx' : {
-"     \     'extends' : 'jsx',
-"     \ },
-"     \}
-
-" let g:ultisnipsexpandtrigger="<tab>"
-" let g:ultisnipsjumpforwardtrigger="<c-b>"
-" let g:ultisnipsjumpbackwardtrigger="<c-z>"
-" let g:ultisnipsexpandtrigger="<c-l>"
-
-" let g:syntastic_javascript_checkers = ['eslint']
-
-" set statusline+=%#warningmsg#
-" set statusline+=%{SyntasticStatuslineflag()}
-" set statusline+=%*
-" let g:syntastic_always_populate_loc_list = 1
-" let g:syntastic_auto_loc_list = 1
-" let g:syntastic_check_on_open = 1
-" let g:syntastic_check_on_wq = 0
-" let g:syntastic_javascript_checkers = ['eslint']
-" let g:syntastic_javascript_eslint_exe = 'npm run lint --'
-" let g:syntastic_javascript_eslint_exe = 'eslint % --fix'
-
-
-
-" autocmd bufwritepost *.js asyncrun -post=checktime eslint --fix %
-" autocmd bufwritepre *.js execute ':!eslint --fix %'
 autocmd bufwritepre *.py execute 'PyPreSave'
 autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
 autocmd bufwritepost *.vim execute ':source %'
 
-" set runtimepath^=~/.vim/bundle/ctrlp.vim
 let g:ctrl_map   = '<c-p>'
 let g:ctrl_cmd   = 'CtrlP'
 let g:ctrlp_custom_ignore = 'node_modules|git'
@@ -175,30 +79,11 @@ let g:ctrlp_custom_ignore = 'node_modules|git'
 let g:ale_linters = {'javascript': ['eslint']}
 let g:ale_fixers = {'javascript': ['eslint']}
 
-" autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
-
-" let g:lightline = {
-"   \ 'colorscheme': 'gruvbox',
-"   \ }
-
-" let g:gruvbox_contrast_dark = 'hard'
-" let g:gruvbox_invert_selection='0'
-
-" map <C-p> :CtrlSpace O<CR>
 set encoding=utf-8
-
 
 " set Line Numbers
 :set number relativenumber
 
-
-
-"
-" A (not so) minimal vimrc.
-"
-
-" You want Vim, not vi. When Vim finds a vimrc, 'nocompatible' is set anyway.
-" We set it explicitely to make our position clear!
 set nocompatible
 filetype off
 
@@ -239,20 +124,30 @@ set nowrap
 
 set list                   " Show non-printable characters.
 
+set completeopt=menuone,noinsert,noselect
+set signcolumn=yes
+
+" Nice menu when typing `:find *.py`
+set wildmode=longest,list,full
+set wildmenu
+" Ignore files
+set wildignore+=*.pyc
+set wildignore+=*_build/*
+set wildignore+=**/coverage/*
+set wildignore+=**/node_modules/*
+set wildignore+=**/android/*
+set wildignore+=**/ios/*
+set wildignore+=**/.git/*
+
 if has('multi_byte') && &encoding ==# 'utf-8'
   let &listchars = 'tab:? ,extends:?,precedes:?,nbsp:±'
 else
   let &listchars = 'tab:> ,extends:>,precedes:<,nbsp:.'
 endif
 
-" The fish shell is not very compatible to other shells and unexpectedly
-" breaks things that use 'shell'.
 if &shell =~# 'fish$'
   set shell=/bin/bash
 endif
-
-
-
 
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 command! -bang -nargs=* Ag
@@ -260,65 +155,25 @@ command! -bang -nargs=* Ag
   \   'ag --column --numbers --noheading --color --smart-case '.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview(), <bang>0)
 
-
 if executable("ag")
     let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""' 
 endif
 
-" let g:airline_powerline_fonts=1
-
 " keep nerdtree open when opening files with nerdtree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-
-" --------------------------------------------------------
-" SETTINGS START
-
-" set completeopt=longest,menuone
-set completeopt=menuone,noinsert,noselect
-set signcolumn=yes
-" set colorcolumn=88
-
-" SETTINGS END
-" --------------------------------------------------------
-
-" --------------------------------------------------------
-" COC-VIM TAB SETTINGS START
-
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-" inoremap <silent><expr> <TAB>
-"       \ pumvisible() ? "\<C-n>" :
-"       \ <SID>check_back_space() ? "\<TAB>" :
-"       \ coc#refresh()
-" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-" Use <c-space> to trigger completion.
-" if has('nvim')
-"   inoremap <silent><expr> <c-space> coc#refresh()
-" else
-"   inoremap <silent><expr> <c-@> coc#refresh()
-" endif
-
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
-" position. Coc only does snippet and additional edit on confirm.
-" <cr> could be remapped by other vim plugin, try `:verbose imap <CR>`.
 if exists('*complete_info')
   inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
 else
   inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 endif
 
-" COC-VIM TAB SETTINGS END
-" --------------------------------------------------------
-
-" if has('wsl')
 if system('uname -r') =~ "Microsoft"
     augroup Yank
         autocmd!
