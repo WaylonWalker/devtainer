@@ -70,12 +70,9 @@ runner(){
     passmsg="$TAB $GREEN ✅   success on $(basename $1) $RESTORE"
     failmsg="$TAB $RED ❌   Failed to run $(basename $1) $BLUE \n$TAB see log $YELLOW $logfile $RESTORE"
     local dir=$(pwd)
-    $1 >> $logfile 2>&1 && $(stat=$passmsg && cd $dir) || $(stat=$failmsg && cd $dir)
+    $1 2>&1 | tee $logfile && $(stat=$passmsg && cd $dir) || $(stat=$failmsg && cd $dir)
     echo $stat
     echo $stat >> $logfile
-    # if [[ "$stat" == *"Failed"* ]]; then
-    #     exit 
-    # fi
 }
 
 
