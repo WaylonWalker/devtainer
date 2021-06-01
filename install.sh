@@ -243,6 +243,7 @@ install_gitui () {
     _install_gitui () {
         GITUI_VERSION=$(curl --silent https://github.com/extrawurst/gitui/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
         wget https://github.com/extrawurst/gitui/releases/download/v${GITUI_VERSION}/gitui-linux-musl.tar.gz -O- -q | sudo tar -zxf - -C /usr/bin/
+        curl https://raw.githubusercontent.com/extrawurst/gitui/master/vim_style_key_config.ron > ~/.config/gitui/key_config.ron
     }
     runner _install_gitui
 }
