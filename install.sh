@@ -330,6 +330,13 @@ install_docker() {
     sudo systemctl status docker
 }
 
+install_broot() {
+    _install_broot() {
+        wget https://dystroy.org/broot/download/x86_64-linux/broot -O /usr/local/bin/broot
+    }
+    runner _install_broot
+}
+
 install_main () {
     install_apt
     install_configure
@@ -345,6 +352,7 @@ install_main () {
     install_glow
     install_zoxide
     install_oh_my_zsh
+    install_broot
 
     install_neovim
 }
