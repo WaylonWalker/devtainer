@@ -7,8 +7,26 @@ alias np=~/git/ww3/new-post
 alias pid="ps -aux | grep -v grep | grep "
 alias upload="chrome.exe https://github.com/WaylonWalker/images.waylonwalker.com/upload/main/static"
 alias tkill="for s in \$(tmux list-sessions | awk '{print \$1}' | rg ':' -r '' | fzy); do tmux kill-session -t \$s; done;"
-alias termedit='nvim /mnt/c/Users/walkews/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json'
+alias termedit='$EDITOR /mnt/c/Users/walkews/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json'
+alias clock="tty-clock -tcs -C 3"
+alias restartexplorer='cmd.exe /c "taskkill /F /IM explorer.exe && start explorer.exe"'
+alias anyconnect="/mnt/c/Program\ Files\ \(x86\)/Cisco/Cisco\ AnyConnect\ Secure\ Mobility\ Client/vpnui.exe"
+alias paste=' powershell.exe Get-Clipboard '
+alias nvim='[ -f Session.vim ] && nvim -S || nvim'
+alias direnvconda='cp ~/.config/direnv/conda/.envrc . && direnv allow .'
+alias direnvvenv='cp ~/.config/direnv/venv/.envrc . && direnv allow .'
 
+
+alias gez="$EDITOR ~/.zshrc"
+alias gsz="source ~/.zshrc"
+alias geb="$EDITOR ~/.bashrc"
+alias gsb="source ~/.bashrc"
+alias gea="$EDITOR ~/.alias"
+alias gsa="source ~/.alias"
+alias get="$EDITOR ~/.tmux.conf"
+alias gst="source ~/.tmux.conf"
+alias gep="$EDITOR ~/.config/nvim/plugins.vim"
+alias ges="$EDITOR ~/.config/nvim/settings.vim"
 
 
 # alias ta="tmux attach"
