@@ -407,7 +407,6 @@ install_main () {
     install_oh_my_zsh
     install_broot
     install_direnv
-
     install_neovim
 }
 

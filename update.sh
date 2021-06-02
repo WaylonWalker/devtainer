@@ -1,3 +1,4 @@
+#!/bin/bash
 cp -a ~/.config/. ./dotfiles/.config
 cp ~/.tmux.conf ./dotfiles/
 cp ~/.pdbrc ./dotfiles/
