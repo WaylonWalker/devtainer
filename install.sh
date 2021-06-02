@@ -3,6 +3,7 @@
 
 # helpers
 
+export NODE_VERSION=0.14.x
 mkif () {
     if [ ! -d $1 ]; then
         mkdir -p $1;
@@ -15,7 +16,7 @@ mkln() {
     if [[ ! -e $1 || ! -e $2 ]];
     then
         mkif $1
-        rmif $2
+        rm $2
         ln -s $1 $2
     fi
 }
@@ -70,12 +71,9 @@ runner(){
     passmsg="$TAB $GREEN ✅   success on $(basename $1) $RESTORE"
     failmsg="$TAB $RED ❌   Failed to run $(basename $1) $BLUE \n$TAB see log $YELLOW $logfile $RESTORE"
     local dir=$(pwd)
-    $1 >> $logfile 2>&1 && $(stat=$passmsg && cd $dir) || $(stat=$failmsg && cd $dir)
+    $1 2>&1 | tee $logfile && $(stat=$passmsg && cd $dir) || $(stat=$failmsg && cd $dir)
     echo $stat
     echo $stat >> $logfile
-    # if [[ "$stat" == *"Failed"* ]]; then
-    #     exit 
-    # fi
 }
 
 
@@ -243,6 +241,7 @@ install_gitui () {
     _install_gitui () {
         GITUI_VERSION=$(curl --silent https://github.com/extrawurst/gitui/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
         wget https://github.com/extrawurst/gitui/releases/download/v${GITUI_VERSION}/gitui-linux-musl.tar.gz -O- -q | sudo tar -zxf - -C /usr/bin/
+        curl https://raw.githubusercontent.com/extrawurst/gitui/master/vim_style_key_config.ron > ~/.config/gitui/key_config.ron
     }
     runner _install_gitui
 }
@@ -260,13 +259,57 @@ install_dust () {
 
 install_node () {
     _install_node () {
-        curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash -
-        sudo apt-get install nodejs -y
+        if [ ! -d /usr/local/bin/nodejs ]; then
+            sudo mkdir -p /usr/local/bin/nodejs;
+        fi
+        wget https://nodejs.org/dist/v14.17.0/node-v14.17.0-linux-x64.tar.xz -q -O- - | sudo tar xJv -C /usr/local/bin/nodejs
+        sudo rm /usr/bin/node -f
+        sudo ln -s /usr/local/bin/nodejs/node-v14.17.0-linux-x64/bin/node /usr/bin/node
+        sudo rm /usr/bin/npm -f
+        sudo ln -s /usr/local/bin/nodejs/node-v14.17.0-linux-x64/bin/npm /usr/bin/npm
+        sudo rm /usr/bin/npx -f
+        sudo ln -s /usr/local/bin/nodejs/node-v14.17.0-linux-x64/bin/npx /usr/bin/npx
+
+        mkif ~/.npm
+        npm config set prefix ~/.npm/node_modules
+        npm config set cache ~/.npm/cache
         npm i -g diff-so-fancy
         npm i -g markserv
         npm i -g neovim
+        npm i -g treesitter-cli
     }
     runner _install_node
+}
+
+install_lua_lsp() {
+    _install_lua_lsp() {
+        os=$(uname -s | tr "[:upper:]" "[:lower:]")
+        case $os in
+        linux)
+        platform="Linux"
+        ;;
+        darwin)
+        platform="macOS"
+        ;;
+        esac
+        curl -L -o sumneko-lua.vsix $(curl -s https://api.github.com/repos/sumneko/vscode-lua/releases/latest | grep 'browser_' | cut -d\" -f4)
+        rm -rf sumneko-lua
+        unzip sumneko-lua.vsix -d sumneko-lua
+        rm sumneko-lua.vsix
+        chmod +x sumneko-lua/extension/server/bin/$platform/lua-language-server
+        echo "#!/usr/bin/env bash" > sumneko-lua-language-server
+        echo "\$(dirname \$0)/sumneko-lua/extension/server/bin/$platform/lua-language-server -E -e LANG=en \$(dirname \$0)/sumneko-lua/extension/server/main.lua \$*" >> sumneko-lua-language-server
+        chmod +x sumneko-lua-language-server
+    }
+runner _install_lua_lsp
+}
+
+install_lsp() {
+    _install_lsp() {
+        npm install bash-language-server@latest
+        npm install dockerfile-language-server-nodejs@latest
+    }
+runner _install_lsp
 }
 
 install_configure () {
@@ -283,40 +326,41 @@ install_neovim () {
     _install_neovim () {
         mkif ~/downloads
         cd ~/downloads
-
-        NEOVIM_LATEST_VERSION=$(curl --silent https://github.com/neovim/neovim/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
-        NEOVIM_NIGHTLY_VERSION=$(curl --silent https://github.com/neovim/neovim/releases/nightly | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
-        NEOVIM_VERSION=$NEOVIM_NIGHTLY_VERSION
-        curl --silent -LO https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim.appimage
+        rm nvim.appimage
+        curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
         sudo chmod u+x nvim.appimage
         ./nvim.appimage --appimage-extract > nvim-extract.log 2>&1
+        rm ~/.local/share/neovim -rf
         mkdir ~/.local/share/neovim -p
         mv ~/downloads/squashfs-root/* ~/.local/share/neovim
-        # rm /usr/bin/nvim
+        sudo rm /usr/bin/nvim
         sudo ln -s ~/.local/share/neovim/AppRun /usr/bin/nvim
-        sudo ln -s ~/.local/share/neovim/AppRun /usr/bin/vim
+        # sudo ln -s ~/.local/share/neovim/AppRun /usr/bin/vim
 
-        python -m venv ~/.local/share/nvim/black
+        python3 -m venv ~/.local/share/nvim/black || \
+            python -m venv ~/.local/share/nvim/black 
         ~/.local/share/nvim/black/bin/pip install -U -q --no-cache-dir --disable-pip-version-check black;
 
-        cp ~/downloads/devtainer/dotfiles/ $HOME
+        # cp ~/downloads/devtainer/dotfiles/ $HOME
 
         # install vim in order to run PlugInstall, neovim cannot run PlugInstall unattended
         sudo apt-get install -y --no-install-recommends vim
-        cp ~/.config/nvim/init.vim ~/.vimrc
+        # cp ~/.config/nvim/init.vim ~/.vimrc
+	echo 'source ~/.config/nvim/plugins.vim' > ~/.vimrc
         curl --silent -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        /usr/bin/vim +PlugInstall +qall +enter +silent
+        /usr/bin/vim --noplugin +PlugInstall +qall +enter +silent
         rm ~/.vimrc
         rm -rf ~/.vim
-        apt-get remove vim -y
+        sudo apt-get remove vim -y
+        sudo apt-get autoremove -y
 
         chmod 0750 ~/.local/share/nvim/
-        mkdir ~/.local/share/nvim/backup/
-        mkdir ~/.local/share/nvim/swap/
-        mkdir ~/.local/share/nvim/undo/
+        mkif ~/.local/share/nvim/backup/
+        mkif ~/.local/share/nvim/swap/
+        mkif ~/.local/share/nvim/undo/
     }
     runner _install_neovim
 }
@@ -330,6 +374,20 @@ install_docker() {
     apt-cache policy docker-ce
     sudo apt install docker-ce -y
     sudo systemctl status docker
+}
+
+install_broot() {
+    _install_broot() {
+        wget https://dystroy.org/broot/download/x86_64-linux/broot -O /usr/local/bin/broot
+    }
+    runner _install_broot
+}
+
+install_direnv() {
+    _install_direnv() {
+        curl -sfL https://direnv.net/install.sh | bash
+    }
+    runner _install_direnv
 }
 
 install_main () {
@@ -347,6 +405,8 @@ install_main () {
     install_glow
     install_zoxide
     install_oh_my_zsh
+    install_broot
+    install_direnv
 
     install_neovim
 }
