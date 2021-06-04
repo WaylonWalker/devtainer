@@ -4,6 +4,12 @@
 <h1 align='center'>devtainer</h1>
 My personal development docker container base image
 
+---
+
+⚠⚠ docker image currently broken as I upgrade to nvim 0.5.5 ⚠⚠
+
+---
+
 # Motivation
 
 
