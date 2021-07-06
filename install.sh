@@ -1,6 +1,4 @@
-#!/bin/bash
-# a work in progress
-
+#!/bin/bash # a work in progress
 # helpers
 
 export NODE_VERSION=0.14.x
@@ -88,7 +86,6 @@ install_apt () {
         cmake \
         command-not-found \
         curl \
-        fd-find \
         figlet \
         fuse \
         g++ \
@@ -112,18 +109,19 @@ install_apt () {
         python3-apt \
         python3-distutils \
         python3-venv \
-        ripgrep \
-        silversearcher-ag \
         software-properties-common \
         sudo \
         tmux \
         tzdata \
-        universal-ctags \
         unzip \
-        vifm \
         wget \
         zsh
     }
+        # fd-find \
+        # ripgrep \
+        # silversearcher-ag \
+        # universal-ctags \
+        # vifm \
     runner _install_apt
 }
 
@@ -246,6 +244,15 @@ install_gitui () {
     runner _install_gitui
 }
 
+install_ripgrep () {
+    _install_ripgrep () {
+        RIPGREP_VERSION=$(curl --silent https://github.com/BurntSushi/ripgrep/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+        # https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep-13.0.0-x86_64-unknown-linux-musl.tar.gz
+        wget https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-x86_64-unknown-linux-musl.tar.gz -O- -q | sudo tar -zxf - -C /tmp && sudo cp /tmp/ripgrep-${RIPGREP_VERSION}-x86_64-unknown-linux-musl/rg /usr/bin/rg
+    }
+    runner _install_ripgrep
+}
+
 install_dust () {
     _install_dust () {
         DUST_VERSION=$(curl --silent https://github.com/bootandy/dust/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
@@ -328,13 +335,13 @@ install_neovim () {
         cd ~/downloads
         rm nvim.appimage
         curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
-        sudo chmod u+x nvim.appimage
+        chmod u+x nvim.appimage
         ./nvim.appimage --appimage-extract > nvim-extract.log 2>&1
         rm ~/.local/share/neovim -rf
         mkdir ~/.local/share/neovim -p
         mv ~/downloads/squashfs-root/* ~/.local/share/neovim
-        sudo rm /usr/bin/nvim
-        sudo ln -s ~/.local/share/neovim/AppRun /usr/bin/nvim
+        # sudo rm /usr/bin/nvim
+        # sudo ln -s ~/.local/share/neovim/AppRun /usr/bin/nvim
         # sudo ln -s ~/.local/share/neovim/AppRun /usr/bin/vim
 
         python3 -m venv ~/.local/share/nvim/black || \
@@ -378,7 +385,7 @@ install_docker() {
 
 install_broot() {
     _install_broot() {
-        wget https://dystroy.org/broot/download/x86_64-linux/broot -O /usr/local/bin/broot
+        wget https://dystroy.org/broot/download/x86_64-linux/broot -O ~/.local/bin/broot
     }
     runner _install_broot
 }
@@ -388,6 +395,44 @@ install_direnv() {
         curl -sfL https://direnv.net/install.sh | bash
     }
     runner _install_direnv
+}
+
+install_obs() {
+    _install_obs() {
+        sudo apt install ffmpeg
+        sudo apt install v4l2loopback-dkms
+        sudo add-apt-repository ppa:obsproject/obs-studio
+        sudo apt update
+        sudo apt install obs-studio
+    }
+    runner _install_obs
+}
+
+install_brave() {
+    _install_brave() {
+        sudo apt install apt-transport-https curl
+        sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main"|sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+        sudo apt update
+        sudo apt install brave-browser
+    }
+    runner _install_brave
+}
+
+install_oracle() {
+    _install_oracle() {
+        cd /opt/oracle
+        sudo apt-get update \
+            && sudo apt-get install -y libaio1 wget unzip \
+            && wget -q https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip \
+            && unzip -q instantclient-basiclite-linuxx64.zip \
+            && rm -f instantclient-basiclite-linuxx64.zip \
+            && cd /opt/oracle/instantclient* \
+            && rm -f *jdbc* *occi* *mysql* *README *jar uidrvci genezi adrci \
+            && echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf \
+            && ldconfig
+    }
+    runner _install_oracle
 }
 
 install_main () {
@@ -414,3 +459,5 @@ setup_droplet () {
     install_docker
     install_main
 }
+
+
