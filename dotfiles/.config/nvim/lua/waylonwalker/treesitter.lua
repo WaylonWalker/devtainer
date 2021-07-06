@@ -11,6 +11,7 @@ require'nvim-treesitter.configs'.setup {
   textobjects = {
     select = {
       enable = true,
+      set_jumps = true,
       keymaps = {
         -- You can use the capture groups defined in textobjects.scm
         ["af"] = "@function.outer",
@@ -28,6 +29,23 @@ require'nvim-treesitter.configs'.setup {
           java = "(method_declaration) @function",
         },
       },
+      goto_next_start = {
+        ["]m"] = "@function.outer",
+        ["]]"] = "@class.outer",
+      },
+      goto_next_end = {
+        ["]F"] = "@function.outer",
+        ["]["] = "@class.outer",
+      },
+      goto_previous_start = {
+        ["[f"] = "@function.outer",
+        ["[["] = "@class.outer",
+      },
+      goto_previous_end = {
+        ["[F"] = "@function.outer",
+        ["[]"] = "@class.outer",
+      },
+    },
     },
   },
 }
