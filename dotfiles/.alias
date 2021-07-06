@@ -1,4 +1,4 @@
-export EDITOR=nvim
+export EDITOR=/usr/bin/nvim
 
 # alias vim=nvim
 alias cat=bat
