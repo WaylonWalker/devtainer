@@ -1,6 +1,13 @@
 call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'jbyuki/instant.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'folke/trouble.nvim'
+Plug 'folke/lsp-colors.nvim'
+Plug 'folke/which-key.nvim'
+Plug 'Pocco81/TrueZen.nvim'
+Plug 'windwp/nvim-spectre'
+
 
 " color
 Plug 'Th3Whit3Wolf/onebuddy'
