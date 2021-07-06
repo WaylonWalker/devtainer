@@ -14,13 +14,12 @@ if exists('+termguicolors')
     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
 
-silent! lua require('colorbuddy').colorscheme('onebuddy')
 
-highlight Normal ctermbg=NONE
-highlight Normal guibg=NONE ctermbg=NONE
-highlight CursorLineNr ctermbg=NONE guibg=NONE 
-highlight SignColumn ctermbg=3
-highlight SignColumn ctermbg=NONE guibg=NONE 
+" highlight Normal ctermbg=NONE
+" highlight Normal guibg=NONE ctermbg=NONE
+" highlight CursorLineNr ctermbg=NONE guibg=NONE 
+" highlight SignColumn ctermbg=3
+" highlight SignColumn ctermbg=NONE guibg=NONE 
 
 function! s:NoBg()
     highlight Normal guibg=None ctermbg=NONE
