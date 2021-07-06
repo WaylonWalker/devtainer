@@ -26,6 +26,19 @@ end
 --         },
 --         on_attach = on_attach
 --     }
+local configs = require 'lspconfig/configs'
+
+configs.kedro = {
+  default_config = {
+    -- cmd = {"kedro-lsp", "--tcp"};
+    cmd = {"kedro-lsp"};
+    filetypes = {"python"};
+    root_dir = function(fname)
+      return vim.fn.getcwd()
+    end;
+  };
+};
+require'lspconfig'.kedro.setup{on_attach=on_attach}
 require'lspconfig'.pyright.setup{on_attach=on_attach}
 require'lspconfig'.cssls.setup{on_attach=on_attach}
 require'lspconfig'.yamlls.setup{on_attach=on_attach}
