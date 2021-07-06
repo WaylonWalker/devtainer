@@ -6,10 +6,8 @@
 "                             |___/                       
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 let g:instant_username = "walkews"
-function! s:Sleep()
-    sleep 100000m " sleep 100s
-endfunction
 
+set clipboard+=unnamedplus
 
 let g:python_lint_config = '~/pylint.rc'
 let g:python_lint_config = '~/pylint.rc'
@@ -71,6 +69,7 @@ let g:black_virtualenv='/usr/local/bin/black'
 autocmd bufwritepre *.py execute 'PyPreSave'
 autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
 autocmd bufwritepost *.vim execute ':source %'
+autocmd bufwritepost *.lua execute ':source %'
 
 let g:ctrl_map   = '<c-p>'
 let g:ctrl_cmd   = 'CtrlP'
