@@ -12,7 +12,6 @@ setopt share_history
 # setopt histignoredups
 # setopt incappendhistorytime
 
-
 unsetopt BEEP
 
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
