@@ -39,9 +39,14 @@ configs.kedro = {
   };
 };
 require'lspconfig'.kedro.setup{on_attach=on_attach}
+require('trouble').setup{}
 require'lspconfig'.pyright.setup{on_attach=on_attach}
 require'lspconfig'.cssls.setup{on_attach=on_attach}
 require'lspconfig'.yamlls.setup{on_attach=on_attach}
 require'lspconfig'.bashls.setup{on_attach=on_attach}
 require('telescope').load_extension('dap')
 require('dap-python').setup('~/miniconda3/envs/markata/bin/python')
+
+require('navigator').setup({
+ pyls={filetype={}}
+})
