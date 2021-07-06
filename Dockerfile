@@ -204,6 +204,13 @@ RUN wget https://github.com/tree-sitter/tree-sitter/releases/download/v0.19.4/tr
     chmod +x tree-sitter-linux-x64; \
     mv tree-sitter-linux-x64 /usr/bin/tree-sitter
 
+RUN echo install lsp; \
+    npm install -global bash-language-server@latest; \
+    npm install --global vscode-css-languageserver-bin; \
+    npm install --global dockerfile-language-server-nodejs@latest; \
+    npm install --global vscode-html-languageserver-bin; \
+
+
 
 COPY dotfiles/ $HOME
 COPY bin/ta $HOME/.local/bin/ta
