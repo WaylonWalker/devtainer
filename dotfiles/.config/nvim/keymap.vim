@@ -15,6 +15,7 @@ vnoremap <leader>sp :'<,'>call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
 nnoremap <leader>sp :call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
 
 nnoremap <leader>ht :lua require("harpoon.term").gotoTerminal(1)<cr>
+nnoremap <leader>hi :lua require("harpoon.term").gotoTerminal(2)<cr>
 nnoremap <leader>hs :lua require("harpoon.term").sendCommand(1, vim.api.nvim_get_current_line() .. "\n")<cr>j
 nnoremap <c-s> :lua require("harpoon.term").sendCommand(1, vim.api.nvim_get_current_line() .. "\n")<cr>j
 vnoremap <leader>hs :'<,'>lua for line in vim.api.nvim_buf_get_lines() do require("harpoon.term").sendCommand(1, line .. "\n") end<cr>
@@ -29,6 +30,8 @@ nnoremap <leader>6 <c-^>
 inoremap gqq <esc>gqqA
 nnoremap <leader>: :lua<space>
 nnoremap ga :G add %<CR>
+nnoremap gim iWIP <esc>:put=expand('#:t')<CR>kJ
+
 nnoremap gic :G add %<CR>:sleep 500m<CR>:only<CR>:G commit<CR>
 nnoremap gii :G add %<CR>:sleep 500m<CR>:only<CR>:G commit<CR>
 nnoremap gid :Gdiff<CR>
@@ -456,6 +459,7 @@ vnoremap <silent><leader>ca :<C-U>Lspsaga range_code_action<CR>
 nnoremap <TAB> :lua require("harpoon.ui").nav_next()<CR>
 nnoremap <S-TAB> :lua require("harpoon.ui").nav_prev()<CR>
 " nnoremap <cr>b :Telescope buffers<CR>
+nnoremap <c-m-j> :lua require("harpoon.ui").nav_file(1)<CR>
 nnoremap <c-m-j> :lua require("harpoon.ui").nav_file(1)<CR>
 nnoremap <c-m-k> :lua require("harpoon.ui").nav_file(2)<CR>
 nnoremap <c-m-l> :lua require("harpoon.ui").nav_file(3)<CR>
