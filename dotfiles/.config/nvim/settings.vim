@@ -6,13 +6,17 @@
 "                             |___/                       
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 let g:instant_username = "walkews"
+function! s:Sleep()
+    sleep 100000m " sleep 100s
+endfunction
 
-set clipboard+=unnamedplus
 
 let g:python_lint_config = '~/pylint.rc'
 let g:python_lint_config = '~/pylint.rc'
 let g:python3_host_prog = '~/miniconda3/bin/python'
 let g:python3_host_prog = '~/miniconda3/envs/nvim3/bin/python'
+let g:python_host_prog = '~/miniconda3/envs/nvim2/bin/python'
+
 
 let g:VtrStripLeadingWhitespace = 0
 let g:VtrClearEmptyLines = 0
@@ -21,6 +25,8 @@ let g:VtrAppendNewline = 1
 let g:ale_fixers = {'python': ['isort', 'black', 'remove_trailing_lines', 'trim_whitespace']}
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
+
+set clipboard+=unnamedplus
 
 " require'nvim-biscuits'.setup{}
 
@@ -64,12 +70,11 @@ autocmd filetype javascript setlocal ts=2 sts=2 sw=2
 
 
 let g:pymode_lint_config='~/pylint.rc'
-let g:black_virtualenv='/usr/local/bin/black'
+let g:black_virtualenv='~/.local/pipx/venvs/black'
 
 autocmd bufwritepre *.py execute 'PyPreSave'
 autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
 autocmd bufwritepost *.vim execute ':source %'
-autocmd bufwritepost *.lua execute ':source %'
 
 let g:ctrl_map   = '<c-p>'
 let g:ctrl_cmd   = 'CtrlP'
