@@ -8,10 +8,18 @@ require'nvim-treesitter.configs'.setup {
     updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
     persist_queries = false -- Whether the query persists across vim sessions
   },
+swap = {
+    enable = true,
+    swap_next = {
+    ["<leader>fj"] = "@function.outer",
+    },
+    swap_previous = {
+    ["<leader>fk"] = "@function.outer",
+    },
+},
   textobjects = {
     select = {
       enable = true,
-      set_jumps = true,
       keymaps = {
         -- You can use the capture groups defined in textobjects.scm
         ["af"] = "@function.outer",
@@ -29,23 +37,6 @@ require'nvim-treesitter.configs'.setup {
           java = "(method_declaration) @function",
         },
       },
-      goto_next_start = {
-        ["]m"] = "@function.outer",
-        ["]]"] = "@class.outer",
-      },
-      goto_next_end = {
-        ["]F"] = "@function.outer",
-        ["]["] = "@class.outer",
-      },
-      goto_previous_start = {
-        ["[f"] = "@function.outer",
-        ["[["] = "@class.outer",
-      },
-      goto_previous_end = {
-        ["[F"] = "@function.outer",
-        ["[]"] = "@class.outer",
-      },
-    },
     },
   },
 }
