@@ -256,11 +256,25 @@ install_ripgrep () {
 install_dust () {
     _install_dust () {
         DUST_VERSION=$(curl --silent https://github.com/bootandy/dust/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
-        wget https://github.com/bootandy/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-x86_64-unknown-linux-musl.tar.gz -O- -q | sudo tar -zxf - -C /tmp && sudo cp /tmp/dust-v${DUST_VERSION}-x86_64-unknown-linux-musl/dust /usr/bin/dust
+        wget https://github.com/tmux/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-x86_64-unknown-linux-musl.tar.gz -O- -q | sudo tar -zxf - -C /tmp && sudo cp /tmp/dust-v${DUST_VERSION}-x86_64-unknown-linux-musl/dust /usr/bin/dust
         # https://github.com/bootandy/dust/releases/download/v0.5.4/dust-v0.5.4-x86_64-unknown-linux-musl.tar.gz
     }
     # runner _install_dust
     _install_dust
+}
+
+install_tmux () {
+    _install_tmux () {
+        TMUX_VERSION=$(curl --silent https://github.com/tmux/tmux/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+        wget https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz -O- -q | tar -zxf - -C /tmp
+        pushd /tmp/tmux-${TMUX_VERSION}
+        sudo ./configure
+        sudo make
+        sudo make install
+        # https://github.com/bootandy/tmux/releases/download/v0.5.4/dust-v0.5.4-x86_64-unknown-linux-musl.tar.gz
+    }
+    # runner _install_tmux
+    _install_tmux
 }
 
 
@@ -327,6 +341,11 @@ install_configure () {
         cp -r ~/downloads/devtainer/bin ~/.local.bin
     }
     runner _install_configure
+}
+
+install_nvim_config () {
+    # include dotfiles
+    cp -r ~/downloads/devtainer/dotfiles/.config/nvim*(D) ~/.config/ 
 }
 
 install_neovim () {
