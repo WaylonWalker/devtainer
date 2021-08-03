@@ -5,7 +5,6 @@
 "  \___\___/|_|\___/|_|(_) \_/ |_|_| |_| |_|
 "                                           
 
-" set termguicolors
 
 " set background=dark
 

@@ -15,5 +15,7 @@ lua require'waylonwalker.color'
 lua require'waylonwalker.toggler'
 lua require'waylonwalker.lsp-config'
 lua require'waylonwalker.treesitter'
+lua require'waylonwalker.compe'
+lua require'waylonwalker.snippets'
 
 

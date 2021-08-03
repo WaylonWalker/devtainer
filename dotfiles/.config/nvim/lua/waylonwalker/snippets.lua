@@ -216,7 +216,12 @@ ls.snippets = {
 			t({"", "\\end{itemize}"}),
 			i(0)
 		})
-	}
+	},
+    py = {
+        s({trig = file}, {
+            t({'file = Path(__file__)'})
+        })
+    }
 }
 
 --[[

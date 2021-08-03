@@ -46,6 +46,7 @@ Plug 'tpope/vim-commentary'
 " lsp
 Plug 'glepnir/lspsaga.nvim'
 Plug 'hrsh7th/nvim-compe'
+Plug 'andersevenrud/compe-tmux'
 " Plug 'tzachar/compe-tabnine', { 'do': './install.sh' }
 Plug 'kabouzeid/nvim-lspinstall'
 Plug 'michaeljsmith/vim-indent-object'
@@ -66,5 +67,6 @@ Plug 'mfussenegger/nvim-dap-python'
 
 Plug 'hrsh7th/vim-vsnip/'
 Plug 'L3MON4D3/LuaSnip'
+Plug 'rafamadriz/friendly-snippets'
 
 call plug#end()

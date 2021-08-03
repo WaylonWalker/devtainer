@@ -1,4 +1,16 @@
 require'nvim-treesitter.configs'.setup {
+  ensure_installed = {
+    "python",
+    "regex",
+    "lua",
+    "javascript",
+    "bash",
+    "toml",
+    "rst",
+    "html",
+    "json",
+    "yaml"
+  }, -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   highlight = {
     enable = true
   },
@@ -40,3 +52,4 @@ swap = {
     },
   },
 }
+
