@@ -12,15 +12,19 @@ setopt share_history
 # setopt histignoredups
 # setopt incappendhistorytime
 
+
 unsetopt BEEP
 
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
+export PATH="$HOME/.npm/node_modules/bin/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 eval "$(dircolors -b ~/.dircolors.256dark)"
 eval "$(starship init zsh)"
 eval "$(direnv hook zsh)"
 export DIRENV_WARN_TIMEOUT=100s
 export DIRENV_LOG_FORMAT=
+
+export QMK_HOME='~/git/qmk_firmware'
 
 source ~/.alias
 source ~/.alias.local
@@ -50,8 +54,8 @@ bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
+# source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source ~/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
 
 [[ -n "${key[Up]}" ]] && bindkey "${key[Up]}" history-beginning-search-backward
 [[ -n "${key[Down]}" ]] && bindkey "${key[Down]}" history-beginning-search-forward
@@ -61,9 +65,9 @@ if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
     if [ -f "/home/walkews/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/walkews/miniconda3/etc/profile.d/conda.sh"
+# . "/home/walkews/miniconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
     else
-        export PATH="/home/walkews/miniconda3/bin:$PATH"
+# export PATH="/home/walkews/miniconda3/bin:$PATH"  # commented out by conda initialize
     fi
 fi
 unset __conda_setup
@@ -71,7 +75,7 @@ unset __conda_setup
 
 # _not_inside_tmux() { [[ -z "$TMUX" ]] }
 
-ta
+~/.local/bin/ta
 
 # ensure_tmux_is_running() {
 #   if _not_inside_tmux; then
@@ -88,4 +92,20 @@ ln -sf ~/git/* ~/projects/
 
 export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_1:
 
-source /home/walkews/.config/broot/launcher/bash/br
+eval "$(starship init zsh)"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/u_walkews/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/u_walkews/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/u_walkews/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/u_walkews/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
