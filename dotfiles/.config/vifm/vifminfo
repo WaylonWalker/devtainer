@@ -1,0 +1,139 @@
+# You can edit this file by hand, but it's recommended not to do that.
+
+# Marks:
+'H
+	/home/u_walkews/
+	..
+1627823337
+'b
+	/home/u_walkews/bin/
+	..
+1627823337
+'h
+	/home/u_walkews/
+	..
+1627823337
+'z
+	/home/u_walkews/.config/vifm
+	..
+1627823337
+
+# Bookmarks:
+
+# TUI:
+al
+q0
+v2
+ov
+m-1
+l2
+r2
+
+# Left window history (oldest to newest):
+d/home/u_walkews
+	projects
+14
+d/home/u_walkews/projects
+	..
+0
+d/home/u_walkews
+	miniconda3
+13
+d/home/u_walkews/miniconda3
+	bin
+1
+d/home/u_walkews
+	work
+10
+d/home/u_walkews/git/waylonwalker.com
+	pages
+2
+d/home/u_walkews/git/waylonwalker.com/pages
+	blog
+1
+d/home/u_walkews/git/waylonwalker.com/pages/blog
+	tmux-rename-session.md
+5
+d/home/u_walkews/git/waylonwalker.com
+	pages
+2
+d/home/u_walkews/devtainer
+	dotfiles
+4
+d/home/u_walkews/devtainer/dotfiles
+	nvim
+1
+d/home/u_walkews/devtainer/dotfiles/nvim
+	..
+0
+d/home/u_walkews/devtainer/dotfiles
+	nvim
+1
+d/home/u_walkews/devtainer
+	dotfiles
+4
+d/home/u_walkews
+	devtainer
+10
+d/home
+	u_walkews
+5
+d/
+	home
+4
+d/home/u_walkews/devtainer
+	dotfiles
+4
+d/home/u_walkews/devtainer/dotfiles
+	..
+0
+d/home/u_walkews/devtainer
+	dotfiles
+4
+d/home/u_walkews/devtainer/dotfiles
+	..
+0
+d
+
+# Right window history (oldest to newest):
+D/home/u_walkews
+	..
+0
+D/home/u_walkews/git/waylonwalker.com
+	..
+0
+D/home/u_walkews/devtainer
+	..
+0
+D
+
+# Command line history (oldest to newest):
+:q
+
+# Search history (oldest to newest):
+/rename
+
+# Prompt history (oldest to newest):
+ptmux-rename-session.md
+
+# Local filter history (oldest to newest):
+
+# Registers:
+""/home/u_walkews/.local/share/vifm/Trash/000_nvim
+
+# Directory stack (oldest to newest):
+
+# Trash content:
+t/home/u_walkews/.local/share/vifm/Trash/000_nvim
+	/home/u_walkews/devtainer/dotfiles/nvim
+
+# State:
+f
+i1
+[.1
+[F
+F
+I1
+].1
+]F
+s0
