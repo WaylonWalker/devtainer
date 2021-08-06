@@ -110,6 +110,7 @@ install_apt () {
         python3-distutils \
         python3-venv \
         software-properties-common \
+        stow \
         sudo \
         tmux \
         tzdata \
