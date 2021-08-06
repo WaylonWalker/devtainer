@@ -479,4 +479,10 @@ setup_droplet () {
     install_main
 }
 
+stow_all () {
+    stow zsh
+    stow nvim
+    stow bin
+}
+
 
