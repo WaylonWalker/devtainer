@@ -1,0 +1,4 @@
+#!/bin/bash
+
+xinput reattach $(xinput list --id-only "AT Translated Set 2 keyboard") $(xinput list --id-only "Virtual core keyboard") | notify-send "laptop keeb reattached" -i ~/Pictures/8bitcc.png
+
