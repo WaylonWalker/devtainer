@@ -74,6 +74,7 @@ let g:black_virtualenv='~/.local/pipx/venvs/black'
 
 autocmd bufwritepre *.py execute 'PyPreSave'
 autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
+autocmd bufwritepost .tmux.local.conf execute ':!tmux source-file %'
 autocmd bufwritepost *.vim execute ':source %'
 
 let g:ctrl_map   = '<c-p>'
