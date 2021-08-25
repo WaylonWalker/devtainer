@@ -3,19 +3,19 @@ local gears = require("gears")
 local awful = require("awful")
 require("awful.autofocus")
 -- Widget and layout library
-local wibox = require("wibox")
+-- local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
-local menubar = require("menubar")
+-- local menubar = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 -- Enable hotkeys help widget for VIM and other apps
 -- when client with a matching name is opened:
 
 -- Load Debian menu entries
-local debian = require("debian.menu")
-local has_fdo, freedesktop = pcall(require, "freedesktop")
+-- local debian = require("debian.menu")
+-- local has_fdo, freedesktop = pcall(require, "freedesktop")
 local xrandr = require("xrandr")
 
 -- {{{ Error handling
@@ -45,7 +45,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
+-- beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
 
 
 -- This is used later as the default terminal and editor to run.
@@ -53,19 +53,19 @@ terminal = "x-terminal-emulator"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
-local themes = {
-    "blackburn",       -- 1
-    "copland",         -- 2
-    "dremora",         -- 3
-    "holo",            -- 4
-    "multicolor",      -- 5
-    "powerarrow",      -- 6
-    "powerarrow-dark", -- 7
-    "rainbow",         -- 8
-    "steamburn",       -- 9
-    "vertex"           -- 10
-}
-local chosen_theme = themes[5]
+-- local themes = {
+--     "blackburn",       -- 1
+--     "copland",         -- 2
+--     "dremora",         -- 3
+--     "holo",            -- 4
+--     "multicolor",      -- 5
+--     "powerarrow",      -- 6
+--     "powerarrow-dark", -- 7
+--     "rainbow",         -- 8
+--     "steamburn",       -- 9
+--     "vertex"           -- 10
+-- }
+-- local chosen_theme = themes[5]
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -112,46 +112,46 @@ awful.layout.layouts = {
 
 -- {{{ Menu
 -- Create a launcher widget and a main menu
-myawesomemenu = {
-   { "hotkeys", function() return false, hotkeys_popup.show_help end},
-   { "manual", terminal .. " -e man awesome" },
-   { "edit config", editor_cmd .. " " .. awesome.conffile },
-   { "restart", awesome.restart },
-   { "quit", function() awesome.quit() end}
-}
+-- myawesomemenu = {
+--    { "hotkeys", function() return false, hotkeys_popup.show_help end},
+--    { "manual", terminal .. " -e man awesome" },
+--    { "edit config", editor_cmd .. " " .. awesome.conffile },
+--    { "restart", awesome.restart },
+--    { "quit", function() awesome.quit() end}
+-- }
 
-local menu_awesome = { "awesome", myawesomemenu, beautiful.awesome_icon }
-local menu_terminal = { "open terminal", terminal }
+-- local menu_awesome = { "awesome", myawesomemenu, beautiful.awesome_icon }
+-- local menu_terminal = { "open terminal", terminal }
 
-if has_fdo then
-    mymainmenu = freedesktop.menu.build({
-        before = { menu_awesome },
-        after =  { menu_terminal }
-    })
-else
-    mymainmenu = awful.menu({
-        items = {
-                  menu_awesome,
-                  { "Debian", debian.menu.Debian_menu.Debian },
-                  menu_terminal,
-                }
-    })
-end
+-- if has_fdo then
+--     mymainmenu = freedesktop.menu.build({
+--         before = { menu_awesome },
+--         after =  { menu_terminal }
+--     })
+-- else
+--     mymainmenu = awful.menu({
+--         items = {
+--                   menu_awesome,
+--                   { "Debian", debian.menu.Debian_menu.Debian },
+--                   menu_terminal,
+--                 }
+--     })
+-- end
 
 
-mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
-                                     menu = mymainmenu })
+-- mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
+--                                      menu = mymainmenu })
 
--- Menubar configuration
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it
--- }}}
+-- -- Menubar configuration
+-- menubar.utils.terminal = terminal -- Set the terminal for applications that require it
+-- -- }}}
 
 -- Keyboard map indicator and switcher
-mykeyboardlayout = awful.widget.keyboardlayout()
+-- mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock()
+-- mytextclock = wibox.widget.textclock()
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
@@ -237,7 +237,7 @@ awful.screen.connect_for_each_screen(function(s)
     s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, tasklist_buttons)
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s })
+    -- s.mywibox = awful.wibar({ position = "top", screen = s })
 
     -- main top status bar replaced with polybar
     -- Add widgets to the wibox
