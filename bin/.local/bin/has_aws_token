@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# 101 Network is unreachable
+aws s3 ls &> /dev/null && echo 🪙 ||( echo no token && exit 101 )
