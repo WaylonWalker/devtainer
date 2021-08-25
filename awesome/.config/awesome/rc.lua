@@ -46,13 +46,26 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
-beautiful.useless_gap = 10
 
 
 -- This is used later as the default terminal and editor to run.
 terminal = "x-terminal-emulator"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
+
+local themes = {
+    "blackburn",       -- 1
+    "copland",         -- 2
+    "dremora",         -- 3
+    "holo",            -- 4
+    "multicolor",      -- 5
+    "powerarrow",      -- 6
+    "powerarrow-dark", -- 7
+    "rainbow",         -- 8
+    "steamburn",       -- 9
+    "vertex"           -- 10
+}
+local chosen_theme = themes[5]
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -63,19 +76,19 @@ modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
-    awful.layout.suit.floating,
+    -- awful.layout.suit.floating,
     awful.layout.suit.tile,
     awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
+    -- awful.layout.suit.tile.bottom,
+    -- awful.layout.suit.tile.top,
+    -- awful.layout.suit.fair,
+    -- awful.layout.suit.fair.horizontal,
+    -- awful.layout.suit.spiral,
+    -- awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
-    awful.layout.suit.max.fullscreen,
-    awful.layout.suit.magnifier,
-    awful.layout.suit.corner.nw,
+    -- awful.layout.suit.max.fullscreen,
+    -- awful.layout.suit.magnifier,
+    -- awful.layout.suit.corner.nw,
     -- awful.layout.suit.corner.ne,
     -- awful.layout.suit.corner.sw,
     -- awful.layout.suit.corner.se,
@@ -83,18 +96,18 @@ awful.layout.layouts = {
 -- }}}
 
 -- {{{ Helper functions
-local function client_menu_toggle_fn()
-    local instance = nil
+-- local function client_menu_toggle_fn()
+--     local instance = nil
 
-    return function ()
-        if instance and instance.wibox.visible then
-            instance:hide()
-            instance = nil
-        else
-            instance = awful.menu.clients({ theme = { width = 250 } })
-        end
-    end
-end
+--     return function ()
+--         if instance and instance.wibox.visible then
+--             instance:hide()
+--             instance = nil
+--         else
+--             instance = awful.menu.clients({ theme = { width = 250 } })
+--         end
+--     end
+-- end
 -- }}}
 
 -- {{{ Menu
@@ -175,7 +188,7 @@ local tasklist_buttons = gears.table.join(
                                                   c:raise()
                                               end
                                           end),
-                     awful.button({ }, 3, client_menu_toggle_fn()),
+                     -- awful.button({ }, 3, client_menu_toggle_fn()),
                      awful.button({ }, 4, function ()
                                               awful.client.focus.byidx(1)
                                           end),
@@ -183,27 +196,29 @@ local tasklist_buttons = gears.table.join(
                                               awful.client.focus.byidx(-1)
                                           end))
 
-local function set_wallpaper(s)
-    -- Wallpaper
-    if beautiful.wallpaper then
-        local wallpaper = beautiful.wallpaper
-        -- If wallpaper is a function, call it with the screen
-        if type(wallpaper) == "function" then
-            wallpaper = wallpaper(s)
-        end
-        gears.wallpaper.maximized(wallpaper, s, true)
-    end
-end
+-- beautiful.init(string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv("HOME"), chosen_theme))
 
--- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
-screen.connect_signal("property::geometry", set_wallpaper)
+-- local function set_wallpaper(s)
+--     -- Wallpaper
+--     if beautiful.wallpaper then
+--         local wallpaper = beautiful.wallpaper
+--         -- If wallpaper is a function, call it with the screen
+--         if type(wallpaper) == "function" then
+--             wallpaper = wallpaper(s)
+--         end
+--         gears.wallpaper.maximized(wallpaper, s, true)
+--     end
+-- end
+
+-- -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
+-- screen.connect_signal("property::geometry", set_wallpaper)
 
 awful.screen.connect_for_each_screen(function(s)
     -- Wallpaper
-    set_wallpaper(s)
+    -- set_wallpaper(s)
 
     -- Each screen has its own tag table.
-    awful.tag({ "term", "www", "spotify", "obs", "gimp", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
+    awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -224,24 +239,25 @@ awful.screen.connect_for_each_screen(function(s)
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s })
 
+    -- main top status bar replaced with polybar
     -- Add widgets to the wibox
-    s.mywibox:setup {
-        layout = wibox.layout.align.horizontal,
-        { -- Left widgets
-            layout = wibox.layout.fixed.horizontal,
-            mylauncher,
-            s.mytaglist,
-            s.mypromptbox,
-        },
-        s.mytasklist, -- Middle widget
-        { -- Right widgets
-            layout = wibox.layout.fixed.horizontal,
-            mykeyboardlayout,
-            wibox.widget.systray(),
-            mytextclock,
-            s.mylayoutbox,
-        },
-    }
+    -- s.mywibox:setup {
+    --     layout = wibox.layout.align.horizontal,
+    --     { -- Left widgets
+    --         layout = wibox.layout.fixed.horizontal,
+    --         mylauncher,
+    --         s.mytaglist,
+    --         s.mypromptbox,
+    --     },
+    --     s.mytasklist, -- Middle widget
+    --     { -- Right widgets
+    --         layout = wibox.layout.fixed.horizontal,
+    --         mykeyboardlayout,
+    --         wibox.widget.systray(),
+    --         mytextclock,
+    --         s.mylayoutbox,
+    --     },
+    -- }
 end)
 -- }}}
 
@@ -302,8 +318,12 @@ globalkeys = gears.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
-    awful.key({ modkey,           }, "b", function () awful.spawn("google-chrome") end,
+    awful.key({ modkey,           }, "b", function () awful.spawn("google-chrome --new-window https://waylonwalker.com/reading-list/") end,
               {description = "web browser", group = "launcher"}),
+    awful.key({ modkey, "Shift"   }, "b", function () awful.spawn("google-chrome") end,
+              {description = "web browser", group = "launcher"}),
+    awful.key({ modkey, "Shift"   }, "o", function () awful.spawn("obs-studio") end,
+              {description = "obs", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
@@ -320,7 +340,7 @@ globalkeys = gears.table.join(
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1, nil, true)    end,
               {description = "increase the number of columns", group = "layout"}),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
-              {description = "decrease the number of columns", group = "layout"}),
+              {description = "decrease the number of columns", group = "layout"})   ,
     awful.key({ modkey,           }, "space", function () awful.layout.inc( 1)                end,
               {description = "select next", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
@@ -355,8 +375,15 @@ globalkeys = gears.table.join(
               end,
               {description = "lua execute prompt", group = "awesome"}),
     -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end,
-              {description = "show the menubar", group = "launcher"})
+    -- awful.key({ modkey }, "p", function() menubar.show() end,
+    --           {description = "show the menubar", group = "launcher"})
+    --
+    -- awful.key({}, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer -D pulse sset Master 2%+", false) end),
+    -- awful.key({}, "XF86AudioLowerVolume", function () awful.util.spawn("amixer -D pulse sset Master 2%-", false) end),
+    -- awful.key({}, "XF86AudioMute", function () awful.util.spawn("amixer -D pulse sset Master toggle", false) end)
+    awful.key({}, "XF86AudioRaiseVolume", function() os.execute("pactl set-sink-volume 0 +5%") end),
+    awful.key({}, "XF86AudioLowerVolume", function() os.execute("pactl set-sink-volume 0 -5%") end),
+    awful.key({}, "XF86AudioMute", function() os.execute("pactl set-sink-mute 0 toggle") end) 
 )
 
 clientkeys = gears.table.join(
@@ -450,7 +477,8 @@ for i = 1, 9 do
                       end
                   end,
                   {description = "toggle focused client on tag #" .. i, group = "tag"}),
-        awful.key({ modkey, "Shift"}, "k", function() xrandr.xrandr() end)
+        awful.key({ modkey, }, "p", function() xrandr.xrandr() end),
+        awful.key({ modkey, "Mod1", }, "p", function() awful.spawn('flameshot gui') end)
     )
 end
 
@@ -574,17 +602,37 @@ end)
 -- end)
 
 -- Enable sloppy focus, so that focus follows mouse.
-client.connect_signal("mouse::enter", function(c)
-    if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-        and awful.client.focus.filter(c) then
-        client.focus = c
-    end
-end)
+-- client.connect_signal("mouse::enter", function(c)
+--     if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+--         and awful.client.focus.filter(c) then
+--         client.focus = c
+--     end
+-- end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+-- client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+-- client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
 
 awful.spawn.with_shell('compton')
 awful.spawn.with_shell('nitrogen --restore')
+awful.spawn.with_shell('launch_polybar')
+awful.spawn.with_shell('flameshot')
+
+
+beautiful.useless_gap = 12
+client.connect_signal("focus", function(c) c.border_color = "#6e5bae" end)
+client.connect_signal("focus", function(c) c.border_color = "##ff66c4" end)
+client.connect_signal("unfocus", function(c) c.border_color = "#003b4e" end)
+client.connect_signal("focus", function(c) c.border_width = 1 end)
+client.connect_signal("unfocus", function(c) c.border_width = 1 end)
+-- client.connect_signal("unfocus", 
+--     function(c) 
+--         naughty.notify({preset=naughty.config.presets.normal, title="debug", text="unfocus"}) 
+--         naughty.notify({preset=naughty.config.presets.normal, title="screen index", text=tostring(awful.screen.tags)}) 
+
+--     end
+-- )
+
+
+-- require('smart_borders'){ show_button_tooltips = true }
