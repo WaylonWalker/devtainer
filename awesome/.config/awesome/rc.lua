@@ -443,6 +443,7 @@ for i = 1, 9 do
                         if tag then
                            tag:view_only()
                         end
+                        os.execute("echo " .. i .. " > ~/.config/awesome/activetag.txt")
                   end,
                   {description = "view tag #"..i, group = "tag"}),
         -- Toggle tag display.
