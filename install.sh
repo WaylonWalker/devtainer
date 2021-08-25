@@ -110,7 +110,6 @@ install_apt () {
         python3-distutils \
         python3-venv \
         software-properties-common \
-        stow \
         sudo \
         tmux \
         tzdata \
@@ -151,6 +150,7 @@ install_python () {
             pynvim \
             visidata
             # end pip install
+        conda config --set changeps1 false
     }
     runner _install_python
 }
@@ -453,6 +453,18 @@ install_oracle() {
             && ldconfig
     }
     runner _install_oracle
+}
+
+install_polybar() {
+sudo apt-get install cmake cmake-data libcairo2-dev libxcb1-dev libxcb-ewmh-dev libxcb-composite0-dev libjsoncpp-dev libxcb-randr0-dev xcb-proto
+sudo ln -s /usr/include/jsoncpp/json/ /usr/include/json
+pushd ~/git
+git clone https://github.com/jaagr/polybar.git
+pushd polybar
+./build.sh
+popd
+popd
+
 }
 
 install_main () {
