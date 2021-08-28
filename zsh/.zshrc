@@ -11,7 +11,8 @@ setopt share_history
 # setopt extendedhistory
 # setopt histignoredups
 # setopt incappendhistorytime
-
+#
+export VIRTUAL_ENV_DISABLE_PROMPT=true
 
 unsetopt BEEP
 
