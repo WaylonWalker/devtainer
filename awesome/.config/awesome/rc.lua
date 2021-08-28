@@ -20,6 +20,9 @@ local xrandr = require("xrandr")
 
 local gap = 16
 
+beautiful.border_width = 2
+beautiful.font = "Ubuntu 16"
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -673,17 +676,19 @@ beautiful.useless_gap = gap
 client.connect_signal("focus", function(c) c.border_color = "#6e5bae" end)
 client.connect_signal("focus", function(c) c.border_color = "##ff66c4" end)
 client.connect_signal("unfocus", function(c) c.border_color = "#003b4e" end)
-client.connect_signal("focus", function(c) c.border_width = 2 end)
-client.connect_signal("unfocus", function(c) c.border_width = 2 end)
-client.connect_signal("unfocus", 
-    function(c) 
-        local t = awful.tag.find_by_name(awful.screen.focused(), "name")
-        local t = client.focus and client.focus.first_tag or nil
-        naughty.notify({preset=naughty.config.presets.normal, title="debug", text="unfocus"}) 
-        naughty.notify({preset=naughty.config.presets.normal, title="screen index", text=tostring(c.name)}) 
+-- client.connect_signal("focus", function(c) c.border_width = 2 end)
+-- client.connect_signal("unfocus", function(c) c.border_width = 2 end)
+-- 
+-- debugging window names
+-- client.connect_signal("unfocus", 
+--     function(c) 
+--         local t = awful.tag.find_by_name(awful.screen.focused(), "name")
+--         local t = client.focus and client.focus.first_tag or nil
+--         naughty.notify({preset=naughty.config.presets.normal, title="debug", text="unfocus"}) 
+--         naughty.notify({preset=naughty.config.presets.normal, title="screen index", text=tostring(c.name)}) 
 
-    end
-)
+--     end
+-- )
 
 
 -- require('smart_borders'){ show_button_tooltips = true }
