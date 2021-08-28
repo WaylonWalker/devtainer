@@ -59,7 +59,7 @@ font-2 = unifont:fontformat=truetype:size=8:antialias=false;0
 font-3 = unifont:fontformat=truetype:size=14;1
 font-4 = "JetBrainsMono Nerd Font:style=Medium:size=12;2"
 
-modules-left = aws
+modules-left = run aws
 ; modules-center = mpd
 modules-center = 1 2 3 4 5 6 7 8 9 layout
 modules-right = vpn filesystem pulseaudio memory cpu wlan eth battery temperature popup-calendar powermenu
@@ -304,6 +304,8 @@ click-right = gnome-terminal  -e "bash -c /home/u_walkews/.local/bin/vpn_peoria"
 interval = 60
 type = custom/script
 exec = has_aws_token
+click-left = gnome-terminal  -e "bash -c /home/u_walkews/.local/bin/get_aws_token"
+click-right = rm -rf ~/.aws/credentials
 
 [module/popup-calendar]
 format-prefix = %{T5}  %{T-}
@@ -312,3 +314,8 @@ type = custom/script
 exec = popup-calendar
 interval = 5
 click-left = popup-calendar --popup &
+
+[module/run]
+type = custom/text
+content = %{T5} %{T-}
+click-left = rofi -show window -sorting-method fzf -sort -show-icon
