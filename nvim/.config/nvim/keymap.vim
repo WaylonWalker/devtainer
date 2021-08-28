@@ -54,6 +54,7 @@ nnoremap gic :GitAdd<CR>
 
 " window shortcuts
 tnoremap <c-\><c-\> <c-\><c-n>
+tnoremap jj <c-\><c-n>
 tnoremap <c-h> <c-\><c-n><c-w>h
 tnoremap <c-l> <c-\><c-n><c-w>l
 tnoremap <c-^> <c-\><c-n><c-^>
