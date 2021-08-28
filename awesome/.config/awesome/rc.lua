@@ -18,6 +18,8 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 -- local has_fdo, freedesktop = pcall(require, "freedesktop")
 local xrandr = require("xrandr")
 
+local gap = 16
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -88,7 +90,7 @@ awful.layout.layouts = {
     awful.layout.suit.max,
     -- awful.layout.suit.max.fullscreen,
     -- awful.layout.suit.magnifier,
-    -- awful.layout.suit.corner.nw,
+    awful.layout.suit.corner.nw,
     -- awful.layout.suit.corner.ne,
     -- awful.layout.suit.corner.sw,
     -- awful.layout.suit.corner.se,
@@ -269,6 +271,13 @@ root.buttons(gears.table.join(
 ))
 -- }}}
 
+function useless_gaps_resize(thatmuch, s, t)
+    local scr = s or awful.screen.focused()
+    local tag = t or scr.selected_tag
+    tag.gap = tag.gap + tonumber(thatmuch)
+    awful.layout.arrange(scr)
+end
+
 -- {{{ Key bindings
 globalkeys = gears.table.join(
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
@@ -318,14 +327,35 @@ globalkeys = gears.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
-    awful.key({ modkey,           }, "b", function () awful.spawn("google-chrome --new-window https://waylonwalker.com/reading-list/") end,
+
+    awful.key({ modkey,           }, "b", function () awful.spawn("start_chrome") end,
               {description = "web browser", group = "launcher"}),
+
     awful.key({ modkey, "Shift"   }, "b", function () awful.spawn("google-chrome") end,
               {description = "web browser", group = "launcher"}),
+
+    awful.key({ modkey,           }, "t", function () awful.spawn("teams") end,
+              {description = "teams chat", group = "launcher"}),
+
+    awful.key({ modkey,           }, "e", function () awful.spawn("nautilus") end,
+              {description = "teams chat", group = "launcher"}),
+
     awful.key({ modkey, "Shift"   }, "o", function () awful.spawn("obs-studio") end,
               {description = "obs", group = "launcher"}),
+
+    awful.key({ modkey,           }, ";", function () awful.spawn("rofimoji") end,
+              {description = "emoji picker", group = "launcher"}),
+
+    awful.key({ modkey,           }, "i", function () useless_gaps_resize(2) end,
+              {description = "resize gaps larger", group = "launcher"}),
+
+    awful.key({ modkey, "Control" }, "i", function () useless_gaps_resize(-2) end,
+              {description = "resize gaps smaller", group = "launcher"}),
+
+
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
+
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
 
@@ -341,9 +371,15 @@ globalkeys = gears.table.join(
               {description = "increase the number of columns", group = "layout"}),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
               {description = "decrease the number of columns", group = "layout"})   ,
-    awful.key({ modkey,           }, "space", function () awful.layout.inc( 1)                end,
+    awful.key({ modkey,           }, "space", function ()
+        awful.layout.inc( 1)
+        os.execute("echo " .. awful.layout.getname() .. " > ~/.config/awesome/layout.txt")
+    end,
               {description = "select next", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
+    awful.key({ modkey, "Shift"   }, "space", function () 
+        awful.layout.inc(-1)
+        os.execute("echo " .. awful.layout.getname() .. " > ~/.config/awesome/layout.txt")
+    end,
               {description = "select previous", group = "layout"}),
 
     awful.key({ modkey, "Control" }, "n",
@@ -361,7 +397,8 @@ globalkeys = gears.table.join(
     -- awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
     --           {description = "run prompt", group = "launcher"}),
 
-    awful.key({ modkey },            "r",     function () awful.util.spawn("dmenu_run") end,
+    -- awful.key({ modkey },            "r",     function () awful.util.spawn("dmenu_run") end,
+    awful.key({ modkey },            "r",     function () awful.util.spawn("rofi -show run -sorting-method fzf -sort -show-icons") end,
               {description = "run prompt", group = "launcher"}),
 
     awful.key({ modkey }, "x",
@@ -381,9 +418,14 @@ globalkeys = gears.table.join(
     -- awful.key({}, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer -D pulse sset Master 2%+", false) end),
     -- awful.key({}, "XF86AudioLowerVolume", function () awful.util.spawn("amixer -D pulse sset Master 2%-", false) end),
     -- awful.key({}, "XF86AudioMute", function () awful.util.spawn("amixer -D pulse sset Master toggle", false) end)
+
+    -- Media Keys
     awful.key({}, "XF86AudioRaiseVolume", function() os.execute("pactl set-sink-volume 0 +5%") end),
     awful.key({}, "XF86AudioLowerVolume", function() os.execute("pactl set-sink-volume 0 -5%") end),
-    awful.key({}, "XF86AudioMute", function() os.execute("pactl set-sink-mute 0 toggle") end) 
+    awful.key({}, "XF86AudioMute", function() os.execute("pactl set-sink-mute 0 toggle") end),
+    awful.key({}, "XF86AudioPlay", function() os.execute("playerctl play-pause") end),
+    awful.key({}, "XF86AudioNext", function() os.execute("playerctl next") end),
+    awful.key({}, "XF86AudioPrev", function() os.execute("playerctl previous") end) 
 )
 
 clientkeys = gears.table.join(
@@ -393,7 +435,7 @@ clientkeys = gears.table.join(
             c:raise()
         end,
         {description = "toggle fullscreen", group = "client"}),
-    awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end,
+    awful.key({ modkey,   }, "c",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
               {description = "toggle floating", group = "client"}),
@@ -479,7 +521,8 @@ for i = 1, 9 do
                   end,
                   {description = "toggle focused client on tag #" .. i, group = "tag"}),
         awful.key({ modkey, }, "p", function() xrandr.xrandr() end),
-        awful.key({ modkey, "Mod1", }, "p", function() awful.spawn('flameshot gui') end)
+        awful.key({ modkey, "Mod1", }, "p", function() awful.spawn('flameshot gui') end),
+        awful.key({  }, "Print", function() awful.spawn('flameshot gui') end)
     )
 end
 
@@ -508,6 +551,10 @@ awful.rules.rules = {
      }
     },
 
+    { rule = { name = "Microsoft Teams" },
+    properties = { tag = "6", floating = false, switchtotag = true }
+  },
+
     -- Floating clients.
     { rule_any = {
         instance = {
@@ -527,6 +574,7 @@ awful.rules.rules = {
 
         name = {
           "Event Tester",  -- xev.
+          "YAD",
         },
         role = {
           "AlarmWindow",  -- Thunderbird's calendar.
@@ -616,24 +664,27 @@ end)
 
 
 awful.spawn.with_shell('compton')
-awful.spawn.with_shell('nitrogen --restore')
+-- awful.spawn.with_shell('nitrogen --restore')
+awful.spawn.with_shell('feh --bg-scale ~/Pictures/wp2555882-space-background.jpg')
 awful.spawn.with_shell('launch_polybar')
 awful.spawn.with_shell('flameshot')
 
 
-beautiful.useless_gap = 12
+beautiful.useless_gap = gap
 client.connect_signal("focus", function(c) c.border_color = "#6e5bae" end)
 client.connect_signal("focus", function(c) c.border_color = "##ff66c4" end)
 client.connect_signal("unfocus", function(c) c.border_color = "#003b4e" end)
-client.connect_signal("focus", function(c) c.border_width = 1 end)
-client.connect_signal("unfocus", function(c) c.border_width = 1 end)
--- client.connect_signal("unfocus", 
---     function(c) 
---         naughty.notify({preset=naughty.config.presets.normal, title="debug", text="unfocus"}) 
---         naughty.notify({preset=naughty.config.presets.normal, title="screen index", text=tostring(awful.screen.tags)}) 
+client.connect_signal("focus", function(c) c.border_width = 2 end)
+client.connect_signal("unfocus", function(c) c.border_width = 2 end)
+client.connect_signal("unfocus", 
+    function(c) 
+        local t = awful.tag.find_by_name(awful.screen.focused(), "name")
+        local t = client.focus and client.focus.first_tag or nil
+        naughty.notify({preset=naughty.config.presets.normal, title="debug", text="unfocus"}) 
+        naughty.notify({preset=naughty.config.presets.normal, title="screen index", text=tostring(c.name)}) 
 
---     end
--- )
+    end
+)
 
 
 -- require('smart_borders'){ show_button_tooltips = true }
