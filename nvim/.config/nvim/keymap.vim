@@ -75,8 +75,8 @@ nmap gtg :call TermOpen('gitui', 't')<CR>
 nmap gtg :call TermOpen('gitui', 'v')<CR><C-w>H:vertical resize 160<CR>i
 nmap gtf :call TermOpen('vifm', 'v')<CR><C-w>H:vertical resize 80<CR>i
 
-nnoremap <leader><leader>d "_d
-vnoremap <leader>d "_d
+" nnoremap <leader><leader>d "_d
+" vnoremap <leader>d "_d
 
 nnoremap <leader>ghw :h <C-R>=expand("<cword>")<CR><CR>
 
@@ -91,6 +91,8 @@ inoremap <c-/> :Commentary
 " source current file
 nnoremap <leader>so :source %<CR>
 nnoremap gso :source %<CR>
+" edit hidden files
+nnoremap geh :Telescope find_files hidden=true<CR>
 " edit nvim dotfiles
 nnoremap gen :Telescope find_files cwd=~/.config/nvim<CR>
 " edit blog posts
@@ -113,6 +115,8 @@ nnoremap ges :e ~/.config/nvim/settings.vim<CR>
 nnoremap get :e ~/.tmux.conf<CR>
 " edit zshrc
 nnoremap gez :e ~/.zshrc<CR>
+
+nnoremap gow <cmd>lua os.execute('xdg-open https://waylonwalker.com/' .. vim.api.nvim_buf_get_name(0):match("^.+/(.+)$"):gsub('.md', '') .. '/ > /dev/null 2>&1')<cr>
 
 " edit from parent directory
 set wcm=<C-Z>
@@ -412,7 +416,8 @@ function! ToggleHiddenAll()
         set noshowcmd
         set nonumber
         set norelativenumber
-        GitGutterDisable
+        set scl=no
+        " GitGutterDisable
     else
         let s:hidden_all = 0
         set showmode
@@ -421,7 +426,8 @@ function! ToggleHiddenAll()
         set showcmd
         set number
         set relativenumber
-        GitGutterEnable
+        set scl=yes
+        " GitGutterEnable
     endif
 endfunction
 nnoremap <silent> <leader>z :call ToggleHiddenAll()<CR>
@@ -518,6 +524,7 @@ nnoremap <silent> [d <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 nnoremap <silent> ]d <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 nnoremap <silent> gh :Lspsaga lsp_finder<CR>
 nnoremap <silent>K :Lspsaga hover_doc<CR>
+nnoremap <silent> gs <cmd>lua vim.lsp.buf.signature_help()<CR>
 
 " something hijacked escape to escape and scroll up
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
