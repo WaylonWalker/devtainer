@@ -1,0 +1,15 @@
+[credential]
+	helper = store
+[user]
+	name = Waylon S. Walker
+	email = walker_waylon_s@cat.com
+[core]
+	editor = nvim
+[init]
+	defaultBranch = main
+[push]
+	default = current
+[rebase]
+	autoStash = true
+[pull]
+	rebase = true
