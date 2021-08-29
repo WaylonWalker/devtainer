@@ -93,6 +93,15 @@ d/home/u_walkews/devtainer
 d/home/u_walkews/devtainer/dotfiles
 	..
 0
+d/home/u_walkews/git/waylonwalker.com
+	pages
+2
+d/home/u_walkews/git/waylonwalker.com/pages
+	blog
+1
+d/home/u_walkews/git/waylonwalker.com/pages/blog
+	tmux-display-message.md
+22
 d
 
 # Right window history (oldest to newest):
@@ -105,6 +114,9 @@ D/home/u_walkews/git/waylonwalker.com
 D/home/u_walkews/devtainer
 	..
 0
+D/home/u_walkews/git/waylonwalker.com
+	..
+0
 D
 
 # Command line history (oldest to newest):
@@ -112,9 +124,11 @@ D
 
 # Search history (oldest to newest):
 /rename
+/display
 
 # Prompt history (oldest to newest):
 ptmux-rename-session.md
+ptmux-display-message.md
 
 # Local filter history (oldest to newest):
 
