@@ -66,6 +66,7 @@ RUN apt-get update; \
     ripgrep \
     silversearcher-ag \
     software-properties-common \
+    stow \
     tmux \
     tzdata \
     universal-ctags \
@@ -212,8 +213,13 @@ RUN echo install lsp; \
 
 
 
-COPY dotfiles/ $HOME
-COPY bin/ta $HOME/.local/bin/ta
+RUN stow bin; \
+    stow nvim; \
+    stow zsh; \
+    stow git; \
+    stow ipython; \
+    stow tmux; \
+
 
 # install vim in order to run PlugInstall, neovim cannot run PlugInstall unattended
 RUN echo "starting pluginstall step"; \
