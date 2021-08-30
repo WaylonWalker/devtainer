@@ -43,7 +43,40 @@ client.connect_signal("focus",
             -- naughty.notify({preset=naughty.config.presets.normal, title="screen focused", text=tostring(c.name)}) 
             -- naughty.notify({preset=naughty.config.presets.normal, title="screen tag", text=tostring(layout)}) 
             os.execute("echo " .. name .. " > ~/.config/awesome/activetag.txt")
+            -- naughty.notify({preset=naughty.config.presets.normal, title="focus", text=name})
             os.execute("echo " .. layout .. " > ~/.config/awesome/layout.txt")
     end
 )
+
+screen.connect_signal("tag::history::update", function(s) 
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update'}) 
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update-' .. type(s.selected_tag)}) 
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update' .. s.selected_tag.name}) 
+    -- local name = awful.tag.selected(1).name
+    -- local layout = screen.focus.first_tag.layout.name or nil
+    local name = s.selected_tag.name
+    -- local name = awful.tag.selected(s).getproperty("name")
+    -- local t = client.focus.first_tag or nil
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update-screen-name' .. t}) 
+    -- local name = t.name
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update-' .. name}) 
+
+    os.execute("echo " .. name .. " > ~/.config/awesome/activetag.txt")
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update'}) 
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug-tag-history-update--name", text=name})
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug-tag-history-update--layout", text=layout})
+end)
+
+tag.connect_signal("property::selected", function()
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update-screen-name'}) 
+    -- name = awful.tag.selected(1).name
+    -- name = awful.first_tag.layout.name or nil
+    -- os.execute("echo " .. name .. " > ~/.config/awesome/activetag.txt")
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update-screen-name' .. name}) 
+    -- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update-screen-layout' .. layout}) 
+end)
+
+client.connect_signal("focus", function(c) c.border_color = "#6e5bae" end)
+client.connect_signal("focus", function(c) c.border_color = "##ff66c4" end)
+client.connect_signal("unfocus", function(c) c.border_color = "#003b4e" end)
 
