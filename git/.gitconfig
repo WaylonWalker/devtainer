@@ -2,7 +2,7 @@
 	helper = store
 [user]
 	name = Waylon S. Walker
-	email = walker_waylon_s@cat.com
+	email = waylon@waylonwalker.com
 [core]
 	editor = nvim
 [init]
@@ -13,3 +13,7 @@
 	autoStash = true
 [pull]
 	rebase = true
+[includeIf "gitdir:~/work/"]
+        path = ~/.gitconfig-work
+[includeIf "gitdir:~/git/"]
+        path = ~/.gitconfig-git
