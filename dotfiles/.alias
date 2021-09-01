@@ -14,6 +14,7 @@ alias paste=' powershell.exe Get-Clipboard '
 alias nvims='[ -f Session.vim ] && nvim -S || nvim'
 alias direnvconda='cp ~/.config/direnv/conda/.envrc . && direnv allow .'
 alias direnvvenv='cp ~/.config/direnv/venv/.envrc . && direnv allow .'
+alias forgit='source <(curl -sSL git.io/forgit)'
 
 
 alias gez="$EDITOR ~/.zshrc"
