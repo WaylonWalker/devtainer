@@ -2,6 +2,7 @@ local gears = require("gears")
 local awful = require("awful")
 local xrandr = require("xrandr")
 
+local naughty = require("naughty")
 
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
@@ -10,13 +11,8 @@ editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 modkey = "Mod4"
 
-function useless_gaps_resize(thatmuch, s, t)
-    local scr = s or awful.screen.focused()
-    local tag = t or scr.selected_tag
-    tag.gap = tag.gap + tonumber(thatmuch)
-    awful.layout.arrange(scr)
-end
 
+-- mostly default
 globalkeys = gears.table.join(
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
@@ -39,8 +35,6 @@ globalkeys = gears.table.join(
         end,
         {description = "focus previous by index", group = "client"}
     ),
-    awful.key({ modkey,           }, "w", function () mymainmenu:show() end,
-              {description = "show main menu", group = "awesome"}),
 
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end,
@@ -61,34 +55,6 @@ globalkeys = gears.table.join(
             end
         end,
         {description = "go back", group = "client"}),
-
-    -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
-              {description = "open a terminal", group = "launcher"}),
-
-    awful.key({ modkey,           }, "b", function () awful.spawn("start_chrome") end,
-              {description = "web browser", group = "launcher"}),
-
-    awful.key({ modkey, "Shift"   }, "b", function () awful.spawn("google-chrome") end,
-              {description = "web browser", group = "launcher"}),
-
-    awful.key({ modkey,           }, "t", function () awful.spawn("teams") end,
-              {description = "teams chat", group = "launcher"}),
-
-    awful.key({ modkey,           }, "e", function () awful.spawn("nautilus") end,
-              {description = "teams chat", group = "launcher"}),
-
-    awful.key({ modkey, "Shift"   }, "o", function () awful.spawn("obs-studio") end,
-              {description = "obs", group = "launcher"}),
-
-    awful.key({ modkey,           }, ";", function () awful.spawn("rofimoji") end,
-              {description = "emoji picker", group = "launcher"}),
-
-    awful.key({ modkey,           }, "i", function () useless_gaps_resize(2) end,
-              {description = "resize gaps larger", group = "launcher"}),
-
-    awful.key({ modkey, "Control" }, "i", function () useless_gaps_resize(-2) end,
-              {description = "resize gaps smaller", group = "launcher"}),
 
 
     awful.key({ modkey, "Control" }, "r", awesome.restart,
@@ -131,14 +97,6 @@ globalkeys = gears.table.join(
               end,
               {description = "restore minimized", group = "client"}),
 
-    -- Prompt
-    -- awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
-    --           {description = "run prompt", group = "launcher"}),
-
-    -- awful.key({ modkey },            "r",     function () awful.util.spawn("dmenu_run") end,
-    awful.key({ modkey },            "r",     function () awful.util.spawn("rofi -show run -sorting-method fzf -sort -show-icons") end,
-              {description = "run prompt", group = "launcher"}),
-
     awful.key({ modkey }, "x",
               function ()
                   awful.prompt.run {
@@ -148,24 +106,11 @@ globalkeys = gears.table.join(
                     history_path = awful.util.get_cache_dir() .. "/history_eval"
                   }
               end,
-              {description = "lua execute prompt", group = "awesome"}),
-    -- Menubar
-    -- awful.key({ modkey }, "p", function() menubar.show() end,
-    --           {description = "show the menubar", group = "launcher"})
-    --
-    -- awful.key({}, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer -D pulse sset Master 2%+", false) end),
-    -- awful.key({}, "XF86AudioLowerVolume", function () awful.util.spawn("amixer -D pulse sset Master 2%-", false) end),
-    -- awful.key({}, "XF86AudioMute", function () awful.util.spawn("amixer -D pulse sset Master toggle", false) end)
+              {description = "lua execute prompt", group = "awesome"})
 
-    -- Media Keys
-    awful.key({}, "XF86AudioRaiseVolume", function() os.execute("pactl set-sink-volume 0 +5%") end),
-    awful.key({}, "XF86AudioLowerVolume", function() os.execute("pactl set-sink-volume 0 -5%") end),
-    awful.key({}, "XF86AudioMute", function() os.execute("pactl set-sink-mute 0 toggle") end),
-    awful.key({}, "XF86AudioPlay", function() os.execute("playerctl play-pause") end),
-    awful.key({}, "XF86AudioNext", function() os.execute("playerctl next") end),
-    awful.key({}, "XF86AudioPrev", function() os.execute("playerctl previous") end) 
 )
 
+-- mostly defaults
 clientkeys = gears.table.join(
     awful.key({ modkey,           }, "f",
         function (c)
@@ -207,7 +152,10 @@ clientkeys = gears.table.join(
             c.maximized_horizontal = not c.maximized_horizontal
             c:raise()
         end ,
-        {description = "(un)maximize horizontally", group = "client"})
+        {description = "(un)maximize horizontally", group = "client"}),
+        awful.key({ modkey, }, "p", function() xrandr.xrandr() end),
+        awful.key({ modkey, "Mod1", }, "p", function() awful.spawn('flameshot gui') end),
+        awful.key({  }, "Print", function() awful.spawn('flameshot gui') end)
 )
 
 -- Bind all key numbers to tags.
@@ -223,7 +171,7 @@ for i = 1, 9 do
                         if tag then
                            tag:view_only()
                         end
-                        -- os.execute("echo " .. i .. " > ~/.config/awesome/activetag.txt")
+                        -- os.execute("echo " .. i .. " > ~/.config/awesome/activetag.tcxt")
                   end,
                   {description = "view tag #"..i, group = "tag"}),
         -- Toggle tag display.
@@ -257,13 +205,69 @@ for i = 1, 9 do
                           end
                       end
                   end,
-                  {description = "toggle focused client on tag #" .. i, group = "tag"}),
-        awful.key({ modkey, }, "p", function() xrandr.xrandr() end),
-        awful.key({ modkey, "Mod1", }, "p", function() awful.spawn('flameshot gui') end),
-        awful.key({  }, "Print", function() awful.spawn('flameshot gui') end)
+                  {description = "toggle focused client on tag #" .. i, group = "tag"})
 
     )
 end
+
+-- resize gaps
+function useless_gaps_resize(thatmuch, s, t)
+    local scr = s or awful.screen.focused()
+    local tag = t or scr.selected_tag
+    tag.gap = tag.gap + tonumber(thatmuch)
+    awful.layout.arrange(scr)
+end
+
+globalkeys = gears.table.join(globalkeys, 
+    awful.key({ modkey,           }, "i", function () useless_gaps_resize(2) end,
+              {description = "resize gaps larger", group = "launcher"}),
+
+    awful.key({ modkey, "Control" }, "i", function () useless_gaps_resize(-2) end,
+              {description = "resize gaps smaller", group = "launcher"})
+)
+
+
+-- app launcher
+globalkeys = gears.table.join(globalkeys, 
+
+    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
+              {description = "open a terminal", group = "launcher"}),
+
+    awful.key({ modkey,           }, "b", function () awful.spawn("start_chrome") end,
+              {description = "web browser", group = "launcher"}),
+
+    awful.key({ modkey, "Shift"   }, "b", function () awful.spawn("google-chrome") end,
+              {description = "web browser", group = "launcher"}),
+
+    awful.key({ modkey,           }, "t", function () awful.spawn("teams") end,
+              {description = "teams chat", group = "launcher"}),
+
+    awful.key({ modkey,           }, "e", function () awful.spawn("nautilus") end,
+              {description = "teams chat", group = "launcher"}),
+
+    awful.key({ modkey, "Shift"   }, "o", function () awful.spawn("obs-studio") end,
+              {description = "obs", group = "launcher"}),
+
+    awful.key({ modkey,           }, ";", function () awful.spawn("rofimoji") end,
+              {description = "emoji picker", group = "launcher"}),
+
+    awful.key({ modkey },            "r",     function () awful.util.spawn("rofi -show run -sorting-method fzf -sort -show-icons") end,
+              {description = "run prompt", group = "launcher"}),
+
+    awful.key({ modkey },            "w",     function () awful.util.spawn("rofi -show window -sorting-method fzf -sort -show-icons") end,
+              {description = "window switcher", group = "launcher"})
+
+)
+
+globalkeys = gears.table.join(globalkeys, 
+    -- Media Keys
+    awful.key({}, "XF86AudioRaiseVolume", function() os.execute("pactl set-sink-volume 0 +5%") end),
+    awful.key({}, "XF86AudioLowerVolume", function() os.execute("pactl set-sink-volume 0 -5%") end),
+    awful.key({}, "XF86AudioMute", function() os.execute("pactl set-sink-mute 0 toggle") end),
+    awful.key({}, "XF86AudioPlay", function() os.execute("playerctl play-pause") end),
+    awful.key({}, "XF86AudioNext", function() os.execute("playerctl next") end),
+    awful.key({}, "XF86AudioPrev", function() os.execute("playerctl previous") end) 
+)
 
 clientbuttons = gears.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
@@ -272,8 +276,4 @@ clientbuttons = gears.table.join(
 
 -- Set keys
 root.keys(globalkeys)
-
-client.connect_signal("focus", function(c) c.border_color = "#6e5bae" end)
-client.connect_signal("focus", function(c) c.border_color = "##ff66c4" end)
-client.connect_signal("unfocus", function(c) c.border_color = "#003b4e" end)
 
