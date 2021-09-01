@@ -889,3 +889,7 @@ dotfiles/.config/kdenlive-appimagerc
 dotfiles/.config/kdenlive-layoutsrc
 dotfiles/.config/pulse
 dotfiles/.config/teams
+zsh/.config/vifm/vifminfo
+zsh/.config/htop/htoprc
+awesome/.config/awesome/activetag.txt
+awesome/.config/awesome/layout.txt
