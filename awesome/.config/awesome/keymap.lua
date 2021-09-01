@@ -76,7 +76,8 @@ globalkeys = gears.table.join(
 		group = "screen",
 	}),
     
-	awful.key({ modkey }, "u", awful.client.urgent.jumpto, {
+	awful.key({ modkey }, "u", 
+    awful.client.urgent.jumpto, {
 		description = "jump to urgent client",
 		group = "client",
 	}),
@@ -262,15 +263,24 @@ clientkeys = gears.table.join(
 
 	awful.key({ modkey }, "p", function()
 		xrandr.xrandr()
-	end),
+	end, {
+		description = "xrandr",
+		group = "client",
+}),
 
 	awful.key({ modkey, "Mod1" }, "p", function()
 		awful.spawn("flameshot gui")
-	end),
+	end, {
+		description = "flameshot",
+		group = "client",
+}),
 
 	awful.key({}, "Print", function()
 		awful.spawn("flameshot gui")
-	end)
+	end, {
+		description = "flameshot",
+		group = "client",
+})
 )
 
 -- Bind all key numbers to tags.
