@@ -1,0 +1,9 @@
+[python]
+# symbol  = '[ ](fg:#ffd43b)'
+symbol  = '[ ](fg:#4b8bbe)'
+# style  = 'fg:#4b8bbe'
+style  = 'fg:#ffd43b'
+format = '[${symbol}${pyenv_prefix}(${version} )]($style)[(\($virtualenv\) )](fg:#646464)'
+
+[ directory ]
+style  = 'fg:#FF10F0'
