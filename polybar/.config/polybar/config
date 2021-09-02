@@ -62,7 +62,7 @@ font-4 = "JetBrainsMono Nerd Font:style=Medium:size=12;2"
 modules-left = run aws
 ; modules-center = mpd
 modules-center = 1 2 3 4 5 6 7 8 9 layout
-modules-right = vpn filesystem pulseaudio memory cpu wlan eth battery temperature popup-calendar powermenu
+modules-right = vpn filesystem pulseaudio memory cpu wlan eth battery temperature popup-calendar
 
 tray-position = right
 tray-padding = 2
@@ -123,6 +123,7 @@ label-connected = %essid%
 format-disconnected =
 
 ramp-signal-foreground = ${colors.foreground-alt}
+ramp-signal-0 =  
 
 [module/eth]
 type = internal/network
@@ -197,19 +198,17 @@ adapter = AC
 full-at = 98
 
 format-charging = <animation-charging> <label-charging>
-# format-charging-underline = #ffb52a
-
 format-discharging = <animation-discharging> <label-discharging>
-format-discharging-underline = ${self.format-charging-underline}
 
 format-full-prefix-foreground = ${colors.foreground-alt}
-format-full-underline = ${self.format-charging-underline}
 
 animation-charging-foreground = ${colors.foreground-alt}
 animation-charging-framerate = 750
 
 animation-discharging-foreground = ${colors.foreground-alt}
 animation-discharging-framerate = 750
+animation-charging-0 = A
+animation-discharging-0 = A
 
 [module/temperature]
 type = internal/temperature
@@ -217,15 +216,17 @@ thermal-zone = 0
 warn-temperature = 60
 
 format = <ramp> <label>
-# format-underline = #f50a4d
 format-warn = <ramp> <label-warn>
-format-warn-underline = ${self.format-underline}
 
 label = %temperature-c%
 label-warn = %temperature-c%
 label-warn-foreground = ${colors.secondary}
 
 ramp-foreground = ${colors.foreground-alt}
+
+ramp-0 = A
+ramp-1 = B
+ramp-2 = C
 
 [settings]
 screenchange-reload = true
@@ -301,7 +302,7 @@ click-left = "vpn_disconnect"
 click-right = gnome-terminal  -e "bash -c /home/u_walkews/.local/bin/vpn_peoria"
 
 [module/aws]
-interval = 60
+interval = 180
 type = custom/script
 exec = has_aws_token
 click-left = gnome-terminal  -e "bash -c /home/u_walkews/.local/bin/get_aws_token"
@@ -319,3 +320,7 @@ click-left = popup-calendar --popup &
 type = custom/text
 content = %{T5} %{T-}
 click-left = rofi -show window -sorting-method fzf -sort -show-icon
+
+[module/ww]
+type = custom/text
+content = https://github.com/WaylonWalker/waylonwalker.com/actions/workflows/deploy-site.yml/badge.svg
