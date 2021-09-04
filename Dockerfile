@@ -209,6 +209,14 @@ RUN echo install lsp; \
     npm install --global vscode-html-languageserver-bin; \
 
 
+WORKDIR /home/devtainer/devtainer
+
+COPY bin .
+COPY nvim .
+COPY zsh .
+COPY git .
+COPY ipython .
+COPY tmux .
 
 RUN stow bin; \
     stow nvim; \
