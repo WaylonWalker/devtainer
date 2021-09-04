@@ -5,8 +5,8 @@ SHELL ["/bin/bash", "-c"]
 ENV \
     UID="1000" \
     GID="1000" \
-    UNAME="root" \
-    GNAME="root"
+    UNAME="devtainer" \
+    GNAME="devtainer"
 ENV \
     HOME="/${UNAME}" \
     SHELL="/bin/zsh" \
@@ -248,6 +248,8 @@ RUN chmod 0750 ~/.local/share/nvim/; \
     mkdir ~/.local/share/nvim/swap/; \
     mkdir ~/.local/share/nvim/undo/;
 
-WORKDIR /src
+USER devtainer
+
+WORKDIR /home/devtainer
 
 CMD ["tmux"]
