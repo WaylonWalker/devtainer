@@ -58,7 +58,6 @@ RUN apt-get update; \
     make \
     pandoc \
     perl \
-    python-neovim \
     python3-apt \
     python3-distutils \
     python3-neovim \
