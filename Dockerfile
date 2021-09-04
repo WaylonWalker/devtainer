@@ -184,8 +184,6 @@ RUN npm i -g diff-so-fancy && \
     npm i -g tree-sitter-cli; \
     rm -rf /root/.npm/_cacache;
 
-RUN 
-
 RUN chsh -s /usr/bin/zsh
 
 # /usr/lib/ghc is a large directory,
