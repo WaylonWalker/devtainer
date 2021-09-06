@@ -115,6 +115,7 @@ install_apt () {
         tzdata \
         unzip \
         wget \
+        xbindkeys \
         zsh
     }
         # fd-find \

@@ -375,12 +375,12 @@ globalkeys = gears.table.join(
 		group = "launcher",
 	}),
 
-	awful.key({ modkey }, "b", function()
-		awful.spawn("start_chrome")
-	end, {
-		description = "web browser",
-		group = "launcher",
-	}),
+	-- awful.key({ modkey }, "b", function()
+	-- 	awful.spawn("start_chrome")
+	-- end, {
+	-- 	description = "web browser",
+	-- 	group = "launcher",
+	-- }),
 
 	awful.key({ modkey, "Shift" }, "b", function()
 		awful.spawn("google-chrome")
@@ -389,47 +389,47 @@ globalkeys = gears.table.join(
 		group = "launcher",
 	}),
 
-	awful.key({ modkey }, "t", function()
-		awful.spawn("teams")
-	end, {
-		description = "teams chat",
-		group = "launcher",
-	}),
+	-- awful.key({ modkey }, "t", function()
+	-- 	awful.spawn("teams")
+	-- end, {
+	-- 	description = "teams chat",
+	-- 	group = "launcher",
+	-- }),
 
-	awful.key({ modkey }, "e", function()
-		awful.spawn("nautilus")
-	end, {
-		description = "teams chat",
-		group = "launcher",
-	}),
+	-- awful.key({ modkey }, "e", function()
+	-- 	awful.spawn("nautilus")
+	-- end, {
+	-- 	description = "teams chat",
+	-- 	group = "launcher",
+	-- }),
 
 	awful.key({ modkey, "Shift" }, "o", function()
 		awful.spawn("obs-studio")
 	end, {
 		description = "obs",
 		group = "launcher",
-	}),
-
-	awful.key({ modkey }, ";", function()
-		awful.spawn("rofimoji")
-	end, {
-		description = "emoji picker",
-		group = "launcher",
-	}),
-
-	awful.key({ modkey }, "r", function()
-		awful.util.spawn("rofi -show run -sorting-method fzf -sort -show-icons")
-	end, {
-		description = "run prompt",
-		group = "launcher",
-	}),
-
-	awful.key({ modkey }, "w", function()
-		awful.util.spawn("rofi -show window -sorting-method fzf -sort -show-icons")
-	end, {
-		description = "window switcher",
-		group = "launcher",
 	})
+
+	-- awful.key({ modkey }, ";", function()
+	-- 	awful.spawn("rofimoji")
+	-- end, {
+	-- 	description = "emoji picker",
+	-- 	group = "launcher",
+	-- }),
+
+	-- awful.key({ modkey }, "r", function()
+	-- 	awful.util.spawn("rofi -show run -sorting-method fzf -sort -show-icons")
+	-- end, {
+	-- 	description = "run prompt",
+	-- 	group = "launcher",
+	-- }),
+
+	-- awful.key({ modkey }, "w", function()
+	-- 	awful.util.spawn("rofi -show window -sorting-method fzf -sort -show-icons")
+	-- end, {
+	-- 	description = "window switcher",
+	-- 	group = "launcher",
+	-- })
 )
 
 globalkeys = gears.table.join(
