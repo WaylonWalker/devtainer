@@ -30,6 +30,7 @@ awful.rules.rules = {
 	},
 
 	{ rule = { name = "Microsoft Teams" }, properties = { tag = "6", floating = false, switchtotag = true } },
+	{ rule = { class = "Polybar" }, properties = {border_width = 0} },
 
 	-- Floating clients.
 	{
