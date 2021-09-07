@@ -47,7 +47,7 @@
 "xbindkeys_show" 
   control+shift + q
 
-"x-www-browser"
+"wmctrl -xa google-chrome.Google-chrome || start_chrome"
     Mod4 + b
 
 "teams"
@@ -64,6 +64,30 @@
 
 "nautilus"
     Mod4 + e
+
+"spotify"
+    Mod4 + y
+
+# "flameshot gui"
+#     Mod4 + alt + p
+
+
+"wmctrl -xa gnome-terminal-server.Gnome-terminal || x-terminal-emulator"
+    Mod4 + Return
+
+"wmctrl -xa obs.obs || obs-studio" 
+    Alt+Mod4 + o
+
+"x-terminal-emulator -e tmux new-session -A -s scratch"
+    Mod4 + g
+
+"wmctrl -xa gimp.Gimp || gimp" 
+    Shift+Mod4 + g
+
+"pkill polybar || launch_polybar"
+    Mod4+period
+
+
 # set directly keycode (here control + f with my keyboard)
 #"xterm"
 #  c:41 + m:0x4
