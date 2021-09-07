@@ -347,8 +347,22 @@ function useless_gaps_resize(thatmuch, s, t)
 	awful.layout.arrange(scr)
 end
 
+function useless_gaps_set_size(thatmuch, s, t)
+	local scr = s or awful.screen.focused()
+	local tag = t or scr.selected_tag
+	tag.gap = tonumber(thatmuch)
+	awful.layout.arrange(scr)
+end
+
 globalkeys = gears.table.join(
 	globalkeys,
+	awful.key({ modkey, "Shift" }, "i", function()
+		useless_gaps_set_size(0)
+	end, {
+		description = "resize gaps larger",
+		group = "launcher",
+	}),
+
 	awful.key({ modkey }, "i", function()
 		useless_gaps_resize(2)
 	end, {
@@ -365,15 +379,15 @@ globalkeys = gears.table.join(
 )
 
 -- app launcher
-globalkeys = gears.table.join(
-	globalkeys,
+-- globalkeys = gears.table.join(
+-- 	globalkeys,
 
-	awful.key({ modkey }, "Return", function()
-		awful.spawn(terminal)
-	end, {
-		description = "open a terminal",
-		group = "launcher",
-	}),
+	-- awful.key({ modkey }, "Return", function()
+	-- 	awful.spawn(terminal)
+	-- end, {
+	-- 	description = "open a terminal",
+	-- 	group = "launcher",
+	-- }),
 
 	-- awful.key({ modkey }, "b", function()
 	-- 	awful.spawn("start_chrome")
@@ -382,12 +396,12 @@ globalkeys = gears.table.join(
 	-- 	group = "launcher",
 	-- }),
 
-	awful.key({ modkey, "Shift" }, "b", function()
-		awful.spawn("google-chrome")
-	end, {
-		description = "web browser",
-		group = "launcher",
-	}),
+	-- awful.key({ modkey, "Shift" }, "b", function()
+	-- 	awful.spawn("google-chrome")
+	-- end, {
+	-- 	description = "web browser",
+	-- 	group = "launcher",
+	-- }),
 
 	-- awful.key({ modkey }, "t", function()
 	-- 	awful.spawn("teams")
@@ -403,12 +417,12 @@ globalkeys = gears.table.join(
 	-- 	group = "launcher",
 	-- }),
 
-	awful.key({ modkey, "Shift" }, "o", function()
-		awful.spawn("obs-studio")
-	end, {
-		description = "obs",
-		group = "launcher",
-	})
+	-- awful.key({ modkey, "Shift" }, "o", function()
+	-- 	awful.spawn("obs-studio")
+	-- end, {
+	-- 	description = "obs",
+	-- 	group = "launcher",
+	-- })
 
 	-- awful.key({ modkey }, ";", function()
 	-- 	awful.spawn("rofimoji")
@@ -430,7 +444,7 @@ globalkeys = gears.table.join(
 	-- 	description = "window switcher",
 	-- 	group = "launcher",
 	-- })
-)
+-- )
 
 globalkeys = gears.table.join(
 	globalkeys,
