@@ -20,6 +20,7 @@
     - compton
     - rofi
     - lxappearance
+    - flameshot
   tags:
     - install
     - productivity
