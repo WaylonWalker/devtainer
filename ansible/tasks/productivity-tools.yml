@@ -1,0 +1,36 @@
+- name: kdenlive ppa (ppa:kdenlive/kdenlive-stable)
+  apt_repository:
+   repo: ppa:kdenlive/kdenlive-stable
+   state: present
+   update_cache: True
+  tags:
+    - install
+    - productivity
+- name: Install packages
+  apt: name={{item}}
+  with_items:
+    - tmux
+    - wireshark
+    - fzf
+    - kdenlive
+    - gimp
+    - xclip
+    - screenkey
+    - tldr
+    - compton
+    - rofi
+    - lxappearance
+  tags:
+    - install
+    - productivity
+- name: install polybar
+  shell: |
+    sudo apt-get install cmake cmake-data libcairo2-dev libxcb1-dev libxcb-ewmh-dev libxcb-composite0-dev libjsoncpp-dev libxcb-randr0-dev xcb-proto python3-sphinx
+    sudo ln -s /usr/include/jsoncpp/json/ /usr/include/json
+    cd ~/tmp
+    git clone https://github.com/jaagr/polybar.git
+    cd polybar
+    ./build.sh
+    sudo apt purge python3-sphinx
+  tags:
+    - polybar

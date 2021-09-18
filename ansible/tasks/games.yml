@@ -1,0 +1,14 @@
+- name: install Steam
+  apt: name=steam-installer
+  tags:
+    - desktop
+    - games
+
+- name: minecraft
+  community.general.snap:
+    name: mc-installer
+  
+  tags:
+    - desktop
+    - games
+

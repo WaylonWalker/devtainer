@@ -1,0 +1,125 @@
+- name: Install ZSH
+  apt: name=zsh
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+- name: Change shell to zsh
+  shell: chsh -s $(which zsh)
+  tags:
+    - install
+    - dotfiles
+    - productivity
+    - zsh
+- name: Remove Oh-My-Zsh
+  shell: rm ~/.oh-my-zsh -rf
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+- name: Oh-My-Zsh
+  shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+- name: Install zsh-autosuggestions
+  ansible.builtin.git:
+    repo: 'https://github.com/zsh-users/zsh-autosuggestions.git'
+    dest: "~/.oh-my-zsh/plugins/zsh-autosuggestions"
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+- name: Install Starship
+  shell: |
+    curl -fsSL https://starship.rs/install.sh | bash -s -- -y
+    cat ~/.bashrc | grep -q 'eval "$(starship init bash)"' || echo 'eval "$(starship init bash)"' >> ~/.bashrc
+    cat ~/.zshrc | grep -q 'eval "$(starship init zsh)"' || echo 'eval "$(starship init zsh)"' >> ~/.zshrc
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+- name: Install Forgit
+  shell: |
+    rm -rf ~/.forgit
+    git clone https://github.com/wfxr/forgit ~/.forgit
+    cat ~/.bashrc | grep -q 'source ~/.forgit/forgit.plugin.sh' || echo 'source ~/.forgit/forgit.plugin.zsh' >> ~/.bashrc
+    cat ~/.zshrc | grep -q 'source ~/.forgit/forgit.plugin.zsh' || echo 'source ~/.forgit/forgit.plugin.zsh' >> ~/.zshrc
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - forgit
+- name: Install Glow
+  shell: |
+    mkdir ~/downloads
+    pushd ~/downloads
+    rm -rf glow
+    GLOW_VERSION=$(curl --silent https://github.com/charmbracelet/glow/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+    wget https://github.com/charmbracelet/glow/releases/download/v${GLOW_VERSION}/glow_${GLOW_VERSION}_linux_x86_64.tar.gz -q
+    mkdir ~/downloads/glow
+    tar -zxf glow_${GLOW_VERSION}_linux_x86_64.tar.gz --directory ~/downloads/glow
+    mv ~/downloads/glow/glow ~/.local/bin/
+    popd
+    rm -rf ~/downloads/glow
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - glow
+
+- name: Install GitUI
+  shell: |
+    GITUI_VERSION=$(curl --silent https://github.com/extrawurst/gitui/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+    wget https://github.com/extrawurst/gitui/releases/download/v${GITUI_VERSION}/gitui-linux-musl.tar.gz -O- -q | tar -zxf - -C /usr/bin
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - gitui
+
+- name: Install ripgrep
+  shell: | 
+    RIPGREP_VERSION=$(curl --silent https://github.com/BurntSushi/ripgrep/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+    wget https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-x86_64-unknown-linux-musl.tar.gz -O- -q | sudo tar -zxf - -C /tmp && sudo cp /tmp/ripgrep-${RIPGREP_VERSION}-x86_64-unknown-linux-musl/rg /usr/bin/rg
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - ripgrep
+
+- name: Install dust
+  shell: | 
+    DUST_VERSION=$(curl --silent https://github.com/bootandy/dust/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+    wget https://github.com/bootandy/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-x86_64-unknown-linux-musl.tar.gz -O- -q | sudo tar -zxf - -C /tmp && sudo cp /tmp/dust-v${DUST_VERSION}-x86_64-unknown-linux-musl/dust /usr/bin/dust
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - dust
+
+- name: Install tmux
+  shell: |
+    TMUX_VERSION=$(curl --silent https://github.com/tmux/tmux/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+    wget https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz -O- -q | tar -zxf - -C /tmp
+    cd /tmp/tmux-${TMUX_VERSION}
+    sudo ./configure
+    sudo make
+    sudo make install
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - tmux
