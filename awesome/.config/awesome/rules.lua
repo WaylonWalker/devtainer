@@ -2,6 +2,7 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
 
+
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
 clientbuttons = gears.table.join(
@@ -17,7 +18,8 @@ awful.rules.rules = {
 	{
 		rule = {},
 		properties = {
-			border_width = beautiful.border_width,
+			-- border_width = beautiful.border_width,
+			border_width = 5, 
 			border_color = beautiful.border_normal,
 			focus = awful.client.focus.filter,
 			-- focus = true,
