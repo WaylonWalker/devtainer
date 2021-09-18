@@ -379,8 +379,8 @@ globalkeys = gears.table.join(
 )
 
 -- app launcher
--- globalkeys = gears.table.join(
--- 	globalkeys,
+globalkeys = gears.table.join(
+	globalkeys,
 
 	-- awful.key({ modkey }, "Return", function()
 	-- 	awful.spawn(terminal)
@@ -424,27 +424,27 @@ globalkeys = gears.table.join(
 	-- 	group = "launcher",
 	-- })
 
-	-- awful.key({ modkey }, ";", function()
-	-- 	awful.spawn("rofimoji")
-	-- end, {
-	-- 	description = "emoji picker",
-	-- 	group = "launcher",
-	-- }),
+	awful.key({ modkey }, ";", function()
+		awful.spawn("rofimoji")
+	end, {
+		description = "emoji picker",
+		group = "launcher",
+	}),
 
-	-- awful.key({ modkey }, "r", function()
-	-- 	awful.util.spawn("rofi -show run -sorting-method fzf -sort -show-icons")
-	-- end, {
-	-- 	description = "run prompt",
-	-- 	group = "launcher",
-	-- }),
+	awful.key({ modkey }, "r", function()
+		awful.util.spawn("rofi -show run -sorting-method fzf -sort -show-icons")
+	end, {
+		description = "run prompt",
+		group = "launcher",
+	}),
 
-	-- awful.key({ modkey }, "w", function()
-	-- 	awful.util.spawn("rofi -show window -sorting-method fzf -sort -show-icons")
-	-- end, {
-	-- 	description = "window switcher",
-	-- 	group = "launcher",
-	-- })
--- )
+	awful.key({ modkey }, "w", function()
+		awful.util.spawn("rofi -show window -sorting-method fzf -sort -show-icons")
+	end, {
+		description = "window switcher",
+		group = "launcher",
+	})
+)
 
 globalkeys = gears.table.join(
 	globalkeys,
