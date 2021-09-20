@@ -24,10 +24,9 @@
     - ninja-build
     - python3-pip
     - dconf-editor
-    - nvidia-settings
     - pavucontrol
-    - clangd
     - xbindkeys
+    - stow
   tags:
     - install
     - core
