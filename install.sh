@@ -457,7 +457,7 @@ install_oracle() {
 }
 
 install_polybar() {
-sudo apt-get install cmake cmake-data libcairo2-dev libxcb1-dev libxcb-ewmh-dev libxcb-composite0-dev libjsoncpp-dev libxcb-randr0-dev xcb-proto
+sudo apt-get install cmake cmake-data libcairo2-dev libxcb1-dev libxcb-ewmh-dev libxcb-composite0-dev libjsoncpp-dev libxcb-randr0-dev xcb-proto python3-sphinx
 sudo ln -s /usr/include/jsoncpp/json/ /usr/include/json
 pushd ~/git
 git clone https://github.com/jaagr/polybar.git
@@ -465,6 +465,7 @@ pushd polybar
 ./build.sh
 popd
 popd
+sudo apt purge python3-sphinx
 
 }
 
@@ -499,6 +500,17 @@ stow_all () {
     stow bin
 }
 
+
 install_rust() {
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs| sh
+}
+
+install_gnome_dracula() {
+    sudo apt-get install dconf-cli
+    pushd ~/downloads
+    git clone https://github.com/dracula/gnome-terminal
+    cd gnome-terminal
+    ./install.sh
+    popd
+    rm -rf gnome-terminal
 }
