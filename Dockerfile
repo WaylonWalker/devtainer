@@ -13,7 +13,7 @@ workdir /devtainer
 
 ENV PATH="${PATH}:/home/dockeruser/.local/bin"
 RUN pip3 install pipx
-RUN pipx run --spec ansible ansible-playbook /home/dockeruser/devtainer/ansible/local.yml -t core
+RUN pipx run --spec ansible ansible-playbook /devtainer/ansible/local.yml -t core
 RUN stow zsh
 RUN stow tmux
 RUN stow bin
