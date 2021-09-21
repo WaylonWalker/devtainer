@@ -1,0 +1,2 @@
+alias ap="pipx run --spec ansible ansible-playbook ~/devtainer/ansible/local.yml"
+
