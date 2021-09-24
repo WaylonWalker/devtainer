@@ -29,12 +29,37 @@
 - name: Install zsh-autosuggestions
   ansible.builtin.git:
     repo: 'https://github.com/zsh-users/zsh-autosuggestions.git'
-    dest: "~/.oh-my-zsh/plugins/zsh-autosuggestions"
+    dest: "~/.zsh/plugins/zsh-autosuggestions"
+    dest: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-autosuggestions"
   tags:
     - install
     - productivity
     - dotfiles
     - zsh
+    - zsh-plugins
+
+- name: Install zsh-history-substring-search
+  ansible.builtin.git:
+    repo: 'https://github.com/zsh-users/zsh-history-substring-search.git'
+    dest: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-history-substring-search"
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - zsh-plugins
+
+- name: Install zsh-syntax-highlighting
+  ansible.builtin.git:
+    repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git'
+    dest: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-syntax-highlighting"
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - zsh-plugins
+
 - name: Install Starship
   shell: |
     curl -fsSL https://starship.rs/install.sh | bash -s -- -y
