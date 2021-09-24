@@ -35,3 +35,19 @@
     sudo apt purge python3-sphinx
   tags:
     - polybar
+
+- name: uninstall kdenlive
+  shell: rm `which kdenlive`
+  tags:
+    - productivity
+    - kdenlive
+- name: install kdenlive
+  get_url:
+    url: https://download.kde.org/stable/kdenlive/21.08/linux/kdenlive-21.08.1-x86_64.appimage 
+    dest: "{{ lookup('env', 'HOME') }}/.local/bin/kdenlive"
+    owner: "{{ lookup('env', 'USER') }}"
+    group: "{{ lookup('env', 'USER') }}"
+    mode: '0755'
+  tags:
+    - productivity
+    - kdenlive
