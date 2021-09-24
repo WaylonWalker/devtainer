@@ -1,0 +1,81 @@
+- name: ensure git directory
+  shell: mkdir "{{ lookup('env', 'HOME') }}/git/" && echo "git directory created" || echo "git directory already exists"
+  register: result
+  changed_when:
+    - '"git directory created" in result.stdout'
+  tags:
+    - install
+    - dotfiles
+    - repos
+    - mkdir
+
+
+- name: Clone Personal Blog
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/waylonwalker.com.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/waylonwalker.com"
+    update: no
+  tags:
+    - install
+    - dotfiles
+    - repos
+
+- name: Clone Find Kedro
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/find-kedro.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/find-kedro"
+    update: no
+  tags:
+    - install
+    - dotfiles
+    - repos
+
+- name: Clone Telegraph
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/Telegraph.nvim.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/Telegraph"
+    update: no
+  tags:
+    - install
+    - dotfiles
+    - repos
+
+- name: Clone Personal QMK Fork
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/qmk_firmware.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/qmk_firmware"
+    update: no
+  tags:
+    - install
+    - dotfiles
+    - repos
+
+- name: Clone kedro-diff
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/kedro-diff.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/kedro-diff"
+    update: no
+  tags:
+    - install
+    - dotfiles
+    - repos
+
+- name: Clone Markata
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/markata.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/markata"
+    update: no
+  tags:
+    - install
+    - dotfiles
+    - repos
+
+- name: Clone kedro-diff
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/steel-toes.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/steel-toes"
+    update: no
+  tags:
+    - install
+    - dotfiles
+    - repos
