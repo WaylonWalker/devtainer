@@ -7,6 +7,7 @@
     - install
     - productivity
 - name: Install packages
+  become_user: root
   apt: name={{item}}
   with_items:
     - tmux
@@ -21,9 +22,17 @@
     - rofi
     - lxappearance
     - flameshot
+
+
   tags:
     - install
     - productivity
+- name: install sphinx-build
+  become_user: root
+  apt: name=python3-sphinx
+  tags: 
+    - productivity
+    - polybar
 - name: install polybar
   shell: |
     sudo apt-get install cmake cmake-data libcairo2-dev libxcb1-dev libxcb-ewmh-dev libxcb-composite0-dev libjsoncpp-dev libxcb-randr0-dev xcb-proto python3-sphinx
@@ -34,6 +43,7 @@
     ./build.sh
     sudo apt purge python3-sphinx
   tags:
+    - productivity
     - polybar
 
 - name: uninstall kdenlive

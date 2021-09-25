@@ -1,4 +1,5 @@
 - name: install Steam
+  become_user: root
   apt: name=steam-installer
   tags:
     - desktop

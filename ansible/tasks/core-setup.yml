@@ -1,4 +1,5 @@
 - name: Install System Packages 1 (build-essential, cmake, pkg-config, pthread)
+  become_user: root
   apt:
     name: ["build-essential", "cmake", "pkg-config", "libpthread-stubs0-dev"]
   tags:
@@ -7,6 +8,7 @@
     - nvim
     - core
 - name: Install System Packages 2 (lua, unzip, libtool, libtool-bin, gettext)
+  become_user: root
   apt:
     name: [ "lua5.1", "unzip", "libtool", "libtool-bin", "gettext"]
   tags:
@@ -15,6 +17,7 @@
     - nvim
     - core
 - name: Install System Packages 3 (the rest)
+  become_user: root
   apt: name={{item}}
   with_items:
     - awesome
