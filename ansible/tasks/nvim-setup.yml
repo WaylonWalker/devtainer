@@ -48,3 +48,27 @@
     - dotfiles
     - neovim
     - nvim
+- name: Setup python-lsp-server
+  shell: pipx install 'python-lsp-server[all]' --force
+  tags:
+    - install
+    - dotfiles
+    - neovim
+    - nvim
+    - python-lsp
+- name: Setup pylsp-mypy
+  shell: pipx inject python-lsp-server pylsp-mypy --force
+  tags:
+    - install
+    - dotfiles
+    - neovim
+    - nvim
+    - python-lsp
+- name: Setup jedi-language-server
+  shell: pipx install jedi-language-server --force
+  tags:
+    - install
+    - dotfiles
+    - neovim
+    - nvim
+    - python-lsp
