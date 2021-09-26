@@ -10,11 +10,11 @@
   become_user: root
   apt: name={{item}}
   with_items:
-    - tmux
     - wireshark
     - fzf
     - kdenlive
     - gimp
+    - vlc
     - xclip
     - screenkey
     - tldr
@@ -22,11 +22,10 @@
     - rofi
     - lxappearance
     - flameshot
-
-
   tags:
     - install
     - productivity
+    - productivity-apt
 - name: install sphinx-build
   become_user: root
   apt: name=python3-sphinx
@@ -61,3 +60,24 @@
   tags:
     - productivity
     - kdenlive
+- name: clone v4l2loopback
+  ansible.builtin.git:
+    repo: 'https://github.com/umlaeute/v4l2loopback.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/v4l2loopback"
+    update: no
+  tags:
+    - productivity
+    - obs
+    - v4l2loopback
+- name: Build 4v4l2loopback
+  shell: "cd {{ lookup('env', 'HOME') }}/git/v4l2loopback && make"
+  tags:
+    - productivity
+    - obs
+    - v4l2loopback
+- name: install v4l2loopback
+  shell: "cd {{ lookup('env', 'HOME') }}/git/v4l2loopback sudo make install"
+  tags:
+    - productivity
+    - obs
+    - v4l2loopback
