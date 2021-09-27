@@ -18,6 +18,7 @@ Plug 'ambv/black'
 
 " navigation
 Plug 'ThePrimeagen/harpoon'
+Plug 'ThePrimeagen/refactoring.nvim'
 Plug 'christoomey/vim-quicklink'
 Plug 'christoomey/vim-tmux-runner'
 Plug 'fabi1cazenave/termopen.vim'
