@@ -4,6 +4,7 @@ local awful = require("awful")
 beautiful.useless_gap = 16
 beautiful.border_width = 2
 beautiful.font = "Ubuntu 16"
+beautiful.notification_bg = '#160e28'
 
 awful.layout.layouts = {
 	-- awful.layout.suit.floating,
