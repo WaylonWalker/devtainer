@@ -47,7 +47,7 @@
 "xbindkeys_show" 
   control+shift + q
 
-"wmctrl -xa google-chrome.Google-chrome || start_chrome"
+"wmctrl -xa google-chrome.Google-chrome || start_chrome || brave || x-www-browser"
     Mod4 + b
 
 "teams"
