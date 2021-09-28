@@ -43,6 +43,8 @@ require'lspconfig'.kedro.setup{
     on_attach=on_attach,
     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 }
+require'lspconfig'.kedro.setup{on_attach=on_attach}
+require'lspconfig'.sumneko_lua.setup{on_attach=on_attach}
 -- require'lspconfig'.pyright.setup{on_attach=on_attach}
 -- require'lspconfig'.pyright.setup{on_attach=on_attach, settings = {python  =  {analysis = {useLibraryCodeForTypes = true}}}}
 require'lspconfig'.jedi_language_server.setup{
@@ -64,6 +66,7 @@ require'lspconfig'.bashls.setup{
 }
 require('telescope').load_extension('dap')
 require('dap-python').setup('~/miniconda3/envs/markata/bin/python')
+require "lsp_signature".setup()
 -- require('trouble').setup{}
 -- require('navigator').setup({
 --  pyls={filetype={}}

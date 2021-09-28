@@ -50,6 +50,14 @@ swap = {
         },
       },
     },
+      lsp_interop = {
+      enable = true,
+      border = 'none',
+      peek_definition_code = {
+        ["gh"] = "@function.outer",
+        ["gH"] = "@class.outer",
+      },
+    },
   },
 }
 

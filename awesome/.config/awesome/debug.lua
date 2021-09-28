@@ -57,11 +57,11 @@ end)
 client.connect_signal("focus", function(c)
 	-- gears.debug(c)
 	-- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='hi'})
-	naughty.notify({ preset = naughty.config.presets.normal, title = "debug", text = gears.debug.dump(
-		c,
-		"border_color",
-		2
-	) })
+	naughty.notify({
+		preset = naughty.config.presets.normal,
+		title = "debug",
+		text = gears.debug.dump(c, "border_color", 2),
+	})
 end)
 
 screen.connect_signal("tag::history::update", function(c)

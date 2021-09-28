@@ -197,3 +197,19 @@
     - zsh
     - bat
 
+- name: Install mdp
+  shell: |
+    cd /tmp/
+    git clone https://github.com/visit1985/mdp.git
+    cd mdp
+    make
+    make install
+    mdp sample.md
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - tmux
+    - mdp
+    - terminal

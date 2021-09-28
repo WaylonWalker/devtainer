@@ -127,6 +127,7 @@
 
   tags:
     - signal
+
 - name: make last pass tmp directory
   file:
     path: /tmp/lplinux
@@ -150,3 +151,30 @@
     chdir: /tmp/lplinux
   tags:
     - lastpass
+
+- name: install screenkey dependencies
+  apt: name={{item}}
+  with_items:
+    - libx11-6
+    - python3-gi
+    - gir1.2-gtk-3.0
+    - python3-cairo
+    - python3-setuptools
+    - python3-distutils-extra
+    - fonts-font-awesome
+    - gir1.2-appindicator3-0.1
+    - slop
+    - wget
+  tags:
+    - screenkey
+- name: install screenkey
+  shell: |
+    cd /tmp
+    wget https://gitlab.com/screenkey/screenkey/-/archive/v1.3/screenkey-v1.3.tar.gz
+    tar -xvf screenkey-v1.3.tar.gz
+    cd screenkey-v1.3
+    sudo ./setup.py install
+    sudo mkdir -p /usr/local/share/applications
+    sudo install data/screenkey.desktop /usr/local/share/applications
+  tags:
+    - screenkey

@@ -11,6 +11,7 @@ source ~/.config/nvim/lsp-config.vim
 source ~/.config/nvim/compe.vim
 source ~/.config/nvim/color.vim
 source ~/.config/nvim/keymap.vim
+lua require'telegraph'
 lua require'waylonwalker.color'
 lua require'waylonwalker.toggler'
 lua require'waylonwalker.compe'

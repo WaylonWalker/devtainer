@@ -62,6 +62,76 @@ background-7 = #1f513b22
 background-8 = #14513b22
 background-9 = #0a513b22
 
+[bar/title]
+
+; override-redirect = true
+; monitor = ${env:MONITOR:HDMI-1}
+monitor = ${env:MONITOR:}
+width = 1200
+height = 48
+offset-x = 600
+offset-y = 15
+radius = 24
+fixed-center = true
+margin-top = 100
+margin-bottom = 0
+
+;background = ${colors.background}
+pseudo-transparency = true
+background = #021530
+foreground = #D922A2
+;foreground = ${colors.foreground}
+
+line-size = 3
+line-color = #f00
+
+; border-size = 4
+border-color = #00000000
+
+padding-left = 0
+padding-right = 7
+
+module-margin-left = 1
+module-margin-right = 20
+module-padding-right = 20
+
+;font-0 = Lato:pixelsize=10;1
+font-0 = "JetBrainsMono Nerd Font:style=Medium:size=36;2"
+font-1 = "Noto Color Emoji:scale=10;2"
+font-2 = unifont:fontformat=truetype:size=8:antialias=false;0
+font-3 = unifont:fontformat=truetype:size=14;1
+font-4 = "JetBrainsMono Nerd Font:style=Medium:size=12;2"
+
+; modules-left = run aws
+; modules-center = mpd
+; modules-center = 1 2 3 4 5 6 7 8 9 layout
+modules-center = title
+
+tray-position = None
+tray-padding = 0
+
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+enable-ipc = true
+
+[bar/min]
+
+; monitor = ${env:MONITOR:HDMI-1}
+monitor = ${env:MONITOR:}
+width = 225
+height = 27
+offset-x = 90% - 225
+radius = 13
+fixed-center = true
+margin-top = 100
+
+;background = ${colors.background}
+pseudo-transparency = true
+background = #2C0431
+foreground = ${colors.foreground}
+
 line-size = 3
 line-color = #f00
 
@@ -73,6 +143,12 @@ padding-right = 2
 
 module-margin-left = 1
 module-margin-right = 2
+;padding-left = 0
+;padding-right = 7
+
+;module-margin-left = 1
+;module-margin-right = 20
+;module-padding-right = 20
 
 ;font-0 = Lato:pixelsize=10;1
 font-0 = "JetBrainsMono Nerd Font:style=Medium:size=8;2"
@@ -88,6 +164,10 @@ modules-center = date ww
 
 tray-position = right
 tray-padding = 2
+; modules-left = run aws
+; modules-center = mpd
+; modules-center = 1 2 3 4 5 6 7 8 9 layout
+modules-right = popup-calendar
 
 cursor-click = pointer
 cursor-scroll = ns-resize
@@ -306,7 +386,6 @@ screenchange-reload = true
 [global/wm]
 margin-top = 5
 margin-bottom = 5
-
 ; vim:ft=dosini
 
 [module/1]
@@ -355,11 +434,11 @@ exec = is_active 9
 interval = .1
 click-left = "xdotool key --clearmodifiers Super_L+9"
 
-[module/title]
-type = custom/script
-exec = cat ~/.config/title/title.txt
-interval = .1
-margin-top=20
+;[module/title]
+;type = custom/script
+;exec = cat ~/.config/title/title.txt
+;interval = .1
+;margin-top=20
 
 [module/layout]
 format-prefix = %{T5}%{F#FF10F0}
@@ -398,3 +477,8 @@ click-left = rofi -show window -sorting-method fzf -sort -show-icon
 type = custom/script
 exec = /home/walkers/.local/bin/ww_stat
 interval = 5
+
+[module/title]
+type = custom/script
+exec = get_title || cat ~/.config/title/title.txt
+interval = .2

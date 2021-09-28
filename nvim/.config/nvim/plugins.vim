@@ -7,7 +7,11 @@ Plug 'hrsh7th/cmp-calc'
 Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
 
 Plug 'waylonwalker/Telegraph.nvim'
+Plug 'kkoomen/vim-doge', { 'do': { -> doge#install() } }
+
+Plug 'waylonwalker/Telegraph.nvim'
 Plug 'ThePrimeagen/vim-be-good'
+Plug 'ThePrimeagen/refactoring.nvim'
 
 Plug 'jbyuki/instant.nvim'
 Plug 'windwp/nvim-spectre'
@@ -60,6 +64,10 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'nvim-lua/plenary.nvim'
+Plug 'RishabhRD/popfix'
+Plug 'RishabhRD/nvim-lsputils'
+Plug 'ray-x/lsp_signature.nvim'
+
 
 " Plug 'ray-x/lsp_signature.nvim'
 " Plug 'ray-x/guihua.lua', {'do': 'cd lua/fzy && make' }
@@ -75,5 +83,6 @@ Plug 'mfussenegger/nvim-dap-python'
 Plug 'hrsh7th/vim-vsnip/'
 " Plug 'L3MON4D3/LuaSnip'
 Plug 'rafamadriz/friendly-snippets'
+Plug 'ckipp01/stylua-nvim'
 
 call plug#end()

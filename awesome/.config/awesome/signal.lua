@@ -29,26 +29,19 @@ client.connect_signal("unmanage", function(c)
 	end
 end)
 
-client.connect_signal("focus", function(c)
-	c.border_color = "#6e5bae"
-end)
-client.connect_signal("focus", function(c)
-	c.border_color = "##ff66c4"
-end)
-client.connect_signal("unfocus", function(c)
-	c.border_color = "#003b4e"
-end)
 
 -- write tag name and layout to file for polybar
 client.connect_signal("focus", function(c)
 	local name = client.focus and client.focus.first_tag.name or nil
 	local layout = client.focus and client.focus.first_tag.layout.name or nil
 	-- naughty.notify({preset=naughty.config.presets.normal, title="debug", text="unfocus"})
-	-- naughty.notify({preset=naughty.config.presets.normal, title="screen focused", text=tostring(c.name)})
 	-- naughty.notify({preset=naughty.config.presets.normal, title="screen tag", text=tostring(layout)})
 	os.execute("echo " .. name .. " > ~/.config/awesome/activetag.txt")
 	-- naughty.notify({preset=naughty.config.presets.normal, title="focus", text=name})
 	os.execute("echo " .. layout .. " > ~/.config/awesome/layout.txt")
+	-- naughty.notify({preset=naughty.config.presets.normal, title="screen focused - name", text=tostring(c.name)})
+	-- naughty.notify({preset=naughty.config.presets.normal, title="screen focused - title", text=tostring(c.title)})
+	-- naughty.notify({preset=naughty.config.presets.normal, title="screen focused - class", text=tostring(c.class)})
 end)
 
 screen.connect_signal("tag::history::update", function(s)
@@ -79,12 +72,22 @@ tag.connect_signal("property::selected", function()
 	-- naughty.notify({preset=naughty.config.presets.normal, title="debug", text='tag::history::update-screen-layout' .. layout})
 end)
 
-client.connect_signal("focus", function(c)
-	c.border_color = "#6e5bae"
+client.connect_signal("property::floating", function(c)
+    if c.floating then
+        c.border_color = "#FFCC00"
+    else
+        c.border_color = "#6e5bae"
+    end
 end)
+
 client.connect_signal("focus", function(c)
-	c.border_color = "##ff66c4"
+    if c.floating then
+        c.border_color = "#FFCC00"
+    else
+        c.border_color = "#6e5bae"
+    end
 end)
+
 client.connect_signal("unfocus", function(c)
 	c.border_color = "#003b4e"
 end)

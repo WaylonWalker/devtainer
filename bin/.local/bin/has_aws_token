@@ -1,4 +1,35 @@
 #!/bin/bash
 
+# set_proxy () {
+#     export http_proxy=http://proxy.cat.com:80
+#     export https_proxy=http://proxy.cat.com:80
+#     export no_proxy=169.254.169.254,169.254.170.2,localhost,127.0.0.1,cat.com
+#     export HTTP_PROXY=$http_proxy
+#     export HTTPS_PROXY=$https_proxy
+#     export NO_PROXY=$no_proxy
+# }
+# no_proxy () {
+#     unset http_proxy
+#     unset https_proxy
+#     unset HTTP_PROXY
+#     unset HTTPS_PROXY
+#     unset no_proxy
+#     unset NO_PROXY
+# }
+# echo_proxy () {
+#     echo http_proxy $http_proxy
+#     echo https_proxy $https_proxy
+#     echo HTTP_PROXY $HTTP_PROXY
+#     echo HTTPS_PROXY  $HTTPS_PROXY
+#     echo no_proxy $no_proxy
+#     echo NO_PROXY $NO_PROXY
+# }
+# auto_proxy() {
+#     ping catatwork.cat.com -c 1 -w 1 > /dev/null && set_proxy || no_proxy
+# }
+
 # 101 Network is unreachable
-aws s3 ls &> /dev/null && echo 🪙 ||( echo no token && exit 101 )
+
+/home/u_walkews/miniconda3/bin/aws s3 ls &> /dev/null && \
+    echo %{T5}%{F#ffcc00} %{F-}%{T-}|| \
+    ( echo %{T5}%{F#473032} %{F-}%{T-}   && exit 101 )

@@ -893,3 +893,4 @@ zsh/.config/vifm/vifminfo
 zsh/.config/htop/htoprc
 awesome/.config/awesome/activetag.txt
 awesome/.config/awesome/layout.txt
+nvim/.config/nvim/lua/waylonwalker/treesitter.lua

@@ -7,7 +7,7 @@
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 
 "unsorted
-nnoremap <leader>tp :let py = termopen('zsh')<CR>
+" nnoremap <leader>tp :let py = termopen('zsh')<CR>
 vnoremap <leader>sp :'<,'>call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
 nnoremap <leader>sp :call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
 
@@ -54,7 +54,9 @@ nnoremap gic :GitAdd<CR>
 
 " window shortcuts
 tnoremap <c-\><c-\> <c-\><c-n>
-tnoremap jj <c-\><c-n>
+tnoremap <c-j><c-j> <c-\><c-n>
+tnoremap <c-c><c-c> <c-\><c-n>
+" tnoremap jj <c-\><c-n>
 tnoremap <c-h> <c-\><c-n><c-w>h
 tnoremap <c-l> <c-\><c-n><c-w>l
 tnoremap <c-^> <c-\><c-n><c-^>
@@ -117,6 +119,9 @@ nnoremap get :e ~/.tmux.conf<CR>
 nnoremap gez :e ~/.zshrc<CR>
 
 nnoremap gow <cmd>lua os.execute('xdg-open https://waylonwalker.com/' .. vim.api.nvim_buf_get_name(0):match("^.+/(.+)$"):gsub('.md', '') .. '/ > /dev/null 2>&1')<cr>
+
+nnoremap goo <cmd>lua print(vim.fn.expand('<cword>'))<cr>
+vnoremap goo <cmd>lua print(vim.fn.expand('<cword>'))<cr>
 
 " edit from parent directory
 set wcm=<C-Z>
@@ -357,7 +362,8 @@ nnoremap <leader>fc :Telescopecopen colorscheme<cr>
 nnoremap <leader>fg :Telescope git_files<cr>
 nnoremap <leader>fs :Telescope grep_string<cr>
 nnoremap <leader>fl :Telescope live_grep<cr>
-nnoremap <leader>fh :Telescope old_files<cr>
+nnoremap <leader>fhl :Telescope live_grep hidden=true<CR>
+nnoremap <leader>fhh :Telescope old_files<cr>
 nnoremap <leader>fr :Telescope lsp_references<cr>
 nnoremap <leader>fq :Telescope quickfix<cr>
 nnoremap gR :Telescope lsp_references<cr>
@@ -402,7 +408,7 @@ nnoremap <leader>i :TagbarToggle<CR>
 
 " interface
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <silent> <leader><leader>l :Limelight!!<cr>
+" nnoremap <silent> <leader><leader>l :Limelight!!<cr>
 
 " Zen Mode
 nnoremap <silent> <leader><leader>z :Goyo<CR>
@@ -468,12 +474,16 @@ nnoremap <leader><leader>c :lua require("harpoon.mark").clear_all()<cr>
 nnoremap zc :lua require("harpoon.mark").clear_all()<cr>
 
 " terminals
-nnoremap <leader>tj :lua require("harpoon.term").gotoTerminal(1)<CR>
-nnoremap <leader>tk :lua require("harpoon.term").gotoTerminal(2)<CR>
+" nnoremap <leader>tj :lua require("harpoon.term").gotoTerminal(1)<CR>
+" nnoremap <leader>tk :lua require("harpoon.term").gotoTerminal(2)<CR>
 nnoremap <leader>cjp :lua require("harpoon.term").sendCommand(1, 'ipython\n')<CR>
 nnoremap <leader>ckp :lua require("harpoon.term").sendCommand(1, 'ipython\n')<CR>
 nnoremap <leader>cj :lua require("harpoon.term").sendCommand(1, vim.api.nvim_get_current_line() .. "\n")<cr>j
 nnoremap <leader>ck :lua require("harpoon.term").sendCommand(2, vim.api.nvim_get_current_line() .. "\n")<cr>j
+" nnoremap <leader>lint :lua require("harpoon.term").sendCommand(1,  "flake8 ." .. "\n")<cr>:lua require("harpoon.term").gotoTerminal(1)<CR>
+nnoremap <leader>gk :lua require("harpoon.term").sendCommand(2,  "pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme "  .. vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()) .. "\n")<cr>:lua require("harpoon.term").gotoTerminal(2)<CR>
+nnoremap <leader>vd :lua require("harpoon.term").sendCommand(1, "direnv reload\n" .. "vd "  .. vim.api.nvim_get_current_line():gsub('filepath:', '') .. "\n")<cr>:lua require("harpoon.term").gotoTerminal(1)<CR>
+" require("harpoon.term").sendCommand(1, "ls -la")
 
 " moving text
 vnoremap K :m '<-2<CR>gv=gv
@@ -532,43 +542,21 @@ map <esc> <esc>
 " c-i was also hijacked
 nnoremap <c-i> <c-i>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 " Telegraph
 
 nnoremap <leader><leader>s <cmd>lua require'telegraph'.telegraph({cmd='pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme {filepath} --live-reload --style gruvbox-dark', how='tmux'})<CR>
 nnoremap <leader><leader>S <cmd>lua require'telegraph'.telegraph({cmd='pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme {filepath} --live-reload --style gruvbox-dark', how='tmux_popup'})<CR>
 
 nnoremap <leader><leader>vd <cmd>lua require'telegraph'.telegraph({cmd='pipx run visidata {cWORD}', how='tmux'})<CR>
-noremap <leader><leader>m :lua require'telegraph'.telegraph({how='tmux_popup', cmd='man '})<Left><Left><Left>
+nnoremap <leader><leader>m :Telegraph man
+nnoremap <leader><leader>M :lua require'telegraph'.telegraph({how='tmux_popup', cmd='man '})<Left><Left><Left>
 
 nnoremap <leader><leader>i <cmd>Telegraph feh {cWORD}<CR>
 
+nnoremap <leader><leader>r :lua require'telegraph'.telegraph({cmd='zsh -c "ipython {filepath} -i"', how='tmux_popup'})<CR>
+nnoremap <leader><leader>z :lua require'telegraph'.telegraph({cmd='zsh', how='tmux_popup'})<CR>
 
+nnoremap <leader>t <cmd>lua require'telegraph'.telegraph({how='execute', cmd='echo "{cline}" > ~/.config/title/title.txt'})<cr>
 
-
-
-
-
-
-
-
-
+nnoremap <leader>ma <cmd>lua require'telegraph'.telegraph({cmd='notify-send TheBoss "Get it Done"', how='execute'})<cr>
+nnoremap <leader>ms <cmd>lua require'telegraph'.telegraph({cmd='notify-send TheBoss "Get it Done"', how='execute'})<cr>

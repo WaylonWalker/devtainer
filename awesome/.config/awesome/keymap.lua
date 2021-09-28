@@ -13,9 +13,16 @@ modkey = "Mod4"
 
 -- mostly default
 globalkeys = gears.table.join(
-	awful.key({ modkey }, "s", hotkeys_popup.show_help, {
-		description = "show help",
-		group = "awesome",
+	-- awful.key({ modkey }, "s", hotkeys_popup.show_help, {
+	-- 	description = "show help",
+	-- 	group = "awesome",
+	-- }),
+    --
+	awful.key({ modkey, "Control"}, "s", function(c)
+       c.sticky = not c.sticky
+	end, {
+		description = "make client sticky",
+		group = "client",
 	}),
 
 	awful.key({ modkey }, "Left", awful.tag.viewprev, {
@@ -207,12 +214,17 @@ clientkeys = gears.table.join(
 		group = "client",
 	}),
 
-	awful.key({ modkey, "Control" }, "Return", function(c)
-		c:swap(awful.client.getmaster())
-	end, {
-		description = "move to master",
+	awful.key({ modkey,  }, "d", awful.client.floating.toggle, {
+		description = "toggle floating",
 		group = "client",
 	}),
+
+	-- awful.key({ modkey,  }, "s", function(c)
+	-- 	c:swap(awful.client.getmaster())
+	-- end, {
+	-- 	description = "move to master",
+	-- 	group = "client",
+	-- }),
 
 	awful.key({ modkey }, "o", function(c)
 		c:move_to_screen()
@@ -228,22 +240,22 @@ clientkeys = gears.table.join(
 		group = "client",
 	}),
 
-	awful.key({ modkey }, "n", function(c)
-		-- The client currently has the input focus, so it cannot be
-		-- minimized, since minimized clients can't have the focus.
-		c.minimized = true
-	end, {
-		description = "minimize",
-		group = "client",
-	}),
+	-- awful.key({ modkey }, "n", function(c)
+	-- 	-- The client currently has the input focus, so it cannot be
+	-- 	-- minimized, since minimized clients can't have the focus.
+	-- 	c.minimized = true
+	-- end, {
+	-- 	description = "minimize",
+	-- 	group = "client",
+	-- }),
 
-	awful.key({ modkey }, "m", function(c)
-		c.maximized = not c.maximized
-		c:raise()
-	end, {
-		description = "(un)maximize",
-		group = "client",
-	}),
+	-- awful.key({ modkey }, "m", function(c)
+	-- 	c.maximized = not c.maximized
+	-- 	c:raise()
+	-- end, {
+	-- 	description = "(un)maximize",
+	-- 	group = "client",
+	-- }),
 
 	awful.key({ modkey, "Control" }, "m", function(c)
 		c.maximized_vertical = not c.maximized_vertical

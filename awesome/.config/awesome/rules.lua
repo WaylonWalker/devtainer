@@ -31,7 +31,9 @@ awful.rules.rules = {
 		},
 	},
 
-	{ rule = { name = "Microsoft Teams" }, properties = { tag = "6", floating = false, switchtotag = true } },
+	{ rule = { name = "Microsoft Teams" }, properties = { tag = "6", floating = false, switchtotag = true, type = "normal" } },
+	{ rule = { class = "obs" }, properties = { tag = "8", floating = false, switchtotag = true, type = "normal" } },
+	{ rule = { class = "Gimp" }, properties = { tag = "3", floating = false, switchtotag = true, type = "normal" } },
 	{ rule = { class = "Polybar" }, properties = {border_width = 0} },
 
 	-- Floating clients.

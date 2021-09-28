@@ -76,6 +76,32 @@ ln -sf ~/work/* ~/projects/
 ln -sf ~/git/* ~/projects/
 
 
-
 eval "$(register-python-argcomplete pipx)"
 eval `dircolors ~/.config/.dracula.dircolors`
+
+export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_1:
+
+eval "$(starship init zsh)"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/u_walkews/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/u_walkews/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/u_walkews/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/u_walkews/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
+# <<< conda initialize <<<
+autoload -U edit-command-line
+# Emacs style
+zle -N edit-command-line
+bindkey '^xe' edit-command-line
+bindkey '^x^e' edit-command-line
+bindkey '^e' edit-command-line
+# Vi style:
