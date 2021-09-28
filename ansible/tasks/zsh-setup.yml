@@ -113,6 +113,18 @@
     - zsh
     - gitui
 
+- name: Install GH
+  shell: |
+    GH_VERSION=$(curl --silent https://github.com/cli/cli/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+    wget https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz -O- -q | tar -zxf - -C /tmp
+    mv /tmp/gh_${GH_VERSION}_linux_amd64/bin/gh {{ lookup('env', 'HOME') }}/.local/bin/gh
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - gh
+
 - name: Install ripgrep
   shell: | 
     RIPGREP_VERSION=$(curl --silent https://github.com/BurntSushi/ripgrep/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
