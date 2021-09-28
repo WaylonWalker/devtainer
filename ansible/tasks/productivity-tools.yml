@@ -81,3 +81,25 @@
     - productivity
     - obs
     - v4l2loopback
+
+- name: rofimoji deps
+  apt: name={{item}}
+  become_user: root
+  with_items:
+    - fonts-emojione
+    - python3
+    - rofi
+    - xdotool
+    - xsel
+  tags:
+    - install
+    - dotfiles
+    - rofimoji
+
+- name: Setup rofimoji
+  shell: pipx install rofimoji --force
+  tags:
+    - install
+    - dotfiles
+    - rofimoji
+
