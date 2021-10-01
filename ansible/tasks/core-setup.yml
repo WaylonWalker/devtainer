@@ -27,17 +27,6 @@
     - nvim
     - core
 
-- name: Install System Packages 2 (desktop)
-  become_user: root
-  apt:
-    name:
-      - awesome
-      - xbindkeys
-      - pavucontrol
-  tags:
-    - install
-    - desktop
-    - core
 - name: pipx
   pip:
     name: pipx

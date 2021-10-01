@@ -8,20 +8,23 @@
     - productivity
 - name: Install packages
   become_user: root
-  apt: name={{item}}
-  with_items:
-    - wireshark
-    - fzf
-    - kdenlive
-    - gimp
-    - vlc
-    - xclip
-    - screenkey
-    - tldr
-    - compton
-    - rofi
-    - lxappearance
-    - flameshot
+  apt:
+    name:
+      - wireshark
+      - fzf
+      - kdenlive
+      - gimp
+      - vlc
+      - xclip
+      - screenkey
+      - tldr
+      - compton
+      - rofi
+      - lxappearance
+      - flameshot
+      - awesome
+      - xbindkeys
+      - pavucontrol
   tags:
     - install
     - productivity
