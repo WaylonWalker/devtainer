@@ -4,11 +4,7 @@
   changed_when:
     - '"git directory created" in result.stdout'
   tags:
-    - install
-    - dotfiles
     - repos
-    - mkdir
-
 
 - name: Clone Personal Blog
   ansible.builtin.git:
@@ -16,8 +12,6 @@
     dest: "{{ lookup('env', 'HOME') }}/git/waylonwalker.com"
     update: no
   tags:
-    - install
-    - dotfiles
     - repos
 
 - name: Clone Find Kedro
@@ -26,8 +20,6 @@
     dest: "{{ lookup('env', 'HOME') }}/git/find-kedro"
     update: no
   tags:
-    - install
-    - dotfiles
     - repos
 
 - name: Clone Telegraph
@@ -36,8 +28,6 @@
     dest: "{{ lookup('env', 'HOME') }}/git/Telegraph"
     update: no
   tags:
-    - install
-    - dotfiles
     - repos
 
 - name: Clone Personal QMK Fork
@@ -46,8 +36,6 @@
     dest: "{{ lookup('env', 'HOME') }}/git/qmk_firmware"
     update: no
   tags:
-    - install
-    - dotfiles
     - repos
 
 - name: Clone kedro-diff
@@ -56,8 +44,6 @@
     dest: "{{ lookup('env', 'HOME') }}/git/kedro-diff"
     update: no
   tags:
-    - install
-    - dotfiles
     - repos
 
 - name: Clone Markata
@@ -66,8 +52,6 @@
     dest: "{{ lookup('env', 'HOME') }}/git/markata"
     update: no
   tags:
-    - install
-    - dotfiles
     - repos
 
 - name: Clone kedro-diff
@@ -76,9 +60,5 @@
     dest: "{{ lookup('env', 'HOME') }}/git/steel-toes"
     update: no
   tags:
-    - install
-    - dotfiles
     - repos
 
-# source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-# source ~/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
