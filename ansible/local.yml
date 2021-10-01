@@ -14,6 +14,6 @@
     - include: tasks/node-setup.yml
     - include: tasks/nvim-setup.yml
     - include: tasks/zsh-setup.yml
-    - include: tasks/productivity-tools.yml
+    - include: tasks/desktop.yml
     - include: tasks/brave.yml
     - include: tasks/obs.yml
