@@ -4,18 +4,21 @@
     dest: "{{ lookup('env', 'HOME') }}/neovim"
   tags:
     - install
+    - terminal
     - neovim
     - nvim
 - name: Build neovim
   shell: "cd {{ lookup('env', 'HOME') }}/neovim && make"
   tags:
     - install
+    - terminal
     - neovim
     - nvim
 - name: Install neovim
   shell: "cd {{ lookup('env', 'HOME') }}/neovim && sudo make install"
   tags:
     - install
+    - terminal
     - neovim
     - nvim
 - name: Neovim Plugin Development 1
@@ -23,6 +26,7 @@
   apt: name=luarocks
   tags:
     - install
+    - terminal
     - neovim
     - nvim
 - name: Neovim Plugin Development 2 luacheck
@@ -30,12 +34,14 @@
   become_user: root
   tags:
     - install
+    - terminal
     - neovim
     - nvim
 - name: Install Vim-Plug
   shell: curl -fLo {{ lookup('env', 'HOME') }}/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   tags:
     - install
+    - terminal
     - dotfiles
     - plugged
     - neovim
@@ -45,6 +51,7 @@
   shell: nvim +PlugInstall +qall
   tags:
     - install
+    - terminal
     - dotfiles
     - neovim
     - nvim
@@ -52,6 +59,7 @@
   shell: pipx install 'python-lsp-server[all]' --force
   tags:
     - install
+    - terminal
     - dotfiles
     - neovim
     - nvim
@@ -60,6 +68,7 @@
   shell: pipx inject python-lsp-server pylsp-mypy --force
   tags:
     - install
+    - terminal
     - dotfiles
     - neovim
     - nvim
@@ -68,6 +77,7 @@
   shell: pipx install jedi-language-server --force
   tags:
     - install
+    - terminal
     - dotfiles
     - neovim
     - nvim
