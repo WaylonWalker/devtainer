@@ -27,6 +27,73 @@ primary = #ffb52a
 secondary = #e60053
 alert = #bd2c40
 
+[bar/twitch]
+
+modules-center = title
+font-0 = "JetBrainsMono Nerd Font:style=Medium:size=24;2"
+foreground=#ff007f
+background-0=#1b3246
+background-1=#1b3246
+height=36
+margin-top=20
+
+[bar/home]
+
+; monitor = ${env:MONITOR:HDMI-1}
+monitor = ${env:MONITOR:}
+width = 100%
+height = 27
+offset-x = -3
+;offset-y = 1%
+radius = 0
+fixed-center = true
+
+; background = ${colors.background}
+foreground = ${colors.foreground}
+
+background-0 = #66513b22
+background-1 = #5c513b22
+background-2 = #52513b22
+background-3 = #47513b22
+background-4 = #3d513b22
+background-5 = #33513b22
+background-6 = #29513b22
+background-7 = #1f513b22
+background-8 = #14513b22
+background-9 = #0a513b22
+
+line-size = 3
+line-color = #f00
+
+; border-size = 4
+border-color = #00000000
+
+padding-left = 5
+padding-right = 2
+
+module-margin-left = 1
+module-margin-right = 2
+
+;font-0 = Lato:pixelsize=10;1
+font-0 = "JetBrainsMono Nerd Font:style=Medium:size=8;2"
+font-1 = "Noto Color Emoji:scale=10;2"
+font-2 = unifont:fontformat=truetype:size=8:antialias=false;0
+font-3 = unifont:fontformat=truetype:size=14;1
+font-4 = "JetBrainsMono Nerd Font:style=Medium:size=12;2"
+
+modles-left = ww
+; modules-center = mpd
+modules-center = date ww
+; modules-right = pulseaudio memory cpu temperature
+
+tray-position = right
+tray-padding = 2
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+enable-ipc = true
+
 [bar/example]
 ; monitor = ${env:MONITOR:HDMI-1}
 monitor = ${env:MONITOR:}
@@ -150,7 +217,7 @@ date-alt = " %Y-%m-%d"
 time = %I:%M %p%
 time-alt = %H:%M:%S
 
-format-prefix = %{T5}  %{T-}
+; format-prefix = %{T5}  %{T-}
 format-prefix-foreground = ${colors.foreground-alt}
 # format-underline = #0a6cf5
 
@@ -288,6 +355,12 @@ exec = is_active 9
 interval = .1
 click-left = "xdotool key --clearmodifiers Super_L+9"
 
+[module/title]
+type = custom/script
+exec = cat ~/.config/title/title.txt
+interval = .1
+margin-top=20
+
 [module/layout]
 format-prefix = %{T5}%{F#FF10F0}
 type = custom/script
@@ -322,5 +395,6 @@ content = %{T5} %{T-}
 click-left = rofi -show window -sorting-method fzf -sort -show-icon
 
 [module/ww]
-type = custom/text
-content = https://github.com/WaylonWalker/waylonwalker.com/actions/workflows/deploy-site.yml/badge.svg
+type = custom/script
+exec = /home/walkers/.local/bin/ww_stat
+interval = 5

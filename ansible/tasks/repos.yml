@@ -79,3 +79,6 @@
     - install
     - dotfiles
     - repos
+
+# source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source ~/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
