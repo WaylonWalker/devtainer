@@ -4,16 +4,25 @@
     name: ["nodejs", "npm"]
   tags:
     - install
+    - terminal
     - node
+    - nvim
+    - neovim
 - name: Install N
   npm:
     name: n
     global: yes
   tags:
     - install
+    - terminal
     - node
+    - nvim
+    - neovim
 - name: Install correct version of Node
   shell: n 14
   tags:
     - install
+    - terminal
     - node
+    - nvim
+    - neovim
