@@ -61,7 +61,7 @@
     group: "{{ lookup('env', 'USER') }}"
     mode: '0755'
   tags:
-    - productivity
+    - desktop
     - kdenlive
 - name: clone v4l2loopback
   ansible.builtin.git:
@@ -69,19 +69,19 @@
     dest: "{{ lookup('env', 'HOME') }}/git/v4l2loopback"
     update: no
   tags:
-    - productivity
+    - desktop
     - obs
     - v4l2loopback
 - name: Build 4v4l2loopback
   shell: "cd {{ lookup('env', 'HOME') }}/git/v4l2loopback && make"
   tags:
-    - productivity
+    - desktop
     - obs
     - v4l2loopback
 - name: install v4l2loopback
   shell: "cd {{ lookup('env', 'HOME') }}/git/v4l2loopback sudo make install"
   tags:
-    - productivity
+    - desktop
     - obs
     - v4l2loopback
 
