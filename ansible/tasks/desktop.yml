@@ -1,39 +1,31 @@
-- name: kdenlive ppa (ppa:kdenlive/kdenlive-stable)
-  apt_repository:
-   repo: ppa:kdenlive/kdenlive-stable
-   state: present
-   update_cache: True
-  tags:
-    - install
-    - productivity
 - name: Install packages
   become_user: root
   apt:
     name:
-      - wireshark
+      - awesome
+      - arandr
+      - compton
+      - flameshot
       - fzf
-      - kdenlive
       - gimp
-      - vlc
-      - xclip
+      - lxappearance
+      - pavucontrol
+      - rofi
       - screenkey
       - tldr
-      - compton
-      - rofi
-      - lxappearance
-      - flameshot
-      - awesome
+      - vlc
+      - wireshark
       - xbindkeys
-      - pavucontrol
+      - xclip
   tags:
     - install
-    - productivity
-    - productivity-apt
+    - desktop
+    - desktop-apt
 - name: install sphinx-build
   become_user: root
   apt: name=python3-sphinx
   tags: 
-    - productivity
+    - desktop
     - polybar
 - name: install polybar
   shell: |
@@ -45,13 +37,13 @@
     ./build.sh
     sudo apt purge python3-sphinx
   tags:
-    - productivity
+    - desktop
     - polybar
 
 - name: uninstall kdenlive
   shell: rm `which kdenlive`
   tags:
-    - productivity
+    - desktop
     - kdenlive
 - name: install kdenlive
   get_url:
