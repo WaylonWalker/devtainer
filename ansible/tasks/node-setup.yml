@@ -26,3 +26,14 @@
     - node
     - nvim
     - neovim
+- name: Set Global npm directory
+  shell: |
+    mkdir ~/.npm-global
+    npm config set prefix '~/.npm-global'
+  tags:
+    - install
+    - terminal
+    - node
+    - nvim
+    - neovim
+    - npm
