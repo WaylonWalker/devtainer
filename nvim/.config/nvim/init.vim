@@ -20,4 +20,8 @@ lua require'waylonwalker.snippets'
 lua require'waylonwalker.refactoring'
 lua require'waylonwalker.title'
 lua require'waylonwalker.slides'
+lua require'waylonwalker.lualine'
+lua require'telegraph'
+
+
 
