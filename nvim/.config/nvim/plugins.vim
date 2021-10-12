@@ -6,6 +6,7 @@ Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-calc'
 Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
 
+Plug 'waylonwalker/Telegraph.nvim'
 Plug 'ThePrimeagen/vim-be-good'
 
 Plug 'jbyuki/instant.nvim'
