@@ -1,4 +1,10 @@
 call plug#begin('~/.local/share/nvim/plugged')
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-calc'
+Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
 
 Plug 'ThePrimeagen/vim-be-good'
 
@@ -47,7 +53,6 @@ Plug 'tpope/vim-commentary'
 " lsp
 Plug 'glepnir/lspsaga.nvim'
 Plug 'hrsh7th/nvim-compe'
-Plug 'andersevenrud/compe-tmux'
 " Plug 'tzachar/compe-tabnine', { 'do': './install.sh' }
 Plug 'kabouzeid/nvim-lspinstall'
 Plug 'michaeljsmith/vim-indent-object'

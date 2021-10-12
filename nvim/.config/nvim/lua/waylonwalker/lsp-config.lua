@@ -24,7 +24,8 @@ require'lspconfig'.pylsp.setup{
                 }
             }
         },
-        on_attach = on_attach
+        on_attach = on_attach,
+        capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
     }
 local configs = require 'lspconfig/configs'
 
@@ -38,14 +39,29 @@ configs.kedro = {
     };
 };
 
-require'lspconfig'.kedro.setup{on_attach=on_attach}
+require'lspconfig'.kedro.setup{
+    on_attach=on_attach,
+    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+}
 -- require'lspconfig'.pyright.setup{on_attach=on_attach}
 -- require'lspconfig'.pyright.setup{on_attach=on_attach, settings = {python  =  {analysis = {useLibraryCodeForTypes = true}}}}
-require'lspconfig'.jedi_language_server.setup{on_attach=on_attach}
+require'lspconfig'.jedi_language_server.setup{
+    on_attach=on_attach,
+    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+}
 -- require'lspconfig'.pylsp.setup{on_attach=on_attach}
-require'lspconfig'.cssls.setup{on_attach=on_attach}
-require'lspconfig'.yamlls.setup{on_attach=on_attach}
-require'lspconfig'.bashls.setup{on_attach=on_attach}
+require'lspconfig'.cssls.setup{
+    on_attach=on_attach,
+    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+}
+require'lspconfig'.yamlls.setup{
+    on_attach=on_attach,
+    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+}
+require'lspconfig'.bashls.setup{
+    on_attach=on_attach,
+    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+}
 require('telescope').load_extension('dap')
 require('dap-python').setup('~/miniconda3/envs/markata/bin/python')
 -- require('trouble').setup{}
