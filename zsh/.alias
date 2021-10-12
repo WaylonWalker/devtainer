@@ -1,4 +1,109 @@
-alias ap="pipx run --spec ansible ansible-playbook ~/devtainer/ansible/local.yml"
-alias cat=bat
+export EDITOR=nvim
 
+# alias vim=nvim
+alias cat=bat
+alias cmatrix=unimatrix
+alias new-post=~/git/ww3/new-post
+alias np=~/git/ww3/new-post
+alias pid="ps -aux | grep -v grep | grep "
+alias upload="chrome.exe https://github.com/WaylonWalker/images.waylonwalker.com/upload/main/static"
+alias tkill="for s in \$(tmux list-sessions | awk '{print \$1}' | rg ':' -r '' | fzy); do tmux kill-session -t \$s; done;"
+alias clock="tty-clock -tcs -C 3"
+alias restartexplorer='cmd.exe /c "taskkill /F /IM explorer.exe && start explorer.exe"'
+alias paste=' powershell.exe Get-Clipboard '
+alias nvims='[ -f Session.vim ] && nvim -S || nvim'
+alias direnvconda='cp ~/.config/direnv/conda/.envrc . && direnv allow .'
+alias direnvvenv='cp ~/.config/direnv/venv/.envrc . && direnv allow .'
+alias ap="pipx run --spec ansible ansible-playbook ~/devtainer/ansible/local.yml"
+
+# alias mu='pipx run --spec mu-repo mu'
+alias hclip="history | tail -n1 | cut -c 8- | xclip -sel clip"
+alias fclip="history -n 1000 | fzf | cut -c 8- | xclip -sel clip"
+
+alias azcheckout='az repos pr checkout --id $(az repos pr list --output table | tail -n -2 | fzf | cut -d " " -f1)'
+
+alias gez="$EDITOR ~/.zshrc"
+alias gsz="source ~/.zshrc"
+alias geb="$EDITOR ~/.bashrc"
+alias gsb="source ~/.bashrc"
+alias gea="$EDITOR ~/.alias"
+alias gsa="source ~/.alias"
+alias get="$EDITOR ~/.tmux.conf"
+alias gst="source ~/.tmux.conf"
+alias gep="$EDITOR ~/.config/nvim/plugins.vim"
+alias ges="$EDITOR ~/.config/nvim/settings.vim"
+
+
+# alias ta="tmux attach"
+switch_session() {
+  local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
+  { tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
+    | awk '!seen[$1]++' \
+    | column -t -s'|' \
+    | fzf -q '$' --reverse --prompt 'switch session: ' -1 \
+    | cut -d':' -f1 \
+    | xargs tmux switch-client -t
+}
+
+
+vim () { 
+  in_tmux \
+    && nvim \
+    || bash -c "\
+    tmux new-session -d;\
+    tmux send-keys nvim Space +GFiles C-m;\
+    tmux -2 attach-session -d;
+    "
+  }
+
+
+in_tmux () {
+  if [ -n "$TMUX" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+
+wup () {
+  cd ~/git/waylonwalkerv2/
+  gatsby develop
+}
+
+ep () {
+    _dir=$(pwd)
+    _ep () {
+        cd ~/git/waylonwalkerv2/
+        nvim $(find ~/git/waylonwalkerv2/src/pages/ | grep .md$ | fzf)
+    }
+    _ep && cd $_dir || cd $_dir
+}
+
+lsn () {
+    if [ -z $1 ]
+        then
+            ls -laht | head -n 10
+        else
+            ls -laht | head -n $1
+    fi
+}
+
+alias ignore='curl https://www.gitignore.io/api/vim,node,data,emacs,python,pycharm,executable,sublimetext,visualstudio,visualstudiocode > .gitignore'
+
+alias todo='cd ~/work/todo && nvim -O backlog.md doing.md done.md'
+
+a () {
+    source activate "$(conda info --envs | fzf --prompt select-env❯ | awk '{print $1}')"
+    }
+
+fs() {
+local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
+{ tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
+  | awk '!seen[$1]++' \
+  | column -t -s'|' \
+  | fzf -q '$' --reverse --prompt 'switch session: ' -1 \
+  | cut -d':' -f1 \
+  | xargs tmux switch-client -t
+}
 
