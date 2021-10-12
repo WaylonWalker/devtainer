@@ -531,3 +531,44 @@ nnoremap <silent> gs <cmd>lua vim.lsp.buf.signature_help()<CR>
 map <esc> <esc>
 " c-i was also hijacked
 nnoremap <c-i> <c-i>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+" Telegraph
+
+nnoremap <leader><leader>s <cmd>lua require'telegraph'.telegraph({cmd='pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme {filepath} --live-reload --style gruvbox-dark', how='tmux'})<CR>
+nnoremap <leader><leader>S <cmd>lua require'telegraph'.telegraph({cmd='pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme {filepath} --live-reload --style gruvbox-dark', how='tmux_popup'})<CR>
+
+nnoremap <leader><leader>vd <cmd>lua require'telegraph'.telegraph({cmd='pipx run visidata {cWORD}', how='tmux'})<CR>
+noremap <leader><leader>m :lua require'telegraph'.telegraph({how='tmux_popup', cmd='man '})<Left><Left><Left>
+
+nnoremap <leader><leader>i <cmd>Telegraph feh {cWORD}<CR>
+
+
+
+
+
+
+
+
+
+
+
