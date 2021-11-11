@@ -42,30 +42,42 @@
     - install
     - desktop
     - desktop-apt
-- name: install sphinx-build
+- name: install polybar dependencies
   become_user: root
-  apt: name=python3-sphinx
+  apt: 
+    name:
+      - cmake
+      - cmake-data
+      - libcairo2-dev
+      - libjsoncpp-dev
+      - 'libxcb-*'
+      - libxcb-composite0-dev
+      - libxcb-ewmh-dev
+      - libxcb-randr0-dev
+      - libxcb1-dev
+      - python3-sphinx
+      - python3-xcbgen
+      - xcb-proto
   tags: 
     - desktop
     - polybar
 - name: install polybar
   shell: |
-    sudo apt-get install cmake cmake-data libcairo2-dev libxcb1-dev libxcb-ewmh-dev libxcb-composite0-dev libjsoncpp-dev libxcb-randr0-dev xcb-proto python3-sphinx
     sudo ln -s /usr/include/jsoncpp/json/ /usr/include/json
     cd ~/tmp
     git clone https://github.com/jaagr/polybar.git
     cd polybar
     ./build.sh
-    sudo apt purge python3-sphinx
+    # sudo apt purge python3-sphinx
   tags:
     - desktop
     - polybar
 
-- name: uninstall kdenlive
-  shell: rm `which kdenlive`
-  tags:
-    - desktop
-    - kdenlive
+  # - name: uninstall kdenlive
+  #   shell: rm `which kdenlive`
+  #   tags:
+  #     - desktop
+  #     - kdenlive
 - name: install kdenlive
   get_url:
     url: https://download.kde.org/stable/kdenlive/21.08/linux/kdenlive-21.08.1-x86_64.appimage 
