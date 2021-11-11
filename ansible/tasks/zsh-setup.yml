@@ -1,15 +1,46 @@
+- name: stow zsh config
+  shell: cd ~/devtainer && stow zsh
+  tags:
+    - install
+    - terminal
+    - stow
+    - dotfile
+    - zsh
+
+- name: stow tmux config
+  shell: cd ~/devtainer && stow tmux
+  tags:
+    - install
+    - terminal
+    - stow
+    - dotfile
+    - zsh
+    - tmux
+
+- name: stow ipython config
+  shell: cd ~/devtainer && stow ipython
+  tags:
+    - install
+    - terminal
+    - stow
+    - dotfile
+    - zsh
+    - ipython
+
 - name: Install ZSH
   become_user: root
   apt: name=zsh
-  tags:
+  tags: 
     - install
     - terminal
     - dotfiles
     - zsh
 
 - name: Change shell to zsh
-  shell: chsh -s $(which zsh)
+  become_user: root
+  shell: sudo usermod --shell /usr/bin/zsh {{ user }}
   tags:
+    - chsh
     - install
     - terminal
     - dotfiles
