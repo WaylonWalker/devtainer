@@ -1,8 +1,7 @@
 - name: ensure git directory
-  shell: mkdir "{{ lookup('env', 'HOME') }}/git/" && echo "git directory created" || echo "git directory already exists"
-  register: result
-  changed_when:
-    - '"git directory created" in result.stdout'
+  file:
+    path: 
+    state: directory
   tags:
     - repos
 
