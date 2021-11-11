@@ -1,3 +1,24 @@
+- name: stow obs config
+  shell: cd ~/devtainer && stow obs
+  tags:
+    - install
+    - stow
+    - obs
+
+- name: stow obs config
+  shell: cd ~/devtainer && stow polybar
+  tags:
+    - install
+    - stow
+    - polybar
+
+- name: stow awesome config
+  shell: cd ~/devtainer && stow awesome
+  tags:
+    - install
+    - awesome
+    - polybar
+
 - name: Install packages
   become_user: root
   apt:
