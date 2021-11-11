@@ -148,3 +148,26 @@
 
   tags:
     - signal
+- name: make last pass tmp directory
+  file:
+    path: /tmp/lplinux
+    state: directory
+  tags:
+    - lastpass
+- name: get last pass
+  ansible.builtin.unarchive:
+    src: https://download.cloud.lastpass.com/linux/lplinux.tar.bz2
+    dest: "/tmp/lplinux"
+    remote_src: yes
+    owner: "{{ lookup('env', 'USER') }}"
+    group: "{{ lookup('env', 'USER') }}"
+    mode: '0755'
+  tags:
+    - lastpass
+- name: install last pass
+  become_user: root
+  script: 
+    cmd: /tmp/lplinux/install_lastpass.sh
+    chdir: /tmp/lplinux
+  tags:
+    - lastpass
