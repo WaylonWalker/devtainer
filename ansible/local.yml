@@ -12,6 +12,7 @@
     user: "{{ ansible_user_id }}"
   tasks:
     - include: tasks/core-setup.yml
+    - include: tasks/stow.yml
     - include: tasks/repos.yml
     - include: tasks/node-setup.yml
     - include: tasks/nvim-setup.yml
