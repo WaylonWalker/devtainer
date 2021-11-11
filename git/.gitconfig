@@ -1,3 +1,6 @@
+[credential "https://github.com"]
+	helper = 
+	helper = !/home/walkers/.local/bin/gh auth git-credential
 [credential]
 	helper = store
 [user]
