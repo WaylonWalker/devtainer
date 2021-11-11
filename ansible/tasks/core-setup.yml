@@ -10,6 +10,7 @@
       - gettext
       - golang
       - htop
+      - libevent-dev
       - libpthread-stubs0-dev
       - libtool
       - libtool-bin
