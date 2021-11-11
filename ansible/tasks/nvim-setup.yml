@@ -1,7 +1,15 @@
+- name: stow nvim
+  shell: cd ~/devtainer && stow nvim
+  tags:
+    - install
+    - terminal
+    - neovim
+    - nvim
 - name: Clone Neovim
   ansible.builtin.git:
     repo: 'https://github.com/neovim/neovim.git'
     dest: "{{ lookup('env', 'HOME') }}/neovim"
+    update: no
   tags:
     - install
     - terminal
