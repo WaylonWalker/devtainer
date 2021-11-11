@@ -56,7 +56,7 @@
     - nvim
 - name: Install vim Plugins
   ignore_errors: yes
-  shell: nvim +PlugInstall +qall
+  shell: nvim -u ~/.config/nvim/plugins.vim +PlugInstall +qall
   tags:
     - install
     - terminal
