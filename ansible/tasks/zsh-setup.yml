@@ -65,7 +65,6 @@
 - name: Install zsh-autosuggestions
   ansible.builtin.git:
     repo: 'https://github.com/zsh-users/zsh-autosuggestions.git'
-    dest: "~/.zsh/plugins/zsh-autosuggestions"
     dest: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-autosuggestions"
   tags:
     - install
