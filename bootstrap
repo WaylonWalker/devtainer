@@ -1,6 +1,8 @@
 #!/usr/bin/env/ bash
 
 export PATH=$PATH:~/.local/bin
+export ANSIBLE_LOCALHOST_WARNING=False
+
 sudo apt install git ansible -y
 ansible-galaxy collection install community.general
 git clone https://github.com/waylonwalker/devtainer ~/devtainer
