@@ -1,0 +1,10 @@
+#!/usr/bin/env/ bash
+
+export PATH=$PATH:~/.local/bin
+sudo apt install git ansible -y
+ansible-galaxy collection install community.general
+git clone https://github.com/waylonwalker/devtainer ~/devtainer
+ansible-playbook --ask-become-pass ~/devtainer/ansible/local.yml
+gh auth login
+
+
