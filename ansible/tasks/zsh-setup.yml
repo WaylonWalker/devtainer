@@ -203,8 +203,7 @@
     git clone https://github.com/visit1985/mdp.git
     cd mdp
     make
-    make install
-    mdp sample.md
+    make install PREFIX="{{ lookup('env', 'HOME') }}/.local/bin"
   tags:
     - install
     - productivity
