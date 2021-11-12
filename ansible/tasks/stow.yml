@@ -71,6 +71,14 @@
   shell: cd ~/devtainer && stow awesome
   tags:
     - install
+    - stow
     - awesome
-    - polybar
+
+- name: stow awesome config
+  shell: cd ~/devtainer && stow xbindkeys
+  tags:
+    - install
+    - stow
+    - xbindkeys
+
 
