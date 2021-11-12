@@ -41,14 +41,20 @@
   tags: 
     - desktop
     - polybar
+- name: clone polybar
+  ansible.builtin.git:
+    repo: 'https://github.com/jaagr/polybar.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/polybar"
+    update: no
+  tags:
+    - desktop
+    - obs
+    - polybar
 - name: install polybar
   shell: |
     sudo ln -s /usr/include/jsoncpp/json/ /usr/include/json
-    cd ~/tmp
-    git clone https://github.com/jaagr/polybar.git
-    cd polybar
+    cd {{ lookup('env', 'HOME') }}/git/polybar
     ./build.sh
-    # sudo apt purge python3-sphinx
   tags:
     - desktop
     - polybar
