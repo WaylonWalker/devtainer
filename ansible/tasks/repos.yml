@@ -1,6 +1,6 @@
 - name: ensure git directory
   file:
-    path: 
+    path: "{{ lookup('env', 'HOME') }}/git"
     state: directory
   tags:
     - repos
