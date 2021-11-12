@@ -1,4 +1,8 @@
 call plug#begin('~/.local/share/nvim/plugged')
+
+
+Plug 'AndrewRadev/diffurcate.vim'
+
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
