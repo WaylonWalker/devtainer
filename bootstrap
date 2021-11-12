@@ -4,6 +4,7 @@
 #
 # sudo apt install curl
 # curl https://raw.githubusercontent.com/WaylonWalker/devtainer/main/bootstrap | bash
+#
 
 export PATH=$PATH:~/.local/bin
 export ANSIBLE_LOCALHOST_WARNING=False
@@ -12,6 +13,3 @@ sudo apt install git ansible -y
 ansible-galaxy collection install community.general
 git clone https://github.com/waylonwalker/devtainer ~/devtainer
 ansible-playbook --ask-become-pass ~/devtainer/ansible/local.yml
-gh auth login
-
-
