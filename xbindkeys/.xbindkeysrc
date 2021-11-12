@@ -56,10 +56,11 @@
 "rofimoji"
     Mod4 + semicolon
     
-"rofi -show run -sorting-method fzf -sort -show-icons"
+"rofi -modi drun,run -show drun -sorting-method fzf -show-icons"
     Mod4 + r
 
 "rofi -show window -sorting-method fzf -sort -show-icons"
+
     Mod4 + w
 
 "nautilus"
@@ -68,8 +69,8 @@
 "spotify"
     Mod4 + y
 
-# "flameshot gui"
-#     Mod4 + alt + p
+"flameshot gui"
+    Mod4 + alt + p
 
 
 "wmctrl -xa gnome-terminal-server.Gnome-terminal || x-terminal-emulator"
@@ -86,6 +87,7 @@
 
 "pkill polybar || launch_polybar"
     Mod4+period
+
 
 
 # set directly keycode (here control + f with my keyboard)
