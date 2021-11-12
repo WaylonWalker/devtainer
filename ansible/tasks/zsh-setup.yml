@@ -96,12 +96,7 @@
     pushd ~/downloads
     rm -rf glow
     GLOW_VERSION=$(curl --silent https://github.com/charmbracelet/glow/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
-    wget https://github.com/charmbracelet/glow/releases/download/v${GLOW_VERSION}/glow_${GLOW_VERSION}_linux_x86_64.tar.gz -q
-    mkdir ~/downloads/glow
-    tar -zxf glow_${GLOW_VERSION}_linux_x86_64.tar.gz --directory ~/downloads/glow
-    mv ~/downloads/glow/glow ~/.local/bin/
-    popd
-    rm -rf ~/downloads/glow
+    wget https://github.com/charmbracelet/glow/releases/download/v${GLOW_VERSION}/glow_${GLOW_VERSION}_linux_x86_64.tar.gz -O- -q | tar -zxf - -C ~/.local/bin
   tags:
     - install
     - terminal
