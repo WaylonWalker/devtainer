@@ -29,7 +29,6 @@
     - neovim
     - nvim
     - core
-
 - name: pipx
   pip:
     name: pipx
@@ -38,3 +37,18 @@
     - terminal
     - core
     - pipx
+
+- name: Add another bin dir to system-wide $PATH.
+  become_user: root
+  copy:
+    dest: /etc/profile.d/custom-path.sh
+    content: 'export "PATH=$PATH:~/.local/bin"'
+
+- name: pipx ensurepath
+  shell: pipx ensurepath
+  tags:
+    - install
+    - terminal
+    - core
+    - pipx
+
