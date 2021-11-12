@@ -1,4 +1,9 @@
 #!/usr/bin/env/ bash
+# 
+# usage
+#
+# sudo apt install curl
+# curl https://raw.githubusercontent.com/WaylonWalker/devtainer/main/bootstrap | bash
 
 export PATH=$PATH:~/.local/bin
 export ANSIBLE_LOCALHOST_WARNING=False
