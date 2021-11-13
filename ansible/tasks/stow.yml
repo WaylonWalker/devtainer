@@ -81,4 +81,17 @@
     - stow
     - xbindkeys
 
+- name: stow obs config
+  shell: cd ~/devtainer && stow obs
+  tags:
+    - install
+    - stow
+    - obs
+
+- name: stow dotfiles config
+  shell: cd ~/devtainer && stow dotfiles
+  tags:
+    - install
+    - stow
+    - obs
 
