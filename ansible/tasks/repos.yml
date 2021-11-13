@@ -5,6 +5,13 @@
   tags:
     - repos
 
+- name: ensure work directory
+  file:
+    path: "{{ lookup('env', 'HOME') }}/work"
+    state: directory
+  tags:
+    - repos
+
 - name: Clone Personal Blog
   ansible.builtin.git:
     repo: 'https://github.com/WaylonWalker/waylonwalker.com.git'
