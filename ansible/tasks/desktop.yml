@@ -173,7 +173,8 @@
     - slop
     - wget
   tags:
-    - screenkey
+    - screenkey-source
+    - never
 - name: install screenkey
   shell: |
     cd /tmp
@@ -184,4 +185,5 @@
     sudo mkdir -p /usr/local/share/applications
     sudo install data/screenkey.desktop /usr/local/share/applications
   tags:
-    - screenkey
+    - screenkey-source
+    - never
