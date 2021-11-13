@@ -81,9 +81,13 @@
     - dotfiles
     - zsh
 
+- name: Remove Existing Forgit
+  ansible.builtin.file:
+    Path: ~/.forgit
+    state: absent
+
 - name: Install Forgit
   shell: |
-    rm -rf ~/.forgit
     git clone https://github.com/wfxr/forgit ~/.forgit
     cat ~/.bashrc | grep -q 'source ~/.forgit/forgit.plugin.sh' || echo 'source ~/.forgit/forgit.plugin.zsh' >> ~/.bashrc
     cat ~/.zshrc | grep -q 'source ~/.forgit/forgit.plugin.zsh' || echo 'source ~/.forgit/forgit.plugin.zsh' >> ~/.zshrc
