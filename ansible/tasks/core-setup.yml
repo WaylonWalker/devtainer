@@ -29,6 +29,23 @@
     - neovim
     - nvim
     - core
+
+- name: install direnv
+  shell: curl -sfL https://direnv.net/install.sh | bash
+  tags:
+    - install
+    - terminal
+    - core
+    - direnv
+
+- name: install nix
+  shell: curl -L https://nixos.org/nix/install | sh
+  tags:
+    - install
+    - terminal
+    - core
+    - direnv
+
 - name: pipx
   pip:
     name: pipx
