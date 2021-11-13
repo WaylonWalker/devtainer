@@ -90,5 +90,5 @@ bindkey '^xe' edit-command-line
 bindkey '^x^e' edit-command-line
 bindkey '^e' edit-command-line
 # Vi style:
--e 
+
 if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
