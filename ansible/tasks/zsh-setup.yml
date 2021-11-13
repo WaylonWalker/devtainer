@@ -24,6 +24,8 @@
     - terminal
     - dotfiles
     - zsh
+    - ohmyzsh
+    - never
 
 - name: Oh-My-Zsh
   shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
@@ -32,6 +34,8 @@
     - terminal
     - dotfiles
     - zsh
+    - ohmyzsh
+    - never
 
 - name: Install zsh-autosuggestions
   ansible.builtin.git:
