@@ -20,7 +20,6 @@ unsetopt BEEP
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
 export PATH="$HOME/.npm/node_modules/bin/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/miniconda3/bin:$PATH"
 eval "$(dircolors -b ~/.dircolors.256dark)"
 eval "$(starship init zsh)"
 eval "$(direnv hook zsh)"
@@ -83,21 +82,7 @@ export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_1:
 
 eval "$(starship init zsh)"
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/u_walkews/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/u_walkews/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/u_walkews/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/u_walkews/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
 
-# <<< conda initialize <<<
 autoload -U edit-command-line
 # Emacs style
 zle -N edit-command-line
