@@ -18,6 +18,7 @@
       - wmctrl
       - xbindkeys
       - xclip
+      - scrot
   tags:
     - install
     - desktop

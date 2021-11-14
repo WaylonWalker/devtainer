@@ -2,7 +2,7 @@ FROM python:3.8-buster
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt update && apt upgrade && apt install sudo
+RUN apt-get update && apt-get upgrade && apt-get install sudo
 RUN adduser --disabled-password --gecos '' dockeruser
 RUN adduser dockeruser sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers

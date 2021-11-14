@@ -13,10 +13,6 @@
 	/home/u_walkews/
 	..
 1627823337
-'z
-	/home/u_walkews/.config/vifm
-	..
-1627823337
 
 # Bookmarks:
 
@@ -100,8 +96,107 @@ d/home/u_walkews/git/waylonwalker.com/pages
 	blog
 1
 d/home/u_walkews/git/waylonwalker.com/pages/blog
-	tmux-display-message.md
-22
+	parsing-rss-python.md
+7
+d/home/u_walkews/devtainer
+	awesome
+3
+d/home/u_walkews/devtainer/awesome
+	..
+0
+d/home/u_walkews/devtainer
+	awesome
+3
+d/home/u_walkews/devtainer/awesome
+	..
+0
+d/home/u_walkews/devtainer
+	awesome
+3
+d/home/u_walkews/devtainer/awesome
+	..
+0
+d/home/u_walkews/devtainer
+	awesome
+3
+d/home/u_walkews/devtainer/awesome
+	.config
+1
+d/home/u_walkews/devtainer/awesome/.config
+	awesome
+1
+d/home/u_walkews/devtainer/awesome/.config/awesome
+	wallpaper
+1
+d/home/u_walkews/devtainer/awesome/.config/awesome/wallpaper
+	wp2555882-space-background.jpg
+1
+d/home/u_walkews/git/images.waylonwalker.com
+	static
+4
+d/home/u_walkews/git/images.waylonwalker.com/static
+	3-things-to-automate-with-python-og.png
+15
+d/home/u_walkews/git/images.waylonwalker.com
+	static
+4
+d/home/u_walkews/git/images.waylonwalker.com/static
+	git-rewrite-history
+2
+d/home/u_walkews/devtainer
+	bin
+5
+d/home/u_walkews/devtainer/nvim/.config/nvim
+	keymap.vim
+6
+d/home/u_walkews/git/waylonwalker.com/pages/blog
+	whats-new-in-kedro-0164.md
+57
+d/home/u_walkews/Pictures
+	Screenshot from 2021-06-30 11-37-04.png
+12
+d/home/u_walkews/git/Telegraph
+	..
+0
+d/home/u_walkews/git
+	Telegraph
+2
+d/home/u_walkews
+	git
+12
+d/home/u_walkews/git/Telegraph
+	lua
+2
+d/home/u_walkews/work/11-Reman-Seed
+	src
+9
+d/home/u_walkews/work/11-Reman-Seed/src
+	reman_seed.egg-info
+2
+d/home/u_walkews/work/11-Reman-Seed/src/reman_seed.egg-info
+	..
+0
+d/home/u_walkews/work/11-Reman-Seed/src
+	reman_seed
+1
+d/home/u_walkews/work/11-Reman-Seed/src/reman_seed
+	pipelines
+3
+d/home/u_walkews/work/11-Reman-Seed/src/reman_seed/pipelines
+	a_raw
+1
+d/home/u_walkews/work/11-Reman-Seed/src/reman_seed/pipelines/a_raw
+	..
+0
+d/home/u_walkews/work/11-Reman-Seed/src/reman_seed/pipelines
+	h_rep
+7
+d/home/u_walkews/work/11-Reman-Seed/src/reman_seed/pipelines/h_rep
+	..
+0
+d/home/u_walkews/work/11-Reman-Seed/src/reman_seed/pipelines
+	oia_nodes.py
+9
 d
 
 # Right window history (oldest to newest):
@@ -117,9 +212,35 @@ D/home/u_walkews/devtainer
 D/home/u_walkews/git/waylonwalker.com
 	..
 0
+D/home/u_walkews/devtainer
+	artwork
+2
+D/home/u_walkews/devtainer/nvim/.config/nvim
+	keymap.vim
+6
+D/home/u_walkews
+	..
+0
+D/home/u_walkews/git/Telegraph/lua
+	..
+0
+D/home/u_walkews/git
+	lookatme
+7
+D/home/u_walkews/git/lookatme
+	lookatme
+3
+D/home/u_walkews/git
+	lookatme
+14
+D/home/u_walkews/work/11-Reman-Seed
+	..
+0
 D
 
 # Command line history (oldest to newest):
+:help
+:h
 :q
 
 # Search history (oldest to newest):
@@ -133,18 +254,17 @@ ptmux-display-message.md
 # Local filter history (oldest to newest):
 
 # Registers:
-""/home/u_walkews/.local/share/vifm/Trash/000_nvim
 
 # Directory stack (oldest to newest):
 
 # Trash content:
 t/home/u_walkews/.local/share/vifm/Trash/000_nvim
-	/home/u_walkews/devtainer/dotfiles/nvim
+	/home/u_walkews/git/images.waylonwalker.com/static/nvim
 
 # State:
 f
 i1
-[.1
+[.0
 [F
 F
 I1
