@@ -88,10 +88,3 @@
     - stow
     - obs
 
-- name: stow dotfiles config
-  shell: cd ~/devtainer && stow dotfiles
-  tags:
-    - install
-    - stow
-    - obs
-
