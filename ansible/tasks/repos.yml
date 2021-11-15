@@ -12,6 +12,13 @@
   tags:
     - repos
 
+- name: ensure git directory
+  file:
+    path: "{{ lookup('env', 'HOME') }}/third-party"
+    state: directory
+  tags:
+    - repos
+
 - name: Clone Personal Blog
   ansible.builtin.git:
     repo: 'https://github.com/WaylonWalker/waylonwalker.com.git'
@@ -68,3 +75,18 @@
   tags:
     - repos
 
+- name: Clone kedro-diff
+  ansible.builtin.git:
+    repo: vinceliuice/Qogir-icon-theme
+    dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme"
+    update: no
+  tags:
+    - repos
+
+- name: Clone kedro-diff
+  ansible.builtin.git:
+    repo: vinceliuice/Qogir-theme
+    dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-theme"
+    update: no
+  tags:
+    - repos
