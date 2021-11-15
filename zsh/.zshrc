@@ -92,3 +92,7 @@ bindkey '^e' edit-command-line
 # Vi style:
 
 if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+if [[ `type mcfly` > dev/null ]] then;
+    eval "$(mcfly init zsh)"
+fi
