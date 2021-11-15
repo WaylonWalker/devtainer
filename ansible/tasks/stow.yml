@@ -88,3 +88,11 @@
     - stow
     - obs
 
+- name: stow nix config
+  shell: cd ~/devtainer && stow nix
+  tags:
+    - install
+    - stow
+    - nix
+
+
