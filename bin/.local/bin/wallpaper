@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+ls ~/.config/awesome/wallpaper | fzf --preview-window=hidden --preview="feh --bg-scale ~/.config/awesome/wallpaper/{}" | xargs -I {} feh --bg-scale ~/.config/awesome/wallpaper/{}
