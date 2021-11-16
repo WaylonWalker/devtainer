@@ -76,7 +76,7 @@ ln -sf ~/git/* ~/projects/
 
 
 eval "$(register-python-argcomplete pipx)"
-eval `dircolors ~/.config/.dracula.dircolors`
+# eval `dircolors ~/.config/.dracula.dircolors`
 
 export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_1:
 
@@ -84,15 +84,13 @@ eval "$(starship init zsh)"
 
 
 autoload -U edit-command-line
-# Emacs style
+
 zle -N edit-command-line
 bindkey '^xe' edit-command-line
 bindkey '^x^e' edit-command-line
 bindkey '^e' edit-command-line
-# Vi style:
 
 if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
-
-if [[ `type mcfly` > dev/null ]] then;
+if [[ `command -v mcfly` ]] then;
     eval "$(mcfly init zsh)"
 fi
