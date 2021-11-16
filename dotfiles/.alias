@@ -15,6 +15,8 @@ alias nvims='[ -f Session.vim ] && nvim -S || nvim'
 alias direnvconda='cp ~/.config/direnv/conda/.envrc . && direnv allow .'
 alias direnvvenv='cp ~/.config/direnv/venv/.envrc . && direnv allow .'
 alias forgit='source <(curl -sSL git.io/forgit)'
+alias kitty-theme='ls kitty-themes | fzf | xargs -I {} cp kitty-themes/{} theme.conf && kitty'
+alias wallpaper='ls ~/.config/awesome/wallpaper | fzf --preview="feh --bg-scale ~/.config/awesome/wallpaper/{}" | xargs -I {} feh --bg-scale ~/.config/awesome/wallpaper/{}'
 
 
 alias gez="$EDITOR ~/.zshrc"
