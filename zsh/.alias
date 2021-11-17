@@ -18,6 +18,8 @@ alias ap="pipx run --spec ansible ansible-playbook ~/devtainer/ansible/local.yml
 alias diffstaged="git diff --staged | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmain="git diff main.. | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmaster="git diff master.. | nvim - +Diffurcate '+Telescope find_files'"
+alias wallpaper='ls ~/.config/awesome/wallpaper | fzf --preview="feh --bg-scale ~/.config/awesome/wallpaper/{}" | xargs -I {} feh --bg-scale ~/.config/awesome/wallpaper/{}'
+
 
 # alias mu='pipx run --spec mu-repo mu'
 alias hclip="history | tail -n1 | cut -c 8- | xclip -sel clip"
