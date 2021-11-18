@@ -95,4 +95,10 @@
     - stow
     - nix
 
-
+- name: ensure local alias file exists
+  file:
+    path: "{{ lookup('env', 'HOME') }}/.alias.local"
+    state: file
+  tags:
+    - install
+    - stow
