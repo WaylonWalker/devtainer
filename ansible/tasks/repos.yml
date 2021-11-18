@@ -12,7 +12,14 @@
   tags:
     - repos
 
-- name: ensure git directory
+- name: ensure work directory
+  file:
+    path: "{{ lookup('env', 'HOME') }}/work/gitkeep"
+    state: directory
+  tags:
+    - repos
+
+- name: ensure third-party directory
   file:
     path: "{{ lookup('env', 'HOME') }}/third-party"
     state: directory
