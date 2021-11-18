@@ -189,6 +189,24 @@
     - screenkey-source
     - never
 
+- name: Clone Qogir icon theme
+  ansible.builtin.git:
+    repo: https://github.com/vinceliuice/Qogir-icon-theme
+    dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme"
+    update: no
+  tags:
+    - desktop
+    - theme
+
+- name: Clone Qogir theme
+  ansible.builtin.git:
+    repo: https://github.com/vinceliuice/Qogir-theme
+    dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-theme"
+    update: no
+  tags:
+    - desktop
+    - theme
+
 - name: install Qogir theme
   script: "{{ lookup('env', 'HOME') }}/third-party/Qogir-theme/install.sh"
   tags:
