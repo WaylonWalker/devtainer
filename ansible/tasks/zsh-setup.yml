@@ -85,6 +85,7 @@
   ansible.builtin.file:
     Path: ~/.forgit
     state: absent
+  ignore_errors: yes
 
 - name: Install Forgit
   shell: |
