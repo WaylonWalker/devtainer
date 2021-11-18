@@ -77,7 +77,7 @@
 
 - name: Clone kedro-diff
   ansible.builtin.git:
-    repo: vinceliuice/Qogir-icon-theme
+    repo: https://github.com/vinceliuice/Qogir-icon-theme
     dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme"
     update: no
   tags:
@@ -85,7 +85,7 @@
 
 - name: Clone kedro-diff
   ansible.builtin.git:
-    repo: vinceliuice/Qogir-theme
+    repo: https://github.com/vinceliuice/Qogir-theme
     dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-theme"
     update: no
   tags:
