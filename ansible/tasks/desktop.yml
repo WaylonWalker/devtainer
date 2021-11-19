@@ -208,13 +208,17 @@
     - theme
 
 - name: install Qogir theme
-  script: "{{ lookup('env', 'HOME') }}/third-party/Qogir-theme/install.sh"
+  shell: |
+    cd {{ lookup('env', 'HOME') }}/third-party/Qogir-theme/
+    ./install.sh
   tags:
     - desktop
     - theme
 
 - name: install Qogir icon theme
-  script: "{{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme/install.sh"
+  shell:
+    cd {{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme/
+    ./install.sh
   tags:
     - desktop
     - theme
