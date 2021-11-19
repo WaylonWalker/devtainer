@@ -98,7 +98,9 @@
 - name: ensure local alias file exists
   file:
     path: "{{ lookup('env', 'HOME') }}/.alias.local"
-    state: file
+    state: touch
+    modification_time: preserve
+    access_time: preserve
   tags:
     - install
     - stow
