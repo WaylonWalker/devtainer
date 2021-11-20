@@ -222,5 +222,13 @@
   tags:
     - desktop
     - theme
+- name: install kitty
+  shell: |
+    curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest={{ lookup('env', 'HOME') }}/.local/stow
+    cd {{ lookup('env', 'HOME') }}/.local/stow
+    stow -v kitty.app
+  tags:
+    - desktop
+    - kitty
 
 
