@@ -132,6 +132,7 @@ cnoremap <C-p> %:h<C-Z>
 " Plug
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 nnoremap gpi :PlugInstall<CR>
+nnoremap gpu :PlugInstall<CR>
 nnoremap gpc :PlugClean<CR>
 
 " insert mode mappings
