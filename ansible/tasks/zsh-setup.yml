@@ -217,3 +217,15 @@
     - mdp
     - terminal
     - never
+
+- name: Install fzf
+  shell: |
+        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
+        ~/.fzf/install --all
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - fzf
+    - terminal
