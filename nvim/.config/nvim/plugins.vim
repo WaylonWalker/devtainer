@@ -15,7 +15,7 @@ Plug 'kkoomen/vim-doge', { 'do': { -> doge#install() } }
 
 Plug 'waylonwalker/Telegraph.nvim'
 Plug 'ThePrimeagen/vim-be-good'
-Plug 'ThePrimeagen/refactoring.nvim'
+" Plug 'ThePrimeagen/refactoring.nvim'
 
 Plug 'jbyuki/instant.nvim'
 Plug 'windwp/nvim-spectre'
