@@ -231,4 +231,10 @@
     - desktop
     - kitty
 
+- name: stow git gtk
+  shell: cd ~/devtainer && stow gtk
+  tags:
+    - desktop
+    - stow
+    - gtk
 
