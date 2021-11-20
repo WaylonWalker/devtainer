@@ -62,3 +62,10 @@
     - core
     - pipx
 
+- name: set python3 as default python
+  shell: update-alternatives --install /usr/local/bin/python `which python3.8` 20
+  tags:
+    - install
+    - terminal
+    - core
+    - python
