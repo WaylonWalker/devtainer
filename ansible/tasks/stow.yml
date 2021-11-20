@@ -95,6 +95,14 @@
     - stow
     - nix
 
+- name: stow nix config
+  shell: cd ~/devtainer && stow kitty
+  tags:
+    - install
+    - stow
+    - kitty
+    - desktop
+
 - name: ensure local alias file exists
   file:
     path: "{{ lookup('env', 'HOME') }}/.alias.local"
