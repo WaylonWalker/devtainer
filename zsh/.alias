@@ -19,6 +19,7 @@ alias diffstaged="git diff --staged | nvim - +Diffurcate '+Telescope find_files'
 alias diffmain="git diff main.. | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmaster="git diff master.. | nvim - +Diffurcate '+Telescope find_files'"
 alias wallpaper='ls ~/.config/awesome/wallpaper | fzf --preview="feh --bg-scale ~/.config/awesome/wallpaper/{}" | xargs -I {} feh --bg-scale ~/.config/awesome/wallpaper/{}'
+alias p='nvim `fzf --preview="bat --color always {}"`'
 
 
 # alias mu='pipx run --spec mu-repo mu'
