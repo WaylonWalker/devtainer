@@ -4,6 +4,7 @@ import os
 from platform import python_version
 import subprocess
 
+
 def get_branch():
     try:
         return (
@@ -26,9 +27,9 @@ class MyPrompt(Prompts):
             (Token.Generic.Subheading, "↪"),
             (Token.Generic.Subheading, get_branch()),
             (Token, " "),
-            (Token.Prompt, "©"),
-            (Token.Prompt, os.environ["CONDA_DEFAULT_ENV"]),
-            (Token, " "),
+            # (Token.Prompt, "©"),
+            # (Token.Prompt, os.environ["CONDA_DEFAULT_ENV"]),
+            # (Token, " "),
             (Token.Name.Class, "v" + python_version()),
             (Token, " "),
             (Token.Name.Entity, "ipython"),
