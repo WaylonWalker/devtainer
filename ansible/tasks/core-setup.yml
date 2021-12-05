@@ -74,3 +74,11 @@
     - terminal
     - core
     - python
+
+- name: set python3 as default python
+  shell: update-alternatives --install ~/.local/bin/python3 python3 `which python3` 20
+  tags:
+    - install
+    - terminal
+    - core
+    - python
