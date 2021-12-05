@@ -51,6 +51,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-repeat'
 
+Plug 'lewis6991/gitsigns.nvim'
 " objects
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} 
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
