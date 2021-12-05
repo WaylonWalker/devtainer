@@ -7,7 +7,6 @@
                                  
 source ~/.config/nvim/plugins.vim
 source ~/.config/nvim/settings.vim
-source ~/.config/nvim/lsp-config.vim
 source ~/.config/nvim/keymap.vim
 lua require'telegraph'
 lua require'waylonwalker.color'
