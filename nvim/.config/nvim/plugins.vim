@@ -1,5 +1,6 @@
 call plug#begin('~/.local/share/nvim/plugged')
 
+Plug 'mtdl9/vim-log-highlighting'
 
 Plug 'AndrewRadev/diffurcate.vim'
 
