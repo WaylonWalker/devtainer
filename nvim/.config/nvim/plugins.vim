@@ -86,9 +86,64 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'nvim-telescope/telescope-dap.nvim'
 Plug 'mfussenegger/nvim-dap-python'
 
+Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip/'
+Plug '/norcalli/snippets.nvim'
 " Plug 'L3MON4D3/LuaSnip'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'ckipp01/stylua-nvim'
 
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'kyazdani42/nvim-tree.lua'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Plug 'neovim/nvim-lspconfig'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 call plug#end()
+
