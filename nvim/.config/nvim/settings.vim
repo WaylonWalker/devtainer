@@ -73,10 +73,14 @@ autocmd filetype javascript setlocal ts=2 sts=2 sw=2
 let g:pymode_lint_config='~/pylint.rc'
 let g:black_virtualenv='~/.local/pipx/venvs/black'
 
-autocmd bufwritepre *.py execute 'PyPreSave'
-autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
-autocmd bufwritepost .tmux.local.conf execute ':!tmux source-file %'
-autocmd bufwritepost *.vim execute ':source %'
+augroup waylonwalker
+    autocmd!
+    autocmd bufwritepre *.py execute 'PyPreSave'
+    autocmd bufwritepost *.py execute 'PyPostSave'
+    autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
+    autocmd bufwritepost .tmux.local.conf execute ':!tmux source-file %'
+    autocmd bufwritepost *.vim execute ':source %'
+augroup end
 
 let g:ctrl_map   = '<c-p>'
 let g:ctrl_cmd   = 'CtrlP'

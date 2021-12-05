@@ -31,12 +31,15 @@ inoremap gqq <esc>gqqA
 nnoremap <leader>: :lua<space>
 
 " git commits
-nnoremap ga :G add %<CR>
-nnoremap gic :G add %<CR>:sleep 500m<CR>:only<CR>:G commit<CR>
-nnoremap gii :G add l%<CR>:sleep 500m<CR>:only<CR>:G commit<CR>
-nnoremap gid :Gdiff<CR>
-nnoremap gpp :G push<CR>
-nnoremap gPP :G pull<CR>
+nnoremap ga <cmd>G add %<CR>
+nnoremap gic <cmd>G add %<CR>:sleep 500m<CR>:only<CR>:G commit<CR>
+nnoremap gii <cmd>G add l%<CR>:sleep 500m<CR>:only<CR>:G commit<CR>
+nnoremap gid <cmd>Gdiff<CR>
+nnoremap gpp <cmd>G push<CR>
+nnoremap gPP <cmd>G pull<CR>
+nnoremap gil <cmd>GcLog<CR>
+nnoremap giL <cmd>GcLog %<CR>
+nnoremap gib <cmd>G blame<CR>
 
 nnoremap gD :diffthis<CR>
 set diffopt=vertical
@@ -108,15 +111,18 @@ nnoremap <leader>en :Telescope find_files cwd=~/.config/nvim<CR>
 " edit vim keymap
 nnoremap gek :e ~/.config/nvim/keymap.vim<CR>
 " edit lsp-config
-nnoremap gel :e ~/.config/nvim/lsp-config.lua<CR>
+nnoremap gel :e ~/.config/nvim/lua/waylonwalker/lsp-config.lua<CR>
 " edit plugins list
 nnoremap gep :e ~/.config/nvim/plugins.vim<CR>
+"edit next to me
+nnoremap gee :e %:h<C-Z>
 " edit nvim settings
 nnoremap ges :e ~/.config/nvim/settings.vim<CR>
 " edit tmuux config
 nnoremap get :e ~/.tmux.conf<CR>
 " edit zshrc
 nnoremap gez :e ~/.zshrc<CR>
+nnoremap gea :e ~/.alias<CR>
 
 nnoremap gow <cmd>lua os.execute('xdg-open https://waylonwalker.com/' .. vim.api.nvim_buf_get_name(0):match("^.+/(.+)$"):gsub('.md', '') .. '/ > /dev/null 2>&1')<cr>
 
