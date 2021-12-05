@@ -244,11 +244,15 @@ nnoremap gtp :TogglePasteMode<CR>
 
 function! s:PyPreSave()
     Black
-    " Isort
-    " call flake8#Flake8()
+endfunction
+
+function! s:PyPostSave()
+    execute "silent !tidy-imports --black --quiet --replace-star-imports --action REPLACE " . bufname("%")
+    execute "e"
 endfunction
 
 :command! PyPreSave :call s:PyPreSave()
+:command! PyPostSave :call s:PyPostSave()
 
 " ToggleLocationList
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
