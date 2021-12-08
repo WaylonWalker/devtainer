@@ -20,7 +20,7 @@ unsetopt BEEP
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
 export PATH="$HOME/.npm/node_modules/bin/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-eval "$(dircolors -b ~/.dircolors.256dark)"
+# eval "$(dircolors -b ~/.dircolors.256dark)"
 eval "$(starship init zsh)"
 eval "$(direnv hook zsh)"
 export DIRENV_WARN_TIMEOUT=100s

@@ -10,6 +10,16 @@ My personal development docker container base image
 
 ---
 
+## Getting Started
+
+
+``` bash
+sudo apt update && apt upgrade
+sudo apt install python3-pip
+pip install pipx
+~/.local/bin/pipx ensurepath
+```
+
 # Motivation
 
 
