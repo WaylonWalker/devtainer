@@ -20,3 +20,7 @@
     - include: tasks/desktop.yml
     - include: tasks/brave.yml
     - include: tasks/obs.yml
+    - include: tasks/games.yml
+      tags: |
+        never
+        games
