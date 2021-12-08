@@ -9,7 +9,7 @@
     - neovim
     - nvim
 - name: Build neovim
-  shell: "cd {{ lookup('env', 'HOME') }}/neovim && make"
+  shell: "cd {{ lookup('env', 'HOME') }}/neovim && sudo make"
   tags:
     - install
     - terminal
