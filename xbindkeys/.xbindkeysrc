@@ -59,9 +59,14 @@
 "rofi -modi drun,run -show drun -sorting-method fzf -sort -show-icons"
     Mod4 + r
 
-"rofi -show window -sorting-method fzf -sort -show-icons"
+"rofi -modi drun,run -show run -sorting-method fzf -sort -show-icons"
+    Shift+Mod4 + r
 
+"rofi -show window -sorting-method fzf -sort -show-icons"
     Mod4 + w
+
+"rofi -show window -sorting-method fzf -sort -show-icons"
+    Alt + Tab
 
 "nautilus"
     Mod4 + e
@@ -88,8 +93,6 @@
 "pkill polybar || launch_polybar"
     Mod4+period
 
-"rofi -show window -sorting-method fzf -sort -show-icons"
-    Alt + Tab
 
 "amixer -D pulse sset Master 5%+"
     Alt+Mod4 + k
