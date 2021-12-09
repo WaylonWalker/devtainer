@@ -1,35 +1,86 @@
 - name: Clone Neovim
   ansible.builtin.git:
     repo: 'https://github.com/neovim/neovim.git'
-    dest: "{{ lookup('env', 'HOME') }}/neovim"
-    update: no
+    dest: "{{ lookup('env', 'HOME') }}/third-party/neovim"
+    update: yes
   tags:
     - install
     - terminal
     - neovim
     - nvim
+
+
 - name: Build neovim
-  shell: "cd {{ lookup('env', 'HOME') }}/neovim && sudo make"
+  become_user: root
+  shell: "cd {{ lookup('env', 'HOME') }}/third-party/neovim && sudo make CMAKE_INSTALL_PREFIX={{ lookup('env', 'home') }}/third-party/neovim"
   tags:
     - install
     - terminal
     - neovim
     - nvim
+
 - name: Install neovim
-  shell: "cd {{ lookup('env', 'HOME') }}/neovim && sudo make install"
+  shell: "cd {{ lookup('env', 'HOME') }}/third-party/neovim && sudo make install"
   tags:
     - install
     - terminal
     - neovim
     - nvim
+
+- name: Install pynvim venv3
+  shell: |
+    cd {{ lookup('env', 'HOME') }}/.config/nvim/
+    python3 -m venv .venv3  --prompt nvim3
+  tags:
+    - install
+    - terminal
+    - neovim
+    - nvim
+    - nvimvenv
+
+- name: Install pynvim into venv3
+  pip:
+    name: pynvim
+    virtualenv: "{{ lookup('env', 'HOME') }}/.config/nvim/.venv3"
+  tags:
+    - install
+    - terminal
+    - neovim
+    - nvim
+    - nvimvenv
+
+- name: Install neovim venv2
+  shell: |
+    cd {{ lookup('env', 'HOME') }}/.config/nvim/
+    python2 -m virtualenv .venv2  --prompt nvim2
+  tags:
+    - install
+    - terminal
+    - neovim
+    - nvim
+    - nvimvenv
+
+- name: Install pynvim into venv2
+  pip:
+    name: pynvim
+    virtualenv: "{{ lookup('env', 'HOME') }}/.config/nvim/.venv2"
+  tags:
+    - install
+    - terminal
+    - neovim
+    - nvim
+    - nvimvenv
+
+
+
 - name: Neovim Plugin Development 1
   become_user: root
   apt: name=luarocks
   tags:
     - install
     - terminal
-    - neovim
-    - nvim
+    # - neovim
+    # - nvim
 - name: Neovim Plugin Development 2 luacheck
   shell: luarocks install luacheck
   become_user: root
@@ -83,3 +134,22 @@
     - neovim
     - nvim
     - python-lsp
+- name: Setup yaml language server
+  shell: npm i -g yaml-language-server@latest
+  tags:
+    - install
+    - terminal
+    - dotfiles
+    - neovim
+    - nvim
+    - yaml-lsp
+
+- name: Setup html language server
+  shell: npm i -g vscode-langservers-extracted
+  tags:
+    - install
+    - terminal
+    - dotfiles
+    - neovim
+    - nvim
+    - html-lsp

@@ -13,9 +13,8 @@ endfunction
 
 let g:python_lint_config = '~/pylint.rc'
 let g:python_lint_config = '~/pylint.rc'
-let g:python3_host_prog = '~/miniconda3/bin/python'
-let g:python3_host_prog = '~/miniconda3/envs/nvim3/bin/python'
-let g:python_host_prog = '~/miniconda3/envs/nvim2/bin/python'
+let g:python3_host_prog = '~/.config/nvim/.venv3/bin/python'
+let g:python_host_prog = '~/.config/nvim/.venv2/bin/python'
 
 let g:fugitive_summary_format = "%ar\t%an\t%s"
 
