@@ -74,11 +74,13 @@ let g:black_virtualenv='~/.local/pipx/venvs/black'
 
 augroup waylonwalker
     autocmd!
-    autocmd bufwritepre *.py execute 'PyPreSave'
-    autocmd bufwritepost *.py execute 'PyPostSave'
-    autocmd bufwritepost .tmux.conf execute ':!tmux source-file %'
-    autocmd bufwritepost .tmux.local.conf execute ':!tmux source-file %'
-    autocmd bufwritepost *.vim execute ':source %'
+    autocmd filetype html setlocal ts=2 sts=2 sw=2
+    autocmd filetype javascript setlocal ts=2 sts=2 sw=2
+    autocmd bufwritepre *.py silent! execute 'PyPreSave'
+    autocmd bufwritepost *.py silent! execute 'PyPostSave'
+    autocmd bufwritepost .tmux.conf silent! execute ':!tmux source-file %'
+    autocmd bufwritepost .tmux.local.conf silent! execute ':!tmux source-file %'
+    autocmd bufwritepost *.vim silent! execute ':source %'
 augroup end
 
 let g:ctrl_map   = '<c-p>'
