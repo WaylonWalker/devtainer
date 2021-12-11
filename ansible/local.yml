@@ -13,6 +13,7 @@
   tasks:
     - import_tasks: tasks/core-setup.yml
       tags:
+        - always
         - core
     - import_tasks: tasks/stow.yml
       tags:

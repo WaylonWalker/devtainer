@@ -29,30 +29,18 @@
       - tree
       - unzip
       - webp
-  tags:
-    - install
-    - terminal
-    - neovim
-    - nvim
-    - core
 
 - name: install nix
   shell: |
     sudo install -d -m755 -o $(id -u) -g $(id -g) /nix
     curl -L https://nixos.org/nix/install | sh
   tags:
-    - install
-    - terminal
-    - core
     - direnv
 
 - name: pipx
   pip:
     name: pipx
   tags:
-    - install
-    - terminal
-    - core
     - pipx
 
 - name: Add another bin dir to system-wide $PATH.
@@ -64,23 +52,14 @@
 - name: pipx ensurepath
   shell: pipx ensurepath
   tags:
-    - install
-    - terminal
-    - core
     - pipx
 
 - name: set python3 as default python
   shell: update-alternatives --install {{ lookup('env', 'HOME') }}/.local/bin/python python `which python3` 20
   tags:
-    - install
-    - terminal
-    - core
     - python
 
 - name: set python3 as default python
   shell: update-alternatives --install {{ lookup('env', 'HOME') }}.local/bin/python3 python3 `which python3` 20
   tags:
-    - install
-    - terminal
-    - core
     - python
