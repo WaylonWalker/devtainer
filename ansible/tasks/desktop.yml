@@ -115,26 +115,34 @@
     - obs
     - v4l2loopback
 
-- name: rofimoji deps
-  apt: name={{item}}
-  become_user: root
-  with_items:
-    - fonts-emojione
-    - python3
-    - rofi
-    - xdotool
-    - xsel
-  tags:
-    - install
-    - dotfiles
+
+- name: check is rofimoji installed
+  shell: command -v rofimoji
+  register: rofimoji_exists
+  ignore_errors: yes
+  tags: 
+    - desktop
     - rofimoji
 
-- name: Setup rofimoji
-  shell: pipx install rofimoji --force
+- name: install rofimoji
+  when: rofimoji_exists is failed
   tags:
     - install
     - dotfiles
     - rofimoji
+  block:
+  - name: rofimoji deps
+    apt: name={{item}}
+    become_user: root
+    with_items:
+      - fonts-emojione
+      - python3
+      - rofi
+      - xdotool
+      - xsel
+
+  - name: Setup rofimoji
+    shell: pipx install rofimoji --force
 
 - name: Install signal
   shell: |
