@@ -18,9 +18,12 @@ alias ap="pipx run --spec ansible ansible-playbook ~/devtainer/ansible/local.yml
 alias diffstaged="git diff --staged | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmain="git diff main.. | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmaster="git diff master.. | nvim - +Diffurcate '+Telescope find_files'"
-alias diffcommit="git diff $1 | nvim - +Diffurcate '+Telescope find_files'"
+diffcommit() {
+    git diff $1 | nvim - +Diffurcate '+Telescope find_files'
+}
 alias wallpaper='ls ~/.config/awesome/wallpaper | fzf --preview="feh --bg-scale ~/.config/awesome/wallpaper/{}" | xargs -I {} feh --bg-scale ~/.config/awesome/wallpaper/{}'
 alias p='nvim `fzf --preview="bat --color always {}"`'
+
 alias :e='nvim '
 
 alias gic='git commit -m ""'
