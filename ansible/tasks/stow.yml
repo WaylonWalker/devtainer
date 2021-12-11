@@ -1,19 +1,11 @@
 - name: stow git config
   shell: cd ~/devtainer && stow git
   tags:
-    - install
-    - terminal
-    - core
-    - stow
     - gitconfig
 
 - name: stow git bin
   shell: cd ~/devtainer && stow bin
   tags:
-    - install
-    - terminal
-    - core
-    - stow
     - bin
 
 - name: stow nvim
@@ -27,81 +19,55 @@
 - name: stow zsh config
   shell: cd ~/devtainer && stow zsh
   tags:
-    - install
-    - terminal
-    - stow
-    - dotfile
     - zsh
 
 - name: stow tmux config
   shell: cd ~/devtainer && stow tmux
   tags:
-    - install
-    - terminal
-    - stow
-    - dotfile
-    - zsh
     - tmux
 
 - name: stow ipython config
   shell: cd ~/devtainer && stow ipython
   tags:
-    - install
-    - terminal
-    - stow
-    - dotfile
-    - zsh
     - ipython
+    - python
 
 - name: stow obs config
   shell: cd ~/devtainer && stow obs
   tags:
-    - install
-    - stow
     - obs
 
 - name: stow obs config
   shell: cd ~/devtainer && stow polybar
   tags:
-    - install
     - stow
     - polybar
 
 - name: stow awesome config
   shell: cd ~/devtainer && stow awesome
   tags:
-    - install
     - stow
     - awesome
 
 - name: stow awesome config
   shell: cd ~/devtainer && stow xbindkeys
   tags:
-    - install
-    - stow
     - xbindkeys
 
 - name: stow obs config
   shell: cd ~/devtainer && stow obs
   tags:
-    - install
-    - stow
     - obs
 
 - name: stow nix config
   shell: cd ~/devtainer && stow nix
   tags:
-    - install
-    - stow
     - nix
 
 - name: stow nix config
   shell: cd ~/devtainer && stow kitty
   tags:
-    - install
-    - stow
     - kitty
-    - desktop
 
 - name: ensure local alias file exists
   file:
@@ -109,6 +75,4 @@
     state: touch
     modification_time: preserve
     access_time: preserve
-  tags:
-    - install
-    - stow
+
