@@ -19,6 +19,25 @@
     - nvim
     - neovim
 
+- name: include node_modules path in .profile
+  blockinfile:
+    dest: "{{ lookup('env', 'HOME') }}/.profile"
+
+    marker: '# {mark} npm-global bin added by devtainer'
+    block: |
+      # set PATH so it includes user's npm-global bin if it exists
+      if [ -d "$HOME/.local/.npm-global/bin/" ] ; then
+        PATH="$PATH:$HOME/.local/.npm-global/bin/"
+      fi
+    state: present
+  become: yes
+  tags:
+    - install
+    - terminal
+    - node
+    - nvim
+    - neovim
+
 - name: Install N
   npm:
     name: n
