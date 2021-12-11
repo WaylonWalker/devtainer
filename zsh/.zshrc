@@ -1,6 +1,8 @@
 # follow symlinks
 set -o physical
 
+source ~/.profile
+
 # set history
 HISTFILESIZE=1000000000
 HISTSIZE=1000000000
