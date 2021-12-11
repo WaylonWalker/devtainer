@@ -36,7 +36,7 @@
     - terminal
     - neovim
     - nvim
-    - nvimvenv
+    - pynvim
 
 - name: Install pynvim into venv3
   pip:
@@ -47,7 +47,7 @@
     - terminal
     - neovim
     - nvim
-    - nvimvenv
+    - pynvim
 
 - name: Install neovim venv2
   shell: |
@@ -58,7 +58,7 @@
     - terminal
     - neovim
     - nvim
-    - nvimvenv
+    - pynvim
 
 - name: Install pynvim into venv2
   pip:
@@ -69,7 +69,7 @@
     - terminal
     - neovim
     - nvim
-    - nvimvenv
+    - pynvim
 
 
 
@@ -110,6 +110,7 @@
 - name: Setup python-lsp-server
   shell: pipx install 'python-lsp-server[all]' --force
   tags:
+    - lsp
     - install
     - terminal
     - dotfiles
@@ -119,6 +120,7 @@
 - name: Setup pylsp-mypy
   shell: pipx inject python-lsp-server pylsp-mypy --force
   tags:
+    - lsp
     - install
     - terminal
     - dotfiles
@@ -128,6 +130,7 @@
 - name: Setup jedi-language-server
   shell: pipx install jedi-language-server --force
   tags:
+    - lsp
     - install
     - terminal
     - dotfiles
@@ -137,6 +140,7 @@
 - name: Setup yaml language server
   shell: npm i -g yaml-language-server@latest
   tags:
+    - lsp
     - install
     - terminal
     - dotfiles
@@ -147,6 +151,7 @@
 - name: Setup html language server
   shell: npm i -g vscode-langservers-extracted
   tags:
+    - lsp
     - install
     - terminal
     - dotfiles
