@@ -22,49 +22,65 @@
     - install
     - desktop
     - desktop-apt
-- name: install polybar dependencies
-  become_user: root
-  apt: 
-    name:
-      - cmake
-      - cmake-data
-      - libcairo2-dev
-      - libjsoncpp-dev
-      - 'libxcb-*'
-      - libxcb-composite0-dev
-      - libxcb-ewmh-dev
-      - libxcb-randr0-dev
-      - libxcb1-dev
-      - python3-sphinx
-      - python3-xcbgen
-      - xcb-proto
+
+- name: check is polybar installed
+  shell: command -v polybar
+  register: polybar_exists
+  ignore_errors: yes
   tags: 
     - desktop
     - polybar
-- name: clone polybar
-  ansible.builtin.git:
-    repo: 'https://github.com/jaagr/polybar.git'
-    dest: "{{ lookup('env', 'HOME') }}/git/polybar"
-    update: no
-  tags:
-    - desktop
-    - obs
-    - polybar
-- name: install polybar
-  shell: |
-    sudo ln -s /usr/include/jsoncpp/json/ /usr/include/json
-    cd {{ lookup('env', 'HOME') }}/git/polybar
-    ./build.sh
-  tags:
-    - desktop
-    - polybar
 
-  # - name: uninstall kdenlive
-  #   shell: rm `which kdenlive`
-  #   tags:
-  #     - desktop
-  #     - kdenlive
+- name: install polybar
+  tags: 
+    - desktop
+    - polybar
+  when: polybar_exists is failed
+  block:
+  - name: install polybar dependencies
+    become_user: root
+    apt: 
+      name:
+        - cmake
+        - cmake-data
+        - libcairo2-dev
+        - libjsoncpp-dev
+        - 'libxcb-*'
+        - libxcb-composite0-dev
+        - libxcb-ewmh-dev
+        - libxcb-randr0-dev
+        - libxcb1-dev
+        - python3-sphinx
+        - python3-xcbgen
+        - xcb-proto
+  - name: clone polybar
+    ansible.builtin.git:
+      repo: 'https://github.com/jaagr/polybar.git'
+      dest: "{{ lookup('env', 'HOME') }}/git/polybar"
+      update: no
+  - name: install polybar
+    shell: |
+      sudo ln -s /usr/include/jsoncpp/json/ /usr/include/json
+      cd {{ lookup('env', 'HOME') }}/git/polybar
+      ./build.sh
+
+- name: check is kdenlive installed
+  shell: command -v kdenlive
+  register: kdenlive_exists
+  ignore_errors: yes
+  tags: 
+    - desktop
+    - kdenlive
+
+- name: uninstall kdenlive
+  shell: rm `which kdenlive`
+  when: kdenlive is succeeded
+  tags:
+    - never
+    - uninstall-kdenlive
+
 - name: install kdenlive
+  when: kdenlive_exists is failed
   get_url:
     url: https://download.kde.org/stable/kdenlive/21.08/linux/kdenlive-21.08.1-x86_64.appimage 
     dest: "{{ lookup('env', 'HOME') }}/.local/bin/kdenlive"
@@ -74,6 +90,7 @@
   tags:
     - desktop
     - kdenlive
+
 - name: clone v4l2loopback
   ansible.builtin.git:
     repo: 'https://github.com/umlaeute/v4l2loopback.git'
@@ -83,12 +100,14 @@
     - desktop
     - obs
     - v4l2loopback
+
 - name: Build 4v4l2loopback
   shell: "cd {{ lookup('env', 'HOME') }}/git/v4l2loopback && make"
   tags:
     - desktop
     - obs
     - v4l2loopback
+
 - name: install v4l2loopback
   shell: "cd {{ lookup('env', 'HOME') }}/git/v4l2loopback sudo make install"
   tags:
@@ -116,6 +135,7 @@
     - install
     - dotfiles
     - rofimoji
+
 - name: Install signal
   shell: |
     # NOTE: These instructions only work for 64 bit Debian-based
@@ -133,6 +153,7 @@
     sudo apt update && sudo apt install signal-desktop
 
   tags:
+    - never
     - signal
 
 - name: make last pass tmp directory
@@ -141,6 +162,7 @@
     state: directory
   tags:
     - lastpass
+
 - name: get last pass
   ansible.builtin.unarchive:
     src: https://download.cloud.lastpass.com/linux/lplinux.tar.bz2
@@ -151,6 +173,7 @@
     mode: '0755'
   tags:
     - lastpass
+
 - name: install last pass
   become_user: root
   script: 
@@ -188,39 +211,42 @@
     - screenkey-source
     - never
 
-- name: Clone Qogir icon theme
-  ansible.builtin.git:
-    repo: https://github.com/vinceliuice/Qogir-icon-theme
-    dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme"
-    update: no
+- name: Check if Qogir-theme is installed
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.themes/Qogir"
+  register: qogir_exists
   tags:
     - desktop
     - theme
+ 
+- name: Install Qogir Theme
+  when: qogir_exists is failed
+  tags:
+    - desktop
+    - theme
+  block:
+  - name: Clone Qogir icon theme
+    ansible.builtin.git:
+      repo: https://github.com/vinceliuice/Qogir-icon-theme
+      dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme"
+      update: yes
 
-- name: Clone Qogir theme
-  ansible.builtin.git:
-    repo: https://github.com/vinceliuice/Qogir-theme
-    dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-theme"
-    update: no
-  tags:
-    - desktop
-    - theme
+  - name: Clone Qogir theme
+    ansible.builtin.git:
+      repo: https://github.com/vinceliuice/Qogir-theme
+      dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-theme"
+      update: yes
 
-- name: install Qogir theme
-  shell: |
-    cd {{ lookup('env', 'HOME') }}/third-party/Qogir-theme/
-    ./install.sh
-  tags:
-    - desktop
-    - theme
+  - name: install Qogir theme
+    shell: |
+      cd {{ lookup('env', 'HOME') }}/third-party/Qogir-theme/
+      ./install.sh
 
-- name: install Qogir icon theme
-  shell:
-    cd {{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme/
-    ./install.sh
-  tags:
-    - desktop
-    - theme
+  - name: install Qogir icon theme
+    shell:
+      cd {{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme/
+      ./install.sh
+
 - name: install kitty
   shell: |
     curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest={{ lookup('env', 'HOME') }}/.local/stow
