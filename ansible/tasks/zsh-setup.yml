@@ -230,17 +230,16 @@
     - fzf
     - terminal
 
-- name: include node_modules path in .profile
-  blockinfile:
+- name: include ANSIBLE_LOCALHOST_WARNING in profile
+  lineinfile:
     dest: "{{ lookup('env', 'HOME') }}/.profile"
-
-    block: |
-      # set PATH so it includes user's private bin if it exists
-      if [ -d "$HOME/.npm/node_modules/bin/" ] ; then
-        PATH="$PATH:$HOME/.npm/node_modules/bin/"
-      fi
+    line: export ANSIBLE_LOCALHOST_WARNING=False
+    regexp: "^export ANSIBLE_LOCALHOST_WARNING"
     state: present
-  become: yes
-  tags: 
-    - path
+  tags:
+    - install
+    - productivity
+    - dotfiles
+    - zsh
+    - terminal
     - profile
