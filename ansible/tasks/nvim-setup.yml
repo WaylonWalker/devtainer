@@ -3,197 +3,186 @@
     repo: 'https://github.com/neovim/neovim.git'
     dest: "{{ lookup('env', 'HOME') }}/third-party/neovim"
     update: yes
-  tags:
-    - install
-    - terminal
-    - neovim
-    - nvim
-
 
 - name: Build neovim
   become_user: root
   shell: "cd {{ lookup('env', 'HOME') }}/third-party/neovim && sudo make CMAKE_INSTALL_PREFIX={{ lookup('env', 'home') }}/third-party/neovim"
-  tags:
-    - install
-    - terminal
-    - neovim
-    - nvim
 
 - name: Install neovim
   shell: "cd {{ lookup('env', 'HOME') }}/third-party/neovim && sudo make install"
-  tags:
-    - install
-    - terminal
-    - neovim
-    - nvim
+
+- name: Check if pynvim venv3 exists
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.config/nvim/"
+  register: pynvim_venv3_exists
 
 - name: Install pynvim venv3
+  when: pynvim_venv3_exists is failed
   shell: |
     cd {{ lookup('env', 'HOME') }}/.config/nvim/
     python3 -m venv .venv3  --prompt nvim3
-  tags:
-    - install
-    - terminal
-    - neovim
-    - nvim
-    - pynvim
 
 - name: Install pynvim into venv3
   pip:
     name: pynvim
     virtualenv: "{{ lookup('env', 'HOME') }}/.config/nvim/.venv3"
-  tags:
-    - install
-    - terminal
-    - neovim
-    - nvim
-    - pynvim
+
+- name: Check if pynvim venv2 exists
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.config/nvim/"
+  register: pynvim_venv2_exists
 
 - name: Install neovim venv2
+  when: pynvim_venv2_exists is failed
   shell: |
     cd {{ lookup('env', 'HOME') }}/.config/nvim/
     python2 -m virtualenv .venv2  --prompt nvim2
-  tags:
-    - install
-    - terminal
-    - neovim
-    - nvim
-    - pynvim
 
 - name: Install pynvim into venv2
   pip:
     name: pynvim
     virtualenv: "{{ lookup('env', 'HOME') }}/.config/nvim/.venv2"
-  tags:
-    - install
-    - terminal
-    - neovim
-    - nvim
-    - pynvim
 
-
+- name: check is luarocks installed
+  shell: command -v luarocks
+  register: luarocks_exists
+  ignore_errors: yes
 
 - name: Neovim Plugin Development 1
+  when: luarocks_exists is failed
   become_user: root
   apt: name=luarocks
-  tags:
-    - install
-    - terminal
-    # - neovim
-    # - nvim
+
+- name: check is luacheck installed
+  shell: command -v luacheck
+  register: luacheck_exists
+  ignore_errors: yes
+
 - name: Neovim Plugin Development 2 luacheck
+  when: luacheck_exists is failed
   shell: luarocks install luacheck
   become_user: root
-  tags:
-    - install
-    - terminal
-    - neovim
-    - nvim
+
+
+- name: Check if vim-plug is installed
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.local/share/nvim/site/autoload/plug.vim"
+  register: vim_plug_exists
+
 - name: Install Vim-Plug
+  when: vim_plug_exists is failed
   shell: curl -fLo {{ lookup('env', 'HOME') }}/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  tags:
-    - install
-    - terminal
-    - dotfiles
-    - plugged
-    - neovim
-    - nvim
+
 - name: Install vim Plugins
   ignore_errors: yes
   shell: nvim -u ~/.config/nvim/plugins.vim +PlugInstall +qall
+
+- name: Install vim Plugins
+  ignore_errors: yes
+  shell: nvim -u ~/.config/nvim/plugins.vim +PlugClean +qall
+
+- name: check is pylsp installed
+  shell: command -v pylsp
+  register: pylsp_exists
+  ignore_errors: yes
   tags:
-    - install
-    - terminal
-    - dotfiles
-    - neovim
-    - nvim
-- name: Setup python-lsp-server
-  shell: pipx install 'python-lsp-server[all]' --force
+    -lsp
+    - python-lsp
+
+- name: install python lsp
+  when: pylsp_exists is failed
+  tags:
+    -lsp
+    - python-lsp
+  block:
+  - name: Setup python-lsp-server
+    shell: pipx install 'python-lsp-server[all]' --force
+
+  - name: Setup pylsp-mypy
+    shell: pipx inject python-lsp-server pylsp-mypy --force
+
+  - name: Setup jedi-language-server
+    shell: pipx install jedi-language-server --force
+
+- name: check is yaml-language-server installed
+  shell: command -v yaml-language-server
+  register: yamllsp_exists
+  ignore_errors: yes
   tags:
     - lsp
-    - install
-    - terminal
-    - dotfiles
-    - neovim
-    - nvim
-    - python-lsp
-- name: Setup pylsp-mypy
-  shell: pipx inject python-lsp-server pylsp-mypy --force
-  tags:
-    - lsp
-    - install
-    - terminal
-    - dotfiles
-    - neovim
-    - nvim
-    - python-lsp
-- name: Setup jedi-language-server
-  shell: pipx install jedi-language-server --force
-  tags:
-    - lsp
-    - install
-    - terminal
-    - dotfiles
-    - neovim
-    - nvim
-    - python-lsp
+    - yaml-lsp
+
 - name: Setup yaml language server
+  when: yamllsp_exists is failed
   shell: npm i -g yaml-language-server@latest
   tags:
     - lsp
-    - install
-    - terminal
-    - dotfiles
-    - neovim
-    - nvim
     - yaml-lsp
 
+- name: check is htmllsp installed
+  shell: command -v vscode-html-language-server
+  register: htmllsp_exists
+  ignore_errors: yes
+  tags:
+    - lsp
+    - html-lsp
+
 - name: Setup html language server
+  when: htmllsp_exists is failed
   shell: npm i -g vscode-langservers-extracted
   tags:
     - lsp
-    - install
-    - terminal
-    - dotfiles
-    - neovim
-    - nvim
     - html-lsp
 
+- name: check is bashlsp installed
+  shell: command -v bash-language-server
+  register: bashlsp_exists
+  ignore_errors: yes
+  tags:
+    - lsp
+    - bash-lsp
+
 - name: Setup bash language server
+  when: bashlsp_exists is failed
   shell: npm i -g bash-language-server@latest
   tags:
     - lsp
-    - install
-    - terminal
-    - dotfiles
-    - neovim
-    - nvim
     - bash-lsp
 
-- name: Clone sumneko lua-language-server
-  ansible.builtin.git:
-    repo: https://github.com/sumneko/lua-language-server
-    dest: "{{ lookup('env', 'HOME') }}/third-party/lua-language-server"
-    update: yes
-  tags:
-    - lua-lsp
-
-- name: setup sumneko lua-language-server
-  shell: |
-    cd "{{ lookup('env', 'HOME') }}/third-party/lua-language-server"
-    git submodule update --init --recursive
-    cd 3rd/luamake
-    compile/install.sh
-    cd ../..
-    ./3rd/luamake/luamake rebuild
+- name: check is lualsp installed
+  shell: command -v lua-language-server
+  register: lualsp_exists
+  ignore_errors: yes
   tags:
     - lsp
-    - install
-    - terminal
-    - dotfiles
-    - neovim
-    - nvim
     - lua-lsp
+
+- name: Install lua-language-server
+  when: lualsp_exists is failed
+  tags:
+    - lsp
+    - lua-lsp
+  block:
+  - name: Clone sumneko lua-language-server
+    ansible.builtin.git:
+      repo: https://github.com/sumneko/lua-language-server
+      dest: "{{ lookup('env', 'HOME') }}/third-party/lua-language-server"
+      update: yes
+    tags:
+      - lsp
+      - lua-lsp
+
+  - name: setup sumneko lua-language-server
+    shell: |
+      cd "{{ lookup('env', 'HOME') }}/third-party/lua-language-server"
+      git submodule update --init --recursive
+      cd 3rd/luamake
+      compile/install.sh
+      cd ../..
+      ./3rd/luamake/luamake rebuild
+    tags:
+      - lsp
+      - lua-lsp
 
 - name: include sumneko lua-language-server path in .profile
   blockinfile:
@@ -209,9 +198,4 @@
   become: yes
   tags:
     - lsp
-    - install
-    - terminal
-    - dotfiles
-    - neovim
-    - nvim
-    - neovim
+    - lua-lsp
