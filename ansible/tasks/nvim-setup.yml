@@ -158,3 +158,60 @@
     - neovim
     - nvim
     - html-lsp
+
+- name: Setup bash language server
+  shell: npm i -g bash-language-server@latest
+  tags:
+    - lsp
+    - install
+    - terminal
+    - dotfiles
+    - neovim
+    - nvim
+    - bash-lsp
+
+- name: Clone sumneko lua-language-server
+  ansible.builtin.git:
+    repo: https://github.com/sumneko/lua-language-server
+    dest: "{{ lookup('env', 'HOME') }}/third-party/lua-language-server"
+    update: yes
+  tags:
+    - lua-lsp
+
+- name: setup sumneko lua-language-server
+  shell: |
+    cd "{{ lookup('env', 'HOME') }}/third-party/lua-language-server"
+    git submodule update --init --recursive
+    cd 3rd/luamake
+    compile/install.sh
+    cd ../..
+    ./3rd/luamake/luamake rebuild
+  tags:
+    - lsp
+    - install
+    - terminal
+    - dotfiles
+    - neovim
+    - nvim
+    - lua-lsp
+
+- name: include sumneko lua-language-server path in .profile
+  blockinfile:
+    dest: "{{ lookup('env', 'HOME') }}/.profile"
+
+    marker: '# {mark} sumneko lua-language-server path added by devtainer'
+    block: |
+      # set PATH so it includes user's lua-language-server bin if it exists
+      if [ -d "$HOME/third-party/lua-language-server/bin/Linux/" ] ; then
+        PATH="$PATH:$HOME/third-party/lua-language-server/bin/Linux/"
+      fi
+    state: present
+  become: yes
+  tags:
+    - lsp
+    - install
+    - terminal
+    - dotfiles
+    - neovim
+    - nvim
+    - neovim
