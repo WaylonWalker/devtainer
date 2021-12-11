@@ -11,16 +11,34 @@
   vars:
     user: "{{ ansible_user_id }}"
   tasks:
-    - include: tasks/core-setup.yml
-    - include: tasks/stow.yml
-    - include: tasks/repos.yml
-    - include: tasks/node-setup.yml
-    - include: tasks/nvim-setup.yml
-    - include: tasks/zsh-setup.yml
-    - include: tasks/desktop.yml
-    - include: tasks/brave.yml
-    - include: tasks/obs.yml
-    - include: tasks/games.yml
+    - import_tasks: tasks/core-setup.yml
+      tags:
+        - core
+    - import_tasks: tasks/stow.yml
+      tags:
+        - stow
+    - import_tasks: tasks/repos.yml
+      tags:
+        - repos
+    - import_tasks: tasks/node-setup.yml
+      tags:
+        - node
+    - import_tasks: tasks/nvim-setup.yml
+      tags:
+        - nvim
+    - import_tasks: tasks/zsh-setup.yml
+      tags:
+        - zsh
+    - import_tasks: tasks/desktop.yml
+      tags:
+        - desktop
+    - import_tasks: tasks/brave.yml
+      tags:
+        - brave
+    - import_tasks: tasks/obs.yml
+      tags:
+        - obs
+    - import_tasks: tasks/games.yml
       tags: |
         never
         games
