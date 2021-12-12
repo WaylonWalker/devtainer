@@ -8,6 +8,7 @@
       - curl
       - dconf-editor
       - direnv
+      - fd-find
       - gettext
       - golang
       - htop
