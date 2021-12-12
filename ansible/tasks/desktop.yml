@@ -115,7 +115,6 @@
     - obs
     - v4l2loopback
 
-
 - name: check is rofimoji installed
   shell: command -v rofimoji
   register: rofimoji_exists
