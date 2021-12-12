@@ -38,6 +38,11 @@
     cd {{ lookup('env', 'HOME') }}/.config/nvim/
     python2 -m virtualenv .venv2  --prompt nvim2
 
+- name: install neovim for nodejs
+  community.general.npm:
+    name: neovim
+    global: yes
+
 - name: Install pynvim into venv2
   pip:
     name: pynvim
