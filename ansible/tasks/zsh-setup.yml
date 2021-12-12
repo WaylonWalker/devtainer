@@ -259,6 +259,22 @@
   tags:
     - fzf
 
+- name: check is vifm installed
+  shell: command -v vifm
+  register: vifm_exists
+  ignore_errors: yes
+  tags: 
+    - vifm
+
+- name: Install vifm
+  when: vifm_exists is failed
+  shell: | 
+    VIFM_VERSION=$(curl --silent https://github.com/vifm/vifm/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+    wget https://github.com/vifm/vifm/releases/download/v${VIFM_VERSION}/vifm-v${VIFM_VERSION}-x86_64.AppImage -O {{ lookup('env', 'HOME') }}/.local/bin/vifm
+    chmod +x {{ lookup('env', 'HOME') }}/.local/bin/vifm
+  tags:
+    - vifm
+
 - name: include ANSIBLE_LOCALHOST_WARNING in profile
   lineinfile:
     dest: "{{ lookup('env', 'HOME') }}/.profile"
