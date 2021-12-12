@@ -64,11 +64,11 @@
 #     dest: /etc/profile.d/custom-path.sh
 #     content: 'export "PATH=$PATH:~/.local/bin"'
 
-- name: pipx ensurepath
-  when: pipx_exists is failed
-  shell: pipx ensurepath
-  tags:
-    - pipx
+# - name: pipx ensurepath
+#   when: pipx_exists is failed
+#   shell: pipx ensurepath
+#   tags:
+#     - pipx
 
 - name: check python is in update-alternatives
   shell: update-alternatives --query python
