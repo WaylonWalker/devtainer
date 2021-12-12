@@ -275,6 +275,21 @@
   tags:
     - vifm
 
+- name: check is lf installed
+  shell: command -v lf
+  register: lf_exists
+  ignore_errors: yes
+  tags: 
+    - lf
+
+- name: Install lf
+  when: lf_exists is failed
+  shell: | 
+    LF_VERSION=$(curl --silent https://github.com/gokcehan/lf/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+    wget https://github.com/gokcehan/lf/releases/download/${LF_VERSION}/lf-linux-amd64.tar.gz -O- -q | tar -zxf - -C {{ lookup('env', 'HOME') }}/.local/bin/
+  tags:
+    - lf
+
 - name: include ANSIBLE_LOCALHOST_WARNING in profile
   lineinfile:
     dest: "{{ lookup('env', 'HOME') }}/.profile"
