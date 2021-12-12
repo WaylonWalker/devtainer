@@ -30,16 +30,32 @@
     - import_tasks: tasks/zsh-setup.yml
       tags:
         - zsh
-    - import_tasks: tasks/desktop.yml
+
+    - name: check if desktop
+      shell: command -v gnome-session
+      register: is_desktop
+      ignore_errors: yes
       tags:
-        - desktop
+        - always
+
+
+    - name: install desktop
+      when: is_desktop is succeeded or "desktop" in ansible_run_tags
+      block:
+      - import_tasks: tasks/desktop.yml
+        tags:
+          - desktop
+
     - import_tasks: tasks/brave.yml
+      when: is_desktop is succeeded or "desktop" in ansible_run_tags
       tags:
         - brave
     - import_tasks: tasks/obs.yml
+      when: is_desktop is succeeded or "desktop" in ansible_run_tags
       tags:
         - obs
     - import_tasks: tasks/games.yml
+      when: is_desktop is succeeded or "desktop" in ansible_run_tags
       tags: |
         never
         games
