@@ -18,6 +18,9 @@
       - xbindkeys
       - xclip
       - scrot
+      - python3-cairo
+      - python3-gi
+      - python3-gi-cairo
   tags:
     - install
     - desktop
@@ -271,3 +274,17 @@
     - stow
     - gtk
 
+- name: install pick colour-picker
+  become_user: root
+  community.general.snap:
+    name: pick-colour-picker
+  tags:
+    - desktop
+    - pick
+
+- name: Install delicolour
+  pip:
+    name: delicolour
+  tags:
+    - desktop
+    - pick
