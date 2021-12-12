@@ -77,7 +77,7 @@
 
 - name: uninstall kdenlive
   shell: rm `which kdenlive`
-  when: kdenlive is succeeded
+  when: kdenlive_exists is succeeded
   tags:
     - never
     - uninstall-kdenlive
