@@ -8,7 +8,6 @@
       - curl
       - dconf-editor
       - direnv
-      - fd-find
       - gettext
       - golang
       - htop
@@ -43,6 +42,14 @@
   shell: |
     sudo install -d -m755 -o $(id -u) -g $(id -g) /nix
     curl -L https://nixos.org/nix/install | sh
+
+- name: check is fd installed
+  shell: command -v fd
+  register: fd_exists
+  ignore_errors: yes
+
+- name: check is pipx installed
+  shell: nix-env -iA nixpkgs.fd
 
 - name: check is pipx installed
   shell: command -v pipx
