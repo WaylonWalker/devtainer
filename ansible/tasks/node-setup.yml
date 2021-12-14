@@ -8,6 +8,7 @@
     - node
     - nvim
     - neovim
+
 - name: Set Global npm directory
   shell: |
     mkdir ~/.local/.npm-global
@@ -19,16 +20,7 @@
     - nvim
     - neovim
 
-- name: check if ~/.local/bin is already in path
-  lineinfile:
-    dest: "{{ lookup('env', 'HOME') }}/.profile"
-    line: 'PATH="$HOME/.local/bin:$PATH"'
-    state: present
-  check_mode: yes
-  register: localbin_exists
-
 - name: include node_modules path in .profile
-  when: localbin_exists is failed
   blockinfile:
     dest: "{{ lookup('env', 'HOME') }}/.profile"
 
