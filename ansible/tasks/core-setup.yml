@@ -49,7 +49,7 @@
   ignore_errors: yes
 
 - name: install fd
-  shell: source ~/.profile && nix-env -iA nixpkgs.fd
+  shell: . ~/.profile && nix-env -iA nixpkgs.fd
 
 - name: check is pipx installed
   shell: command -v pipx
