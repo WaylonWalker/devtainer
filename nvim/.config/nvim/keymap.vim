@@ -248,6 +248,7 @@ endfunction
 
 function! s:PyPostSave()
     execute "silent !tidy-imports --black --quiet --replace-star-imports --action REPLACE " . bufname("%")
+    execute "silent !isort " . bufname("%")
     execute "e"
 endfunction
 
