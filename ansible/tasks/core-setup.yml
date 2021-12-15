@@ -48,8 +48,8 @@
   register: fd_exists
   ignore_errors: yes
 
-- name: check is pipx installed
-  shell: nix-env -iA nixpkgs.fd
+- name: install fd
+  shell: source ~/.profile && nix-env -iA nixpkgs.fd
 
 - name: check is pipx installed
   shell: command -v pipx
