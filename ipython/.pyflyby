@@ -28,6 +28,7 @@ from subprocess import STDOUT
 from tempfile import NamedTemporaryFile
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
+from types import NamedTuple
 import base64 as b64
 import platform
 import toml
