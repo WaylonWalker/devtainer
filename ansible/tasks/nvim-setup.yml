@@ -1,3 +1,20 @@
+- name: Install System Packages required for nvim
+  become_user: root
+  apt:
+    name: 
+      - libtool
+      - libtool-bin
+      - autoconf
+      - automake
+      - cmake
+      - libncurses5-dev
+      - g++
+      - python-dev
+      - python3-dev
+      - python3-pip
+      - ruby
+      - ruby-dev
+
 - name: Clone Neovim
   ansible.builtin.git:
     repo: 'https://github.com/neovim/neovim.git'
@@ -6,7 +23,7 @@
 
 - name: Build neovim
   become_user: root
-  shell: "cd {{ lookup('env', 'HOME') }}/third-party/neovim && sudo make CMAKE_INSTALL_PREFIX={{ lookup('env', 'home') }}/third-party/neovim"
+  shell: "cd {{ lookup('env', 'HOME') }}/third-party/neovim && sudo make CMAKE_INSTALL_PREFIX={{ lookup('env', 'home') }}/third-party/neovim CMAKE_BUILD_TYPE=RelWithDebInfo"
 
 - name: Install neovim
   shell: "cd {{ lookup('env', 'HOME') }}/third-party/neovim && sudo make install"
@@ -37,6 +54,18 @@
   shell: |
     cd {{ lookup('env', 'HOME') }}/.config/nvim/
     python2 -m virtualenv .venv2  --prompt nvim2
+
+- name: gem environment
+  shell: gem environment
+  tags:
+    - ruby
+- name: gem install neovim
+  community.general.gem:
+    name: neovim
+    state: latest
+    user_install: yes
+  tags:
+    - ruby
 
 - name: install neovim for nodejs
   community.general.npm:
