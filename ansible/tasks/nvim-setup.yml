@@ -211,27 +211,6 @@
     - lsp
     - lua-lsp
   shell: nix-env -iA nixpkgs.sumneko-lua-language-server
-  # block:
-  # - name: Clone sumneko lua-language-server
-  #   ansible.builtin.git:
-  #     repo: https://github.com/sumneko/lua-language-server
-  #     dest: "{{ lookup('env', 'HOME') }}/third-party/lua-language-server"
-  #     update: yes
-  #   tags:
-  #     - lsp
-  #     - lua-lsp
-
-  # - name: setup sumneko lua-language-server
-  #   shell: |
-  #     cd "{{ lookup('env', 'HOME') }}/third-party/lua-language-server"
-  #     git submodule update --init --recursive
-  #     cd 3rd/luamake
-  #     compile/install.sh
-  #     cd ../..
-  #     ./3rd/luamake/luamake rebuild
-  #   tags:
-  #     - lsp
-  #     - lua-lsp
 
 - name: include sumneko lua-language-server path in .profile
   blockinfile:
