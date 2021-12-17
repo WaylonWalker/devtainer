@@ -32,7 +32,7 @@
         - zsh
 
     - name: check if desktop
-      shell: command -v gnome-session
+      shell: command -v gdm3 || command -v lightdm
       register: is_desktop
       ignore_errors: yes
       tags:
