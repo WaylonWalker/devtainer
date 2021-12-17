@@ -55,6 +55,24 @@
     cd {{ lookup('env', 'HOME') }}/.config/nvim/
     python2 -m virtualenv .venv2  --prompt nvim2
 
+- name: check is pyflyby installed
+  shell: command -v tidy-imports
+  register: pyflyby_exists
+  ignore_errors: yes
+
+- name: install pyflyby
+  shell:  |
+    pipx install pyflyby
+    pipx inject pyflyby black
+
+- name: check is black installed
+  shell: command -v black
+  register: black_exists
+  ignore_errors: yes
+
+- name: install black
+  shell: pipx install black
+
 - name: gem environment
   shell: gem environment
   tags:
