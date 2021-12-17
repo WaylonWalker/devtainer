@@ -46,6 +46,14 @@
         tags:
           - desktop
 
+    - name: install kvm
+      when: is_desktop is succeeded or "desktop" in ansible_run_tags
+      block:
+      - import_tasks: tasks/kvm.yml
+        tags:
+          - desktop
+          - kvm
+
     - import_tasks: tasks/brave.yml
       when: is_desktop is succeeded or "desktop" in ansible_run_tags
       tags:
