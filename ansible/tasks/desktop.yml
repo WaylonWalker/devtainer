@@ -226,16 +226,17 @@
 - name: Check if Qogir-theme is installed
   stat:
     path: "{{ lookup('env', 'HOME') }}/.themes/Qogir"
-  register: qogir_exists
+  register: qogir_path
   tags:
     - desktop
     - theme
  
 - name: Install Qogir Theme
-  when: qogir_exists is failed
   tags:
     - desktop
     - theme
+
+  when: qogir_path.stat.islnk is defined
   block:
   - name: Clone Qogir icon theme
     ansible.builtin.git:
@@ -259,7 +260,16 @@
       cd {{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme/
       ./install.sh
 
+- name: Check if kitty exists
+  shell: command -v kitty
+  register: kitty_exists
+  ignore_errors: yes
+  tags:
+    - desktop
+    - kitty
+
 - name: install kitty
+  when: kitty_exists is failed
   shell: |
     curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest={{ lookup('env', 'HOME') }}/.local/stow
     cd {{ lookup('env', 'HOME') }}/.local/stow

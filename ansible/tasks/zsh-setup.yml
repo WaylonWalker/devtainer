@@ -21,14 +21,14 @@
 - name: Check if oh-my-zsh is installed
   stat:
     path: "{{ lookup('env', 'HOME') }}/.oh-my-zsh"
-  register: ohmyzsh_exists
+  register: ohmyzsh_path
   tags:
     - ohmyzsh
     - never
 
 - name: Oh-My-Zsh
   shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
-  when: ohmyzsh_exists is failed
+  when: ohmyzsh_path.stat.islnk is not defined
   tags:
     - ohmyzsh
     - never
@@ -36,10 +36,10 @@
 - name: Check if zsh-autosuggestions is installed
   stat:
     path: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-autosuggestions"
-  register: zshautosuggestions_exists
+  register: zshautosuggestions_path
 
 - name: Install zsh-autosuggestions
-  when: zshautosuggestions_exists is failed
+  when: zshautosuggestions_path.stat.islnk is not defined
   ansible.builtin.git:
     repo: 'https://github.com/zsh-users/zsh-autosuggestions.git'
     dest: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-autosuggestions"
@@ -47,10 +47,10 @@
 - name: Check if zsh-history-substring-search is installed
   stat:
     path: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-history-substring-search"
-  register: zsh_history_substring_search_exists
+  register: zsh_history_substring_search_path
 
 - name: Install zsh-history-substring-search
-  when: zsh_history_substring_search_exists
+  when: zsh_history_substring_search_path.stat.islnk is not defined
   ansible.builtin.git:
     repo: 'https://github.com/zsh-users/zsh-history-substring-search.git'
     dest: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-history-substring-search"
