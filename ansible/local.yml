@@ -38,6 +38,14 @@
       tags:
         - always
 
+    - name: install desktop
+      when: is_desktop is succeeded or "desktop" in ansible_run_tags
+      block:
+      - import_tasks: tasks/fonts.yml
+        tags:
+          - desktop
+          - fonts
+
 
     - name: install desktop
       when: is_desktop is succeeded or "desktop" in ansible_run_tags
