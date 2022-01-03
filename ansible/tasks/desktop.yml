@@ -232,11 +232,11 @@
     - theme
  
 - name: Install Qogir Theme
+  when: qogir_path.stat.islnk is defined
   tags:
     - desktop
     - theme
 
-  when: qogir_path.stat.islnk is defined
   block:
   - name: Clone Qogir icon theme
     ansible.builtin.git:
@@ -300,3 +300,5 @@
   tags:
     - desktop
     - pick
+
+
