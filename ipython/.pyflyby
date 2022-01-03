@@ -1,4 +1,6 @@
 
+import pkg_resources
+
 from os import environ
 from there import environ
 from os import environ
