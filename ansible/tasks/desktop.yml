@@ -301,4 +301,10 @@
     - desktop
     - pick
 
-
+- name: Install cadmus
+  get_url:
+    url: https://github.com/josh-richardson/cadmus/releases/download/0.0.3/cadmus.AppImage
+    dest: "{{ lookup('env', 'HOME') }}/.local/bin/cadmus"
+  tags:
+    - desktop
+    - cadmus
