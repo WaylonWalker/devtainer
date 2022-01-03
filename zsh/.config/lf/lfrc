@@ -1,0 +1,35 @@
+set previewer bat
+set preview true
+set hidden true
+set icons true
+set ignorecase true
+
+cmd mkdir ${{
+  printf "Directory Name: "
+  read ans
+  mkdir $ans
+}}
+
+cmd mkfile ${{
+  printf "File Name: "
+  read ans
+  touch $ans
+}}
+
+
+map . set hidden!
+map DD delete
+map o mkdir
+map O mkfile
+map <enter> open
+map H top
+map L bottom
+map gei cd ~/git/waylonwalker.com
+map <a-i> cd ~/git/waylonwalker.com
+map ged cd ~/Downloads
+map grr set ratios 1:100:100
+map grp set ratios 1:50:100
+map <a-l> set ratios 1:50:100
+map <a-h> set ratios 1:1:1
+map gre set ratios 1:1:1
+map <a-e> quit
