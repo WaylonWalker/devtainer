@@ -14,3 +14,9 @@ except ModuleNotFoundError:
         stderr=subprocess.DEVNULL,
     ).wait()
     ipython.magic("load_ext pyflyby")
+    print("installing isort")
+    subprocess.Popen(
+        ["pip", "install", "isort"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
