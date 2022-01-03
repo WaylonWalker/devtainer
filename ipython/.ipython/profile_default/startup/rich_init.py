@@ -1,3 +1,6 @@
+import subprocess
+
+
 def rich_init():
     from rich import pretty, traceback
 
