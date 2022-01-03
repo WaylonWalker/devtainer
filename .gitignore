@@ -896,3 +896,5 @@ awesome/.config/awesome/layout.txt
 nvim/.config/nvim/lua/waylonwalker/treesitter.lua
 nvim/.config/nvim/.venv3
 ipython/.ipython/profile_default/history.sqlite
+zsh/.config/vifm/vifm-help.txt
+zsh/.config/vifm/vifminfo.json
