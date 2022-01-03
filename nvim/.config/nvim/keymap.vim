@@ -121,6 +121,11 @@ nnoremap ges :e ~/.config/nvim/settings.vim<CR>
 " edit tmuux config
 nnoremap get :e ~/.tmux.conf<CR>
 " edit zshrc
+"
+nnoremap geit <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,date==today<cr>
+nnoremap geil <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='til',--sort,date,--reverse<cr>
+nnoremap geig <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='gratitude',--sort,date,--reverse<cr>
+
 nnoremap gez :e ~/.zshrc<CR>
 nnoremap gea :e ~/.alias<CR>
 
