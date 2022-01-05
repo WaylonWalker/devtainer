@@ -69,6 +69,11 @@
   tags:
     - kitty
 
+- name: stow copier-templates config
+  shell: cd ~/devtainer && stow copier-templates
+  tags:
+    - copier-templates
+
 - name: ensure local alias file exists
   file:
     path: "{{ lookup('env', 'HOME') }}/.alias.local"
