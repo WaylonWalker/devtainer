@@ -64,7 +64,7 @@
   tags:
     - nix
 
-- name: stow nix config
+- name: stow kitty config
   shell: cd ~/devtainer && stow kitty
   tags:
     - kitty
