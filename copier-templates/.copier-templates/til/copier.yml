@@ -1,0 +1,47 @@
+title:
+  type: str
+slug:
+  type: str
+  default: "[[ title.lower().replace(' ', '-') ]]"
+
+tag1:
+  type: str
+  choices:
+    - python
+    - linux
+    - kedro
+    - bash
+    - cli
+    - tmux
+    - webdev
+    - vim
+    - catalytic
+    - data
+
+tag2:
+  type: str
+  choices:
+    - python
+    - linux
+    - kedro
+    - bash
+    - cli
+    - tmux
+    - webdev
+    - vim
+    - catalytic
+    - data
+
+tag3:
+  type: str
+  choices:
+    - python
+    - linux
+    - kedro
+    - bash
+    - cli
+    - tmux
+    - webdev
+    - vim
+    - catalytic
+    - data

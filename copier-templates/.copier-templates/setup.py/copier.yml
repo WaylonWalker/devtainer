@@ -1,0 +1,16 @@
+package_name:
+author_name: Waylon Walker
+author_github: waylonwalker
+description:
+framework:
+  choices:
+    - '"Framework :: Kedro",'
+    - ''
+keywords: 
+  choices:
+    - 'keywords="pipelines, machine learning, data pipelines, data science, data engineering",'
+    - ''
+
+_tasks:
+  - 'pipx run black setup.py'
+_answers_file: .setup-py-copier-answers.yml
