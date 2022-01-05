@@ -23,6 +23,9 @@ diffcommit() {
 }
 alias wallpaper='ls ~/.config/awesome/wallpaper | fzf --preview="feh --bg-scale ~/.config/awesome/wallpaper/{}" | xargs -I {} feh --bg-scale ~/.config/awesome/wallpaper/{}'
 alias p='nvim `fzf --preview="bat --color always {}"`'
+cpr() {
+    pipx run copier copy ~/.copier-templates/`ls ~/.copier-templates | fzf` .
+}
 
 alias :e='nvim '
 
