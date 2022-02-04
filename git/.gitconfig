@@ -7,7 +7,7 @@
 	name = Waylon S. Walker
 	email = waylon@waylonwalker.com
 [core]
-	editor = nvim
+	editor = nvim -u ~/.config/nvim/init-git.vim
 [init]
 	defaultBranch = main
 [push]
