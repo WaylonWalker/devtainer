@@ -35,6 +35,7 @@ sources = {
     { name = 'buffer' },
     { name = 'calc' },
     { name = 'tmux' },
+    { name = 'rg' },
 }
 })
 

@@ -10,6 +10,7 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-calc'
 Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
+Plug 'lukas-reineke/cmp-rg'
 
 Plug 'waylonwalker/Telegraph.nvim'
 Plug 'kkoomen/vim-doge', { 'do': { -> doge#install() } }
