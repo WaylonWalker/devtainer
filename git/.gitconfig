@@ -6,6 +6,7 @@
 [user]
 	name = Waylon S. Walker
 	email = waylon@waylonwalker.com
+	signingkey = 66E2BF2B4190EFE4
 [core]
 	editor = nvim -u ~/.config/nvim/init-git.vim
 [init]
@@ -20,3 +21,5 @@
         path = ~/.gitconfig-work
 [includeIf "gitdir:~/git/"]
         path = ~/.gitconfig-git
+[commit]
+	gpgsign = true
