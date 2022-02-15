@@ -51,6 +51,43 @@ alias gep="$EDITOR ~/.config/nvim/plugins.vim"
 alias ges="$EDITOR ~/.config/nvim/settings.vim"
 
 
+
+gei (){
+    markata list --map path --filter 'True' --sort date --reverse | fzf --preview 'bat --color always {}' | xargs -I {} $EDITOR {}
+}
+
+gli (){
+    markata list --map slug --filter 'True' --sort date --reverse | fzf | xargs -I {} xdg-open https://waylonwalker.com/{}
+}
+
+geit (){
+    markata list --map path --filter 'date==today' --sort date --reverse | fzf --preview 'bat --color always {}' | xargs -I {} $EDITOR {}
+}
+
+glit (){
+    markata list --map slug --filter 'date==today' --sort date --reverse | fzf | xargs -I {} xdg-open https://waylonwalker.com/{}
+}
+
+geil (){
+    markata list --map path --filter 'templateKey=="til"' --sort date --reverse | fzf --preview 'bat --color always {}' | xargs -I {} $EDITOR {}
+}
+
+geid (){
+    markata list --map path --filter 'status=="draft"' --sort date --reverse | fzf --preview 'bat --color always {}' | xargs -I {} $EDITOR {}
+}
+
+geig (){
+    markata list --map path --filter 'templateKey=="gratitude"' --sort date --reverse | fzf --preview 'bat --color always {}' | xargs -I {} $EDITOR {}
+}
+
+geib (){
+    markata list --map path --filter 'templateKey=="blog"' --sort date --reverse | fzf --preview 'bat --color always {}' | xargs -I {} $EDITOR {}
+}
+
+geik (){
+    markata list --map path --filter '"kedro" in tags' --sort date --reverse | fzf --preview 'bat --color always {}' | xargs -I {} $EDITOR {}
+}
+
 # alias ta="tmux attach"
 switch_session() {
   local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
