@@ -1,4 +1,4 @@
-"       _                                         _           
+"       l_                                         _           
 "      | | _____ _   _ _ __ ___   __ _ _ ____   _(_)_ __ ___  
 "      | |/ / _ \ | | | '_ ` _ \ / _` | '_ \ \ / / | '_ ` _ \ 
 "      |   <  __/ |_| | | | | | | (_| | |_) \ V /| | | | | | |
@@ -7,27 +7,28 @@
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 
 "unsorted
-" nnoremap <leader>tp :let py = termopen('zsh')<CR>
-vnoremap <leader>sp :'<,'>call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
-nnoremap <leader>sp :call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
+" nnoremap <leader>tp <cmd>let py = termopen('zsh')<CR>
+vnoremap <leader>sp <cmd>'<,'>call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
+nnoremap <leader>sp <cmd>call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
 
 " get word count
-nnoremap gwc vap:'<,'>w !wc -c<CR>
+nnoremap gwc vap<cmd>'<,'>w !wc -c<CR>
 
 " toggle floatterm
-nnoremap <c-\> :FloatermToggle<CR>
+nnoremap <c-\> <cmd>FloatermToggle<CR>
 nnoremap <leader>ft :FloatermToggle<CR>
 
 nnoremap ZR zR
 nnoremap ZM zM
 
 command! Xs :mks! | :xa 
-nnoremap U :redo<cr>
+nnoremap U <cmd>redo<cr>
 "stupid Terminals map <c-^> to other things
 nnoremap <leader>6 <c-^>
 nnoremap <c-y> <c-^>
 nnoremap zy <c-^>
 inoremap gqq <esc>gqqA
+inoremap mm. ->
 nnoremap <leader>: :lua<space>
 
 " git commits
@@ -41,7 +42,7 @@ nnoremap gil <cmd>GcLog<CR>
 nnoremap giL <cmd>GcLog %<CR>
 nnoremap gib <cmd>G blame<CR>
 
-nnoremap gD :diffthis<CR>
+nnoremap gD <cmd>diffthis<CR>
 set diffopt=vertical
 
 autocmd TermOpen * setlocal nonumber norelativenumber
@@ -67,64 +68,73 @@ nnoremap <c-l> <c-w>l
 nnoremap <c-h> <c-w>h
 
 " Vtr
-nnoremap <leader>vat :VtrAttachToPane<CR>
-vnoremap <leader>vs :'<,'>VtrSendLinesToRunner<CR>
-nnoremap <leader>vs :VtrSendLinesToRunner<CR>
-nnoremap <leader>vv :VtrSendCommandToRunner 
+nnoremap <leader>vat <cmd>VtrAttachToPane<CR>
+vnoremap <leader>vs <cmd>'<,'>VtrSendLinesToRunner<CR>
+nnoremap <leader>vs <cmd>VtrSendLinesToRunner<CR>
+nnoremap <leader>vv <cmd>VtrSendCommandToRunner 
 
-nnoremap <tab> :bnext<cr>
-nnoremap <s-tab> :bprevious<cr>
+nnoremap <tab> <cmd>bnext<cr>
+nnoremap <s-tab> <cmd>bprevious<cr>
 
-nmap <Leader>g :call TermOpen('gitui', 't')<CR>
-nmap gtg :call TermOpen('gitui', 't')<CR>
+nmap <Leader>g <cmd>call TermOpen('gitui', 't')<CR>
+nmap gtg <cmd>call TermOpen('gitui', 't')<CR>
 nmap gtg :call TermOpen('gitui', 'v')<CR><C-w>H:vertical resize 160<CR>i
 nmap gtf :call TermOpen('vifm', 'v')<CR><C-w>H:vertical resize 80<CR>i
 
 " nnoremap <leader><leader>d "_d
 " vnoremap <leader>d "_d
 
-nnoremap <leader>ghw :h <C-R>=expand("<cword>")<CR><CR>
+nnoremap <leader>ghw <cmd>h <C-R>=expand("<cword>")<CR><CR>
 
-map <c-c> :qall<cr>
-map <c-x> :xall<cr>
-map <c-n> :NERDTreeToggle<cr>
-map <c-/> :Commentary
-inoremap <c-/> :Commentary
+map <c-c> <cmd>qall<cr>
+map <c-x> <cmd>xall<cr>
+map <c-n> <cmd>NERDTreeToggle<cr>
+map <c-/> <cmd>Commentary
+inoremap <c-/> <cmd>Commentary
 
 " edit things
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 " source current file
-nnoremap <leader>so :source %<CR>
-nnoremap gso :source %<CR>
+nnoremap <leader>so <cmd>source %<CR>
+nnoremap gso <cmd>source %<CR>
 " edit hidden files
-nnoremap geh :Telescope find_files hidden=true<CR>
+nnoremap geh <cmd>Telescope find_files hidden=true<CR>
 " edit nvim dotfiles
-nnoremap gen :Telescope find_files cwd=~/.config/nvim<CR>
+nnoremap gen <cmd>Telescope find_files cwd=~/.config/nvim<CR>
 " edit blog posts
-nnoremap gei :Telescope find_files cwd=~/git/waylonwalker.com<CR>
+nnoremap gei <cmd>Telescope find_files cwd=~/git/waylonwalker.com<CR>
 " edit public projects
-nnoremap geg :Telescope find_files cwd=~/git/<CR>
+nnoremap geg <cmd>Telescope find_files cwd=~/git/<CR>
 " edit private projects
-nnoremap gew :Telescope find_files cwd=~/work/<CR>
+nnoremap gew <cmd>Telescope find_files cwd=~/work/<CR>
 " edit vim config
-nnoremap <leader>en :Telescope find_files cwd=~/.config/nvim<CR>
+nnoremap <leader>en <cmd>Telescope find_files cwd=~/.config/nvim<CR>
 " edit vim keymap
-nnoremap gek :e ~/.config/nvim/keymap.vim<CR>
+nnoremap gek <cmd>e ~/.config/nvim/keymap.vim<CR>
 " edit lsp-config
-nnoremap gel :e ~/.config/nvim/lua/waylonwalker/lsp-config.lua<CR>
+nnoremap gel <cmd>e ~/.config/nvim/lua/waylonwalker/lsp-config.lua<CR>
 " edit plugins list
-nnoremap gep :e ~/.config/nvim/plugins.vim<CR>
+nnoremap gep <cmd>e ~/.config/nvim/plugins.vim<CR>
 "edit next to me
-nnoremap gee :e %:h<C-Z>
+nnoremap gee <cmd>e %:h<C-Z>
 " edit nvim settings
-nnoremap ges :e ~/.config/nvim/settings.vim<CR>
+nnoremap ges <cmd>e ~/.config/nvim/settings.vim<CR>
 " edit tmuux config
-nnoremap get :e ~/.tmux.conf<CR>
+nnoremap get <cmd>e ~/.tmux.conf<CR>
 " edit zshrc
 "
+" edit ipython config
+nnoremap gel <cmd>Telescope find_files cwd=~/.config/nvim<CR>
+"
 nnoremap geit <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,date==today<cr>
+nnoremap geid <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,status=='draft',--sort,date,--reverse<cr>
 nnoremap geil <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='til',--sort,date,--reverse<cr>
 nnoremap geig <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='gratitude',--sort,date,--reverse<cr>
+" nnoremap geik <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,'kedro' in tags,--sort,date,--reverse<cr>
+nnoremap geid <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "status=='draft' and templateKey!='gratitude'", "--sort", "date", "--reverse"}})<cr>
+nnoremap geik <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "'kedro' in tags", "--sort", "date", "--reverse"}})<cr>
+nnoremap geidk <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "'kedro' in tags and status != 'published'", "--sort", "date", "--reverse"}})<cr>
+nnoremap gec <cmd>Telescope find_files find_command=nnoremap,g,ec,<cmd>Telescope,find_files,find_command=nnoremap,gec<cmd>Telescope,find_files,find_command=",nnoremapmanifest,gec,<cmd>Telescope,find_files,find_commannnoremap,cc,<cmd>Telescope,find_files,find_command=git,status,--porcelain,\|,sed,s\/^...\\/\/<c\r\>l<cr><cr><cr><cr>
 
 nnoremap gez :e ~/.zshrc<CR>
 nnoremap gea :e ~/.alias<CR>
@@ -160,7 +170,7 @@ imap <c-_> <esc>:Commentary<cr>i
 
 " toggle coomments with tpope
 nnoremap <c-/> :Commentary
-nnoremap <c-_> :Commentary<cr>
+nnoremap <c-_> <cmd>Commentary<cr>
 
 
 " ??? these have been here forever
@@ -185,29 +195,30 @@ nnoremap <c-r>w :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
 nnoremap <c-r>r :%s/\<<C-r><C-/>\>//gI<Left><Left><Left>
 nnoremap <c-r><c-r> :%s/\<<C-r><C-/>\>/<C-r><C-/>/gI<Left><Left><Left>
 
-nnoremap <c-r><c-p><c-r> :vim <c-r><c-/> **/*%:e<cr>:cdo s/\<<c-r><c-/>\>//gc<Left><Left><Left>
 nnoremap <c-r>pr :vim <c-r><c-/> **/*<cr>:cdo s/\<<c-r><c-/>\>/<c-r><c-/>/gc<Left><Left><Left>
+nnoremap <c-r><c-p><c-r> :vim <c-r><c-/> **/*%:e<cr>:cdo s/\<<c-r><c-/>\>//gc<Left><Left><Left>
+
 
 " replace visual star
 vnoremap <c-r><space> :s/<C-R>///g<Left><Left>
 vnoremap <c-r>r :s/<C-R>//<C-R>//g<Left><Left>
 
-" vnoremap <c-R> :s///g<Left><Left><Left>
+" vnoremap <c-R> <cr>s///g<Left><Left><Left>
 " type a replacement term and press . to repeat the replacement on the next
 " match.
-nnoremap <silent> s* :let @/='\<'.expand('<cword>').'\>'<cr>cgn
+nnoremap <silent> s* <cr>let @/='\<'.expand('<cword>').'\>'<cr>cgn
 xnoremap <silent> s* "sy: let @/=@s<cr>cgn
 
-" nnoremap <leader>prw :CocSearch <C-R>=expand("<cword>")<CR><CR>
+" nnoremap <leader>prw <cr>CocSearch <C-R>=expand("<cword>")<CR><CR>
 
 " nvim spectre
-nnoremap <leader>S :lua require('spectre').open()<CR>
+nnoremap <leader>SS <cmd>lua require('spectre').open()<CR>
 
 "search current word
-nnoremap <leader>SW viw:lua require('spectre').open_visual()<CR>zR
-vnoremap <leader>S :lua require('spectre').open_visual()<CR>zR
+nnoremap <leader>SW viw<cmd>lua require('spectre').open_visual()<CR>zR
+vnoremap <leader>S <cmd>lua require('spectre').open_visual()<CR>zR
 "  search in current file
-nnoremap <leader>SP viw:lua require('spectre').open_file_search()<cr>zR
+nnoremap <leader>SP viw<cmd>lua require('spectre').open_file_search()<cr>zR
 
 " leader keys
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
@@ -252,8 +263,8 @@ function! s:PyPreSave()
 endfunction
 
 function! s:PyPostSave()
-    execute "silent !tidy-imports --black --quiet --replace-star-imports --action REPLACE " . bufname("%")
-    execute "silent !isort " . bufname("%")
+    execute "!tidy-imports --black --quiet --replace-star-imports --action REPLACE " . bufname("%")
+    execute "!isort " . bufname("%")
     execute "e"
 endfunction
 
@@ -278,9 +289,9 @@ function! s:ToggleLocationList()
 endfunction
 
 :command! ToggleLocationList :call s:ToggleLocationList()
-nnoremap gtl :ToggleLocationList<CR>
-nnoremap glp :lprevious<CR>
-nnoremap gln :lnext<CR>
+nnoremap gtl <cmd>ToggleLocationList<CR>
+nnoremap glp <cmd>lprevious<CR>
+nnoremap gln <cmd>lnext<CR>
 
 " nnoremap <c-s-j> :GitGutterNextHunk<CR>
 " nnoremap <c-s-k> :GitGutterPrevHunk<CR>
@@ -288,8 +299,8 @@ nnoremap gln :lnext<CR>
 
 " quickfix
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <c-j> :copen<cr>:cnext<CR>
-nnoremap <c-k> :copen<cr>:cprev<CR>
+nnoremap <c-j> <cmd>copen<cr><cmd>cnext<CR>
+nnoremap <c-k> <cmd>copen<cr><cmd>cprev<CR>
 
 let s:cisopen = 0
 
@@ -306,48 +317,48 @@ function! s:ToggleQuickFix()
     endif
 endfunction
 
-:command! ToggleQuickFix :call s:ToggleQuickFix()
-nnoremap gtj :ToggleQuickFix<CR>
-" nnoremap <c-q> :ToggleQuickFix<CR>
+:command! ToggleQuickFix <cmd>call s:ToggleQuickFix()
+nnoremap gtj <cmd>ToggleQuickFix<CR>
+" nnoremap <c-q> <cmd>ToggleQuickFix<CR>
 
-nnoremap <silent> <leader>c :ToggleQuickFix<CR>
+nnoremap <silent> <leader>c <cmd>ToggleQuickFix<CR>
 
 
-" nnoremap <C-S-L> :cnext<CR>
+" nnoremap <C-S-L> <cmd>cnext<CR>
 
 " git
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <silent><leader>go :G<cr>
-nnoremap <silent><leader>gd :Gdiff<cr>
-nnoremap <silent><leader>gs :Gstatus<cr>
-nnoremap <silent><leader>gc :Gcommit<cr>
-" nnoremap <silent><c-]> :GitGutterNextHunk<cr>
-" nnoremap <silent><c-[> :GitGutterPrevHunk<cr>
+nnoremap <silent><leader>go <cmd>G<cr>
+nnoremap <silent><leader>gd <cmd>Gdiff<cr>
+nnoremap <silent><leader>gs <cmd>Gstatus<cr>
+nnoremap <silent><leader>gc <cmd>Gcommit<cr>
+" nnoremap <silent><c-]> <cmd>GitGutterNextHunk<cr>
+" nnoremap <silent><c-[> <cmd>GitGutterPrevHunk<cr>
 
-" nnoremap gpg :GitGutterPrevHunk<CR>
-" nnoremap gng :GitGutterNextHunk<CR>
-" nnoremap gfg :GitGutterFold<CR>
-" nnoremap gcg :GitGutterQuickFix<CR>:copen<CR><C-w>L
+" nnoremap gpg <cmd>GitGutterPrevHunk<CR>
+" nnoremap gng <cmd>GitGutterNextHunk<CR>
+" nnoremap gfg <cmd>GitGutterFold<CR>
+" nnoremap gcg <cmd>GitGutterQuickFix<CR><cmd>copen<CR><C-w>L
 
 
 " shortcuts
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-nnoremap <silent><leader>w :w<cr>
-nnoremap <silent><leader>q :q<cr>
-nnoremap <silent><leader>x :x<cr>
+nnoremap <silent><leader>w <cmd>w<cr>
+nnoremap <silent><leader>q <cmd>q<cr>
+nnoremap <silent><leader>x <cmd>x<cr>
 
 " formatting
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-" nnoremap <leader><leader>p :!prettier % --write l<cr>
-" nnoremap <leader>f :black<cr>
-" nnoremap <leader>c :Commentary<cr>
+" nnoremap <leader><leader>p <cmd>!prettier % --write l<cr>
+" nnoremap <leader>f <cmd>black<cr>
+" nnoremap <leader>c <cmd>Commentary<cr>
 " nnoremap <leader>u gu
-nnoremap <leader>f8 :call flake8#Flake8()<cr>
+nnoremap <leader>f8 <cmd>call flake8#Flake8()<cr>
 
 " visual mode remap
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 command! Vb normal! <C-v>
-nnoremap <leader>b :Vb<CR>
+nnoremap <leader>b <cmd>Vb<CR>
 
 " retain visual selection after indent
 " > indent
@@ -368,47 +379,47 @@ nnoremap <leader>b :Vb<CR>
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 command! -bang -nargs=? -complete=dir HFiles
   " \ call fzf#vim#files(<q-args>, {'source': 'ag --hidden --ignore .git -g ""'}, <bang>0)
-nnoremap <leader>p :GFiles<cr>
+nnoremap <leader>p <cmd>GFiles<cr>
 
-nnoremap <leader>p :Telescope find_files<cr>
-nnoremap <leader>F :Telescope<cr>
-nnoremap <leader>o :Telescope old_files<cr>
-nnoremap <leader>q :Telescope lsp_document_diagnostics<cr>
-nnoremap <leader>ff :Telescope find_files<cr>
-nnoremap <leader>fb :Telescope buffers<cr>
-nnoremap <leader>fc :Telescope colorscheme<cr>
-nnoremap <leader>fg :Telescope git_files<cr>
-nnoremap <leader>fs :Telescope grep_string<cr>
-nnoremap <leader>fl :Telescope live_grep<cr>
-nnoremap <leader>fhl :Telescope live_grep hidden=true<CR>
-nnoremap <leader>fhh :Telescope old_files<cr>
-nnoremap <leader>fr :Telescope lsp_references<cr>
-nnoremap <leader>fq :Telescope quickfix<cr>
+nnoremap <leader>p <cmd>Telescope find_files<cr>
+nnoremap <leader>F <cmd>Telescope<cr>
+nnoremap <leader>o <cmd>Telescope old_files<cr>
+nnoremap <leader>q <cmd>Telescope lsp_document_diagnostics<cr>
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fc <cmd>Telescope colorscheme<cr>
+nnoremap <leader>fg <cmd>Telescope git_files<cr>
+nnoremap <leader>fs <cmd>Telescope grep_string<cr>
+nnoremap <leader>fl <cmd>Telescope live_grep<cr>
+nnoremap <leader>fhl <cmd>Telescope live_grep hidden=true<CR>
+nnoremap <leader>fhh <cmd>Telescope old_files<cr>
+nnoremap <leader>fr <cmd>Telescope lsp_references<cr>
+nnoremap <leader>fq <cmd>Telescope quickfix<cr>
 
-nnoremap gR :Telescope lsp_references<cr>
-nnoremap gr :lua vim.lsp.buf.references()<cr>
-nnoremap gd :lua vim.lsp.buf.definition()<cr>
-nnoremap gD :Telescope lsp_definitions<cr>
-nnoremap gn :lua vim.lsp.buf.rename()<cr>
-nnoremap gh :lua vim.lsp.buf.hover()<cr>
-nnoremap gH :Lspsaga hover_doc<cr>
-nnoremap gb :Telescope git_branches<cr>
-nnoremap gs :Git<cr>
+nnoremap gR <cmd>Telescope lsp_references<cr>
+nnoremap gr <cmd>lua vim.lsp.buf.references()<cr>
+nnoremap gd <cmd>lua vim.lsp.buf.definition()<cr>
+nnoremap gD <cmd>Telescope lsp_definitions<cr>
+nnoremap gn <cmd>lua vim.lsp.buf.rename()<cr>
+nnoremap gh <cmd>lua vim.lsp.buf.hover()<cr>
+nnoremap gH <cmd>Lspsaga hover_doc<cr>
+nnoremap gb <cmd>Telescope git_branches<cr>
+nnoremap gs <cmd>Git<cr>
 
-nnoremap <leader>p :Telescope find_files<cr>
-nnoremap <leader>F :Telescope<cr>
-nnoremap <leader>fb :Telescope buffers<cr>
-nnoremap <leader>fl :Telescope live_grep<cr>
-nnoremap <leader>m :Telescope marks<cr>
-nnoremap <leader>M :Telescope man_pages<cr>
-nnoremap <leader>F :Telescope<cr>
-nnoremap gR :Telescope lsp_references<cr>
-nnoremap gr :lua vim.lsp.buf.references()<cr>
+nnoremap <leader>p <cmd>Telescope find_files<cr>
+nnoremap <leader>F <cmd>Telescope<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fl <cmd>Telescope live_grep<cr>
+nnoremap <leader>m <cmd>Telescope marks<cr>
+nnoremap <leader>M <cmd>Telescope man_pages<cr>
+nnoremap <leader>F <cmd>Telescope<cr>
+nnoremap gR <cmd>Telescope lsp_references<cr>
+nnoremap gr <cmd>lua vim.lsp.buf.references()<cr>
 
-nnoremap <leader>r :Rg<cr>
+nnoremap <leader>r <cmd>Rg<cr>
 
-nnoremap <leader>n :b#<cr>
-nnoremap \ :b#<cr>
+nnoremap <leader>n <cmd>b#<cr>
+nnoremap \ <cmd>b#<cr>
 nnoremap <D-A-LEFT> <C-W>h
 nnoremap <D-A-DOWN> <C-W>j
 nnoremap <D-A-UP> <C-W>k
@@ -418,21 +429,21 @@ nnoremap <leader>j <C-W>j
 nnoremap <leader>k <C-W>k
 nnoremap <leader>l <C-W>l
 
-nnoremap <leader>s :sp<cr>
-nnoremap <leader>v :vsp<cr>
+nnoremap <leader>s <cmd>sp<cr>
+nnoremap <leader>v <cmd>vsp<cr>
 
 nnoremap <leader>H <c-w>H
 nnoremap <leader>J <c-w>J
 nnoremap <leader>K <c-w>K
 nnoremap <leader>L <c-w>L
-nnoremap <leader>i :TagbarToggle<CR>
+nnoremap <leader>i <cmd>TagbarToggle<CR>
 
 " interface
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-" nnoremap <silent> <leader><leader>l :Limelight!!<cr>
+" nnoremap <silent> <leader><leader>l <cmd>Limelight!!<cr>
 
 " Zen Mode
-nnoremap <silent> <leader><leader>z :Goyo<CR>
+nnoremap <silent> <leader><leader>z <cmd>Goyo<CR>
 let s:hidden_all = 0
 function! ToggleHiddenAll()
     if s:hidden_all  == 0
@@ -457,66 +468,66 @@ function! ToggleHiddenAll()
         " GitGutterEnable
     endif
 endfunction
-nnoremap <silent> <leader>z :call ToggleHiddenAll()<CR>
+nnoremap <silent> <leader>z <cmd>call ToggleHiddenAll()<CR>
 
 " Function Keys
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
-map <F6> :setlocal spell! spelllang=expand("<cword>")<cr><cr>
+map <F6> <cmd>setlocal spell! spelllang=expand("<cword>")<cr><cr>
 
 
 
 " Saga
 
-nnoremap <silent><leader>ca :Lspsaga code_action<CR>
-vnoremap <silent><leader>ca :<C-U>Lspsaga range_code_action<CR>
+nnoremap <silent><leader>ca <cmd>Lspsaga code_action<CR>
+vnoremap <silent><leader>ca <cmd><C-U>Lspsaga range_code_action<CR>
 
 " Harpoon
 "
-nnoremap <c-h><c-h> :lua require("harpoon.mark").toggle_file()<CR>
-nnoremap <c-h><c-e> :lua require("harpoon.ui").toggle_quick_menu()<CR>
-nnoremap <c-h><c-a> :lua require("harpoon.ui").nav_file(1)<CR>
-nnoremap <c-h><c-s> :lua require("harpoon.ui").nav_file(2)<CR>
-nnoremap <c-h><c-d> :lua require("harpoon.ui").nav_file(3)<CR>
-nnoremap <c-h><c-f> :lua require("harpoon.ui").nav_file(4)<CR>
-" nnoremap <c-u> :lua require("harpoon.ui").nav_next()<CR>
-" nnoremap <c-k> :lua require("harpoon.ui").nav_prev()<CR>
+nnoremap <c-h><c-h> <cmd>lua require("harpoon.mark").toggle_file()<CR>
+nnoremap <c-h><c-e> <cmd>lua require("harpoon.ui").toggle_quick_menu()<CR>
+nnoremap <c-h><c-a> <cmd>lua require("harpoon.ui").nav_file(1)<CR>
+nnoremap <c-h><c-s> <cmd>lua require("harpoon.ui").nav_file(2)<CR>
+nnoremap <c-h><c-d> <cmd>lua require("harpoon.ui").nav_file(3)<CR>
+nnoremap <c-h><c-f> <cmd>lua require("harpoon.ui").nav_file(4)<CR>
+" nnoremap <c-u> <cmd>lua require("harpoon.ui").nav_next()<CR>
+" nnoremap <c-k> <cmd>lua require("harpoon.ui").nav_prev()<CR>
 
 
-nnoremap <TAB> :lua require("harpoon.ui").nav_next()<CR>
-nnoremap <S-TAB> :lua require("harpoon.ui").nav_prev()<CR>
-nnoremap <leader>aj :lua require("harpoon.ui").nav_file(1)<CR>
-nnoremap zj :lua require("harpoon.ui").nav_file(1)<CR>
-nnoremap <leader>ak :lua require("harpoon.ui").nav_file(2)<CR>
-nnoremap zk :lua require("harpoon.ui").nav_file(2)<CR>
-nnoremap <leader>al :lua require("harpoon.ui").nav_file(3)<CR>
-nnoremap zl :lua require("harpoon.ui").nav_file(3)<CR>
-nnoremap <leader>a; :lua require("harpoon.ui").nav_file(4)<CR>
-nnoremap z; :lua require("harpoon.ui").nav_file(4)<CR>
-nnoremap <leader>aa :lua require("harpoon.ui").toggle_quick_menu()<CR>
-nnoremap zx :lua require("harpoon.ui").toggle_quick_menu()<CR>
-nnoremap <leader>ap :lua require("harpoon.ui").nav_prev()<CR>
-nnoremap zp :lua require("harpoon.ui").nav_prev()<CR>
-nnoremap <leader><leader>n :lua require("harpoon.ui").nav_next()<CR>
-nnoremap zn :lua require("harpoon.ui").nav_next()<CR>
+nnoremap <TAB> <cmd>lua require("harpoon.ui").nav_next()<CR>
+nnoremap <S-TAB> <cmd>lua require("harpoon.ui").nav_prev()<CR>
+nnoremap <leader>aj <cmd>lua require("harpoon.ui").nav_file(1)<CR>
+nnoremap zj <cmd>lua require("harpoon.ui").nav_file(1)<CR>
+nnoremap <leader>ak <cmd>lua require("harpoon.ui").nav_file(2)<CR>
+nnoremap zk <cmd>lua require("harpoon.ui").nav_file(2)<CR>
+nnoremap <leader>al <cmd>lua require("harpoon.ui").nav_file(3)<CR>
+nnoremap zl <cmd>lua require("harpoon.ui").nav_file(3)<CR>
+nnoremap <leader>a; <cmd>lua require("harpoon.ui").nav_file(4)<CR>
+nnoremap z; <cmd>lua require("harpoon.ui").nav_file(4)<CR>
+nnoremap <leader>aa <cmd>lua require("harpoon.ui").toggle_quick_menu()<CR>
+nnoremap zx <cmd>lua require("harpoon.ui").toggle_quick_menu()<CR>
+nnoremap <leader>ap <cmd>lua require("harpoon.ui").nav_prev()<CR>
+nnoremap zp <cmd>lua require("harpoon.ui").nav_prev()<CR>
+nnoremap <leader><leader>n <cmd>lua require("harpoon.ui").nav_next()<CR>
+nnoremap zn <cmd>lua require("harpoon.ui").nav_next()<CR>
 
-nnoremap <c-m-m> :lua require("harpoon.mark").toggle_file()<cr>
-nnoremap <leader><leader>m :lua require("harpoon.mark").toggle_file()<cr>
-nnoremap <leader><leader>m :lua require("harpoon.mark").toggle_file()<cr>
-nnoremap <leader>am :lua require("harpoon.mark").toggle_file()<cr>
-nnoremap zm :lua require("harpoon.mark").toggle_file()<cr>
-nnoremap <leader><leader>c :lua require("harpoon.mark").clear_all()<cr>
-nnoremap zc :lua require("harpoon.mark").clear_all()<cr>
+nnoremap <c-m-m> <cmd>lua require("harpoon.mark").toggle_file()<cr>
+nnoremap <leader><leader>m <cmd>lua require("harpoon.mark").toggle_file()<cr>
+nnoremap <leader><leader>m <cmd>lua require("harpoon.mark").toggle_file()<cr>
+nnoremap <leader>am <cmd>lua require("harpoon.mark").toggle_file()<cr>
+nnoremap zm <cmd>lua require("harpoon.mark").toggle_file()<cr>
+nnoremap <leader><leader>c <cmd>lua require("harpoon.mark").clear_all()<cr>
+nnoremap zc <cmd>lua require("harpoon.mark").clear_all()<cr>
 
 " terminals
 " nnoremap <leader>tj :lua require("harpoon.term").gotoTerminal(1)<CR>
 " nnoremap <leader>tk :lua require("harpoon.term").gotoTerminal(2)<CR>
-nnoremap <leader>cjp :lua require("harpoon.term").sendCommand(1, 'ipython\n')<CR>
-nnoremap <leader>ckp :lua require("harpoon.term").sendCommand(1, 'ipython\n')<CR>
+nnoremap <leader>cjp <cmd>lua require("harpoon.term").sendCommand(1, 'ipython\n')<CR>
+nnoremap <leader>ckp <cmd>lua require("harpoon.term").sendCommand(1, 'ipython\n')<CR>
 nnoremap <leader>cj :lua require("harpoon.term").sendCommand(1, vim.api.nvim_get_current_line() .. "\n")<cr>j
 nnoremap <leader>ck :lua require("harpoon.term").sendCommand(2, vim.api.nvim_get_current_line() .. "\n")<cr>j
-" nnoremap <leader>lint :lua require("harpoon.term").sendCommand(1,  "flake8 ." .. "\n")<cr>:lua require("harpoon.term").gotoTerminal(1)<CR>
-nnoremap <leader>gk :lua require("harpoon.term").sendCommand(2,  "pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme "  .. vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()) .. "\n")<cr>:lua require("harpoon.term").gotoTerminal(2)<CR>
-nnoremap <leader>vd :lua require("harpoon.term").sendCommand(1, "direnv reload\n" .. "vd "  .. vim.api.nvim_get_current_line():gsub('filepath:', '') .. "\n")<cr>:lua require("harpoon.term").gotoTerminal(1)<CR>
+" nnoremap <leader>lint <cmd>lua require("harpoon.term").sendCommand(1,  "flake8 ." .. "\n")<cr><cmd>lua require("harpoon.term").gotoTerminal(1)<CR>
+nnoremap <leader>gk <cmd>lua require("harpoon.term").sendCommand(2,  "pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme "  .. vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()) .. "\n")<cr>:lua require("harpoon.term").gotoTerminal(2)<CR>
+nnoremap <leader>vd <cmd>lua require("harpoon.term").sendCommand(1, "direnv reload\n" .. "vd "  .. vim.api.nvim_get_current_line():gsub('filepath:', '') .. "\n")<cr>:lua require("harpoon.term").gotoTerminal(1)<CR>
 " require("harpoon.term").sendCommand(1, "ls -la")
 
 " moving text
@@ -566,8 +577,8 @@ nnoremap <silent> <leader>dn <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 nnoremap <silent> <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
 nnoremap <silent> [d <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 nnoremap <silent> ]d <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
-nnoremap <silent> gh :Lspsaga lsp_finder<CR>
-nnoremap <silent>K :Lspsaga hover_doc<CR>
+nnoremap <silent> gh <cmd>Lspsaga lsp_finder<CR>
+nnoremap <silent>K <cmd>Lspsaga hover_doc<CR>
 nnoremap <silent> gs <cmd>lua vim.lsp.buf.signature_help()<CR>
 
 " something hijacked escape to escape and scroll up
@@ -587,8 +598,8 @@ nnoremap <leader><leader>M :lua require'telegraph'.telegraph({how='tmux_popup', 
 
 nnoremap <leader><leader>i <cmd>Telegraph feh {cWORD}<CR>
 
-nnoremap <leader><leader>r :lua require'telegraph'.telegraph({cmd='zsh -c "ipython {filepath} -i"', how='tmux_popup'})<CR>
-nnoremap <leader><leader>z :lua require'telegraph'.telegraph({cmd='zsh', how='tmux_popup'})<CR>
+nnoremap <leader><leader>r <cmd>lua require'telegraph'.telegraph({cmd='zsh -c "ipython {filepath} -i"', how='tmux_popup'})<CR>
+nnoremap <leader><leader>z <cmd>lua require'telegraph'.telegraph({cmd='zsh', how='tmux_popup'})<CR>
 
 nnoremap <leader>t <cmd>lua require'telegraph'.telegraph({how='execute', cmd='echo "{cline}" > ~/.config/title/title.txt'})<cr>
 
@@ -598,3 +609,5 @@ nnoremap <leader>ms <cmd>lua require'telegraph'.telegraph({cmd='notify-send TheB
 nnoremap <leader><leader>b <cmd>lua  require'telegraph'.telegraph({cmd='google-chrome {cWORD}', how='subprocess'})<CR> command! -nargs=1 T lua require'telegraph'.telegraph({cmd=<f-args>})
 
 nnoremap <leader><leader>c I[//]: <> (<esc>A)<esc>
+
+nnoremap <leader><leader>j <cmd>w
