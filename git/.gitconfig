@@ -1,25 +1,26 @@
 [credential "https://github.com"]
-	helper = 
-	helper = !gh auth git-credential
+    helper = 
+    helper = !gh auth git-credential
 [credential]
-	helper = store
+    helper = store
 [user]
-	name = Waylon S. Walker
-	email = waylon@waylonwalker.com
-	signingkey = 66E2BF2B4190EFE4
+    name = Waylon S. Walker
+    email = waylon@waylonwalker.com
+    signingkey = 66E2BF2B4190EFE4
 [core]
-	editor = nvim -u ~/.config/nvim/init-git.vim
+    ; editor = nvim -u ~/.config/nvim/init-git.vim -c startinsert
+    editor = nvr --remote-wait-silent
 [init]
-	defaultBranch = main
+    defaultBranch = main
 [push]
-	default = current
+    default = current
 [rebase]
-	autoStash = true
+    autoStash = true
 [pull]
-	rebase = true
+    rebase = true
 [includeIf "gitdir:~/work/"]
         path = ~/.gitconfig-work
 [includeIf "gitdir:~/git/"]
         path = ~/.gitconfig-git
 [commit]
-	gpgsign = true
+    gpgsign = true
