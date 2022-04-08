@@ -69,9 +69,14 @@
   shell: command -v black
   register: black_exists
   ignore_errors: yes
+  tags: |
+    - black
 
 - name: install black
+  when: black_exists is failed
   shell: pipx install black
+  tags: |
+    - black
 
 - name: gem environment
   shell: gem environment
