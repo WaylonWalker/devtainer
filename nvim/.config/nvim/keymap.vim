@@ -34,14 +34,13 @@ nnoremap <leader>: :lua<space>
 
 " git commits
 nnoremap ga <cmd>G add %<CR>
-nnoremap gic <cmd>G add %<CR>:sleep 500m<CR>:only<CR>:G commit<CR>
-nnoremap gii <cmd>G add l%<CR>:sleep 500m<CR>:only<CR>:G commit<CR>
 nnoremap gid <cmd>Gdiff<CR>
 nnoremap gpp <cmd>G push<CR>
 nnoremap gPP <cmd>G pull<CR>
 nnoremap gil <cmd>GcLog<CR>
 nnoremap giL <cmd>GcLog %<CR>
 nnoremap gib <cmd>G blame<CR>
+nnoremap git <cmd>G<CR>
 
 nnoremap gD <cmd>diffthis<CR>
 set diffopt=vertical
@@ -50,9 +49,9 @@ autocmd TermOpen * setlocal nonumber norelativenumber
 
 function! s:GitAdd()
     exe "G add %"
-    exe "G diff --staged"
-    exe "only"
-    exe "G commit"
+    " exe "G diff --staged"
+    " exe "only"
+    exe "G commit --verbose"
 endfunction
 :command! GitAdd :call s:GitAdd()
 nnoremap gic :GitAdd<CR>
