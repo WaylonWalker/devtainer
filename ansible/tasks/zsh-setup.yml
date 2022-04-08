@@ -290,6 +290,23 @@
   tags:
     - lf
 
+- name: check is yq installed
+  shell: command -v yq
+  register: yq_exists
+  ignore_errors: yes
+  tags: 
+    - yq
+
+- name: Install yq
+  when: yq_exists is failed
+  shell: |
+    cd /tmp
+    YQ_VERSION=$(curl --silent https://github.com/mikefarah/yq/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+    wget https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64.tar.gz -O- -q | tar -zxf - -C /tmp
+    cp yq_linux_amd64 {{ lookup('env', 'HOME') }}/.local/bin/yq
+  tags:
+    - yq
+
 - name: include ANSIBLE_LOCALHOST_WARNING in profile
   lineinfile:
     dest: "{{ lookup('env', 'HOME') }}/.profile"
