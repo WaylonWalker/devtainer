@@ -23,7 +23,6 @@ alias gc='git commit --verbose'
 diffcommit() {
     git diff $1 | nvim - +Diffurcate '+Telescope find_files'
 }
-alias wallpaper='ls ~/.config/awesome/wallpaper | fzf --preview="feh --bg-scale ~/.config/awesome/wallpaper/{}" | xargs -I {} feh --bg-scale ~/.config/awesome/wallpaper/{}'
 alias p='nvim `fzf --preview="bat --color always {}"`'
 cpr() {
     pipx run copier copy ~/.copier-templates/`ls ~/.copier-templates | fzf` .
@@ -162,4 +161,3 @@ local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
   | cut -d':' -f1 \
   | xargs tmux switch-client -t
 }
-
