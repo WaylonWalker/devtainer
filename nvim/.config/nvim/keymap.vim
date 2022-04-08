@@ -116,7 +116,7 @@ nnoremap gel <cmd>e ~/.config/nvim/lua/waylonwalker/lsp-config.lua<CR>
 " edit plugins list
 nnoremap gep <cmd>e ~/.config/nvim/plugins.vim<CR>
 "edit next to me
-nnoremap gee <cmd>e %:h<C-Z>
+nnoremap gee :e %:h<C-Z>
 " edit nvim settings
 nnoremap ges <cmd>e ~/.config/nvim/settings.vim<CR>
 " edit tmuux config
