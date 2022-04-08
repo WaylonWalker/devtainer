@@ -1,3 +1,10 @@
+[aws]
+format = 'on [$symbol($profile )(\($region\) )]($style)'
+style = "bold blue"
+symbol =" " 
+
+[lua]
+symbol=' '
 [python]
 # symbol  = '[ ](fg:#ffd43b)'
 symbol  = '[ ](fg:#4b8bbe)'
@@ -7,3 +14,4 @@ format = '[${symbol}${pyenv_prefix}(${version} )]($style)[(\($virtualenv\) )](fg
 
 [ directory ]
 style  = 'fg:#FF10F0'
+
