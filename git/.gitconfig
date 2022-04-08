@@ -10,6 +10,7 @@
 [core]
     ; editor = nvim -u ~/.config/nvim/init-git.vim -c startinsert
     editor = nvr --remote-wait-silent
+    excludesfile = /home/u_walkews/.global-gitignore
 [init]
     defaultBranch = main
 [push]
