@@ -108,3 +108,5 @@ zle -N expand-alias
 bindkey -M main '^n' expand-alias
 bindkey -s '^k' 'cwfetch\n'
 wfetch
+# dedupe path at the very end
+eval "typeset -U path"
