@@ -10,7 +10,7 @@
 [core]
     editor = nvim -u ~/.config/nvim/init-git.vim -c startinsert
     excludesfile = /home/u_walkews/.global-gitignore
-	pager = bat --style=plain
+    pager = bat --style=plain
 [init]
     defaultBranch = main
 [push]
@@ -30,4 +30,4 @@
 [color]
     pager = no
 [pager]
-	diff = dunk | less -R
+    diff = dunk | less -R
