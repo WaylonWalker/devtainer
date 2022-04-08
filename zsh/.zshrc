@@ -96,3 +96,15 @@ if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile
 if [[ `command -v mcfly` ]] then;
     eval "$(mcfly init zsh)"
 fi
+function expand-alias() {
+    zle _expand_alias
+    zle self-insert
+}
+function cwfetch() {
+    clear
+    wfetch
+}
+zle -N expand-alias
+bindkey -M main '^n' expand-alias
+bindkey -s '^k' 'cwfetch\n'
+wfetch
