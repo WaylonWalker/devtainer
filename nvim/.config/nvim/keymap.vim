@@ -26,6 +26,7 @@ nnoremap U <cmd>redo<cr>
 "stupid Terminals map <c-^> to other things
 nnoremap <leader>6 <c-^>
 nnoremap <c-y> <c-^>
+inoremap <c-y> <c-o><c-^>
 nnoremap zy <c-^>
 inoremap gqq <esc>gqqA
 inoremap mm. ->
