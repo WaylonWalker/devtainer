@@ -611,3 +611,12 @@ nnoremap <leader><leader>b <cmd>lua  require'telegraph'.telegraph({cmd='google-c
 nnoremap <leader><leader>c I[//]: <> (<esc>A)<esc>
 
 nnoremap <leader><leader>j <cmd>w
+
+function! MdLinks()
+    $norm o## Links
+    $norm o
+    g/\[[^\]]\+\]([^)]\+)/t$
+    silent! '^,$s/\v[^\[]*(\[[^\]]+\])\(([^)]+)\)[^\[]*/* \1(\2)/g
+    nohl
+endfunction
+command! MdLinks call MdLinks()
