@@ -61,6 +61,7 @@
   ignore_errors: yes
 
 - name: install pyflyby
+  when: pyflyby_exists is failed
   shell:  |
     pipx install pyflyby
     pipx inject pyflyby black
