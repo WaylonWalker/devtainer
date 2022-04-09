@@ -145,7 +145,7 @@ lsn () {
     fi
 }
 
-alias ignore='curl https://www.gitignore.io/api/vim,node,data,emacs,python,pycharm,executable,sublimetext,visualstudio,visualstudiocode > .gitignore'
+alias ignore='curl https://www.toptal.com/developers/gitignore/api/vim,node,data,emacs,python,pycharm,executable,sublimetext,visualstudio,visualstudiocode,direnv > .gitignore'
 
 alias todo='cd ~/work/todo && nvim -O backlog.md doing.md done.md'
 
@@ -162,3 +162,4 @@ local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
   | cut -d':' -f1 \
   | xargs tmux switch-client -t
 }
+
