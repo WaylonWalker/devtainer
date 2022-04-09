@@ -1,3 +1,4 @@
+from rich import inspect as rinspect
 
 import pkg_resources
 
