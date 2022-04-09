@@ -8,9 +8,9 @@
     email = waylon@waylonwalker.com
     signingkey = 66E2BF2B4190EFE4
 [core]
-    ; editor = nvim -u ~/.config/nvim/init-git.vim -c startinsert
-    editor = nvr --remote-wait-silent
+    editor = nvim -u ~/.config/nvim/init-git.vim -c startinsert
     excludesfile = /home/u_walkews/.global-gitignore
+	pager = bat --style=plain
 [init]
     defaultBranch = main
 [push]
@@ -25,3 +25,9 @@
         path = ~/.gitconfig-git
 [commit]
     gpgsign = true
+[help]
+    autocorrect = 10
+[color]
+    pager = no
+[pager]
+	diff = dunk | less -R
