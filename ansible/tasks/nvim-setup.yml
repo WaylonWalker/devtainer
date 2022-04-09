@@ -79,6 +79,17 @@
   tags: |
     - black
 
+# Dunk - prettier git diffs
+# https://github.com/darrenburns/dunk
+- name: check is dunk installed
+  shell: command -v black
+  register: dunk_exists
+  ignore_errors: yes
+
+- name: install dunk
+  when: dunk_exists is failed
+  shell: pipx install dunk
+
 - name: gem environment
   shell: gem environment
   tags:
