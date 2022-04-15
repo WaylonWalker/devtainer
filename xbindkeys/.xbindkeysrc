@@ -78,10 +78,12 @@
     Mod4 + alt + p
 
 
-"wmctrl -xa gnome-terminal-server.Gnome-terminal || x-terminal-emulator"
+# "~/.local/bin/kitty"
+"x-terminal-emulator"
+    m:0x40 + c:36
     Mod4 + Return
 
-"wmctrl -xa obs.obs || obs-studio" 
+"wmctrl -xa obs.obs || obs-studio --startvirtualcam --collection calls --profile call --scene SCENE-FACECAM" 
     Alt+Mod4 + o
 
 "x-terminal-emulator -e tmux new-session -A -s scratch"
@@ -105,6 +107,12 @@
 "amixer -D pulse set Master 1+ toggle"
     Alt+Mod4 + m
 
+"laptop-only.sh"
+    Control+Mod4 + p
+
+
+"side-by-side.sh"
+    Shift+Mod4 + p
 
 # set directly keycode (here control + f with my keyboard)
 #"xterm"

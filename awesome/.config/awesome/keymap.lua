@@ -18,12 +18,6 @@ globalkeys = gears.table.join(
 	-- 	group = "awesome",
 	-- }),
     --
-	awful.key({ modkey, "Control"}, "s", function(c)
-       c.sticky = not c.sticky
-	end, {
-		description = "make client sticky",
-		group = "client",
-	}),
 
 	awful.key({ modkey }, "Left", awful.tag.viewprev, {
 		description = "view previous",
@@ -394,6 +388,13 @@ globalkeys = gears.table.join(
 
 globalkeys = gears.table.join(
 	globalkeys,
+	awful.key({ modkey }, "Return", function()
+        os.execute(terminal)
+	end, {
+		description = "go back",
+		group = "tag",
+	}),
+    awful.key({ modkey,           }, "s",      function (c) c.sticky = not c.sticky  end),
 	-- Media Keys
 	awful.key({}, "XF86AudioRaiseVolume", function()
 		os.execute("pactl set-sink-volume 0 +5%")
@@ -431,7 +432,14 @@ globalkeys = gears.table.join(
 	end, {
     description = 'media previous',
     group = 'media',
-})
+}),
+
+	awful.key({ modkey}, "s", function(c)
+       c.sticky = not c.sticky
+	end, {
+		description = "make client sticky",
+		group = "client",
+	})
 )
 
 clientbuttons = gears.table.join(

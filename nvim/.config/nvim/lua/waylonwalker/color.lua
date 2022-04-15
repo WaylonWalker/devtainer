@@ -12,9 +12,12 @@ vim.o.termguicolors = true
 vim.o.background = 'dark'
 
 
-require('colorbuddy').colorscheme('onebuddy')
+-- require('colorbuddy').colorscheme('onebuddy')
 
-vim.cmd('highlight Normal ctermbg=NONE')
+
+vim.cmd('colorscheme onedark')
+vim.cmd('highlight Normal guibg=NONE ctermbg=NONE')
+vim.cmd('highlight EndOfBuffer guibg=NONE ctermbg=NONE')
 vim.cmd('highlight Normal guibg=NONE ctermbg=NONE')
 vim.cmd('highlight CursorLineNr ctermbg=NONE guibg=NONE ')
 vim.cmd('highlight SignColumn ctermbg=3')

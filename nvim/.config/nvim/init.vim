@@ -5,6 +5,7 @@
 "              |_|_| |_|_|\__(_)_/ |_|_| |_| |_|
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
                                  
+" lua require('impatient')
 source ~/.config/nvim/plugins.vim
 source ~/.config/nvim/settings.vim
 source ~/.config/nvim/keymap.vim
@@ -18,6 +19,7 @@ lua require'waylonwalker.snippets'
 lua require'waylonwalker.refactoring'
 lua require'waylonwalker.title'
 lua require'waylonwalker.lualine'
+lua require'waylonwalker.nvim-tree'
 lua require'telegraph'
 
 

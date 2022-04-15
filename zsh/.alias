@@ -20,12 +20,14 @@ alias diffstaged="git diff --staged | nvim - +Diffurcate '+Telescope find_files'
 alias diffmain="git diff main.. | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmaster="git diff master.. | nvim - +Diffurcate '+Telescope find_files'"
 alias gc='git commit --verbose'
+alias awsrules="aws events list-rules | visidata -f json"
+
 diffcommit() {
     git diff $1 | nvim - +Diffurcate '+Telescope find_files'
 }
 alias p='nvim `fzf --preview="bat --color always {}"`'
 cpr() {
-    pipx run copier copy ~/.copier-templates/`ls ~/.copier-templates | fzf` .
+    copier copy ~/.copier-templates/`ls ~/.copier-templates | fzf` .
 }
 
 alias :e='nvim '
@@ -144,7 +146,7 @@ lsn () {
     fi
 }
 
-alias ignore='curl https://www.toptal.com/developers/gitignore/api/vim,node,data,emacs,python,pycharm,executable,sublimetext,visualstudio,visualstudiocode,direnv > .gitignore'
+alias ignore='curl -L https://www.gitignore.io/api/vim,node,data,emacs,python,pycharm,executable,sublimetext,visualstudio,visualstudiocode > .gitignore'
 
 alias todo='cd ~/work/todo && nvim -O backlog.md doing.md done.md'
 
@@ -161,3 +163,4 @@ local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
   | cut -d':' -f1 \
   | xargs tmux switch-client -t
 }
+

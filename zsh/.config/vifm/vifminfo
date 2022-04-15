@@ -17,7 +17,7 @@
 # Bookmarks:
 
 # TUI:
-al
+ar
 q0
 v2
 ov
@@ -195,8 +195,32 @@ d/home/u_walkews/work/11-Reman-Seed/src/reman_seed/pipelines/h_rep
 	..
 0
 d/home/u_walkews/work/11-Reman-Seed/src/reman_seed/pipelines
-	oia_nodes.py
-9
+	f_modout
+6
+d/home/u_walkews/work/11-Reman-Seed/src/reman_seed
+	pipelines
+3
+d/home/u_walkews/work/11-Reman-Seed/src
+	reman_seed
+1
+d/home/u_walkews/work/11-Reman-Seed
+	src
+10
+d/home/u_walkews/work
+	11-Reman-Seed
+22
+d/home/u_walkews
+	Downloads
+4
+d/home/u_walkews/Downloads
+	cat-Scenes.png
+30
+d/home/u_walkews
+	Downloads
+4
+d/home/u_walkews/Downloads
+	kedro-user-report-1.png
+53
 d
 
 # Right window history (oldest to newest):
@@ -236,16 +260,39 @@ D/home/u_walkews/git
 D/home/u_walkews/work/11-Reman-Seed
 	..
 0
+D/home/u_walkews/work
+	11-Reman-Seed
+20
+D/home/u_walkews
+	.vst
+45
+D/home/u_walkews/.vst
+	libTAL-Reverb-4.so
+1
+D/home/u_walkews
+	.vst
+45
+D/home/u_walkews/.vst
+	libTAL-Reverb-4.so
+1
+D/home/u_walkews
+	.vsnip
+44
 D
 
 # Command line history (oldest to newest):
 :help
 :h
+:exit
 :q
 
 # Search history (oldest to newest):
 /rename
 /display
+/png
+/R
+/Lib
+/.so
 
 # Prompt history (oldest to newest):
 ptmux-rename-session.md
@@ -254,6 +301,7 @@ ptmux-display-message.md
 # Local filter history (oldest to newest):
 
 # Registers:
+""/home/u_walkews/Downloads/libTAL-Reverb-4.so
 
 # Directory stack (oldest to newest):
 
@@ -268,6 +316,6 @@ i1
 [F
 F
 I1
-].1
+].0
 ]F
 s0

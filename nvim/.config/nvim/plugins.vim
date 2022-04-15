@@ -1,5 +1,12 @@
 call plug#begin('~/.local/share/nvim/plugged')
 
+Plug 'mgedmin/coverage-highlight.vim'
+Plug 'lewis6991/impatient.nvim'
+Plug 'navarasu/onedark.nvim'
+Plug 'jpalardy/vim-slime', { 'for': 'python' }
+Plug 'hanschen/vim-ipython-cell', { 'for': 'python' }
+
+
 Plug 'mtdl9/vim-log-highlighting'
 
 Plug 'AndrewRadev/diffurcate.vim'
@@ -68,7 +75,6 @@ Plug 'hrsh7th/nvim-compe'
 " Plug 'tzachar/compe-tabnine', { 'do': './install.sh' }
 Plug 'kabouzeid/nvim-lspinstall'
 Plug 'michaeljsmith/vim-indent-object'
-Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'RishabhRD/popfix'

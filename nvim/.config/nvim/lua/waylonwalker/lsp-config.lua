@@ -15,12 +15,12 @@ require'lspconfig'.pylsp.setup{
                         live_mode =true,
                         strict = true
                     },
-                    -- jedi_completion = {fuzzy = true},
-                    -- jedi_completion = {fuzzy = true, enabled=true},
-                    -- jedi_hover = {enabled = true},
-                    -- jedi_references = {enabled = true},
-                    -- jedi_signature_help = {enabled = true},
-                    -- jedi_symbols = {enabled = true, all_scopes = true},
+                    jedi_completion = {fuzzy = true},
+                    jedi_completion = {fuzzy = true, enabled=true},
+                    jedi_hover = {enabled = true},
+                    jedi_references = {enabled = true},
+                    jedi_signature_help = {enabled = true},
+                    jedi_symbols = {enabled = true, all_scopes = true},
                 }
             }
         },
@@ -87,10 +87,20 @@ require'lspconfig'.cssls.setup{
     on_attach=on_attach,
     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 }
-require'lspconfig'.yamlls.setup{
-    on_attach=on_attach,
-    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 require'lspconfig'.bashls.setup{
     on_attach=on_attach,
     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -102,5 +112,59 @@ require('dap-python').setup('~/miniconda3/envs/markata/bin/python')
 -- require('navigator').setup({
 --  pyls={filetype={}}
 -- })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+require'lspconfig'.yamlls.setup{
+    on_attach=on_attach,
+    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
+    settings = {
+        yaml = {
+            schemas = {
+                ["https://raw.githubusercontent.com/quantumblacklabs/kedro/develop/static/jsonschema/kedro-catalog-0.17.json"]= "conf/**/*catalog*",
+                ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*"
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+-- require'lspconfig'.html.setup{
+--     on_attach=on_attach,
+--     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+-- }
+-- require'lspconfig'.cssls.setup{
+--     on_attach=on_attach,
+--     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+-- }
+
+
+
+
+
+
+
+
 
 return M

@@ -1,5 +1,4 @@
 local foo = 1
-
 local M = {}
 M.open = false
 M.iswinmax = false

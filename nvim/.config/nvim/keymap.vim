@@ -140,9 +140,10 @@ nnoremap gez :e ~/.zshrc<CR>
 nnoremap gea :e ~/.alias<CR>
 
 nnoremap gow <cmd>lua os.execute('xdg-open https://waylonwalker.com/' .. vim.api.nvim_buf_get_name(0):match("^.+/(.+)$"):gsub('.md', '') .. '/ > /dev/null 2>&1')<cr>
+nnoremap goo <cmd>Telegraph 'xdg-open "{cWORD}"'<cr>
 
-nnoremap goo <cmd>lua print(vim.fn.expand('<cword>'))<cr>
-vnoremap goo <cmd>lua print(vim.fn.expand('<cword>'))<cr>
+" nnoremap goo <cmd>lua print(vim.fn.expand('<cword>'))<cr>
+" vnoremap goo <cmd>lua print(vim.fn.expand('<cword>'))<cr>
 
 " edit from parent directory
 set wcm=<C-Z>
@@ -609,8 +610,7 @@ nnoremap <leader>ms <cmd>lua require'telegraph'.telegraph({cmd='notify-send TheB
 nnoremap <leader><leader>b <cmd>lua  require'telegraph'.telegraph({cmd='google-chrome {cWORD}', how='subprocess'})<CR> command! -nargs=1 T lua require'telegraph'.telegraph({cmd=<f-args>})
 
 nnoremap <leader><leader>c I[//]: <> (<esc>A)<esc>
-
-nnoremap <leader><leader>j <cmd>w
+nnoremap <leader>ts <cmd>UltestSummary<cr>
 
 function! MdLinks()
     $norm o## Links
@@ -620,3 +620,5 @@ function! MdLinks()
     nohl
 endfunction
 command! MdLinks call MdLinks()
+
+nnoremap goo <cmd>lua require'telegraph'.telegraph({cmd='xdg-open "{cWORD}"', how='execute'})<cr>

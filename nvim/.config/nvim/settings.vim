@@ -6,6 +6,8 @@
 "                             |___/                       
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 let g:instant_username = "walkews"
+let g:slime_target = "tmux"
+let g:slime_default_config = {"socket_name": get(split($TMUX, ","), 0), "target_pane": ":.1"}
 function! s:Sleep()
     sleep 100000m " sleep 100s
 endfunction
@@ -65,8 +67,6 @@ set scrolloff=8
 
 set fillchars+=vert:\│
 
-autocmd filetype html setlocal ts=2 sts=2 sw=2
-autocmd filetype javascript setlocal ts=2 sts=2 sw=2
 
 
 let g:pymode_lint_config='~/pylint.rc'

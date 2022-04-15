@@ -21,6 +21,7 @@ unsetopt BEEP
 
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
 export PATH="$HOME/.npm/node_modules/bin/:$PATH"
+export PATH="$HOME/.local/.npm-global/bin/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 # eval "$(dircolors -b ~/.dircolors.256dark)"
 eval "$(starship init zsh)"
@@ -96,6 +97,7 @@ if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile
 if [[ `command -v mcfly` ]] then;
     eval "$(mcfly init zsh)"
 fi
+
 function expand-alias() {
     zle _expand_alias
     zle self-insert
@@ -108,8 +110,10 @@ zle -N expand-alias
 bindkey -M main '^n' expand-alias
 bindkey -s '^k' 'cwfetch\n'
 wfetch
+
 # dedupe path at the very end
 eval "typeset -U path"
+
 source ~/.zsh/plugins/zlong_alert/zlong_alert.zsh
 zlong_duration=30
 zlong_ignore_cmds="vim ssh"
