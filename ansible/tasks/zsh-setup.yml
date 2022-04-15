@@ -70,13 +70,15 @@
   shell: command -v starship
   register: starship_exists
   ignore_errors: yes
+  tags:
+    - starship
 
 - name: Install Starship
   when: starship_exists is failed
   shell: |
     curl -fsSL https://starship.rs/install.sh | bash -s -- -y
-    cat ~/.bashrc | grep -q 'eval "$(starship init bash)"' || echo 'eval "$(starship init bash)"' >> ~/.bashrc
-    cat ~/.zshrc | grep -q 'eval "$(starship init zsh)"' || echo 'eval "$(starship init zsh)"' >> ~/.zshrc
+  tags:
+    - starship
 
 - name: Check if forgit is installed
   stat:
