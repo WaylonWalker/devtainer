@@ -12,27 +12,6 @@
   become_user: root
   shell: sudo usermod --shell /usr/bin/zsh {{ user }}
 
-- name: Remove Oh-My-Zsh
-  shell: rm ~/.oh-my-zsh -rf
-  tags:
-    - uninstall-zsh
-    - never
-
-- name: Check if oh-my-zsh is installed
-  stat:
-    path: "{{ lookup('env', 'HOME') }}/.oh-my-zsh"
-  register: ohmyzsh_path
-  tags:
-    - ohmyzsh
-    - never
-
-- name: Oh-My-Zsh
-  shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
-  when: ohmyzsh_path.stat.islnk is not defined
-  tags:
-    - ohmyzsh
-    - never
-
 - name: Check if zsh-autosuggestions is installed
   stat:
     path: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-autosuggestions"
