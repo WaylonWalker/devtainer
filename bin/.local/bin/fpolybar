@@ -1,0 +1,2 @@
+MYBAR=`echo "example\nhome\nmin\ntitle\ntwitch" | fzf`
+echo $MYBAR > ~/.config/polybar/mybar.txt

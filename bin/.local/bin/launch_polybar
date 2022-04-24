@@ -1,0 +1,2 @@
+pkill polybar
+polybar `cat ~/.config/polybar/mybar.txt`

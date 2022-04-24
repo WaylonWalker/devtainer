@@ -1,0 +1,3 @@
+MYBAR=`echo "example\nhome\nmin\ntitle\ntwitch" | rofi -dmenu`
+echo $MYBAR > ~/.config/polybar/mybar.txt
+launch_polybar

@@ -95,6 +95,8 @@
 "pkill polybar || launch_polybar"
     Mod4+period
 
+"rofi_polybar"
+    Shift+Mod4 + period
 
 "amixer -D pulse sset Master 5%+"
     Alt+Mod4 + k
