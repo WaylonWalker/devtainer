@@ -899,3 +899,4 @@ ipython/.ipython/profile_default/history.sqlite
 zsh/.config/vifm/vifm-help.txt
 zsh/.config/vifm/vifminfo.json
 zsh/.config/direnv/allow
+ansible/signal-desktop-keyring.gpg
