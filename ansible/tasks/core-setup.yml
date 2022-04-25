@@ -64,6 +64,20 @@
   tags:
     - pipx
 
+- name: check is pyenv installed
+  stat:
+    path: "{{ lookup('env', 'HOME') }}/.pyenv/"
+  register: pyenv_exists
+  ignore_errors: yes
+  tags: 
+    - pyenv
+
+- name: install pyenv
+  when: pyenv_exists is failed
+  shell: 
+    curl https://pyenv.run | bash
+  tags: 
+    - pyenv
 
 # I dont think I need this anymore, this is now in ~/.profile
 #
