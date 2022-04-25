@@ -5,7 +5,9 @@ rootFree=`lsblk | awk '{if (length($7)==1) print  $4}'`
 memAvailable=`free -m | grep "Mem" | awk '{printf "%.1fG", $7/1024}'`
 cpuTemp=`echo ?`  #`sensors | grep CPU | awk '{print $2}' | sed 's/+//' | tr -d '\n'`
 loadAvg=`cat /proc/loadavg | awk '{printf "%s %s %s", $1, $2, $3}'`
-if [[ "$(/opt/cisco/anyconnect/bin/vpn status)"  == *"state: Disconnected"* ]]; then
+if ! command -v /opt/cisco/anyconnect/bin/vpn &> /dev/null; then
+        proxy=
+elif [[ "$(/opt/cisco/anyconnect/bin/vpn status)"  == *"state: Disconnected"* ]]; then
         proxy=
 else
         proxy=ﭝ
