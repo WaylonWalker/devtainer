@@ -29,6 +29,11 @@ eval "$(direnv hook zsh)"
 export DIRENV_WARN_TIMEOUT=100s
 export DIRENV_LOG_FORMAT=
 
+if [ -d "$HOME/.pyenv" ]; then
+    export PATH="$HOME/.pyenv/bin:$PATH"
+    eval "$(pyenv init --path)"
+    eval "$(pyenv virtualenv-init -)"
+fi
 
 export QMK_HOME='~/git/qmk_firmware'
 
