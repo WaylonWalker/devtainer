@@ -104,6 +104,15 @@
   when: dunk_exists is failed
   shell: pipx install dunk
 
+- name: check is lolcat installed
+  shell: command -v lolcat
+  register: lolcat_exists
+  ignore_errors: yes
+
+- name: install lolcat
+  when: lolcat_exists is failed
+  shell: pipx install lolcat
+
 - name: gem environment
   shell: gem environment
   tags:
