@@ -10,7 +10,7 @@
 
 - name: Change shell to zsh
   become_user: root
-  shell: sudo usermod --shell /usr/bin/zsh {{ user }}
+  shell: usermod --shell /usr/bin/zsh {{ user }}
 
 - name: Check if zsh-autosuggestions is installed
   stat:
