@@ -15,6 +15,16 @@
       - ruby
       - ruby-dev
 
+
+- name: Fetch Neovim
+  # The next step will fail without --force since they move nightly tag often
+  # I am not sure how to force the next step, so this is the best I have
+  shell: "git fetch --tags origin --force"
+  args:
+    chdir: "{{ lookup('env', 'HOME') }}/third-party/neovim"
+  # don't fail if the repo does not exist
+  ignore_errors: yes
+
 - name: Clone Neovim
   ansible.builtin.git:
     repo: 'https://github.com/neovim/neovim.git'
