@@ -19,7 +19,7 @@ lua require'waylonwalker.snippets'
 lua require'waylonwalker.refactoring'
 lua require'waylonwalker.title'
 lua require'waylonwalker.lualine'
-lua require'waylonwalker.nvim-tree'
+" lua require'waylonwalker.nvim-tree'
 lua require'telegraph'
 
 
