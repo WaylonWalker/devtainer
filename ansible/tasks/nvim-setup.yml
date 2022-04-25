@@ -32,11 +32,15 @@
     update: yes
 
 - name: Build neovim
-  become_user: root
-  shell: "cd {{ lookup('env', 'HOME') }}/third-party/neovim && sudo make CMAKE_INSTALL_PREFIX={{ lookup('env', 'home') }}/third-party/neovim CMAKE_BUILD_TYPE=RelWithDebInfo"
+  args:
+    chdir: "{{ lookup('env', 'HOME') }}/third-party/neovim"
+  shell: "make CMAKE_BUILD_TYPE=RelWithDebInfo"
 
 - name: Install neovim
-  shell: "cd {{ lookup('env', 'HOME') }}/third-party/neovim && sudo make install"
+  become_user: root
+  args:
+    chdir: "{{ lookup('env', 'HOME') }}/third-party/neovim"
+  shell: "make install"
 
 - name: Check if pynvim venv3 exists
   stat:
