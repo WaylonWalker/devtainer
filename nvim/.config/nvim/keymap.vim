@@ -484,12 +484,12 @@ vnoremap <silent><leader>ca <cmd><C-U>Lspsaga range_code_action<CR>
 
 " Harpoon
 "
-nnoremap <c-h><c-h> <cmd>lua require("harpoon.mark").toggle_file()<CR>
-nnoremap <c-h><c-e> <cmd>lua require("harpoon.ui").toggle_quick_menu()<CR>
-nnoremap <c-h><c-a> <cmd>lua require("harpoon.ui").nav_file(1)<CR>
-nnoremap <c-h><c-s> <cmd>lua require("harpoon.ui").nav_file(2)<CR>
-nnoremap <c-h><c-d> <cmd>lua require("harpoon.ui").nav_file(3)<CR>
-nnoremap <c-h><c-f> <cmd>lua require("harpoon.ui").nav_file(4)<CR>
+" nnoremap <c-h><c-h> <cmd>lua require("harpoon.mark").toggle_file()<CR>
+" nnoremap <c-h><c-e> <cmd>lua require("harpoon.ui").toggle_quick_menu()<CR>
+" nnoremap <c-h><c-a> <cmd>lua require("harpoon.ui").nav_file(1)<CR>
+" nnoremap <c-h><c-s> <cmd>lua require("harpoon.ui").nav_file(2)<CR>
+" nnoremap <c-h><c-d> <cmd>lua require("harpoon.ui").nav_file(3)<CR>
+" nnoremap <c-h><c-f> <cmd>lua require("harpoon.ui").nav_file(4)<CR>
 " nnoremap <c-u> <cmd>lua require("harpoon.ui").nav_next()<CR>
 " nnoremap <c-k> <cmd>lua require("harpoon.ui").nav_prev()<CR>
 
@@ -622,3 +622,13 @@ endfunction
 command! MdLinks call MdLinks()
 
 nnoremap goo <cmd>lua require'telegraph'.telegraph({cmd='xdg-open "{cWORD}"', how='execute'})<cr>
+
+function! ToggleGStatus()
+    if buflisted(bufname('.git/index'))
+        bd .git/index
+    else
+        G
+    endif
+endfunction
+command ToggleGStatus :call ToggleGStatus()
+nmap <c-h> :ToggleGStatus<CR>
