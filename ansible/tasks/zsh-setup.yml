@@ -38,12 +38,17 @@
   stat:
     path: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-syntax-highlighting"
   register: zsh_syntax_highlighting_exists
+  tags:
+    - high
+
 
 - name: Install zsh-syntax-highlighting
-  when: zsh_syntax_highlighting_exists is failed
+  when: zsh_syntax_highlighting_exists.stat.islnk is not defined
   ansible.builtin.git:
     repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git'
     dest: "{{ lookup('env', 'HOME') }}/.zsh/plugins/zsh-syntax-highlighting"
+  tags:
+    - high
 
 - name: check is starship installed
   shell: command -v starship
