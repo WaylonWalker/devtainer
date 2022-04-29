@@ -1,0 +1,5 @@
+current=`awk '{print $2}' ~/.copier-templates/gratitude/copier.yml | head -n 1`
+new=`expr $current + 1`
+echo $current
+echo $new
+sed -i "s/$current/$new/g" ~/.copier-templates/gratitude/copier.yml
