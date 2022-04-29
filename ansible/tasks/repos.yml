@@ -54,9 +54,14 @@
     dest: "{{ lookup('env', 'HOME') }}/git/markata"
     update: no
 
-- name: Clone kedro-diff
+- name: Clone steel-toes
   ansible.builtin.git:
     repo: 'https://github.com/WaylonWalker/steel-toes.git'
     dest: "{{ lookup('env', 'HOME') }}/git/steel-toes"
     update: no
 
+- name: Clone markata-todoui
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/markata-todoui.git'
+    dest: "{{ lookup('env', 'HOME') }}/git/markata-todoui"
+    update: no
