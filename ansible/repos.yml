@@ -1,0 +1,14 @@
+- hosts: localhost
+  gather_facts: true
+  become: true
+  become_user: "{{ lookup('env', 'USER') }}"
+
+  pre_tasks:
+    - name: update repositories
+      apt: update_cache=yes
+      become_user: root
+      changed_when: False
+  vars:
+    user: "{{ ansible_user_id }}"
+  tasks:
+    - import_tasks: tasks/repos.yml
