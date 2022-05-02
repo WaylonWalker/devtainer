@@ -77,6 +77,9 @@
 "flameshot gui"
     Mod4 + alt + p
 
+"screenshot"
+    Shift + Mod4 + alt + p
+
 
 # "~/.local/bin/kitty"
 "x-terminal-emulator"
