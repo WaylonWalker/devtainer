@@ -24,6 +24,18 @@
     dest: "{{ lookup('env', 'HOME') }}/git/waylonwalker.com"
     update: no
 
+- name: Clone Personal Blog Images
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/images.waylonwalker.com'
+    dest: "{{ lookup('env', 'HOME') }}/git/images.waylonwalker.com"
+    update: no
+
+- name: Clone Personal Blog Screenshots
+  ansible.builtin.git:
+    repo: 'https://github.com/WaylonWalker/screenshots.waylonwalker.com'
+    dest: "{{ lookup('env', 'HOME') }}/git/screenshots.waylonwalker.com"
+    update: no
+
 - name: Clone Find Kedro
   ansible.builtin.git:
     repo: 'https://github.com/WaylonWalker/find-kedro.git'
