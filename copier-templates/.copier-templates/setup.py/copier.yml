@@ -1,10 +1,13 @@
+_min_copier_version: v6.0.0b0
 package_name:
+python_package: "{{ package_name.replace(' ', '_').replace('-', '_').lower() }}"
 author_name: Waylon Walker
 author_github: waylonwalker
 description:
 framework:
   choices:
     - '"Framework :: Kedro",'
+    - '"Framework :: Markata",'
     - ''
 keywords: 
   choices:

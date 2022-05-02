@@ -1,4 +1,5 @@
-num: 180
+_min_copier_version: v6.0.0
+num: 181
 _answers_file: .gratitude-copier-answers.yml
 _tasks:
   - "update-gratitude"

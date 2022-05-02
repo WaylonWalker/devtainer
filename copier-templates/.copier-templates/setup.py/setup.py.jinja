@@ -1,7 +1,7 @@
 """
-[[package_name]] uses setup tools for packaging.
+{{ package_name }} uses setup tools for packaging.
 
-To Build [[package_name]] as a Python package
+To Build {{ package_name }} as a Python package
 
     $ python setup.py sdist bdist_wheel --bdist-dir ~/temp/bdistwheel
 
@@ -18,26 +18,39 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
-NAME = "[[package_name]]"
+NAME = "{{ python_package }}"
 
 README = (Path(__file__).parent / "README.md").read_text(encoding="utf-8")
 
-with open("requirements.txt", "r", encoding="utf-8") as f:
-    requires = [x.strip() for x in f if x.strip()]
+def get_requirements(file: str)-> List[str]:
+    """get the dependencies and installs"""
+    with open("requirements.txt", encoding="utf-8") as f:
+        # Make sure we strip all comments and options (e.g "--extra-index-url")
+        # that arise from a modified pip.conf file that configure global options
+        # when running kedro build-reqs
+        requires = []
+        for line in f:
+            req = line.split("#", 1)[0].strip()
+            if req and not req.startswith("--"):
+                requires.append(req)
+        return requires
+
+requires = get_requirements('requirements.txt')
+dev_requires = get_requirements('requirements_dev.txt')
 
 with open("requirements_dev.txt", "r", encoding="utf-8") as f:
     dev_requires = [x.strip() for x in f if x.strip()]
 
 setup(
     name=NAME,
-    version="[[version]]",
-    description="[[description]]",
+    version="{{ version }}",
+    description="{{ description }}",
     long_description=README,
     long_description_content_type="text/markdown",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Plugins",
-        [[framework if framework else '']]
+        {{ framework if framework else '' }}
         "Intended Audience :: Developers",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS",
@@ -49,16 +62,15 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Typing :: Typed",
     ],
-    url="https://github.com/[[author_github]]/[[package_name]]",
+    url="https://github.com/{{ author_github }}/{{ package_name }}",
     packages=find_packages(),
     platforms="any",
     license="OSI APPROVED :: MIT LICENSE",
-    author="[[author_name]]",
-    keywords="pipelines, machine learning, data pipelines, data science, data engineering",
+    author="{{ author_name }}",
+    keywords="{{ keywords }}",
     install_requires=requires,
     extras_require={"dev": dev_requires},
     entry_points={
-        "kedro.project_commands": ["[[package_name]] = kedro_diff.cli:cli"],
-        "console_scripts": ["[[package_name]] = kedro_diff.cli:cli"],
+        "console_scripts": ["{{ python_package }} = python_package.__main__:main"],
     },
 )
