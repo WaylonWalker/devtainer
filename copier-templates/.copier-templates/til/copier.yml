@@ -1,4 +1,4 @@
-_min_copier_version: v6.0.0
+_min_copier_version: v6.0.0b0
 title:
   type: str
 slug:
