@@ -632,3 +632,24 @@ function! ToggleGStatus()
 endfunction
 command ToggleGStatus :call ToggleGStatus()
 nmap <c-h> :ToggleGStatus<CR>
+
+let s:hidden_all = 0
+function! ToggleHiddenAll()
+    if s:hidden_all  == 0
+        let s:hidden_all = 1
+        set noshowmode
+        set noruler
+        set laststatus=0
+        set noshowcmd
+        execute "silent !tmux set-option -g status off"
+    else
+        let s:hidden_all = 0
+        set showmode
+        set ruler
+        set laststatus=2
+        set showcmd
+        execute "silent !tmux set-option -g status on"
+    endif
+endfunction
+
+nnoremap <silent> <S-h> :call ToggleHiddenAll()<CR>
