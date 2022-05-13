@@ -1,0 +1,9 @@
+#!/bin/sh
+todo () {
+        filter=`basename $PWD`
+        (
+                cd ~/work/todo && /home/u_walkews/work/todo/.venv/bin/markata todoui --global-filter "'$filter' in tags"
+        )
+}
+
+todo
