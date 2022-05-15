@@ -69,6 +69,7 @@ set fillchars+=vert:\│
 
 
 
+
 let g:pymode_lint_config='~/pylint.rc'
 let g:black_virtualenv='~/.local/pipx/venvs/black'
 
@@ -81,6 +82,7 @@ augroup waylonwalker
     autocmd bufwritepost .tmux.conf silent! execute ':!tmux source-file %'
     autocmd bufwritepost .tmux.local.conf silent! execute ':!tmux source-file %'
     autocmd bufwritepost *.vim silent! execute ':source %'
+    autocmd TextChanged,TextChangedI *.md silent write
 augroup end
 
 let g:ctrl_map   = '<c-p>'
