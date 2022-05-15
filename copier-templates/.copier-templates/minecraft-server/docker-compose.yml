@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  mc:
+    container_name: walkercraft
+    image: itzg/minecraft-server
+    ports:
+      - 25565:25565
+    environment:
+      EULA: "TRUE"
+      TYPE: "FORGE"
+      VERSION: 1.16.5
+      MODS_FILE: /extras/mods.txt
+      REMOVE_OLD_MODS: "true"
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    ports:
+      - 25565:25565
+    volumes:
+      - ./minecraft-data:/data
+      - ./mods.txt:/extras/mods.txt:ro
+
+volumes:
+  data:
+    
+
