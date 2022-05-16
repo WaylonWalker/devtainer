@@ -1,0 +1,19 @@
+#!/bin/sh
+# if COPIER_GALLERY_DIR is not set then ue ~/.copier-templates as a default
+if [ -z "$COPIER_GALLERY_DIR" ]
+then
+    COPIER_GALLERY_DIR="$HOME/.copier-templates"
+fi
+
+template=`ls $COPIER_GALLERY_DIR |\
+fzf\
+  --header $(pwd)\
+  --preview='tree $COPIER_GALLERY_DIR/{} | lolcat'`
+
+if [ -z "$template" ]
+then
+    echo "no template was selected"
+else
+    copier copy ${COPIER_GALLERY_DIR}/${template} .
+fi
+
