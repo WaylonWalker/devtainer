@@ -83,6 +83,8 @@ augroup waylonwalker
     autocmd bufwritepost .tmux.local.conf silent! execute ':!tmux source-file %'
     autocmd bufwritepost *.vim silent! execute ':source %'
     autocmd TextChanged,TextChangedI *.md silent write
+    autocmd TermOpen * setlocal nonumber norelativenumber
+    autocmd TextChanged,TextChangedI *qutebrowser-editor*  silent write
 augroup end
 
 let g:ctrl_map   = '<c-p>'
