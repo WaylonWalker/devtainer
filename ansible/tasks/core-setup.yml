@@ -13,6 +13,7 @@
       - htop
       - libevent-dev
       - libpthread-stubs0-dev
+      - libsqlite3-dev
       - libtool
       - libtool-bin
       - lsof
