@@ -44,6 +44,9 @@
 #
 # use a gui to generate the keybind
 # xbindkeys -k
+"mpv `xclip -sel c -o`"
+    Mod4 + M
+
 "xbindkeys_show" 
   control+shift + q
 
@@ -118,6 +121,7 @@
 
 "side-by-side.sh"
     Shift+Mod4 + p
+
 
 # set directly keycode (here control + f with my keyboard)
 #"xterm"
