@@ -123,6 +123,9 @@
     Shift+Mod4 + p
 
 
+"rofi -show p -modi p:rofi-power-menu -font 'JetBrains Mono NF 16' -width 20 -lines 6"
+    Mod4 + q
+
 # set directly keycode (here control + f with my keyboard)
 #"xterm"
 #  c:41 + m:0x4
