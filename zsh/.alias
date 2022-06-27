@@ -21,6 +21,31 @@ alias diffmain="git diff main.. | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmaster="git diff master.. | nvim - +Diffurcate '+Telescope find_files'"
 alias gc='git commit --verbose'
 alias awsrules="aws events list-rules | visidata -f json"
+alias trackme='git branch --set-upstream-to=origin/$(git symbolic-ref --short HEAD)'
+alias rebasemain='git pull origin main --rebase'
+
+ewhich () {
+case `command -V $1` in
+    "$1 not found")
+        FILE=`fzf --prompt "$1 not found searching ..." --query $1`
+        [ -z "$FILE" ] && echo "closing" || $EDITOR $FILE;;
+    *"is a shell builtin"*)
+        echo "$1 is a builtin";;
+    *"is an alias"*)
+        $EDITOR ~/.alias +/alias\ $1;;
+    *"is a shell function"*)
+        $EDITOR ~/.alias +/^$1;;
+    *)
+        $EDITOR `which "$1"`;;
+esac
+}
+
+alias e=ewhich
+
+# quickly tweak copier templates
+ecopier () {
+    nvim "`rg --files ~/.copier-templates | fzf`"
+}
 
 diffcommit() {
     git diff $1 | nvim - +Diffurcate '+Telescope find_files'
@@ -148,7 +173,12 @@ lsn () {
 
 alias ignore='curl -L https://www.gitignore.io/api/vim,node,data,emacs,python,pycharm,executable,sublimetext,visualstudio,visualstudiocode > .gitignore'
 
-alias todo='cd ~/work/todo && nvim -O backlog.md doing.md done.md'
+# alias todo='cd ~/work/todo && nvim -O backlog.md doing.md done.md'
+
+# todo () {
+#     filter=`basename $PWD`
+#     (cd ~/work/todo && /home/u_walkews/work/todo/.venv/bin/markata todoui --global-filter "'$filter' in tags")
+# }
 
 a () {
     source activate "$(conda info --envs | fzf --prompt select-env❯ | awk '{print $1}')"
