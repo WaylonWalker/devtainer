@@ -30,4 +30,4 @@
 [color]
     pager = no
 [pager]
-    diff = dunk | less -R
+	diff = bat --plain
