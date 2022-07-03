@@ -13,6 +13,8 @@ sudo pacman -Syu
 
 # setup paru
 sudo pacman -S --needed base-devel
+sudo pacman -Syu rustup --noconfirm
+rustup default stable
 mkdir ~/third-party
 git clone https://aur.archlinux.org/paru.git ~/third-party/paru
 pushd ~/third-party/paru
