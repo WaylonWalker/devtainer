@@ -25,5 +25,5 @@ sudo pacman -Syu git ansible --noconfirm
 
 ansible-galaxy collection install community.general
 
-git clone https://github.com/waylonwalker/devtainer ~/devtainer
+[ ! -d ~/devtainer ] && git clone https://github.com/waylonwalker/devtainer ~/devtainer
 # ansible-playbook --ask-become-pass ~/devtainer/ansible/local.yml
