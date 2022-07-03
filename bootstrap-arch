@@ -1,0 +1,28 @@
+#!/usr/bin/env/ bash
+# 
+# usage
+#
+# sudo apt install curl
+# curl https://raw.githubusercontent.com/WaylonWalker/devtainer/main/bootstrap-arch | bash
+#
+
+export PATH=$PATH:~/.local/bin
+export ANSIBLE_LOCALHOST_WARNING=False
+
+# update the system
+sudo pacman -Syu
+
+# setup paru
+sudo pacman -S --needed base-devel
+mkdir ~/third-party
+git clone https://aur.archlinux.org/paru.git ~/third-party/paru
+pushd ~/third-party/paru
+makepkg -si
+popd
+
+sudo pacman -Syu git ansible --noconfirm
+
+ansible-galaxy collection install community.general
+
+git clone https://github.com/waylonwalker/devtainer ~/devtainer
+ansible-playbook --ask-become-pass ~/devtainer/ansible/local.yml
