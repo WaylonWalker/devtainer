@@ -1,8 +1,7 @@
-#!/usr/bin/env/ bash
+#!/usr/bin/bash
 # 
 # usage
 #
-# sudo apt install curl
 # curl https://raw.githubusercontent.com/WaylonWalker/devtainer/main/bootstrap-arch | bash
 #
 
