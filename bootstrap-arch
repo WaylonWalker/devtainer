@@ -18,7 +18,7 @@ rustup default stable
 mkdir ~/third-party
 git clone https://aur.archlinux.org/paru.git ~/third-party/paru
 pushd ~/third-party/paru
-makepkg -si
+yes | makepkg -si
 popd
 
 sudo pacman -Syu git ansible --noconfirm
@@ -26,4 +26,4 @@ sudo pacman -Syu git ansible --noconfirm
 ansible-galaxy collection install community.general
 
 git clone https://github.com/waylonwalker/devtainer ~/devtainer
-ansible-playbook --ask-become-pass ~/devtainer/ansible/local.yml
+# ansible-playbook --ask-become-pass ~/devtainer/ansible/local.yml
