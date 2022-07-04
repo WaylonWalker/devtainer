@@ -1,0 +1,16 @@
+- hosts: localhost
+  tasks:
+  - name: Paru Core Desktop Install
+    shell: >
+      paru -Syu --noconfirm 
+      neovim-nightly-bin
+      pyenv
+      steam
+      rofi
+      jre-openjdk-headless
+      rofimoji
+      polybar
+      xbindkeys
+      brave-bin
+      neofetch
+
