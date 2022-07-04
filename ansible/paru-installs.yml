@@ -2,6 +2,7 @@
   tasks:
   - name: Paru Core Desktop Install
     shell: >
+      paru -Syu --noconfirm 
       arandr
       awesome
       brave-bin
@@ -18,7 +19,6 @@
       man-pages
       neofetch
       neovim-nightly-bin
-      paru -Syu --noconfirm 
       pavucontrol
       picom
       polybar
