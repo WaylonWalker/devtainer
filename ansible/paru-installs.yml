@@ -2,15 +2,41 @@
   tasks:
   - name: Paru Core Desktop Install
     shell: >
-      paru -Syu --noconfirm 
-      neovim-nightly-bin
-      pyenv
-      steam
-      rofi
-      jre-openjdk-headless
-      rofimoji
-      polybar
-      xbindkeys
+      arandr
+      awesome
       brave-bin
+      cargo
+      direnv
+      fd
+      flameshot
+      gimp
+      htop
+      jre-openjdk-headless
+      kitty
+      lxappearance
+      man-db
+      man-pages
       neofetch
+      neovim-nightly-bin
+      paru -Syu --noconfirm 
+      pavucontrol
+      picom
+      polybar
+      pyenv
+      ripgrep
+      rofi
+      rofimoji
+      screenkey
+      scrot
+      steam
+      stow
+      the_silver_searcher
+      tldr
+      tree
+      unzip
+      wmctrl
+      xbindkeys
+      xclip
+      zsh
+      
 
