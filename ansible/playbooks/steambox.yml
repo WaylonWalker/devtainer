@@ -1,0 +1,36 @@
+- hosts: localhost
+  tasks:
+
+  - name: touch autologin.conf
+    become: true
+    ansible.builtin.file:
+      path: /etc/systemd/system/getty@tty1.service.d/autologin.conf
+      state: touch
+
+  - name: 
+    ansible.builtin.blockinfile:
+      path: /etc/systemd/system/getty@tty1.service.d/autologin.conf
+      block: |
+        [Service]
+        ExecStart=
+        ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin waylon - $TERM
+
+  - name: 
+    ansible.builtin.blockinfile:
+      path: ~/.profile
+      block: |
+        if [[ -z $DISPLAY ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
+            exec startx
+        fi
+
+  - name: 
+    ansible.builtin.lineinfile:
+      path: ~/.bash_profile
+      line: "[[ -f ~/.profile ]] && . ~/.profile"
+
+  - name: 
+    ansible.builtin.lineinfile:
+      path: ~/.zprofile
+      line: "[[ -f ~/.profile ]] && . ~/.profile"
+
+
