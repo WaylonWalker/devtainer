@@ -1,0 +1,5 @@
+#!/bin/bash
+for pane in `tmux list-pane -a -F "#S:#I"`; do
+    tmux capture-pane -t $pane -p;
+    echo '========================================';
+done

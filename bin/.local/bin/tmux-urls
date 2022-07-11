@@ -1,0 +1,17 @@
+#!/bin/bash
+
+capture-all-panes () {
+for pane in `tmux list-pane -a -F "#S:#I"`; do
+    tmux capture-pane -t $pane -p;
+    echo '========================================';
+done
+}
+
+url=`capture-all-panes | egrep -o 'https?://[^ ]+' | sort | uniq | fzf --header tmux-urls`
+
+if [ -z "$url" ]
+then
+    echo "no url was selected"
+else
+    brave ${url}
+fi
