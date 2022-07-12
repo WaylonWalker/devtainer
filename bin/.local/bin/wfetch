@@ -18,5 +18,6 @@ printf "  ╭───╮ ╭─────╮ ╭───╮
   │   │ │     │ │   │  $proxy $os
   │   ╰─╯     ╰─╯   │
   │ @_waylonwalker  │   `date`
-  ╰─────────────────╯"| lolcat --seed=18 --spread=6
+  ╰─────────────────╯
+"| lolcat --seed=18 --spread=6
 
