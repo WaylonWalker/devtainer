@@ -1,0 +1,42 @@
+- hosts: localhost
+  tasks:
+  - name: ensure fonts directory
+    file:
+      path: "{{ lookup('env', 'HOME') }}/.fonts"
+      state: directory
+
+  - name: Hack exists
+    shell: "ls {{ lookup('env', 'HOME') }}/.fonts/Hack*Nerd*Font*Complete*"
+    register: hack_exists
+    ignore_errors: yes
+
+  - name: Download Hack
+    when: hack_exists is failed
+    ansible.builtin.unarchive:
+      src: https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hack.zip
+      dest: "{{ lookup('env', 'HOME') }}/.fonts/"
+      remote_src: yes
+
+  - name: JetBrainsMono exists
+    register: jetbrains_exists
+    shell: "ls {{ lookup('env', 'HOME') }}/.fonts/JetBrains*Mono*Nerd*Font*Complete*"
+    ignore_errors: yes
+
+  - name: Download JetBrainsMono font
+    when: jetbrains_exists is failed
+    ansible.builtin.unarchive:
+      src: https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/JetBrainsMono.zip
+      dest: "{{ lookup('env', 'HOME') }}/.fonts/"
+      remote_src: yes
+
+  - name: Fira Code exists
+    register: firacode_exists
+    shell: "ls {{ lookup('env', 'HOME') }}/.fonts/Fira*Code*Nerd*Font*Complete*"
+    ignore_errors: yes
+
+  - name: Download Fira Code font
+    when: firacode_exists is failed
+    ansible.builtin.unarchive:
+      src: https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/FiraCode.zip
+      dest: "{{ lookup('env', 'HOME') }}/.fonts/"
+      remote_src: yes

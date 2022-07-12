@@ -1,0 +1,85 @@
+- hosts: localhost
+  tasks:
+  - name: stow git config
+    shell: cd ~/devtainer && stow git
+    tags:
+      - gitconfig
+
+  - name: stow git bin
+    shell: cd ~/devtainer && stow bin
+    tags:
+      - bin
+
+  - name: stow nvim
+    shell: cd ~/devtainer && stow nvim
+    tags:
+      - install
+      - terminal
+      - neovim
+      - nvim
+
+  - name: stow zsh config
+    shell: cd ~/devtainer && stow zsh
+    tags:
+      - zsh
+
+  - name: stow tmux config
+    shell: cd ~/devtainer && stow tmux
+    tags:
+      - tmux
+
+  - name: stow ipython config
+    shell: cd ~/devtainer && stow ipython
+    tags:
+      - ipython
+      - python
+
+  - name: stow obs config
+    shell: cd ~/devtainer && stow obs
+    tags:
+      - obs
+
+  - name: stow obs config
+    shell: cd ~/devtainer && stow polybar
+    tags:
+      - stow
+      - polybar
+
+  - name: stow awesome config
+    shell: cd ~/devtainer && stow awesome
+    tags:
+      - stow
+      - awesome
+
+  - name: stow awesome config
+    shell: cd ~/devtainer && stow xbindkeys
+    tags:
+      - xbindkeys
+
+  - name: stow obs config
+    shell: cd ~/devtainer && stow obs
+    tags:
+      - obs
+
+  - name: stow nix config
+    shell: cd ~/devtainer && stow nix
+    tags:
+      - nix
+
+  - name: stow kitty config
+    shell: cd ~/devtainer && stow kitty
+    tags:
+      - kitty
+
+  - name: stow copier-templates config
+    shell: cd ~/devtainer && stow copier-templates
+    tags:
+      - copier-templates
+
+  - name: ensure local alias file exists
+    file:
+      path: "{{ lookup('env', 'HOME') }}/.alias.local"
+      state: touch
+      modification_time: preserve
+      access_time: preserve
+

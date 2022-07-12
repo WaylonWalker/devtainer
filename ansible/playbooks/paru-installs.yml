@@ -1,0 +1,68 @@
+- hosts: localhost
+  tasks:
+  - name: Paru Core Desktop Install
+    shell: >
+      paru -Syu --noconfirm 
+      arandr
+      awesome
+      bat
+      blueman
+      bluez
+      bluez-utils
+      brave-bin
+      cargo
+      direnv
+      dkms
+      fd
+      flameshot
+      gimp
+      htop
+      jre-openjdk-headless
+      jdk8-openjdk
+      kitty
+      lf
+      linux-headers
+      lolcat
+      lxappearance
+      man-db
+      man-pages
+      neofetch
+      neovim-nightly-bin
+      neovim-plug
+      nordic-theme
+      pavucontrol
+      picom
+      polybar
+      pyenv
+      ripgrep
+      rofi
+      rofimoji
+      screenkey
+      scrot
+      starship
+      steam
+      stow
+      the_silver_searcher
+      tldr
+      tmux
+      tree
+      ttf-iosevka-nerd
+      unzip
+      wmctrl
+      xbindkeys
+      xclip
+      xpadneo-dkms
+      zsh
+      zsh-autosuggestions
+      zsh-history-substring-search
+      zsh-syntax-highlighting
+      github-cli
+      gitui
+      gpu-stat
+      yad
+      timeshift
+      pcmanfm
+      network-manager-applet
+
+# paru -Syu virt-manager qemu-desktop libvirt edk2-ovmf dnsmasq iptables jack2 --noconfirm
+# sshfs

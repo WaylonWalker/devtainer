@@ -1,0 +1,26 @@
+- hosts: localhost
+  tasks:
+  - name: Paru Core Desktop Install
+    shell: >
+      paru -Syu --noconfirm
+      qemu
+      virt-manager
+      virt-viewer
+      dnsmasq
+      vde2
+      bridge-utils
+      openbsd-netcat
+      ebtables
+      libguestfs
+
+# - name: Add user to the libvirt group
+#   become_user: root
+#   shell: sudo adduser {{ansible_user_id}} libvirt
+
+# - name: Add user to the kvm group
+#   become_user: root
+#   shell: sudo adduser {{ansible_user_id}} kvm
+
+# - name: enable libvirtd
+#   become_user: root
+#   shell: sudo systemctl enable --now libvirtd

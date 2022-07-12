@@ -1,6 +1,12 @@
 - hosts: localhost
   tasks:
 
+  - name: touch getty@tty1.service.d
+    become: true
+    ansible.builtin.file:
+      path: /etc/systemd/system/getty@tty1.service.d
+      state: directory
+
   - name: touch autologin.conf
     become: true
     ansible.builtin.file:
@@ -8,12 +14,31 @@
       state: touch
 
   - name: 
+    become: true
     ansible.builtin.blockinfile:
       path: /etc/systemd/system/getty@tty1.service.d/autologin.conf
       block: |
         [Service]
         ExecStart=
         ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin waylon - $TERM
+
+  - name: touch profile
+    become: true
+    ansible.builtin.file:
+      path: "{{ lookup('env', 'HOME') }}/.profile"
+      state: touch
+
+  - name: touch bash_profile
+    become: true
+    ansible.builtin.file:
+      path: "{{ lookup('env', 'HOME') }}/.bash_profile"
+      state: touch
+
+  - name: touch zprofile
+    become: true
+    ansible.builtin.file:
+      path: "{{ lookup('env', 'HOME') }}/.zprofile"
+      state: touch
 
   - name: 
     ansible.builtin.blockinfile:
