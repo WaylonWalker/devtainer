@@ -1,0 +1,313 @@
+- hosts: localhost
+  tasks:
+
+  - name: Install packages
+    become_user: root
+    apt:
+      name:
+        - awesome
+        - arandr
+        - compton
+        - flameshot
+        - gimp
+        - lxappearance
+        - pavucontrol
+        - rofi
+        - screenkey
+        - tldr
+        - vlc
+        - wireshark
+        - wmctrl
+        - xbindkeys
+        - xclip
+        - scrot
+        - python3-cairo
+        - python3-gi
+        - python3-gi-cairo
+    tags:
+      - install
+      - desktop
+      - desktop-apt
+
+  - name: check is polybar installed
+    shell: command -v polybar
+    register: polybar_exists
+    ignore_errors: yes
+    tags: 
+      - desktop
+      - polybar
+
+  - name: install polybar
+    tags: 
+      - desktop
+      - polybar
+    when: polybar_exists is failed
+    block:
+    - name: install polybar dependencies
+      become_user: root
+      apt: 
+        name:
+          - cmake
+          - cmake-data
+          - libcairo2-dev
+          - libjsoncpp-dev
+          - 'libxcb-*'
+          - libxcb-composite0-dev
+          - libxcb-ewmh-dev
+          - libxcb-randr0-dev
+          - libxcb1-dev
+          - python3-sphinx
+          - python3-xcbgen
+          - xcb-proto
+    - name: clone polybar
+      ansible.builtin.git:
+        repo: 'https://github.com/jaagr/polybar.git'
+        dest: "{{ lookup('env', 'HOME') }}/git/polybar"
+        update: no
+    - name: install polybar
+      shell: |
+        sudo ln -s /usr/include/jsoncpp/json/ /usr/include/json
+        cd {{ lookup('env', 'HOME') }}/git/polybar
+        ./build.sh
+
+  - name: check is kdenlive installed
+    shell: command -v kdenlive
+    register: kdenlive_exists
+    ignore_errors: yes
+    tags: 
+      - desktop
+      - kdenlive
+
+  - name: uninstall kdenlive
+    shell: rm `which kdenlive`
+    when: kdenlive_exists is succeeded
+    tags:
+      - never
+      - uninstall-kdenlive
+
+  - name: install kdenlive
+    when: kdenlive_exists is failed
+    get_url:
+      url: https://download.kde.org/stable/kdenlive/21.08/linux/kdenlive-21.08.1-x86_64.appimage 
+      dest: "{{ lookup('env', 'HOME') }}/.local/bin/kdenlive"
+      owner: "{{ lookup('env', 'USER') }}"
+      group: "{{ lookup('env', 'USER') }}"
+      mode: '0755'
+    tags:
+      - desktop
+      - kdenlive
+
+  - name: clone v4l2loopback
+    ansible.builtin.git:
+      repo: 'https://github.com/umlaeute/v4l2loopback.git'
+      dest: "{{ lookup('env', 'HOME') }}/git/v4l2loopback"
+      update: no
+    tags:
+      - desktop
+      - obs
+      - v4l2loopback
+
+  - name: Build 4v4l2loopback
+    shell: "cd {{ lookup('env', 'HOME') }}/git/v4l2loopback && make"
+    tags:
+      - desktop
+      - obs
+      - v4l2loopback
+
+  - name: install v4l2loopback
+    shell: "cd {{ lookup('env', 'HOME') }}/git/v4l2loopback sudo make install"
+    tags:
+      - desktop
+      - obs
+      - v4l2loopback
+
+  - name: check is rofimoji installed
+    shell: command -v rofimoji
+    register: rofimoji_exists
+    ignore_errors: yes
+    tags: 
+      - desktop
+      - rofimoji
+
+  - name: install rofimoji
+    when: rofimoji_exists is failed
+    tags:
+      - install
+      - dotfiles
+      - rofimoji
+    block:
+    - name: rofimoji deps
+      apt: name={{item}}
+      become_user: root
+      with_items:
+        - fonts-emojione
+        - python3
+        - rofi
+        - xdotool
+        - xsel
+
+    - name: Setup rofimoji
+      shell: pipx install rofimoji --force
+
+  - name: Install signal
+    shell: |
+      # NOTE: These instructions only work for 64 bit Debian-based
+      # Linux distributions such as Ubuntu, Mint etc.
+
+      # 1. Install our official public software signing key
+      wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg
+      cat signal-desktop-keyring.gpg | sudo tee -a /usr/share/keyrings/signal-desktop-keyring.gpg > /dev/null
+
+      # 2. Add our repository to your list of repositories
+      echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' |\
+        sudo tee -a /etc/apt/sources.list.d/signal-xenial.list
+
+      # 3. Update your package database and install signal
+      sudo apt update && sudo apt install signal-desktop
+
+    tags:
+      - never
+      - signal
+
+  - name: make last pass tmp directory
+    file:
+      path: /tmp/lplinux
+      state: directory
+    tags:
+      - lastpass
+
+  - name: get last pass
+    ansible.builtin.unarchive:
+      src: https://download.cloud.lastpass.com/linux/lplinux.tar.bz2
+      dest: "/tmp/lplinux"
+      remote_src: yes
+      owner: "{{ lookup('env', 'USER') }}"
+      group: "{{ lookup('env', 'USER') }}"
+      mode: '0755'
+    tags:
+      - lastpass
+
+  - name: install last pass
+    become_user: root
+    script: 
+      cmd: /tmp/lplinux/install_lastpass.sh
+      chdir: /tmp/lplinux
+    tags:
+      - lastpass
+
+  - name: install screenkey dependencies
+    become_user: root
+    apt: name={{item}}
+    with_items:
+      - libx11-6
+      - python3-gi
+      - gir1.2-gtk-3.0
+      - python3-cairo
+      - python3-setuptools
+      - python3-distutils-extra
+      - fonts-font-awesome
+      - gir1.2-appindicator3-0.1
+      - slop
+      - wget
+    tags:
+      - screenkey-source
+      - never
+
+  - name: install screenkey
+    shell: |
+      cd /tmp
+      wget https://gitlab.com/screenkey/screenkey/-/archive/v1.3/screenkey-v1.3.tar.gz
+      tar -xvf screenkey-v1.3.tar.gz
+      cd screenkey-v1.3
+      sudo ./setup.py install
+      sudo mkdir -p /usr/local/share/applications
+      sudo install data/screenkey.desktop /usr/local/share/applications
+    tags:
+      - screenkey-source
+      - never
+
+  - name: Check if Qogir-theme is installed
+    stat:
+      path: "{{ lookup('env', 'HOME') }}/.themes/Qogir"
+    register: qogir_path
+    tags:
+      - desktop
+      - theme
+  
+  - name: Install Qogir Theme
+    when: qogir_path.stat.islnk is defined
+    tags:
+      - desktop
+      - theme
+
+    block:
+    - name: Clone Qogir icon theme
+      ansible.builtin.git:
+        repo: https://github.com/vinceliuice/Qogir-icon-theme
+        dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme"
+        update: yes
+
+    - name: Clone Qogir theme
+      ansible.builtin.git:
+        repo: https://github.com/vinceliuice/Qogir-theme
+        dest: "{{ lookup('env', 'HOME') }}/third-party/Qogir-theme"
+        update: yes
+
+    - name: install Qogir theme
+      shell: |
+        cd {{ lookup('env', 'HOME') }}/third-party/Qogir-theme/
+        ./install.sh
+
+    - name: install Qogir icon theme
+      shell:
+        cd {{ lookup('env', 'HOME') }}/third-party/Qogir-icon-theme/
+        ./install.sh
+
+  - name: Check if kitty exists
+    shell: command -v kitty
+    register: kitty_exists
+    ignore_errors: yes
+    tags:
+      - desktop
+      - kitty
+
+  - name: install kitty
+    when: kitty_exists is failed
+    shell: |
+      curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest={{ lookup('env', 'HOME') }}/.local/stow
+      cd {{ lookup('env', 'HOME') }}/.local/stow
+      stow -v kitty.app
+      sudo update-alternatives --install `which x-terminal-emulator` x-terminal-emulator `which kitty` 50
+    tags:
+      - desktop
+      - kitty
+
+  - name: stow git gtk
+    shell: cd ~/devtainer && stow gtk
+    tags:
+      - desktop
+      - stow
+      - gtk
+
+  - name: install pick colour-picker
+    become_user: root
+    community.general.snap:
+      name: pick-colour-picker
+    tags:
+      - desktop
+      - pick
+
+  - name: Install delicolour
+    pip:
+      name: delicolour
+    tags:
+      - desktop
+      - pick
+
+  - name: Install cadmus
+    get_url:
+      url: https://github.com/josh-richardson/cadmus/releases/download/0.0.3/cadmus.AppImage
+      dest: "{{ lookup('env', 'HOME') }}/.local/bin/cadmus"
+    tags:
+      - desktop
+      - cadmus

@@ -1,0 +1,11 @@
+- hosts: localhost
+  tasks:
+
+  - name: Install Obs Studio
+    become_user: root
+    community.general.snap:
+      name:
+        - obs-studio
+    tags:
+      - obs
+
