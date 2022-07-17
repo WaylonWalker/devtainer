@@ -13,12 +13,18 @@
       cargo
       direnv
       dkms
+      dua-cli
       fd
       flameshot
       gimp
+      github-cli
+      gitui
+      gpu-stat
+      heroic-games-launcher-bin
       htop
-      jre-openjdk-headless
+      ijq
       jdk8-openjdk
+      jre-openjdk-headless
       kitty
       lf
       linux-headers
@@ -29,8 +35,12 @@
       neofetch
       neovim-nightly-bin
       neovim-plug
+      network-manager-applet
       nordic-theme
+      noto-fonts
+      nvm
       pavucontrol
+      pcmanfm
       picom
       polybar
       pyenv
@@ -43,26 +53,25 @@
       steam
       stow
       the_silver_searcher
+      timeshift
       tldr
       tmux
       tree
+      ttf-dejavu
       ttf-iosevka-nerd
+      ttf-liberation
       unzip
+      viddy
       wmctrl
       xbindkeys
       xclip
       xpadneo-dkms
+      yad
       zsh
       zsh-autosuggestions
       zsh-history-substring-search
       zsh-syntax-highlighting
-      github-cli
-      gitui
-      gpu-stat
-      yad
-      timeshift
-      pcmanfm
-      network-manager-applet
+      zsh-vi-mode
 
 # paru -Syu virt-manager qemu-desktop libvirt edk2-ovmf dnsmasq iptables jack2 --noconfirm
 # sshfs
