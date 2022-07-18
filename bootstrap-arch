@@ -13,7 +13,7 @@ sudo pacman -Syu
 
 # setup paru
 sudo pacman -S --needed base-devel
-sudo pacman -Syu rustup --noconfirm
+sudo pacman -Syu git ansible rustup --noconfirm
 rustup default stable
 mkdir ~/third-party
 git clone https://aur.archlinux.org/paru.git ~/third-party/paru
@@ -21,7 +21,6 @@ pushd ~/third-party/paru
 yes | makepkg -si
 popd
 
-sudo pacman -Syu git ansible --noconfirm
 
 ansible-galaxy collection install community.general
 
