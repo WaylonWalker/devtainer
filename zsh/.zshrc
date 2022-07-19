@@ -1,7 +1,9 @@
 # follow symlinks
 set -o physical
 
-source ~/.profile
+[ -f ~/.profile ] && source ~/.profile
+[ -f ~/.alias ] && source ~/.alias
+[ -f ~/.alias.local ] && source ~/.alias.local
 
 # set history
 HISTFILESIZE=1000000000
@@ -37,8 +39,6 @@ fi
 
 export QMK_HOME='~/git/qmk_firmware'
 
-source ~/.alias
-source ~/.alias.local
 
 # Setup fzf
 # ---------
