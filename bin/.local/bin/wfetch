@@ -1,6 +1,16 @@
 #!/bin/bash
 
-os=`lsb_release -d | awk '{printf "%s %s", $2, $3}'`
+get_os () {
+    if [[ `command -v lsb_release` ]]; then
+        os=`lsb_release -d | awk '{printf "%s %s", $2, $3}'`
+    elif [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+        os=$PRETTY_NAME
+    fi
+}
+
+get_os
+# os=`lsb_release -d | awk '{printf "%s %s", $2, $3}'`
 rootFree=`lsblk | awk '{if (length($7)==1) print  $4}'`
 memAvailable=`free -m | grep "Mem" | awk '{printf "%.1fG", $7/1024}'`
 cpuTemp=`echo ?`  #`sensors | grep CPU | awk '{print $2}' | sed 's/+//' | tr -d '\n'`
