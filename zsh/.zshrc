@@ -127,7 +127,7 @@ wfetch
 # dedupe path at the very end
 eval "typeset -U path"
 
-source ~/.zsh/plugins/zlong_alert/zlong_alert.zsh
+[ -f ~/.zsh/plugins/zlong_alert/zlong_alert.zsh ] && source ~/.zsh/plugins/zlong_alert/zlong_alert.zsh
 zlong_duration=30
 zlong_ignore_cmds="vim ssh"
 allcommands(){compgen -c | fzf}
