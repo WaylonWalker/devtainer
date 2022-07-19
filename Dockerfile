@@ -29,6 +29,7 @@ RUN sudo -u devtainer paru --noconfirm --skipreview --useask -S \
       cargo \
       direnv \
       dua-cli \
+      dust \
       fd \
       github-cli \
       gitui \
@@ -43,6 +44,7 @@ RUN sudo -u devtainer paru --noconfirm --skipreview --useask -S \
       neovim-nightly-bin \
       neovim-plug-git \
       nvm-git \
+      pacman-contrib \
       pyenv \
       ripgrep \
       starship \
@@ -57,10 +59,14 @@ RUN sudo -u devtainer paru --noconfirm --skipreview --useask -S \
       zsh-autosuggestions \
       zsh-history-substring-search \
       zsh-syntax-highlighting \
-      zsh-vi-mode-git
+      zsh-vi-mode-git && \
+      pacman -Qtdq | xargs -r pacman --noconfirm -Rcns && \
+      paccache -rk0 && \
+      rm -rf /home/devtainer/.cache
 
 # workdir /home/devtainer/devtainer
-RUN git clone https://github.com/waylonwalker/devtainer /home/devtainer/devtainer
+RUN git clone https://github.com/waylonwalker/devtainer /home/devtainer/devtainer && \
+    rm -rf awesome .git obs kitty && \
 
 # stow options, I can never remember these
 # -d DIR, --dir=DIR     Set stow dir to DIR (default is current dir)
