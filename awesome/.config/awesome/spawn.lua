@@ -6,3 +6,5 @@ awful.spawn.with_shell("launch_polybar")
 awful.spawn.with_shell("flameshot")
 awful.spawn.with_shell("nm-applet")
 awful.spawn.with_shell('xbindkeys -f ~/.xbindkeysrc')
+
+awful.spawn.with_shell('[[ `command -v steam` ]] && steam steam://open/bigpicture -fulldesktopres')
