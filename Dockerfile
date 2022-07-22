@@ -64,15 +64,16 @@ RUN sudo -u devtainer paru --noconfirm --skipreview --useask -S \
       paccache -rk0 && \
       rm -rf /home/devtainer/.cache
 
-# workdir /home/devtainer/devtainer
-RUN git clone https://github.com/waylonwalker/devtainer /home/devtainer/devtainer && \
-    rm -rf awesome .git obs kitty && \
+RUN mkdir -p /home/devtainer/git/devtainer/
+COPY --chown=devtainer:devtainer . /home/devtainer/git/devtainer/
+# RUN git clone https://github.com/waylonwalker/devtainer /home/devtainer/devtainer && \
+#     rm -rf awesome .git obs kitty
 
 # stow options, I can never remember these
 # -d DIR, --dir=DIR     Set stow dir to DIR (default is current dir)
 # -t DIR, --target=DIR  Set target to DIR (default is parent of stow dir)
 # -S, --stow            Stow the package names that follow this option
-RUN stow -d /home/devtainer/devtainer -t /home/devtainer --stow zsh tmux bin nvim
+RUN stow -d /home/devtainer/git/devtainer -t /home/devtainer --stow zsh tmux bin nvim
 RUN nvim -u /home/devtainer/.config/nvim/plugins.vim +PlugInstall +qall
 WORKDIR /home/devtainer
 
@@ -112,5 +113,6 @@ WORKDIR /home/devtainer
 
 # WORKDIR /home/dockeruser
 
+WORKDIR /home/
 CMD ["zsh"]
 
