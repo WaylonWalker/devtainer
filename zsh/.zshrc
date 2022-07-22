@@ -81,11 +81,9 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 
 ~/.local/bin/ta
 
-rm -rf ~/projects/
-mkdir ~/projects/
-ln -sf ~/work/* ~/projects/
-ln -sf ~/git/* ~/projects/
-
+[ -d ~/projects ] && rm -rf ~/projects/ && mkdir ~/projects/ || mkdir ~/projects
+[ -d ~/work ] && [ `ls ~/work | wc -l` -gt 0 ] && ln -sf ~/work/* ~/projects/
+[ -d ~/git ] && [ `ls ~/git | wc -l` -gt 0 ] && ln -sf ~/git/* ~/projects/
 
 if [[ `command -v pipx` ]] then;
     eval "$(register-python-argcomplete pipx)"
