@@ -24,6 +24,7 @@ alias gc='git commit --verbose'
 alias awsrules="aws events list-rules | visidata -f json"
 alias trackme='git branch --set-upstream-to=origin/$(git symbolic-ref --short HEAD)'
 alias rebasemain='git pull origin main --rebase'
+alias rebasedev='git pull origin develop --rebase'
 
 ewhich () {
 case `command -V $1` in
