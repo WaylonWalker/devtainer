@@ -120,7 +120,6 @@ function cwfetch() {
 zle -N expand-alias
 bindkey -M main '^n' expand-alias
 bindkey -s '^k' 'cwfetch\n'
-wfetch
 
 # dedupe path at the very end
 eval "typeset -U path"
@@ -138,3 +137,5 @@ bindkey  "^[[4~"   end-of-line
 bindkey  "^[[3~"  delete-char
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
+
+cwfetch
