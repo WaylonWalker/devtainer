@@ -65,7 +65,7 @@
       wmctrl
       xbindkeys
       xclip
-      xpadneo-dkms
+      xpadneo-dkms.git
       yad
       zsh
       zsh-autosuggestions
