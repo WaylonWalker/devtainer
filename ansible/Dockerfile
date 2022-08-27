@@ -1,4 +1,4 @@
-FROM python:3.8-buster
+FROM python:3.10-buster
 
 RUN pip3 install ansible
 RUN apt update && apt install sudo
