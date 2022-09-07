@@ -114,6 +114,10 @@ from rich.padding import Padding
 from rich.padding import PaddingDimensions
 from rich.panel import Panel
 from rich.pretty import Pretty
+from rich.console import Console
+from rich.syntax import Syntax
+from rich.style import Style
+
 import colorama
 from colorama import Back
 from colorama import Fore
