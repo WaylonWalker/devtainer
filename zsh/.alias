@@ -27,6 +27,11 @@ alias rebasemain='git pull origin main --rebase'
 alias rebasedev='git pull origin develop --rebase'
 alias venv=". ./.venv/bin/activate || python3 -m venv .venv --prompt $(basename $PWD) && . ./.venv/bin/activate"
 
+alias ls="exa -lh --git-ignore --icons --git"
+alias lsa="exa -lah --icons --git"
+alias tree="exa -lh --git-ignore --icons --git --tree"
+alias treea="exa -lah --icons --git --tree"
+
 ewhich () {
 case `command -V $1` in
     "$1 not found")
