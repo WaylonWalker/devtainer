@@ -3,3 +3,5 @@ markout
 .markata.cache
 .pyflyby
 .copier-defaults
+.venv*/
+.python-version
