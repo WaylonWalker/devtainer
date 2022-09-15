@@ -900,4 +900,4 @@ zsh/.config/vifm/vifm-help.txt
 zsh/.config/vifm/vifminfo.json
 zsh/.config/direnv/allow
 ansible/signal-desktop-keyring.gpg
-ansible/playbooks/ubuntu/.venv3/share
+ansible/playbooks/ubuntu/.venv3
