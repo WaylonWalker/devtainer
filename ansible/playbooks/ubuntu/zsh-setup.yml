@@ -241,8 +241,8 @@
   - name: Install fzf
     when: fzf_exists is failed
     shell: |
-          git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
-          ~/.fzf/install --all
+          git clone --depth 1 https://github.com/junegunn/fzf.git {{ lookup('env', 'HOME') }}/.fzf && \
+          {{ lookup('env', 'HOME') }}/.fzf/install --all
           cp {{ lookup('env', 'HOME') }}/.fzf/bin/fzf {{ lookup('env', 'HOME') }}/.local/bin
     tags:
       - fzf
