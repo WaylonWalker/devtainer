@@ -100,7 +100,7 @@
   - name: Install Glow
     when: glow_exists is failed
     shell: |
-      GLOW_VERSION=$(curl --silent https://github.com/charmbracelet/glow/releases/latest | tr -d '"' | sed 's/^.*tag\///g' | sed 's/>.*$//g' | sed 's/^v//')
+      GLOW_VERSION=$(curl -s -L -I -o /dev/null -w '%{url_effective}' https://github.com/charmbracelet/glow/releases/latest | rev | cut -d/ -f1 | rev)
       wget https://github.com/charmbracelet/glow/releases/download/v${GLOW_VERSION}/glow_${GLOW_VERSION}_linux_x86_64.tar.gz -O- -q | tar -zxf - -C ~/.local/bin
     tags:
       - glow
