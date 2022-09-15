@@ -1,4 +1,6 @@
 - hosts: localhost
+  vars:
+    user: "{{ ansible_user_id }}"
   tasks:
 
   - name: check is zsh installed
