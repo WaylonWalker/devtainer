@@ -1,5 +1,6 @@
 call plug#begin('~/.local/share/nvim/plugged')
 
+Plug 'laytan/cloak.nvim'
 Plug 'mgedmin/coverage-highlight.vim'
 Plug 'lewis6991/impatient.nvim'
 Plug 'navarasu/onedark.nvim'
@@ -154,4 +155,3 @@ Plug 'neovim/nvim-lspconfig'
 
 
 call plug#end()
-
