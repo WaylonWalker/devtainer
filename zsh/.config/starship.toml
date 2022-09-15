@@ -15,3 +15,7 @@ format = '[${symbol}${pyenv_prefix}(${version} )]($style)[(\($virtualenv\) )](fg
 [ directory ]
 style  = 'fg:#FF10F0'
 
+[custom.zsh]
+when = '[[ ! -n "${VIRTUAL_ENV}" ]]'
+style = "bold red"
+format = '[ NO PYTHON VENV SET ]($style)'
