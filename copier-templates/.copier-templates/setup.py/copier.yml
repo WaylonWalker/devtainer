@@ -14,6 +14,4 @@ keywords:
     - 'keywords="pipelines, machine learning, data pipelines, data science, data engineering",'
     - ''
 
-_tasks:
-  - 'pipx run black setup.py'
 _answers_file: .setup-py-copier-answers.yml
