@@ -62,8 +62,7 @@
 
   - name: Install Starship
     when: starship_exists is failed
-    shell: |
-      curl -sS https://starship.rs/install.sh | sh -- -y
+    shell: bash <(curl -sS https://starship.rs/install.sh) -y
     tags:
       - starship
 
