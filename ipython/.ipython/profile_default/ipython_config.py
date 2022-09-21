@@ -1,5 +1,24 @@
 c.InteractiveShellApp.extensions = ["autoreload"]
 c.InteractiveShellApp.exec_lines = ["%autoreload 2"]
+
+import importlib
+
+
+def activate_extension(extension):
+    try:
+        mod = importlib.import_module(extension)
+        getattr(mod, "load_ipython_extension")
+        c.InteractiveShellApp.extensions.append(extension)
+    except ModuleNotFoundError:
+        "extension is not installed"
+    except AttributeError:
+        "extension does not have a 'load_ipython_extension' function"
+
+
+extensions = ["rich", "markata", "pyflyby"]
+for extension in extensions:
+    activate_extension(extension)
+
 # c.InteractiveShellApp.exec_lines.append(
 #     'print("Warning: disable autoreload in ipython_config.py to improve performance.")'
 # )
@@ -13,18 +32,8 @@ colorLabel = "Linux"
 c.InteractiveShell.colors = colorLabel
 
 
-from pygments.token import (
-    Token,
-    Keyword,
-    Name,
-    Comment,
-    String,
-    Error,
-    Number,
-    Operator,
-    Generic,
-    Whitespace,
-)
+from pygments.token import (Comment, Error, Generic, Keyword, Name, Number,
+                            Operator, String, Token, Whitespace)
 
 black = "#282C34"
 red = "#E06C75"
