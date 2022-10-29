@@ -1,5 +1,6 @@
 call plug#begin('~/.local/share/nvim/plugged')
 
+Plug 'SmiteshP/nvim-navic'
 Plug 'laytan/cloak.nvim'
 Plug 'mgedmin/coverage-highlight.vim'
 Plug 'lewis6991/impatient.nvim'
