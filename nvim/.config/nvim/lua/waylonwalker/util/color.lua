@@ -12,6 +12,9 @@ vim.o.termguicolors = true
 vim.o.background = 'dark'
 
 
+-- require('colorbuddy').colorscheme('onebuddy')
+
+
 vim.cmd('colorscheme onedark')
 vim.cmd('highlight Normal guibg=NONE ctermbg=NONE')
 vim.cmd('highlight EndOfBuffer guibg=NONE ctermbg=NONE')
@@ -27,5 +30,6 @@ M.nobg = function()
     vim.cmd('nohl')
 end
 
+api.nvim_set_keymap('n', '<leader><cr>', ":lua require'waylonwalker.color'.nobg()<cr>", { noremap = true, silent = true })
 
 return M

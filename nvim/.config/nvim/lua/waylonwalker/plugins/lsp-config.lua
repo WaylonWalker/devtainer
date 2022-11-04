@@ -6,6 +6,7 @@ local function on_attach(client, bufnr)
         navic.attach(client, bufnr)
     end
 end
+
 local M = {}
 
 -- Active LSP's
@@ -33,23 +34,26 @@ require'lspconfig'.pylsp.setup{
             }
         },
         on_attach = on_attach,
-        capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+        capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
     }
 
 
+
 require'lspconfig'.sumneko_lua.setup{on_attach=on_attach}
+
 require'lspconfig'.jedi_language_server.setup{
     on_attach=on_attach,
-    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 }
+
 require'lspconfig'.cssls.setup{
     on_attach=on_attach,
-    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 }
 
 require'lspconfig'.bashls.setup{
     on_attach=on_attach,
-    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 }
 
 require('telescope').load_extension('dap')
@@ -58,7 +62,7 @@ require('dap-python').setup('~/miniconda3/envs/markata/bin/python')
 
 require'lspconfig'.yamlls.setup{
     on_attach=on_attach,
-    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
+    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities()),
     settings = {
         yaml = {
             schemas = {
@@ -84,20 +88,65 @@ require'lspconfig'.yamlls.setup{
 
 -- require'lspconfig'.kedro.setup{
 --     on_attach=on_attach,
---     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+--     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 -- }
 
 -- require'lspconfig'.html.setup{
 --     on_attach=on_attach,
---     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+--     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 -- }
 -- require'lspconfig'.cssls.setup{
 --     on_attach=on_attach,
---     capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+--     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 -- }
+--
 
-local remote = io.popen('git config --get remote.origin.url'):read():gsub('https://github.com/', 'gh:'):gsub('.git', '') or ''
--- %F gave full path, vim.fn.expand gets rid of cwd
-vim.o.winbar = " %{%v:lua.vim.fn.expand('%F')%}  %{%v:lua.require'nvim-navic'.get_location()%} %= " .. remote
+-- require 'lspconfig.configs'.kedro = {
+--     default_config = {
+--         cmd = {"kedro-lsp"};
+--         filetypes = {"python"};
+--         root_dir = function(fname)
+--             return vim.fn.getcwd()
+--         end;
+--     };
+-- };
+
+-- local has_kedro = os.execute('command -v kedro-lsp')
+
+-- if (has_kedro == 256 )
+-- then
+-- require'lspconfig'.kedro.setup{
+--     on_attach=on_attach,
+--     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+-- }
+-- else
+--     -- does not have kedro lsp
+--     if ( io.popen('pip show kedro'):read('*a'):match('Name: kedro') ~= nil)
+--     then
+--         print('kedro is installed without the lsp')
+--     else
+--         -- kedro is not installed
+--         -- no need for kedro_lsp
+--     end
+-- end
+
+
+-- require 'lspconfig.configs'.markata = {
+--     default_config = {
+--         cmd = {"markata-lsp"};
+--         filetypes = {"markdown"};
+--         root_dir = function(fname)
+--             return vim.fn.getcwd()
+--         end;
+--     };
+-- };
+
+-- require'lspconfig'.markata.setup{
+--     on_attach=on_attach,
+--     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+-- }
+
+return M
+

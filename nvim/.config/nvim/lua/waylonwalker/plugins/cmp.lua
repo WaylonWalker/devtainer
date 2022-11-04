@@ -39,6 +39,9 @@ sources = {
     { name = 'calc' },
     { name = 'tmux' },
     { name = 'rg' },
+    { name = 'nvim_lsp_signature_help' },
+    { name = "git" },
 }
 })
 
+require("cmp_git").setup()

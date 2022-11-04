@@ -1,18 +1,27 @@
+--  ╭─────╮  ╭────────╮  ╭─────╮
+--  │     │  │        │  │     │
+--  │     │  │        │  │     │
+--  │     │  │        │  │     │
+--  │     ╰──╯        ╰──╯     │
+--  │           init.lua       │
+--  │           @_waylonwalker │
+--  ╰──────────────────────────╯
+--
+-- ## usage
+--
+-- require'waylonwalker'
+local M = {}
 
--- local M = {}
+M.settings = require'waylonwalker.settings'
+M.options = require'waylonwalker.options'
+M.globals = require'waylonwalker.globals'
+M.packer = require'waylonwalker.packer'
+M.keymap = require'waylonwalker.keymap'
+M.autocmds = require'waylonwalker.autocmds'
+M.util = require'waylonwalker.util'
+M.plugins = require'waylonwalker.plugins'
+M.snippets = require'waylonwalker.snippets'
 
--- M.me = 'waylonwalker'
 
--- function M.hello()
---     print(M.me)
--- end
 
--- -- function M.send_lines_to_harpooon()
--- --     local pos1 = vim.fn.getpos("'<")
--- --     local pos2 = vim.fn.getpos("'>")
--- --     local lines = vim.api.nvim_buf_get_lines(0,pos1[2], pos2[2],false)
--- --     print(table.concat(lines, '\n'))
--- --     require("harpoon.term").sendCommand(1, table.concat(lines, '\n'))
--- -- end
-
--- return M
+return M

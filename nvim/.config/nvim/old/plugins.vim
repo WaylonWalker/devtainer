@@ -2,11 +2,15 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'SmiteshP/nvim-navic'
 Plug 'laytan/cloak.nvim'
+Plug 'kkharji/sqlite.lua'
+Plug 'petertriho/cmp-git'
+Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+" Plug 'waylonwalker/mdformat.nvim'
 Plug 'mgedmin/coverage-highlight.vim'
 Plug 'lewis6991/impatient.nvim'
 Plug 'navarasu/onedark.nvim'
 Plug 'jpalardy/vim-slime', { 'for': 'python' }
-Plug 'hanschen/vim-ipython-cell', { 'for': 'python' }
+" Plug 'hanschen/vim-ipython-cell', { 'for': 'python' }
 
 
 Plug 'mtdl9/vim-log-highlighting'
@@ -14,17 +18,17 @@ Plug 'mtdl9/vim-log-highlighting'
 Plug 'AndrewRadev/diffurcate.vim'
 
 Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-calc'
-Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
+Plug 'andersevenrud/cmp-tmux'
 Plug 'lukas-reineke/cmp-rg'
 
 Plug 'waylonwalker/Telegraph.nvim'
 Plug 'kkoomen/vim-doge', { 'do': { -> doge#install() } }
 
-Plug 'waylonwalker/Telegraph.nvim'
 Plug 'ThePrimeagen/vim-be-good'
 " Plug 'ThePrimeagen/refactoring.nvim'
 
@@ -43,8 +47,8 @@ Plug 'tjdevries/colorbuddy.nvim'
 Plug 'ambv/black'
 
 " navigation
-Plug 'ThePrimeagen/harpoon'
-Plug 'ThePrimeagen/refactoring.nvim'
+" Plug 'ThePrimeagen/harpoon'
+" Plug 'ThePrimeagen/refactoring.nvim'
 Plug 'christoomey/vim-quicklink'
 Plug 'christoomey/vim-tmux-runner'
 Plug 'fabi1cazenave/termopen.vim'

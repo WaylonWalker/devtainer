@@ -7,7 +7,7 @@
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 
 "unsorted
-" nnoremap <leader>tp <cmd>let py = termopen('zsh')<CR>
+nnoremap <leader>tp <cmd>let py = termopen('zsh')<CR>
 vnoremap <leader>sp <cmd>'<,'>call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
 nnoremap <leader>sp <cmd>call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
 
@@ -23,6 +23,7 @@ nnoremap ZM zM
 
 command! Xs :mks! | :xa 
 nnoremap U <cmd>redo<cr>
+
 "stupid Terminals map <c-^> to other things
 nnoremap <leader>6 <c-^>
 nnoremap <c-y> <c-^>
@@ -60,7 +61,6 @@ nnoremap gic :GitAdd<CR>
 tnoremap <c-\><c-\> <c-\><c-n>
 tnoremap <c-j><c-j> <c-\><c-n>
 tnoremap <c-c><c-c> <c-\><c-n>
-" tnoremap jj <c-\><c-n>
 tnoremap <c-h> <c-\><c-n><c-w>h
 tnoremap <c-l> <c-\><c-n><c-w>l
 tnoremap <c-^> <c-\><c-n><c-^>
@@ -84,7 +84,7 @@ nmap gtf :call TermOpen('vifm', 'v')<CR><C-w>H:vertical resize 80<CR>i
 " nnoremap <leader><leader>d "_d
 " vnoremap <leader>d "_d
 
-nnoremap <leader>ghw <cmd>h <C-R>=expand("<cword>")<CR><CR>
+" nnoremap <leader>ghw <cmd>h <C-R>=expand("<cword>")<CR><CR>
 
 map <c-c> <cmd>qall<cr>
 map <c-x> <cmd>xall<cr>
@@ -96,7 +96,8 @@ inoremap <c-/> <cmd>Commentary
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
 " source current file
 nnoremap <leader>so <cmd>source %<CR>
-nnoremap gso <cmd>source %<CR>
+" nnoremap gso <cmd>source %<CR>
+
 " edit hidden files
 nnoremap geh <cmd>Telescope find_files hidden=true<CR>
 " edit nvim dotfiles
@@ -123,16 +124,18 @@ nnoremap ges <cmd>e ~/.config/nvim/settings.vim<CR>
 nnoremap get <cmd>e ~/.tmux.conf<CR>
 " edit zshrc
 "
+" edit pyflyby
+nnoremap gef <cmd>e ~/.pyflyby<CR>
 " edit ipython config
 nnoremap gel <cmd>Telescope find_files cwd=~/.config/nvim<CR>
 "
-nnoremap geit <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,date==today<cr>
-nnoremap geid <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,status=='draft',--sort,date,--reverse<cr>
-nnoremap geil <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='til',--sort,date,--reverse<cr>
-nnoremap geig <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='gratitude',--sort,date,--reverse<cr>
+nnoremap geit <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,date==today,--fast<cr>
+nnoremap geid <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,status=='draft',--sort,date,--reverse,--fast<cr>
+nnoremap geil <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='til',--sort,date,--reverse,--fast<cr>
+nnoremap geig <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='gratitude',--sort,date,--fast<cr>
 " nnoremap geik <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,'kedro' in tags,--sort,date,--reverse<cr>
-nnoremap geid <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "status=='draft' and templateKey!='gratitude'", "--sort", "date", "--reverse"}})<cr>
-nnoremap geik <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "'kedro' in tags", "--sort", "date", "--reverse"}})<cr>
+nnoremap geid <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "status=='draft' and templateKey!='gratitude'", "--sort", "date", "--fast"}})<cr>
+nnoremap geik <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "'kedro' in tags", "--sort", "date", "--reverse"}})<cr> 
 nnoremap geidk <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "'kedro' in tags and status != 'published'", "--sort", "date", "--reverse"}})<cr>
 nnoremap gec <cmd>Telescope find_files find_command=nnoremap,g,ec,<cmd>Telescope,find_files,find_command=nnoremap,gec<cmd>Telescope,find_files,find_command=",nnoremapmanifest,gec,<cmd>Telescope,find_files,find_commannnoremap,cc,<cmd>Telescope,find_files,find_command=git,status,--porcelain,\|,sed,s\/^...\\/\/<c\r\>l<cr><cr><cr><cr>
 
@@ -266,11 +269,19 @@ endfunction
 function! s:PyPostSave()
     execute "!tidy-imports --black --quiet --replace-star-imports --action REPLACE " . bufname("%")
     execute "!isort " . bufname("%")
+    execute "!black " . bufname("%")
     execute "e"
 endfunction
 
 :command! PyPreSave :call s:PyPreSave()
 :command! PyPostSave :call s:PyPostSave()
+
+function! s:TomlFmt()
+    execute "!tomlfmt -i" . bufname("%")
+    execute "e"
+endfunction
+
+:command! TomlFmt :call s:TomlFmt()
 
 " ToggleLocationList
 "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
@@ -578,7 +589,7 @@ nnoremap <silent> <leader>dn <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 nnoremap <silent> <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
 nnoremap <silent> [d <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 nnoremap <silent> ]d <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
-nnoremap <silent> gh <cmd>Lspsaga lsp_finder<CR>
+" nnoremap <silent> gh <cmd>Lspsaga lsp_finder<CR>
 nnoremap <silent>K <cmd>Lspsaga hover_doc<CR>
 nnoremap <silent> gs <cmd>lua vim.lsp.buf.signature_help()<CR>
 
@@ -607,7 +618,9 @@ nnoremap <leader>t <cmd>lua require'telegraph'.telegraph({how='execute', cmd='ec
 nnoremap <leader>ma <cmd>lua require'telegraph'.telegraph({cmd='notify-send TheBoss "Get it Done"', how='execute'})<cr>
 nnoremap <leader>ms <cmd>lua require'telegraph'.telegraph({cmd='notify-send TheBoss "Get it Done"', how='execute'})<cr>
 
-nnoremap <leader><leader>b <cmd>lua  require'telegraph'.telegraph({cmd='google-chrome {cWORD}', how='subprocess'})<CR> command! -nargs=1 T lua require'telegraph'.telegraph({cmd=<f-args>})
+nnoremap <leader><leader>b <cmd>lua  require'telegraph'.telegraph({cmd='brave {cWORD}', how='subprocess'})<CR>
+" command! -nargs=1 T lua require'telegraph'.telegraph({cmd=<f-args>})
+nnoremap <leader><leader>i <cmd>lua  require'telegraph'.telegraph({cmd='feh {cWORD}', how='subprocess'})<CR>
 
 nnoremap <leader><leader>c I[//]: <> (<esc>A)<esc>
 nnoremap <leader>ts <cmd>UltestSummary<cr>
@@ -653,3 +666,4 @@ function! ToggleHiddenAll()
 endfunction
 
 nnoremap <silent> <S-h> :call ToggleHiddenAll()<CR>
+
