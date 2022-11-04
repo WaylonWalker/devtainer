@@ -3,13 +3,15 @@
 vim.api.nvim_command('set path+=**')
 vim.o.winbar = " %{%v:lua.vim.fn.expand('%F')%}  %{%v:lua.require'nvim-navic'.get_location()%} %= %{%v:lua.waylonwalker.plugins.fugitive.get_remote()%}"
 vim.opt.background = 'dark'
+vim.opt.swapfile = false
+vim.opt.autoread = true
 vim.opt.backup = true -- automatically save a backup file
 vim.opt.backupdir:remove('.') -- keep backups out of the current directory
 vim.opt.breakindent = true -- maintain indent when wrapping indented lines
 vim.opt.clipboard = 'unnamedplus' -- Use Linux system clipboard
 vim.opt.cmdheight = 0
 vim.opt.completeopt = 'menuone,noinsert,noselect'
-vim.opt.confirm = true -- ask for confirmation instead of erroring
+vim.opt.confirm = false -- ask for confirmation instead of erroring
 vim.opt.expandtab = true
 vim.opt.ignorecase = true
 vim.opt.inccommand = 'nosplit' -- Live highlighting of search term during substitution

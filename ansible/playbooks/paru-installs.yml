@@ -72,6 +72,22 @@
       zsh-history-substring-search
       zsh-syntax-highlighting
       zsh-vi-mode
+      dog
+      inetutils
+      docker-compose
+      cloudflared
+      bitwarden-cli-bin
+      google-chrome
+      openssh
+      gthumb
+      duf
+      systemd-boot-pacman-hook
+      zoom
+      blockbench-bin
+
+# cuda
+# cudnn
 
 # paru -Syu virt-manager qemu-desktop libvirt edk2-ovmf dnsmasq iptables jack2 --noconfirm
+#
 # sshfs
