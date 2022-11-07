@@ -30,6 +30,6 @@ M.nobg = function()
     vim.cmd('nohl')
 end
 
-api.nvim_set_keymap('n', '<leader><cr>', ":lua require'waylonwalker.color'.nobg()<cr>", { noremap = true, silent = true })
+api.nvim_set_keymap('n', '<leader><cr>', ":lua require'waylonwalker.util.color'.nobg()<cr>", { noremap = true, silent = true })
 
 return M
