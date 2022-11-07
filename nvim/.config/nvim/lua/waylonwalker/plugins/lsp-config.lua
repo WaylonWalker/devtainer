@@ -7,6 +7,10 @@ local function on_attach(client, bufnr)
     end
 end
 
+local function on_attach_plain(client, bufnr)
+end
+
+
 local M = {}
 
 -- Active LSP's
@@ -33,7 +37,7 @@ require'lspconfig'.pylsp.setup{
                 }
             }
         },
-        on_attach = on_attach,
+        on_attach = on_attach_plain,
         capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
     }
 

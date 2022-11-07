@@ -8,6 +8,9 @@ local set = vim.keymap.set
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- quickfix
+set('n', '<c-j>', '<cmd>cnext<cr>')
+set('n', '<c-k>', '<cmd>cprev<cr>')
 
 -- Reselect visual selection after indenting
 set('v', '<', '<gv')
@@ -77,7 +80,7 @@ set('n', 'gep', '<cmd>e ~/.config/nvim/lua/waylonwalker/packer.lua<CR>')
 --edit next to me
 set('n', 'gee', ':e %:h<C-Z>')
 -- edit nvim settings
-set('n', 'ges', '<cmd>e ~/.config/nvim/settings.vim<CR>')
+set('n', 'ges', '<cmd>e ~/.config/nvim/lua/waylonwalker/options.lua<CR>')
 -- edit tmuux config
 set('n', 'get', '<cmd>e ~/.tmux.conf<CR>')
 -- edit zshrc
@@ -225,3 +228,7 @@ set('n', '<leader><cr>', ":lua 'waylonwalker.util.color'.nobg()<cr>", { noremap 
 -- toggler
 set('n', '<c-q>', "<cmd>lua require'waylonwalker.util.toggler'.openqf()<cr>", { noremap = true, silent = true })
 set('n', '<c-w><c-w>', "<cmd>lua require'waylonwalker.util.toggler'.winmax()<cr>", { noremap = true, silent = true })
+
+-- temp fix for gqq not working while pylsp is running
+set('n', '<leader>qq', "yy<cmd>lua require'waylonwalker.util.window'.open_window()<cr>pkddgqqggyG:q<cr>Vp")
+set('v', '<leader>qq', "d<cmd>lua require'waylonwalker.util.window'.open_window()<cr>pkddgqqggyG:q<cr>P")
