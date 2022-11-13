@@ -22,23 +22,84 @@ if settings.packer_auto_sync then
   })
 end
 
--- M.has_pyflyby = os.execute('command -v tidy-imports') == 0
--- M.has_black = os.execute('command -v black') == 0
--- M.has_isort = os.execute('command -v isort') == 0
-
 M.format_python = function()
-    vim.cmd('silent execute "!tidy-imports --black --quiet --replace-star-imports --replace --add-missing --remove-unused " . bufname("%")')
-    vim.cmd('silent execute "!isort " . bufname("%")')
-    vim.cmd('silent execute "!black " . bufname("%")')
+    if settings.auto_format.python then
+        vim.cmd('silent execute "%!tidy-imports --black --quiet --replace-star-imports --replace --add-missing --remove-unused " . bufname("%")')
+        vim.cmd('silent execute "%!isort " . bufname("%")')
+        vim.cmd('silent execute "%!black " . bufname("%")')
+    end
 end
 
-if settings.auto_format.python then
-    autocmd({ "BufWritePost" }, {
-        group=M.waylonwalker_augroup,
-        pattern = { "*.py" },
-        callback = M.format_python,
-    })
+autocmd({ "BufWritePost" }, {
+    group=M.waylonwalker_augroup,
+    pattern = { "*.py" },
+    callback = M.format_python,
+})
+
+M.format_markdown = function()
+    if settings.auto_format.markdown then
+        vim.cmd('silent execute "!tree-sitter-formatter " . bufname("%")')
+    end
 end
+
+
+autocmd({ "BufWritePost" }, {
+    group=M.waylonwalker_augroup,
+    pattern = { "*.md" },
+    callback = M.format_markdown,
+})
+
+M.format_html = function()
+    if settings.auto_format.markdown then
+        vim.cmd('silent execute "!prettier --write " . bufname("%")')
+    end
+end
+
+autocmd({ "BufWritePost" }, {
+    group=M.waylonwalker_augroup,
+    pattern = { "*.html" },
+    callback = M.format_html,
+})
+
+M.format_javascript = function()
+    if settings.auto_format.javascript then
+        vim.cmd('silent execute "!prettier --write " . bufname("%")')
+    end
+end
+
+autocmd({ "BufWritePost" }, {
+    group=M.waylonwalker_augroup,
+    pattern = { "*.js" },
+    callback = M.format_javascript,
+})
+
+M.format_json = function()
+    if settings.auto_format.json then
+        vim.cmd('silent execute "%!jq \'\'"')
+    end
+end
+
+
+autocmd({ "BufWritePost" }, {
+    group=M.waylonwalker_augroup,
+    pattern = { "*.json" },
+    callback = M.format_json,
+})
+
+M.format_yaml = function()
+    if settings.auto_format.yaml then
+        vim.cmd('silent execute "%!yamlfmt"')
+    end
+end
+
+autocmd({ "BufWritePost" }, {
+    group=M.waylonwalker_augroup,
+    pattern = { "*.yaml", "*.yml" },
+    callback = M.format_yaml,
+})
+
+
+
 
 return M
 

@@ -23,5 +23,4 @@ M.plugins = require'waylonwalker.plugins'
 M.snippets = require'waylonwalker.snippets'
 
 
-
 return M

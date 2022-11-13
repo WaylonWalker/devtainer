@@ -6,6 +6,11 @@ end
 
 M.auto_format = {
     python=true,
+    markdown=true,
+    html=true,
+    javascript=true,
+    json=true,
+    yaml=true,
 }
 
 return M
