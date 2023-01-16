@@ -279,3 +279,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from pyinstrument import Profiler
+from rich import print as rich_print
+import typer
+import pyautogui
