@@ -1,156 +1,235 @@
 -- SETUP
 local navic = require("nvim-navic")
 
-local function on_attach(client, bufnr)
-    if client.server_capabilities.documentSymbolProvider then
-        navic.attach(client, bufnr)
-    end
-end
+local null_ls = require("null-ls")
 
-local function on_attach_plain(client, bufnr)
-end
+local h = require("null-ls.helpers")
+local methods = require("null-ls.methods")
 
+local FORMATTING = methods.internal.FORMATTING
 
-local M = {}
-
--- Active LSP's
-
-require'lspconfig'.pylsp.setup{
-        enable = true,
-        settings = {
-            pylsp = {
-                configurationSources = {"flake8"},
-                plugins = {
-                    pycodestyle = {enabled = false},
-                    flake8 = {enabled = true},
-                    mypy = {
-                        enabled = true,
-                        live_mode =true,
-                        strict = true
-                    },
-                    jedi_completion = {fuzzy = true},
-                    jedi_completion = {fuzzy = true, enabled=true},
-                    jedi_hover = {enabled = true},
-                    jedi_references = {enabled = true},
-                    jedi_signature_help = {enabled = true},
-                    jedi_symbols = {enabled = true, all_scopes = true},
-                }
-            }
+null_ls.builtins.formatting.tidy_import = h.make_builtin({
+    name = "tidy_import",
+    meta = {
+        url = "https://github.com/deshaw/pyflyby",
+        description = "automatic imports for python",
+    },
+    method = FORMATTING,
+    filetypes = { "python" },
+    generator_opts = {
+        command = "tidy-imports",
+        args = {
+            "--black",
+            "--quiet",
+            "--replace-star-imports",
+            '--add-missing',
+            "--replace",
+            '--remove-unused',
+            "$FILENAME",
         },
-        on_attach = on_attach_plain,
-        capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-    }
+        to_stdin = false,
+        to_temp_file = true,
+    },
+    factory = h.formatter_factory,
+})
+
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+null_ls.setup({
+    sources = {
+        -- formatting
+        null_ls.builtins.formatting.stylua,
+        null_ls.builtins.formatting.black.with({extra_args={'--fast'}}),
+        null_ls.builtins.formatting.isort,
+        null_ls.builtins.formatting.tidy_import,
+        null_ls.builtins.formatting.prettier,
+        null_ls.builtins.formatting.yamlfmt,
+        null_ls.builtins.formatting.sqlformat,
+        null_ls.builtins.formatting.beautysh,
+        null_ls.builtins.formatting.trim_whitespace,
+        null_ls.builtins.formatting.trim_newlines,
+        null_ls.builtins.formatting.markdownlint,
+        null_ls.builtins.formatting.json_tool,
+
+        -- diagnostics
+        null_ls.builtins.diagnostics.eslint,
+        null_ls.builtins.diagnostics.markdownlint,
+        null_ls.builtins.diagnostics.pydocstyle,
+
+        -- completions
+        null_ls.builtins.completion.spell,
+    },
+    on_attach = function(client, bufnr)
+        if client.supports_method("textDocument/formatting") then
+            vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+            vim.api.nvim_create_autocmd("BufWritePre", {
+                -- group = M.waylonwalker_augroup,
+                group = augroup,
+                buffer = bufnr,
+                callback = function()
+                    -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
+                    vim.lsp.buf.format()
+                end,
+            })
+        end
+    end,
+})
+
+--- CREDIT PYPEADAY
+local nnoremap = require('waylonwalker.keymap').nnoremap
+
+local lsp = require("lsp-zero")
+
+lsp.preset("recommended")
+
+lsp.ensure_installed({
+  'bashls',
+  'dockerls',
+  'html',
+  'jedi_language_server',
+  'jsonls',
+  'marksman',
+  'pylsp',
+  'sumneko_lua',
+  'terraformls',
+  'yamlls',
+})
+
+require('mason-null-ls').setup({
+  ensure_installed = nil,
+  automatic_installation = true,
+  automatic_setup = false,
+})
 
 
-
-require'lspconfig'.sumneko_lua.setup{on_attach=on_attach}
-
-require'lspconfig'.jedi_language_server.setup{
-    on_attach=on_attach,
-    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-}
-
-require'lspconfig'.cssls.setup{
-    on_attach=on_attach,
-    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-}
-
-require'lspconfig'.bashls.setup{
-    on_attach=on_attach,
-    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-}
-
-require('telescope').load_extension('dap')
-
-require('dap-python').setup('~/miniconda3/envs/markata/bin/python')
-
-require'lspconfig'.yamlls.setup{
-    on_attach=on_attach,
-    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities()),
+-- Fix Undefined global 'vim'
+lsp.configure('sumneko_lua', {
     settings = {
-        yaml = {
-            schemas = {
-                ["https://raw.githubusercontent.com/quantumblacklabs/kedro/develop/static/jsonschema/kedro-catalog-0.17.json"]= "conf/**/*catalog*",
-                ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*"
+        Lua = {
+            diagnostics = {
+                globals = { 'vim' }
             }
         }
     }
+})
+
+lsp.configure('pylsp', {
+    settings = {
+      pylsp = {
+          configurationSources = {"flake8"},
+          plugins = {
+              pycodestyle = {enabled = false},
+              flake8 = {enabled = true},
+              mypy = {
+                  enabled = true,
+                  live_mode =true,
+                  strict = true
+              },
+              jedi_completion = {fuzzy = true, enabled=true},
+              jedi_hover = {enabled = true},
+              jedi_references = {enabled = true},
+              jedi_signature_help = {enabled = true},
+              jedi_symbols = {enabled = true, all_scopes = true},
+          }
+      }
+    }
+  })
+
+
+local cmp = require('cmp')
+local cmp_select = {behavior = cmp.SelectBehavior.Select}
+local cmp_sources = {
+    { name = "luasnip" },
+    { name = 'nvim_lsp' },
+    { name = 'nvim_lsp_signature_help' },
+    { name = 'nvim_lua' },
+    { name = 'treesitter' },
+    { name = 'buffer' },
+    { name = 'path' },
+    { name = 'tmux' },
+    { name = 'spell' },
 }
+local lspkind = require('lspkind')
+local cmp_formatting = {
+    format = lspkind.cmp_format({
+      mode = 'symbol', -- show only symbol annotations
+      maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+      ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+    })
+}
+local cmp_mappings = lsp.defaults.cmp_mappings({
+  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+  ["<C-Space>"] = cmp.mapping.complete(),
+  ['<Down>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+  ['<Up>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+  ['<C-d>'] = cmp.mapping.scroll_docs(4), -- yes 4 is down
+  ['<C-f>'] = cmp.mapping.scroll_docs(-4), --yes -4 is up
+  ['<C-e>'] = cmp.mapping.close(),
+  ['<CR>'] = cmp.mapping.confirm({
+    behavior = cmp.ConfirmBehavior.Replace,
+    select = true,
+  })
+})
 
--- Disabled LSP's
-
--- require'lspconfig.configs'.kedro = {
---     default_config = {
---         cmd = {"kedro-lsp"};
---         filetypes = {"python", 'yaml'};
---         root_dir = function(fname)
---             return vim.fn.getcwd()
---         end;
---     };
--- };
-
-
--- require'lspconfig'.kedro.setup{
---     on_attach=on_attach,
---     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
--- }
-
--- require'lspconfig'.html.setup{
---     on_attach=on_attach,
---     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
--- }
--- require'lspconfig'.cssls.setup{
---     on_attach=on_attach,
---     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
--- }
---
-
--- require 'lspconfig.configs'.kedro = {
---     default_config = {
---         cmd = {"kedro-lsp"};
---         filetypes = {"python"};
---         root_dir = function(fname)
---             return vim.fn.getcwd()
---         end;
---     };
--- };
-
--- local has_kedro = os.execute('command -v kedro-lsp')
-
--- if (has_kedro == 256 )
--- then
--- require'lspconfig'.kedro.setup{
---     on_attach=on_attach,
---     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
--- }
--- else
---     -- does not have kedro lsp
---     if ( io.popen('pip show kedro'):read('*a'):match('Name: kedro') ~= nil)
---     then
---         print('kedro is installed without the lsp')
---     else
---         -- kedro is not installed
---         -- no need for kedro_lsp
---     end
--- end
+-- disable completion with tab
+-- this helps with copilot setup
+cmp_mappings['<Tab>'] = nil
+cmp_mappings['<S-Tab>'] = nil
 
 
--- require 'lspconfig.configs'.markata = {
---     default_config = {
---         cmd = {"markata-lsp"};
---         filetypes = {"markdown"};
---         root_dir = function(fname)
---             return vim.fn.getcwd()
---         end;
---     };
--- };
 
--- require'lspconfig'.markata.setup{
---     on_attach=on_attach,
---     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
--- }
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      -- For `luasnip` user.
+      require('luasnip').lsp_expand(args.body)
+    end,
+  },
+  window = {
+      completion = cmp.config.window.bordered(),
+  },
+})
 
-return M
+lsp.setup_nvim_cmp({
+  mapping = cmp_mappings,
+  sources = cmp_sources,
+  formatting = cmp_formatting,
+})
+
+lsp.set_preferences({
+    suggest_lsp_servers = false,
+    sign_icons = {
+        error = '',
+        warn = '',
+        hint = '',
+        info = ''
+    }
+})
+
+
+-- " nnoremap <silent> <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
+nnoremap("<silent> (( ", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
+nnoremap("<silent> )) ", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
+
+nnoremap("<leader>vd", "<cmd>lua vim.lsp.buf.definition()<CR>")
+nnoremap("<leader>vD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
+nnoremap("<leader>vh", "<cmd>lua vim.lsp.buf.hover()<CR>")
+nnoremap("<leader>vi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
+nnoremap("<leader>vsh", "<cmd>lua vim.lsp.buf.signature_help()<CR>")
+-- nnoremap("<leader>vrr", "<cmd>lua vim.lsp.buf.references()<CR>")
+nnoremap("<leader>vrr", ":Telescope lsp_references<CR>")
+nnoremap("<leader>vrn", "<cmd>lua vim.lsp.buf.rename()<CR>")
+nnoremap("<leader>vca", "<cmd>lua vim.lsp.buf.code_action()<CR>")
+-- " show_line_diagnostics deprecated for open_float
+nnoremap("<leader>vsd", " vim.diagnostic.open_float()<CR>  ")
+nnoremap("<leader>vsl", "<cmd> lua vim.diagnostic.setloclist({open=false})<CR>")
+nnoremap("<leader>vn", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
+
+
+lsp.setup()
+
+vim.diagnostic.config({
+    virtual_text = true,
+})
 

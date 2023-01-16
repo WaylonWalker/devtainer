@@ -1,5 +1,6 @@
 -- Setup nvim-cmp.
 local cmp = require'cmp'
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 
 cmp.setup({
 snippet = {
@@ -37,7 +38,7 @@ sources = {
     { name = 'path' },
     { name = 'buffer' },
     { name = 'calc' },
-    { name = 'tmux' },
+    { name = 'tmux', option = {all_panes=true}},
     { name = 'rg' },
     { name = 'nvim_lsp_signature_help' },
     { name = "git" },
@@ -45,3 +46,8 @@ sources = {
 })
 
 require("cmp_git").setup()
+
+cmp.event:on(
+  'confirm_done',
+  cmp_autopairs.on_confirm_done()
+)

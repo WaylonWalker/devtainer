@@ -8,6 +8,33 @@ local set = vim.keymap.set
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+local M = {}
+
+local function bind(op, outer_opts)
+    outer_opts = outer_opts or {noremap = true}
+    return function(lhs, rhs, opts)
+        opts = vim.tbl_extend("force",
+            outer_opts,
+            opts or {}
+        )
+        vim.keymap.set(op, lhs, rhs, opts)
+        -- vim.api.nvim_set_keymap(op, lhs, rhs, opts)
+    end
+end
+
+
+M.nmap = bind("n", {noremap = false})
+M.nnoremap = bind("n")
+M.vnoremap = bind("v")
+M.xnoremap = bind("x")
+M.inoremap = bind("i")
+
+
+-- scrolling zz
+-- quickfix
+set('n', '<c-d>', '<c-d>zz')
+set('n', '<c-u>', '<c-u>zz')
+
 -- quickfix
 set('n', '<c-j>', '<cmd>cnext<cr>')
 set('n', '<c-k>', '<cmd>cprev<cr>')
@@ -140,6 +167,7 @@ set('n', '<leader>o', '<cmd>Telescope old_files<cr>')
 set('n', '<leader>q', '<cmd>Telescope lsp_document_diagnostics<cr>')
 set('n', '<leader>ff', '<cmd>Telescope find_files<cr>')
 set('n', '<leader>fb', '<cmd>Telescope buffers<cr>')
+set('n', '<leader>fd', '<cmd>Telescope lsp_document_symbols<cr>')
 set('n', '<leader>fc', '<cmd>Telescope colorscheme<cr>')
 set('n', '<leader>fg', '<cmd>Telescope git_files<cr>')
 set('n', '<leader>fs', '<cmd>Telescope grep_string<cr>')
@@ -232,3 +260,8 @@ set('n', '<c-w><c-w>', "<cmd>lua require'waylonwalker.util.toggler'.winmax()<cr>
 -- temp fix for gqq not working while pylsp is running
 set('n', '<leader>qq', "yy<cmd>lua require'waylonwalker.util.window'.open_window()<cr>pkddgqqggyG:q<cr>Vp")
 set('v', '<leader>qq', "d<cmd>lua require'waylonwalker.util.window'.open_window()<cr>pkddgqqggyG:q<cr>P")
+
+set('n', "<silent> (( ", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
+set('n', "<silent> )) ", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
+
+return M
