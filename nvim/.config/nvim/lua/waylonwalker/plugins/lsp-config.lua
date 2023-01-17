@@ -74,8 +74,7 @@ null_ls.setup({
     end,
 })
 
---- CREDIT PYPEADAY
-local nnoremap = require('waylonwalker.keymap').nnoremap
+--- CREDIT THEPRIMEAGEN -> PYPEADAY
 
 local lsp = require("lsp-zero")
 
@@ -232,4 +231,3 @@ lsp.setup()
 vim.diagnostic.config({
     virtual_text = true,
 })
-
