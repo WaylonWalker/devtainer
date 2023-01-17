@@ -293,6 +293,12 @@ _G.packer_plugins = {
     path = "/home/waylon/.local/share/nvim/site/pack/packer/start/nvim-compe",
     url = "https://github.com/hrsh7th/nvim-compe"
   },
+  ["nvim-coverage"] = {
+    config = { "\27LJ\2\n6\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\rcoverage\frequire\0" },
+    loaded = true,
+    path = "/home/waylon/.local/share/nvim/site/pack/packer/start/nvim-coverage",
+    url = "https://github.com/andythigpen/nvim-coverage"
+  },
   ["nvim-dap"] = {
     loaded = true,
     path = "/home/waylon/.local/share/nvim/site/pack/packer/start/nvim-dap",
@@ -504,39 +510,29 @@ _G.packer_plugins = {
 }
 
 time([[Defining packer_plugins]], false)
--- Config for: null-ls.nvim
-time([[Config for null-ls.nvim]], true)
-try_loadstring("\27LJ\2\n5\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\fnull-ls\frequire\0", "config", "null-ls.nvim")
-time([[Config for null-ls.nvim]], false)
--- Config for: gitsigns.nvim
-time([[Config for gitsigns.nvim]], true)
-try_loadstring("\27LJ\2\n6\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\rgitsigns\frequire\0", "config", "gitsigns.nvim")
-time([[Config for gitsigns.nvim]], false)
+-- Config for: nvim-coverage
+time([[Config for nvim-coverage]], true)
+try_loadstring("\27LJ\2\n6\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\rcoverage\frequire\0", "config", "nvim-coverage")
+time([[Config for nvim-coverage]], false)
 -- Config for: nvim-autopairs
 time([[Config for nvim-autopairs]], true)
 try_loadstring("\27LJ\2\n@\0\0\3\0\3\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\0\0B\0\2\1K\0\1\0\nsetup\19nvim-autopairs\frequire\0", "config", "nvim-autopairs")
 time([[Config for nvim-autopairs]], false)
+-- Config for: null-ls.nvim
+time([[Config for null-ls.nvim]], true)
+try_loadstring("\27LJ\2\n5\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\fnull-ls\frequire\0", "config", "null-ls.nvim")
+time([[Config for null-ls.nvim]], false)
 -- Config for: lspsaga.nvim
 time([[Config for lspsaga.nvim]], true)
 try_loadstring("\27LJ\2\n9\0\0\3\0\3\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\0\0B\0\2\1K\0\1\0\nsetup\flspsaga\frequire\0", "config", "lspsaga.nvim")
 time([[Config for lspsaga.nvim]], false)
+-- Config for: gitsigns.nvim
+time([[Config for gitsigns.nvim]], true)
+try_loadstring("\27LJ\2\n6\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\rgitsigns\frequire\0", "config", "gitsigns.nvim")
+time([[Config for gitsigns.nvim]], false)
 
 -- Command lazy-loads
 time([[Defining lazy-load commands]], true)
-pcall(vim.api.nvim_create_user_command, 'Focus', function(cmdargs)
-          require('packer.load')({'vim-dispatch'}, { cmd = 'Focus', l1 = cmdargs.line1, l2 = cmdargs.line2, bang = cmdargs.bang, args = cmdargs.args, mods = cmdargs.mods }, _G.packer_plugins)
-        end,
-        {nargs = '*', range = true, bang = true, complete = function()
-          require('packer.load')({'vim-dispatch'}, {}, _G.packer_plugins)
-          return vim.fn.getcompletion('Focus ', 'cmdline')
-      end})
-pcall(vim.api.nvim_create_user_command, 'Start', function(cmdargs)
-          require('packer.load')({'vim-dispatch'}, { cmd = 'Start', l1 = cmdargs.line1, l2 = cmdargs.line2, bang = cmdargs.bang, args = cmdargs.args, mods = cmdargs.mods }, _G.packer_plugins)
-        end,
-        {nargs = '*', range = true, bang = true, complete = function()
-          require('packer.load')({'vim-dispatch'}, {}, _G.packer_plugins)
-          return vim.fn.getcompletion('Start ', 'cmdline')
-      end})
 pcall(vim.api.nvim_create_user_command, 'Dispatch', function(cmdargs)
           require('packer.load')({'vim-dispatch'}, { cmd = 'Dispatch', l1 = cmdargs.line1, l2 = cmdargs.line2, bang = cmdargs.bang, args = cmdargs.args, mods = cmdargs.mods }, _G.packer_plugins)
         end,
@@ -550,6 +546,20 @@ pcall(vim.api.nvim_create_user_command, 'Make', function(cmdargs)
         {nargs = '*', range = true, bang = true, complete = function()
           require('packer.load')({'vim-dispatch'}, {}, _G.packer_plugins)
           return vim.fn.getcompletion('Make ', 'cmdline')
+      end})
+pcall(vim.api.nvim_create_user_command, 'Focus', function(cmdargs)
+          require('packer.load')({'vim-dispatch'}, { cmd = 'Focus', l1 = cmdargs.line1, l2 = cmdargs.line2, bang = cmdargs.bang, args = cmdargs.args, mods = cmdargs.mods }, _G.packer_plugins)
+        end,
+        {nargs = '*', range = true, bang = true, complete = function()
+          require('packer.load')({'vim-dispatch'}, {}, _G.packer_plugins)
+          return vim.fn.getcompletion('Focus ', 'cmdline')
+      end})
+pcall(vim.api.nvim_create_user_command, 'Start', function(cmdargs)
+          require('packer.load')({'vim-dispatch'}, { cmd = 'Start', l1 = cmdargs.line1, l2 = cmdargs.line2, bang = cmdargs.bang, args = cmdargs.args, mods = cmdargs.mods }, _G.packer_plugins)
+        end,
+        {nargs = '*', range = true, bang = true, complete = function()
+          require('packer.load')({'vim-dispatch'}, {}, _G.packer_plugins)
+          return vim.fn.getcompletion('Start ', 'cmdline')
       end})
 time([[Defining lazy-load commands]], false)
 
