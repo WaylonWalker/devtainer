@@ -22,9 +22,9 @@ null_ls.builtins.formatting.tidy_import = h.make_builtin({
             "--black",
             "--quiet",
             "--replace-star-imports",
-            '--add-missing',
+            "--add-missing",
             "--replace",
-            '--remove-unused',
+            "--remove-unused",
             "$FILENAME",
         },
         to_stdin = false,
@@ -38,7 +38,7 @@ null_ls.setup({
     sources = {
         -- formatting
         null_ls.builtins.formatting.stylua,
-        null_ls.builtins.formatting.black.with({extra_args={'--fast'}}),
+        null_ls.builtins.formatting.black.with({ extra_args = { "--fast" } }),
         null_ls.builtins.formatting.isort,
         null_ls.builtins.formatting.tidy_import,
         null_ls.builtins.formatting.prettier,
@@ -75,137 +75,133 @@ null_ls.setup({
 })
 
 --- CREDIT THEPRIMEAGEN -> PYPEADAY
+local nnoremap = require("waylonwalker.keymap").nnoremap
 
 local lsp = require("lsp-zero")
 
 lsp.preset("recommended")
 
 lsp.ensure_installed({
-  'bashls',
-  'dockerls',
-  'html',
-  'jedi_language_server',
-  'jsonls',
-  'marksman',
-  'pylsp',
-  'sumneko_lua',
-  'terraformls',
-  'yamlls',
+    "bashls",
+    "dockerls",
+    "html",
+    "jedi_language_server",
+    "jsonls",
+    "marksman",
+    "pylsp",
+    "sumneko_lua",
+    "terraformls",
+    "yamlls",
 })
 
-require('mason-null-ls').setup({
-  ensure_installed = nil,
-  automatic_installation = true,
-  automatic_setup = false,
+require("mason-null-ls").setup({
+    ensure_installed = nil,
+    automatic_installation = true,
+    automatic_setup = false,
 })
-
 
 -- Fix Undefined global 'vim'
-lsp.configure('sumneko_lua', {
+lsp.configure("sumneko_lua", {
     settings = {
         Lua = {
             diagnostics = {
-                globals = { 'vim' }
-            }
-        }
-    }
+                globals = { "vim" },
+            },
+        },
+    },
 })
 
-lsp.configure('pylsp', {
+lsp.configure("pylsp", {
     settings = {
-      pylsp = {
-          configurationSources = {"flake8"},
-          plugins = {
-              pycodestyle = {enabled = false},
-              flake8 = {enabled = true},
-              mypy = {
-                  enabled = true,
-                  live_mode =true,
-                  strict = true
-              },
-              jedi_completion = {fuzzy = true, enabled=true},
-              jedi_hover = {enabled = true},
-              jedi_references = {enabled = true},
-              jedi_signature_help = {enabled = true},
-              jedi_symbols = {enabled = true, all_scopes = true},
-          }
-      }
-    }
-  })
+        pylsp = {
+            configurationSources = { "flake8" },
+            plugins = {
+                pycodestyle = { enabled = false },
+                flake8 = { enabled = true },
+                mypy = {
+                    enabled = true,
+                    live_mode = true,
+                    strict = true,
+                },
+                jedi_completion = { fuzzy = true, enabled = true },
+                jedi_hover = { enabled = true },
+                jedi_references = { enabled = true },
+                jedi_signature_help = { enabled = true },
+                jedi_symbols = { enabled = true, all_scopes = true },
+            },
+        },
+    },
+})
 
-
-local cmp = require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
+local cmp = require("cmp")
+local cmp_select = { behavior = cmp.SelectBehavior.Select }
 local cmp_sources = {
     { name = "luasnip" },
-    { name = 'nvim_lsp' },
-    { name = 'nvim_lsp_signature_help' },
-    { name = 'nvim_lua' },
-    { name = 'treesitter' },
-    { name = 'buffer' },
-    { name = 'path' },
-    { name = 'tmux' },
-    { name = 'spell' },
+    { name = "nvim_lsp" },
+    { name = "nvim_lsp_signature_help" },
+    { name = "nvim_lua" },
+    { name = "treesitter" },
+    { name = "buffer" },
+    { name = "path" },
+    { name = "tmux" },
+    { name = "spell" },
 }
-local lspkind = require('lspkind')
+local lspkind = require("lspkind")
 local cmp_formatting = {
     format = lspkind.cmp_format({
-      mode = 'symbol', -- show only symbol annotations
-      maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
-      ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
-    })
+        mode = "symbol", -- show only symbol annotations
+        maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+        ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+    }),
 }
 local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-  ["<C-Space>"] = cmp.mapping.complete(),
-  ['<Down>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
-  ['<Up>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
-  ['<C-d>'] = cmp.mapping.scroll_docs(4), -- yes 4 is down
-  ['<C-f>'] = cmp.mapping.scroll_docs(-4), --yes -4 is up
-  ['<C-e>'] = cmp.mapping.close(),
-  ['<CR>'] = cmp.mapping.confirm({
-    behavior = cmp.ConfirmBehavior.Replace,
-    select = true,
-  })
+    ["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
+    ["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
+    ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<Down>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+    ["<Up>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+    ["<C-d>"] = cmp.mapping.scroll_docs(4), -- yes 4 is down
+    ["<C-f>"] = cmp.mapping.scroll_docs(-4), --yes -4 is up
+    ["<C-e>"] = cmp.mapping.close(),
+    ["<CR>"] = cmp.mapping.confirm({
+        behavior = cmp.ConfirmBehavior.Replace,
+        select = true,
+    }),
 })
 
 -- disable completion with tab
 -- this helps with copilot setup
-cmp_mappings['<Tab>'] = nil
-cmp_mappings['<S-Tab>'] = nil
-
-
+cmp_mappings["<Tab>"] = nil
+cmp_mappings["<S-Tab>"] = nil
 
 cmp.setup({
-  snippet = {
-    expand = function(args)
-      -- For `luasnip` user.
-      require('luasnip').lsp_expand(args.body)
-    end,
-  },
-  window = {
-      completion = cmp.config.window.bordered(),
-  },
+    snippet = {
+        expand = function(args)
+            -- For `luasnip` user.
+            require("luasnip").lsp_expand(args.body)
+        end,
+    },
+    window = {
+        completion = cmp.config.window.bordered(),
+    },
 })
 
 lsp.setup_nvim_cmp({
-  mapping = cmp_mappings,
-  sources = cmp_sources,
-  formatting = cmp_formatting,
+    mapping = cmp_mappings,
+    sources = cmp_sources,
+    formatting = cmp_formatting,
 })
 
 lsp.set_preferences({
     suggest_lsp_servers = false,
     sign_icons = {
-        error = '',
-        warn = '',
-        hint = '',
-        info = ''
-    }
+        error = "",
+        warn = "",
+        hint = "",
+        info = "",
+    },
 })
-
 
 -- " nnoremap <silent> <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
 nnoremap("<silent> (( ", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
@@ -224,7 +220,6 @@ nnoremap("<leader>vca", "<cmd>lua vim.lsp.buf.code_action()<CR>")
 nnoremap("<leader>vsd", " vim.diagnostic.open_float()<CR>  ")
 nnoremap("<leader>vsl", "<cmd> lua vim.diagnostic.setloclist({open=false})<CR>")
 nnoremap("<leader>vn", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
-
 
 lsp.setup()
 
