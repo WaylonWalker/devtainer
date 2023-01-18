@@ -21,6 +21,7 @@ local packer_bootstrap = ensure_packer()
 vim.cmd([[packadd packer.nvim]])
 
 return require("packer").startup(function(use)
+    use("whiteinge/diffconflicts")
     use({
         "andythigpen/nvim-coverage",
         requires = "nvim-lua/plenary.nvim",
