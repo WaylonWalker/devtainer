@@ -1,0 +1,5 @@
+_min_copier_version: v6.0.0b0
+_envops:
+  variable_end_string: "]]"
+  variable_start_string: "[["
+package_name:

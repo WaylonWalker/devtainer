@@ -2,8 +2,9 @@ name: Release
 on:
   workflow_dispatch:
   push:
-    branches:
-      - "*"
+    paths:
+      - "[[ package_name ]]/**"
+      - "pyproject.toml"
 env:
   HATCH_INDEX_USER: __token__
   HATCH_INDEX_AUTH: ${{ secrets.pypi_password }}
@@ -15,3 +16,5 @@ jobs:
       - uses: waylonwalker/hatch-action@v3
         with:
           before-command: "test-lint"
+        env:
+          GH_TOKEN: ${{ github.token }}
