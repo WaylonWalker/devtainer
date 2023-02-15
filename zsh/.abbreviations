@@ -1,0 +1,60 @@
+#!/bin/zsh
+#taken from https://dev.to/frost/fish-style-abbreviations-in-zsh-40aa
+
+# declare a list of expandable aliases to fill up later
+typeset -a ealiases
+ealiases=()
+
+# write a function for adding an alias to the list mentioned above
+function abbrev-alias() {
+    alias $1
+    ealiases+=(${1%%\=*})
+}
+
+# expand any aliases in the current line buffer
+function expand-ealias() {
+    if [[ $LBUFFER =~ "\<(${(j:|:)ealiases})\$" ]]; then
+        zle _expand_alias
+        zle expand-word
+    fi
+    zle magic-space
+}
+zle -N expand-ealias
+
+# Bind the space key to the expand-alias function above, so that space will expand any expandable aliases
+bindkey ' '        expand-ealias
+bindkey '^ '       magic-space     # control-space to bypass completion
+bindkey -M isearch " "      magic-space     # normal space during searches
+
+# A function for expanding any aliases before accepting the line as is and executing the entered command
+expand-alias-and-accept-line() {
+    expand-ealias
+    zle .backward-delete-char
+    zle .accept-line
+}
+zle -N accept-line expand-alias-and-accept-line
+
+abbrev-alias g="git"
+abbrev-alias gst="git status"
+abbrev-alias gcb="git checkout --branch"
+abbrev-alias gco="git checkout"
+abbrev-alias gc='git commit --verbose'
+abbrev-alias diffstaged="git diff --staged | nvim - +Diffurcate '+Telescope find_files'"
+abbrev-alias diffmain="git diff main.. | nvim - +Diffurcate '+Telescope find_files'"
+abbrev-alias diffmaster="git diff master.. | nvim - +Diffurcate '+Telescope find_files'"
+abbrev-alias trackme='git branch --set-upstream-to=origin/$(git symbolic-ref --short HEAD)'
+abbrev-alias rebasemain='git pull origin main --rebase'
+abbrev-alias rebasedev='git pull origin develop --rebase'
+
+abbrev-alias po="poetry run"
+
+abbrev-alias gez="$EDITOR ~/.zshrc"
+abbrev-alias gsz="source ~/.zshrc"
+abbrev-alias geb="$EDITOR ~/.bashrc"
+abbrev-alias gsb="source ~/.bashrc"
+abbrev-alias gea="$EDITOR ~/.alias"
+abbrev-alias gsa="source ~/.alias"
+abbrev-alias get="$EDITOR ~/.tmux.conf"
+abbrev-alias gst="source ~/.tmux.conf"
+abbrev-alias gep="$EDITOR ~/.config/nvim/plugins.vim"
+abbrev-alias ges="$EDITOR ~/.config/nvim/settings.vim"
