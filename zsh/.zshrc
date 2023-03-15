@@ -81,7 +81,7 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 [[ -n "${key[Down]}" ]] && bindkey "${key[Down]}" history-beginning-search-forward
 
 
-~/.local/bin/ta
+[ command -v zellij ] && ~/.local/bin/za || ~/.local/bin/ta
 
 [ -d ~/projects ] && rm -rf ~/projects/ && mkdir ~/projects/ || mkdir ~/projects
 [ -d ~/work ] && [ `ls ~/work | wc -l` -gt 0 ] && ln -sf ~/work/* ~/projects/
