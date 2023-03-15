@@ -1,5 +1,12 @@
+from collections import namedtuple
+import pyperclip
+import copy
+import tomlkit
+import debugpy
+import openai
 import pkg_resources
 from dataclasses import dataclass
+import typer
 
 from os import environ
 from there import environ
@@ -30,7 +37,6 @@ from subprocess import STDOUT
 from tempfile import NamedTemporaryFile
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
-from types import NamedTuple
 import base64 as b64
 import platform
 import toml
@@ -142,7 +148,6 @@ from collections import OrderedDict
 from collections import UserDict
 from collections import defaultdict
 from collections import deque
-from collections import namedtuple
 from collections.abc import Mapping
 from concurrent.futures import ALL_COMPLETED
 from concurrent.futures import FIRST_COMPLETED
@@ -268,6 +273,7 @@ from markata.hookspec import hook_impl, register_attr
 
 from textual.widget import Widget
 from textual.widgets import Footer, Placeholder
+from textual.reactive import reactive
 
 from markdown_it import MarkdownIt
 from mdit_py_plugins.footnote import footnote_plugin
