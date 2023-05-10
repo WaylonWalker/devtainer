@@ -9,20 +9,33 @@ fi
 
 detach() {
     if [ ! -z "$ZELLIJ" ]; then
-        zellij action switch-mode session
-        xdotool key d
-        sleep 3
+        # zellij action switch-mode session
+        xdotool keydown alt key d keyup alt
+        sleep 1
     fi
 }
 
-detach
+if [ -z "$ZELLIJ" ]; then
+    zellij -c ~/.config/zellij/outer.kdl --layout ~/.config/zellij/outer-layouts/default.kdl
+    exit 1
+fi
+
+# detach
+
+# xdotool keydown alt key d
+# sleep .1
+# xdotool keyup alt
+
 
 # ask the user which directory to start in
-if [ -z $ZELLIJ ]; then
-    _session_name=$(cd $DIR && ls -d */ | sed  "s|/||g" | fzf --reverse --header="Select project from $(basename $DIR) >")
-else
-    _session_name=$(cd $DIR && zellij run --floating -- 'ls -d */ | sed  "s|/||g" | fzf --reverse --header="Select project from $(basename $DIR) >"')
-fi
+# if [ -z $ZELLIJ ]; then
+#     _session_name=$(cd $DIR && /bin/ls -d */ | sed  "s|/||g" | fzf --reverse --header="Select project from $(basename $DIR) >")
+# else
+#     _session_name=$(cd $DIR && zellij run --floating -- 'ls -d */ | sed  "s|/||g" | fzf --reverse --header="Select project from $(basename $DIR) >"')
+# fi
+
+_session_name=$(cd $DIR && /bin/ls -d */ | sed  "s|/||g" | fzf --reverse --header="Select project from $(basename $DIR) >")
+
 session_name=${_session_name//./_}
 path_name=$DIR/$_session_name
 

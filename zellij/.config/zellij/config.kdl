@@ -12,6 +12,11 @@ keybinds {
         bind "Alt d" { Detach; }
         bind "Alt x" { CloseFocus; SwitchToMode "Normal"; }
         bind "Alt f" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
+        unbind "Ctrl o" "Ctrl i" // let me jumplist
+        unbind "Ctrl q" // do not quit
+        unbind "Ctrl b"
+        bind "Alt Left" "Alt Up" { GoToPreviousTab; }
+        bind "Alt Right" "Alt Down" { GoToNextTab; }
     }
     locked {
         bind "Ctrl g" { SwitchToMode "Normal"; }
@@ -146,7 +151,6 @@ keybinds {
     }
     shared_except "locked" {
         bind "Ctrl g" { SwitchToMode "Locked"; }
-        bind "Ctrl q" { Quit; }
         bind "Alt n" { NewPane; }
         bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
         bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
@@ -157,13 +161,14 @@ keybinds {
         bind "Alt [" { PreviousSwapLayout; }
         bind "Alt ]" { NextSwapLayout; }
         bind "Alt e" { Run "lf"; }
+        bind "Alt g" { Run "gitui"; }
         bind "Alt w" { Run "zellij" "list-sessions"; }
     }
     shared_except "normal" "locked" {
         bind "Enter" "Esc" { SwitchToMode "Normal"; }
     }
     shared_except "pane" "locked" {
-        bind "Ctrl p" { SwitchToMode "Pane"; }
+        bind "Alt p" { SwitchToMode "Pane"; }
     }
     shared_except "resize" "locked" {
         bind "Ctrl n" { SwitchToMode "Resize"; }
@@ -172,7 +177,7 @@ keybinds {
         bind "Ctrl s" { SwitchToMode "Scroll"; }
     }
     shared_except "session" "locked" {
-        bind "Ctrl o" { SwitchToMode "Session"; }
+        bind "Alt o" { SwitchToMode "Session"; }
     }
     shared_except "tab" "locked" {
         bind "Ctrl t" { SwitchToMode "Tab"; }
@@ -245,6 +250,7 @@ themes {
         white 255 255 255
     }
 }
+pane_frames false
 
 // Choose the theme that is specified in the themes section.
 // Default: default
