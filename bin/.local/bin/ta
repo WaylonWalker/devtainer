@@ -108,9 +108,9 @@ create_if_needed_and_attach() {
     fi
 }
 
- attatch_to_first_session() {
+ attach_to_first_session() {
      tmux attach -t $(tmux list-sessions -F "${session_name}" | head -n 1)
      tmux choose-tree -Za
 }
  
-create_if_needed_and_attach || attatch_to_first_session
+create_if_needed_and_attach || attach_to_first_session
