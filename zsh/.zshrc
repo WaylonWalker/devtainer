@@ -25,6 +25,8 @@ unsetopt BEEP
 export PATH="$HOME/.npm/node_modules/bin/:$PATH"
 export PATH="$HOME/.local/.npm-global/bin/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
 # eval "$(dircolors -b ~/.dircolors.256dark)"
 eval "$(starship init zsh)"
 eval "$(direnv hook zsh)"
@@ -79,7 +81,7 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 [[ -n "${key[Down]}" ]] && bindkey "${key[Down]}" history-beginning-search-forward
 
 
-~/.local/bin/ta
+[ command -v zellij ] && ~/.local/bin/za || ~/.local/bin/ta
 
 [ -d ~/projects ] && rm -rf ~/projects/ && mkdir ~/projects/ || mkdir ~/projects
 [ -d ~/work ] && [ `ls ~/work | wc -l` -gt 0 ] && ln -sf ~/work/* ~/projects/

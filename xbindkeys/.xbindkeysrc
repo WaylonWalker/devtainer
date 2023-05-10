@@ -129,6 +129,9 @@
 "feh --bg-scale ~/.config/awesome/wallpaper/1440w5.png"
     Mod4 + F1
 
+"feh --bg-scale ~/.config/awesome/wallpaper/backdrop-distort-color.png"
+    Mod4 + F2
+
 # set directly keycode (here control + f with my keyboard)
 #"xterm"
 #  c:41 + m:0x4

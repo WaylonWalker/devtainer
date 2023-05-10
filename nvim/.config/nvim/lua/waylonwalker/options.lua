@@ -41,5 +41,6 @@ vim.opt.title = true
 vim.opt.undofile = true -- persistent undo
 -- vim.opt.updatetime = 4001 -- Set updatime to 1ms longer than the default to prevent polyglot from changing it
 vim.opt.wildmode = 'longest:full,full' -- complete the longest common match, and allow tabbing the results to fully complete them
-vim.opt.wrap = false
-vim.opt.wrapscan = true
+vim.opt.wrap = false -- soft line wraps
+vim.opt.wrapscan = true -- searches wrap around the file
+vim.cmd('filetype plugin on')
