@@ -5,6 +5,10 @@ set -o physical
 [ -f ~/.alias ] && source ~/.alias
 [ -f ~/.alias.local ] && source ~/.alias.local
 
+
+[ -d ~/.erg/bin ] && export PATH=$PATH:/home/waylon/.erg/bin
+[ -d ~/.erg ] && export ERG_PATH=/home/waylon/.erg
+
 # set history
 HISTFILESIZE=1000000000
 HISTSIZE=1000000000
@@ -16,10 +20,11 @@ setopt share_history
 # setopt histignoredups
 # setopt incappendhistorytime
 #
-
+#
+export PBGOPY_SERVER=http://localhost:9090
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 
-unsetopt BEEP
+# unsetopt BEEP
 
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
 export PATH="$HOME/.npm/node_modules/bin/:$PATH"
@@ -33,10 +38,15 @@ eval "$(direnv hook zsh)"
 export DIRENV_WARN_TIMEOUT=100s
 export DIRENV_LOG_FORMAT=
 
+export FLYCTL_INSTALL="/home/waylon/.fly"
+[ -d "$FLYCTL_INSTALL" ] && export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
 if [ -d "$HOME/.pyenv" ]; then
     export PATH="$HOME/.pyenv/bin:$PATH"
+    export PATH=$(pyenv root)/shims:$PATH
+    eval "$(pyenv init -)"
     eval "$(pyenv init --path)"
-    eval "$(pyenv virtualenv-init -)"
+    # eval "$(pyenv virtualenv-init -)"
 fi
 
 export QMK_HOME='~/git/qmk_firmware'
@@ -45,13 +55,13 @@ export QMK_HOME='~/git/qmk_firmware'
 # Setup fzf
 # ---------
 if [[ ! "$PATH" == */root/.local/share/nvim/plugged/fzf/bin* ]]; then
-  export PATH="${PATH:+${PATH}:}/root/.local/share/nvim/plugged/fzf/bin"
+    export PATH="${PATH:+${PATH}:}/root/.local/share/nvim/plugged/fzf/bin"
 fi
 
 # Auto-completion
 # ---------------
 [[ $- == *i* ]] && source "/root/.local/share/nvim/plugged/fzf/shell/completion.zsh" 2> /dev/null
-### 
+###
 # C-R was not loading running contents of .fzf.zsh here seems to resolve the issue
 # Start ~/.fzf.zsh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -81,7 +91,14 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 [[ -n "${key[Down]}" ]] && bindkey "${key[Down]}" history-beginning-search-forward
 
 
-[ command -v zellij ] && ~/.local/bin/za || ~/.local/bin/ta
+if [[ -f `command -v zellij` ]] then;
+    if [[ -z "$ZELLIJ" ]]; then
+        # ~/.local/bin/za
+    fi
+else
+    ~/.local/bin/ta
+fi
+
 
 [ -d ~/projects ] && rm -rf ~/projects/ && mkdir ~/projects/ || mkdir ~/projects
 [ -d ~/work ] && [ `ls ~/work | wc -l` -gt 0 ] && ln -sf ~/work/* ~/projects/
@@ -131,6 +148,7 @@ zlong_duration=30
 zlong_ignore_cmds="vim ssh"
 allcommands(){compgen -c | fzf}
 bindkey -s '^p' 'allcommands\n'
+bindkey -s '^g' 'gitui\n'
 
 bindkey  "^[[H"   beginning-of-line
 bindkey  "^[[F"   end-of-line
@@ -139,5 +157,12 @@ bindkey  "^[[4~"   end-of-line
 bindkey  "^[[3~"  delete-char
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+fpath+=~/.zfunc
+autoload -Uz compinit && compinit
 
 cwfetch
