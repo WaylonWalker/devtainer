@@ -45,6 +45,7 @@
  not_in_tmux() {
    [ -z "$TMUX" ]
  }
+    [ -z "$TMUX" ] && [ -z "$ZELLIJ" ]
 
 DIR=$1
 
