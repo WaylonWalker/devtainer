@@ -1,15 +1,20 @@
-"       l_                                         _           
-"      | | _____ _   _ _ __ ___   __ _ _ ____   _(_)_ __ ___  
-"      | |/ / _ \ | | | '_ ` _ \ / _` | '_ \ \ / / | '_ ` _ \ 
+"       l_                                         _
+"      | | _____ _   _ _ __ ___   __ _ _ ____   _(_)_ __ ___
+"      | |/ / _ \ | | | '_ ` _ \ / _` | '_ \ \ / / | '_ ` _ \
 "      |   <  __/ |_| | | | | | | (_| | |_) \ V /| | | | | | |
 "      |_|\_\___|\__, |_| |_| |_|\__,_| .__(_)_/ |_|_| |_| |_|
-"                |___/                |_|                     
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"                |___/                |_|
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
 "unsorted
 nnoremap <leader>tp <cmd>let py = termopen('zsh')<CR>
 vnoremap <leader>sp <cmd>'<,'>call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
 nnoremap <leader>sp <cmd>call chansend(py, [getline('.') . "<c-v><cr>"])<cr>
+
+nnoremap <leader>et <cmd>Telescope find_files
+find_command=markata,list,--map,path,--filter,date==today<cr>
+
+
 
 " get word count
 nnoremap gwc vap<cmd>'<,'>w !wc -c<CR>
@@ -21,7 +26,7 @@ nnoremap <leader>ft :FloatermToggle<CR>
 nnoremap ZR zR
 nnoremap ZM zM
 
-command! Xs :mks! | :xa 
+command! Xs :mks! | :xa
 nnoremap U <cmd>redo<cr>
 
 "stupid Terminals map <c-^> to other things
@@ -71,7 +76,7 @@ nnoremap <c-h> <c-w>h
 nnoremap <leader>vat <cmd>VtrAttachToPane<CR>
 vnoremap <leader>vs <cmd>'<,'>VtrSendLinesToRunner<CR>
 nnoremap <leader>vs <cmd>VtrSendLinesToRunner<CR>
-nnoremap <leader>vv <cmd>VtrSendCommandToRunner 
+nnoremap <leader>vv <cmd>VtrSendCommandToRunner
 
 nnoremap <tab> <cmd>bnext<cr>
 nnoremap <s-tab> <cmd>bprevious<cr>
@@ -93,7 +98,7 @@ map <c-/> <cmd>Commentary
 inoremap <c-/> <cmd>Commentary
 
 " edit things
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 " source current file
 nnoremap <leader>so <cmd>source %<CR>
 " nnoremap gso <cmd>source %<CR>
@@ -135,7 +140,7 @@ nnoremap geil <cmd>Telescope find_files find_command=markata,list,--map,path,--f
 nnoremap geig <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='gratitude',--sort,date,--fast<cr>
 " nnoremap geik <cmd>Telescope find_files find_command=markata,list,--map,path,--filter,'kedro' in tags,--sort,date,--reverse<cr>
 nnoremap geid <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "status=='draft' and templateKey!='gratitude'", "--sort", "date", "--fast"}})<cr>
-nnoremap geik <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "'kedro' in tags", "--sort", "date", "--reverse"}})<cr> 
+nnoremap geik <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "'kedro' in tags", "--sort", "date", "--reverse"}})<cr>
 nnoremap geidk <cmd>lua require('telescope.builtin').find_files({find_command={"markata", "list", "--map", "path", "--filter", "'kedro' in tags and status != 'published'", "--sort", "date", "--reverse"}})<cr>
 nnoremap gec <cmd>Telescope find_files find_command=nnoremap,g,ec,<cmd>Telescope,find_files,find_command=nnoremap,gec<cmd>Telescope,find_files,find_command=",nnoremapmanifest,gec,<cmd>Telescope,find_files,find_commannnoremap,cc,<cmd>Telescope,find_files,find_command=git,status,--porcelain,\|,sed,s\/^...\\/\/<c\r\>l<cr><cr><cr><cr>
 
@@ -155,13 +160,13 @@ cnoremap <C-f> %<C-Z>
 cnoremap <C-p> %:h<C-Z>
 
 " Plug
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 nnoremap gpi :PlugInstall<CR>
 nnoremap gpu :PlugInstall<CR>
 nnoremap gpc :PlugClean<CR>
 
 " insert mode mappings
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 imap jj <esc>
 imap jk <esc>
 imap JJ <esc>
@@ -170,7 +175,7 @@ imap Jj <esc>
 imap <c-_> <esc>:Commentary<cr>i
 
 " normal mode mappings
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
 " toggle coomments with tpope
 nnoremap <c-/> :Commentary
@@ -185,14 +190,14 @@ noremap Q @@
 
 " <c-w> cavemmands without <c-w>
 " i commonly use cmder on windows which uses <c-w> to close a tab
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 " nnoremap <c-j> <c-w><c-j>
 nnoremap <c-k> <c-w><c-k>
 " nnoremap <c-l> <c-w><c-l>
 nnoremap <c-h> <c-w><c-h>
 
 " Replace Mappings
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 nnoremap <c-r>r :%s/<C-R>////g<Left><Left>
 nnoremap <c-r><space> :%s/\<<C-r><C-w>\>//gI<Left><Left><Left>
 nnoremap <c-r>w :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
@@ -225,12 +230,12 @@ vnoremap <leader>S <cmd>lua require('spectre').open_visual()<CR>zR
 nnoremap <leader>SP viw<cmd>lua require('spectre').open_file_search()<cr>zR
 
 " leader keys
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 let mapleader = " "
 let g:maplocalleader = ','
 
 " generic
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 nnoremap <silent> <leader>d :put =strftime('%Y-%m-%dT%H:%M:%S')<CR>
 let s:pastemode = 0
 function! s:TogglePasteMode()
@@ -284,7 +289,7 @@ endfunction
 :command! TomlFmt :call s:TomlFmt()
 
 " ToggleLocationList
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 let s:syntastic_auto_loc_list = 0
 let syntastic_auto_loc_list = 0
 
@@ -310,7 +315,7 @@ nnoremap gln <cmd>lnext<CR>
 
 
 " quickfix
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 nnoremap <c-j> <cmd>copen<cr><cmd>cnext<CR>
 nnoremap <c-k> <cmd>copen<cr><cmd>cprev<CR>
 
@@ -339,7 +344,7 @@ nnoremap <silent> <leader>c <cmd>ToggleQuickFix<CR>
 " nnoremap <C-S-L> <cmd>cnext<CR>
 
 " git
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 nnoremap <silent><leader>go <cmd>G<cr>
 nnoremap <silent><leader>gd <cmd>Gdiff<cr>
 nnoremap <silent><leader>gs <cmd>Gstatus<cr>
@@ -354,13 +359,13 @@ nnoremap <silent><leader>gc <cmd>Gcommit<cr>
 
 
 " shortcuts
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 nnoremap <silent><leader>w <cmd>w<cr>
 nnoremap <silent><leader>q <cmd>q<cr>
 nnoremap <silent><leader>x <cmd>x<cr>
 
 " formatting
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 " nnoremap <leader><leader>p <cmd>!prettier % --write l<cr>
 " nnoremap <leader>f <cmd>black<cr>
 " nnoremap <leader>c <cmd>Commentary<cr>
@@ -368,27 +373,27 @@ nnoremap <silent><leader>x <cmd>x<cr>
 nnoremap <leader>f8 <cmd>call flake8#Flake8()<cr>
 
 " visual mode remap
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 command! Vb normal! <C-v>
 nnoremap <leader>b <cmd>Vb<CR>
 
 " retain visual selection after indent
 " > indent
 " < unindent
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 " vnoremap < <gv
 " vnoremap > >gv
 
 " give a few extra lines after zt/zb
 " zt scroll current line to top
 " zb scroll current line to bottom
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 " corrected with scrolloff
 " nnoremap zt zt<C-Y><C-Y><C-Y>
 " nnoremap zb zb<C-e><C-e><C-e>
 
 " navigation
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 command! -bang -nargs=? -complete=dir HFiles
   " \ call fzf#vim#files(<q-args>, {'source': 'ag --hidden --ignore .git -g ""'}, <bang>0)
 nnoremap <leader>p <cmd>GFiles<cr>
@@ -451,7 +456,7 @@ nnoremap <leader>L <c-w>L
 nnoremap <leader>i <cmd>TagbarToggle<CR>
 
 " interface
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 " nnoremap <silent> <leader><leader>l <cmd>Limelight!!<cr>
 
 " Zen Mode
@@ -483,7 +488,7 @@ endfunction
 nnoremap <silent> <leader>z <cmd>call ToggleHiddenAll()<CR>
 
 " Function Keys
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 map <F6> <cmd>setlocal spell! spelllang=expand("<cword>")<cr><cr>
 
 
@@ -581,7 +586,7 @@ let g:vsnip_filetypes.javascriptreact = ['javascript']
 let g:vsnip_filetypes.typescriptreact = ['typescript']
 
 " lsp
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 nnoremap <silent> gD <cmd>lua vim.lsp.buf.declaration()<CR>
 nnoremap <silent> gi <cmd>lua vim.lsp.buf.implementation()<CR>
 nnoremap <silent> <leader>dp <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
@@ -594,7 +599,7 @@ nnoremap <silent>K <cmd>Lspsaga hover_doc<CR>
 nnoremap <silent> gs <cmd>lua vim.lsp.buf.signature_help()<CR>
 
 " something hijacked escape to escape and scroll up
-"―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― 
+"――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 map <esc> <esc>
 " c-i was also hijacked
 nnoremap <c-i> <c-i>
@@ -666,4 +671,3 @@ function! ToggleHiddenAll()
 endfunction
 
 nnoremap <silent> <S-h> :call ToggleHiddenAll()<CR>
-

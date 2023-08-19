@@ -5,4 +5,5 @@ M.lsp_config = require("waylonwalker.plugins.lsp-config")
 M.lualine = require("waylonwalker.plugins.lualine")
 M.treesitter = require("waylonwalker.plugins.treesitter")
 M.coverage = require("waylonwalker.plugins.coverage")
+M.navbuddy = require("waylonwalker.plugins.navbuddy")
 return M

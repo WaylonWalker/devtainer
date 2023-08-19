@@ -1,5 +1,6 @@
 -- SETUP
 local navic = require("nvim-navic")
+local navbuddy = require("nvim-navbuddy")
 
 local null_ls = require("null-ls")
 
@@ -36,12 +37,12 @@ null_ls.builtins.formatting.tidy_import = h.make_builtin({
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 null_ls.setup({
     sources = {
-        -- formatting
+        -- -- formatting
         null_ls.builtins.formatting.beautysh,
         null_ls.builtins.formatting.black.with({ extra_args = { "--fast" } }),
         null_ls.builtins.formatting.isort,
         null_ls.builtins.formatting.json_tool,
-        null_ls.builtins.formatting.jsonfix,
+        null_ls.builtins.formatting.fixjson,
         null_ls.builtins.formatting.markdownlint,
         null_ls.builtins.formatting.prettier,
         null_ls.builtins.formatting.sqlformat,
@@ -55,9 +56,9 @@ null_ls.setup({
         null_ls.builtins.diagnostics.alex,
         null_ls.builtins.diagnostics.eslint,
         null_ls.builtins.diagnostics.markdownlint,
-        null_ls.builtins.diagnostics.proselint,
-        null_ls.builtins.diagnostics.pydocstyle,
-        null_ls.builtins.diagnostics.vale,
+        -- null_ls.builtins.diagnostics.proselint,
+        -- null_ls.builtins.diagnostics.pydocstyle,
+        -- null_ls.builtins.diagnostics.vale,
 
         -- completions
         null_ls.builtins.completion.spell,
@@ -66,12 +67,13 @@ null_ls.setup({
         if client.supports_method("textDocument/formatting") then
             vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
             vim.api.nvim_create_autocmd("BufWritePre", {
+                -- pattern = { "!*.jinja" },
                 -- group = M.waylonwalker_augroup,
                 group = augroup,
                 buffer = bufnr,
                 callback = function()
                     -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
-                    vim.lsp.buf.format()
+                    vim.lsp.buf.format({ async = false })
                 end,
             })
         end
@@ -89,12 +91,16 @@ lsp.ensure_installed({
     "bashls",
     "dockerls",
     "html",
+    "html-lsp",
     "jedi_language_server",
     "jsonls",
     "marksman",
     "pylsp",
+    "ruff_lsp",
     "prosemd_lsp",
-    "sumneko_lua",
+    "tailwindcss-language-server",
+    "tailwindcss-colors",
+    -- "sumneko_lua",
     "terraformls",
     "yamlls",
 })
@@ -116,13 +122,23 @@ lsp.configure("sumneko_lua", {
     },
 })
 
+lsp.configure("tailwindcss-colors", {
+    settings = {},
+})
+
+lsp.on_attach(function(client, bufnr)
+    -- see :help lsp-zero-keybindings
+    -- to learn the available actions
+    require("tailwindcss-colors").buf_attach(bufnr)
+end)
+
 lsp.configure("pylsp", {
     settings = {
         pylsp = {
             configurationSources = { "flake8" },
             plugins = {
                 pycodestyle = { enabled = false },
-                flake8 = { enabled = true },
+                flake8 = { enabled = false },
                 mypy = {
                     enabled = true,
                     live_mode = true,
@@ -155,7 +171,7 @@ local lspkind = require("lspkind")
 local cmp_formatting = {
     format = lspkind.cmp_format({
         mode = "symbol", -- show only symbol annotations
-        maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+        maxwidth = 50,   -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
         ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
     }),
 }

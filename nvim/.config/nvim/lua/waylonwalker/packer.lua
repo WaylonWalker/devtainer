@@ -21,6 +21,56 @@ local packer_bootstrap = ensure_packer()
 vim.cmd([[packadd packer.nvim]])
 
 return require("packer").startup(function(use)
+    use("https://github.com/AndrewRadev/splitjoin.vim")
+    use({
+        "themaxmarchuk/tailwindcss-colors.nvim",
+        module = "tailwindcss-colors",
+        -- run the setup function after plugin is loaded
+        config = function()
+            -- pass config options here (or nothing to use defaults)
+            require("tailwindcss-colors").setup()
+        end,
+    })
+    use({
+        "Exafunction/codeium.vim",
+        config = function()
+            -- Change '<C-g>' here to any keycode you like.
+            vim.keymap.set("i", "<C-g>", function()
+                return vim.fn["codeium#Accept"]()
+            end, { expr = true })
+            vim.keymap.set("i", "<c-;>", function()
+                return vim.fn["codeium#CycleCompletions"](1)
+            end, { expr = true })
+            vim.keymap.set("i", "<c-,>", function()
+                return vim.fn["codeium#CycleCompletions"](-1)
+            end, { expr = true })
+            vim.keymap.set("i", "<c-x>", function()
+                return vim.fn["codeium#Clear"]()
+            end, { expr = true })
+        end,
+    })
+    use("rcarriga/nvim-notify")
+    use({
+        "folke/which-key.nvim",
+        config = function()
+            vim.o.timeout = true
+            vim.o.timeoutlen = 300
+            require("which-key").setup({
+                -- your configuration comes here
+                -- or leave it empty to use the default settings
+                -- refer to the configuration section below
+            })
+        end,
+    })
+    use({
+        "SmiteshP/nvim-navbuddy",
+        requires = {
+            "neovim/nvim-lspconfig",
+            "SmiteshP/nvim-navic",
+            "MunifTanjim/nui.nvim",
+        },
+    })
+    use("djoshea/vim-autoread")
     use("whiteinge/diffconflicts")
     use({
         "folke/trouble.nvim",
@@ -38,12 +88,6 @@ return require("packer").startup(function(use)
         requires = "nvim-lua/plenary.nvim",
         config = function()
             require("coverage").setup()
-        end,
-    })
-    use({
-        "windwp/nvim-autopairs",
-        config = function()
-            require("nvim-autopairs").setup({})
         end,
     })
 
@@ -78,7 +122,6 @@ return require("packer").startup(function(use)
     })
     use({
         "williamboman/mason.nvim",
-        "jose-elias-alvarez/null-ls.nvim",
         "jay-babu/mason-null-ls.nvim",
     })
     use("wbthomason/packer.nvim")
@@ -106,11 +149,20 @@ return require("packer").startup(function(use)
     use("hrsh7th/cmp-calc")
     use("andersevenrud/cmp-tmux")
     use("lukas-reineke/cmp-rg")
-    use("waylonwalker/Telegraph.nvim")
     use({
-        "kkoomen/vim-doge",
-        run = ":call doge#install()",
+        "waylonwalker/Telegraph.nvim",
+        config = function()
+            require("telegraph").setup({
+                -- your configuration comes here
+                -- or leave it empty to use the default settings
+                -- refer to the configuration section below
+            })
+        end,
     })
+    -- use({
+    --     "kkoomen/vim-doge",
+    --     run = ":call doge#install()",
+    -- })
     use("ThePrimeagen/vim-be-good")
     use("jbyuki/instant.nvim")
     use("windwp/nvim-spectre")
@@ -118,12 +170,12 @@ return require("packer").startup(function(use)
     use("hoob3rt/lualine.nvim")
     use("mhinz/vim-signify")
     use("tjdevries/colorbuddy.nvim")
-    use("ambv/black")
-    use("christoomey/vim-quicklink")
-    use("christoomey/vim-tmux-runner")
+    -- use("ambv/black")
+    -- use("christoomey/vim-quicklink")
+    -- use("christoomey/vim-tmux-runner")
     use("fabi1cazenave/termopen.vim")
-    use({ "junegunn/fzf", run = ":call fzf#install()" })
-    use("junegunn/fzf.vim")
+    -- use({ "junegunn/fzf", run = ":call fzf#install()" })
+    -- use("junegunn/fzf.vim")
     use("justinmk/vim-sneak")
     use("mbbill/undotree")
     use("nvim-lua/popup.nvim")
@@ -154,8 +206,8 @@ return require("packer").startup(function(use)
             require("lspsaga").setup({})
         end,
     })
-    use("hrsh7th/nvim-compe")
-    use("kabouzeid/nvim-lspinstall")
+    -- use("hrsh7th/nvim-compe")
+    -- use("kabouzeid/nvim-lspinstall")
     use("michaeljsmith/vim-indent-object")
     use("nvim-lua/lsp_extensions.nvim")
     use("nvim-lua/plenary.nvim")
@@ -164,7 +216,7 @@ return require("packer").startup(function(use)
     use("ray-x/lsp_signature.nvim")
     use("antoinemadec/FixCursorHold.nvim")
     use("nvim-neotest/neotest")
-    use("eddyekofo94/gruvbox-flat.nvim")
+    -- use("eddyekofo94/gruvbox-flat.nvim")
     use("mfussenegger/nvim-dap")
     use("nvim-telescope/telescope-dap.nvim")
     use("mfussenegger/nvim-dap-python")
