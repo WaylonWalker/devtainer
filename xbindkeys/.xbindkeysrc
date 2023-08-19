@@ -47,7 +47,7 @@
 "mpv `xclip -sel c -o`"
     Mod4 + M
 
-"xbindkeys_show" 
+"xbindkeys_show"
   control+shift + q
 
 "wmctrl -xa google-chrome.Google-chrome || start_chrome || brave || x-www-browser"
@@ -58,7 +58,7 @@
 
 "rofimoji"
     Mod4 + semicolon
-    
+
 "rofi -modi drun,run -show drun -sorting-method fzf -sort -show-icons"
     Mod4 + r
 
@@ -70,6 +70,9 @@
 
 "rofi -show window -sorting-method fzf -sort -show-icons"
     Alt + Tab
+
+"kitty"
+    Mod4 + Return
 
 "nautilus"
     Mod4 + e
@@ -85,17 +88,17 @@
 
 
 # "~/.local/bin/kitty"
-"x-terminal-emulator"
+"/usr/bin/kitty"
     m:0x40 + c:36
-    Mod4 + Return
+    Mod4 + Super_L
 
-"wmctrl -xa obs.obs || obs-studio --startvirtualcam --collection calls --profile call --scene SCENE-FACECAM" 
+"wmctrl -xa obs.obs || obs-studio --startvirtualcam --collection calls --profile call --scene SCENE-FACECAM"
     Alt+Mod4 + o
 
 "x-terminal-emulator -e tmux new-session -A -s scratch"
     Mod4 + g
 
-"wmctrl -xa gimp.Gimp || gimp" 
+"wmctrl -xa gimp.Gimp || gimp"
     Shift+Mod4 + g
 
 "pkill polybar || launch_polybar"
