@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html{
+    @apply bg-stone-800;
+}
+body {
+    @apply flex;
+    @apply flex-col;
+    @apply mx-24;
+    @apply 2xl:mx-96;
+    @apply p-12;
+    @apply min-h-screen;
+    @apply bg-stone-900;
+    @apply text-stone-50;
+    @apply min-h-screen;
+}
+footer {
+    @apply mt-5;
+} 
+input{
+@apply font-bold py-2 px-4 rounded bg-stone-800;
+}
+textarea {
+    @apply py-2 px-4 rounded bg-stone-800;
+}
+input[type=button], input[type=submit], input[type=reset], button{
+    @apply font-bold py-2 px-4 rounded;
+}
+h1, h2 {
+   @apply mb-4;
+   @apply text-3xl;
+   @apply font-extrabold;
+   @apply text-gray-900;
+   @apply dark:text-white;
+   @apply md:text-5xl;
+   @apply lg:text-6xl;
+}
+h2 {
+    @apply text-xl;
+   @apply text-opacity-70;
+    @apply md:text-2xl;
+    /* @apply lg:text-3xl; */
+}
+h3 {
+    @apply text-lg;
+    @apply md:text-xl;
+    /* @apply lg:text-2xl; */
+}
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+  
+/* Track */
+::-webkit-scrollbar-track {
+    @apply bg-stone-900;
+}
+  
+/* Handle */
+::-webkit-scrollbar-thumb {
+    @apply bg-stone-700;
+    border-radius: 5px;
+}
+  
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-stone-600;
+}
+
