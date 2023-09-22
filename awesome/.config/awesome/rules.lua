@@ -32,7 +32,10 @@ awful.rules.rules = {
     },
 
     { rule = { name = "Microsoft Teams" }, properties = { tag = "6", floating = false, switchtotag = true, type = "normal" } },
+    { rule = { name = "Steam" }, properties = { tag = "1", floating = false, switchtotag = true, type = "normal" } },
+    { rule = { name = "Multiversus" }, properties = { tag = "1", floating = false, switchtotag = true, type = "normal" } },
     { rule = { class = "obs" }, properties = { tag = "8", floating = false, switchtotag = true, type = "normal" } },
+    { rule = { name = "PolyMc" }, properties = { tag = "8", floating = false, switchtotag = true, type = "normal" } },
     { rule = { class = "Gimp" }, properties = { tag = "3", floating = false, switchtotag = true, type = "normal" } },
     { rule = { class = "Polybar" }, properties = {border_width = 0} },
 
@@ -58,6 +61,25 @@ awful.rules.rules = {
             name = {
                 "Event Tester", -- xev.
                 "YAD",
+            },
+            role = {
+                "AlarmWindow", -- Thunderbird's calendar.
+                "pop-up", -- e.g. Google Chrome's (detached) Developer Tools.
+            },
+        },
+        properties = { floating = true },
+    },
+
+    -- Fullscreen clients.
+    {
+        rule_any = {
+            instance = {
+            },
+            class = {
+                "Steam",
+            },
+
+            name = {
             },
             role = {
                 "AlarmWindow", -- Thunderbird's calendar.

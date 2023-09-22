@@ -4,13 +4,10 @@
   tags:
     - desktop
     - games
-
 - name: minecraft
   become_user: root
   community.general.snap:
     name: mc-installer
-  
   tags:
     - desktop
     - games
-

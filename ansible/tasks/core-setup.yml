@@ -1,7 +1,7 @@
 - name: Install System Packages 1 (terminal)
   become_user: root
   apt:
-    name: 
+    name:
       - build-essential
       - ccache
       - cmake
@@ -32,54 +32,43 @@
       - tree
       - unzip
       - webp
-
-
 - name: check is nix installed
   shell: command -v nix
   register: nix_exists
   ignore_errors: yes
-
 - name: install nix
   when: nix_exists is failed
   shell: |
     sudo install -d -m755 -o $(id -u) -g $(id -g) /nix
     curl -L https://nixos.org/nix/install | sh
-
 - name: check is fd installed
   shell: command -v fd
   register: fd_exists
   ignore_errors: yes
-
 - name: install fd
   shell: . ~/.profile && nix-env -iA nixpkgs.fd
-
 - name: check is pipx installed
   shell: command -v pipx
   register: pipx_exists
   ignore_errors: yes
-
 - name: pipx
   when: pipx_exists is failed
   pip:
     name: pipx
   tags:
     - pipx
-
 - name: check is pyenv installed
   stat:
     path: "{{ lookup('env', 'HOME') }}/.pyenv/"
   register: pyenv_exists
   ignore_errors: yes
-  tags: 
+  tags:
     - pyenv
-
 - name: install pyenv
   when: pyenv_exists is failed
-  shell: 
-    curl https://pyenv.run | bash
-  tags: 
+  shell: curl https://pyenv.run | bash
+  tags:
     - pyenv
-
 # I dont think I need this anymore, this is now in ~/.profile
 #
 # - name: Add another bin dir to system-wide $PATH.
@@ -93,24 +82,20 @@
 #   shell: pipx ensurepath
 #   tags:
 #     - pipx
-
 - name: check python is in update-alternatives
   shell: update-alternatives --query python
   register: python_alternative_exists
   ignore_errors: yes
-
 - name: set python3 as default python
   when: python_alternative_exists is failed
   become_user: root
   shell: update-alternatives --install {{ lookup('env', 'HOME') }}/.local/bin/python python `which python3` 20
   tags:
     - python
-
 - name: check if cargo is installed
   shell: command -v cargo
   register: cargo_exists
   ignore_errors: yes
-
 - name: Download Installer
   when: cargo_exists is failed
   get_url:
@@ -120,10 +105,8 @@
     force: 'yes'
   tags:
     - rust
-
 - name: install rust/cargo
   when: cargo_exists is failed
   shell: /tmp/sh.rustup.rs -y
   tags:
     - rust
-

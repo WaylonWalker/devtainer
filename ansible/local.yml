@@ -2,7 +2,6 @@
   gather_facts: true
   become: true
   become_user: "{{ lookup('env', 'USER') }}"
-
   pre_tasks:
     - name: update repositories
       apt: update_cache=yes
@@ -30,38 +29,32 @@
     - import_tasks: tasks/zsh-setup.yml
       tags:
         - zsh
-
     - name: check if desktop
       shell: command -v gdm3 || command -v lightdm
       register: is_desktop
       ignore_errors: yes
       tags:
         - always
-
     - name: install desktop
       when: is_desktop is succeeded or "desktop" in ansible_run_tags
       block:
-      - import_tasks: tasks/fonts.yml
-        tags:
-          - desktop
-          - fonts
-
-
+        - import_tasks: tasks/fonts.yml
+          tags:
+            - desktop
+            - fonts
     - name: install desktop
       when: is_desktop is succeeded or "desktop" in ansible_run_tags
       block:
-      - import_tasks: tasks/desktop.yml
-        tags:
-          - desktop
-
+        - import_tasks: tasks/desktop.yml
+          tags:
+            - desktop
     - name: install kvm
       when: is_desktop is succeeded or "desktop" in ansible_run_tags
       block:
-      - import_tasks: tasks/kvm.yml
-        tags:
-          - desktop
-          - kvm
-
+        - import_tasks: tasks/kvm.yml
+          tags:
+            - desktop
+            - kvm
     - import_tasks: tasks/brave.yml
       when: is_desktop is succeeded or "desktop" in ansible_run_tags
       tags:

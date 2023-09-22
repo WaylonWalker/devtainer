@@ -1,147 +1,129 @@
 - hosts: localhost
   tasks:
+    - name: Install System Packages 1 (terminal)
+      become_user: root
+      apt:
+        name:
+          - build-essential
+          - ccache
+          - cmake
+          - curl
+          - dconf-editor
+          - direnv
+          - gettext
+          - git
+          - golang
+          - htop
+          - libbz2-dev
+          - libevent-dev
+          - libffi-dev
+          - liblzma-dev
+          - libncurses5-dev
+          - libncursesw5-dev
+          - libpthread-stubs0-dev
+          - libreadline-dev
+          - libsqlite3-dev
+          - libssl-dev
+          - libtool
+          - libtool-bin
+          - llvm
+          - lsof
+          - lua5.1
+          - make
+          - neofetch
+          - ninja-build
+          - pkg-config
+          - python
+          - python-openssl
+          - python3-dev
+          - python3-pip
+          - python3-venv
+          - python3-virtualenv
+          - rename
+          - silversearcher-ag
+          - stow
+          - tk-dev
+          - tree
+          - unzip
+          - webp
+          - wget
+          - xz-utils
+          - zlib1g-dev
+    - name: check is nix installed
+      shell: command -v nix
+      register: nix_exists
+      ignore_errors: yes
+    - name: install nix
+      when: nix_exists is failed
+      shell: |
+        sudo install -d -m755 -o $(id -u) -g $(id -g) /nix
+        curl -L https://nixos.org/nix/install | sh
+    - name: check is fd installed
+      shell: command -v fd
+      register: fd_exists
+      ignore_errors: yes
+    - name: install fd
+      shell: . ~/.profile && nix-env -iA nixpkgs.fd
+    - name: check is pipx installed
+      shell: command -v pipx
+      register: pipx_exists
+      ignore_errors: yes
+    - name: pipx
+      when: pipx_exists is failed
+      pip:
+        name: pipx
+      tags:
+        - pipx
+    - name: check is pyenv installed
+      stat:
+        path: "{{ lookup('env', 'HOME') }}/.pyenv/"
+      register: pyenv_exists
+      ignore_errors: yes
+      tags:
+        - pyenv
+    - name: install pyenv
+      when: pyenv_exists is failed
+      shell: curl https://pyenv.run | bash
+      tags:
+        - pyenv
+    # I dont think I need this anymore, this is now in ~/.profile
+    #
+    # - name: Add another bin dir to system-wide $PATH.
+    #   become_user: root
+    #   copy:
+    #     dest: /etc/profile.d/custom-path.sh
+    #     content: 'export "PATH=$PATH:~/.local/bin"'
 
-  - name: Install System Packages 1 (terminal)
-    become_user: root
-    apt:
-      name: 
-        - build-essential
-        - ccache
-        - cmake
-        - curl
-        - dconf-editor
-        - direnv
-        - gettext
-        - git
-        - golang
-        - htop
-        - libbz2-dev
-        - libevent-dev
-        - libffi-dev
-        - liblzma-dev
-        - libncurses5-dev
-        - libncursesw5-dev
-        - libpthread-stubs0-dev
-        - libreadline-dev
-        - libsqlite3-dev
-        - libssl-dev
-        - libtool
-        - libtool-bin
-        - llvm
-        - lsof
-        - lua5.1
-        - make
-        - neofetch
-        - ninja-build
-        - pkg-config
+    # - name: pipx ensurepath
+    #   when: pipx_exists is failed
+    #   shell: pipx ensurepath
+    #   tags:
+    #     - pipx
+    - name: check python is in update-alternatives
+      shell: update-alternatives --query python
+      register: python_alternative_exists
+      ignore_errors: yes
+    - name: set python3 as default python
+      when: python_alternative_exists is failed
+      become_user: root
+      shell: update-alternatives --install {{ lookup('env', 'HOME') }}/.local/bin/python python `which python3` 20
+      tags:
         - python
-        - python-openssl
-        - python3-dev
-        - python3-pip
-        - python3-venv
-        - python3-virtualenv
-        - rename
-        - silversearcher-ag
-        - stow
-        - tk-dev
-        - tree
-        - unzip
-        - webp
-        - wget
-        - xz-utils
-        - zlib1g-dev
-
-
-  - name: check is nix installed
-    shell: command -v nix
-    register: nix_exists
-    ignore_errors: yes
-
-  - name: install nix
-    when: nix_exists is failed
-    shell: |
-      sudo install -d -m755 -o $(id -u) -g $(id -g) /nix
-      curl -L https://nixos.org/nix/install | sh
-
-  - name: check is fd installed
-    shell: command -v fd
-    register: fd_exists
-    ignore_errors: yes
-
-  - name: install fd
-    shell: . ~/.profile && nix-env -iA nixpkgs.fd
-
-  - name: check is pipx installed
-    shell: command -v pipx
-    register: pipx_exists
-    ignore_errors: yes
-
-  - name: pipx
-    when: pipx_exists is failed
-    pip:
-      name: pipx
-    tags:
-      - pipx
-
-  - name: check is pyenv installed
-    stat:
-      path: "{{ lookup('env', 'HOME') }}/.pyenv/"
-    register: pyenv_exists
-    ignore_errors: yes
-    tags: 
-      - pyenv
-
-  - name: install pyenv
-    when: pyenv_exists is failed
-    shell: 
-      curl https://pyenv.run | bash
-    tags: 
-      - pyenv
-
-  # I dont think I need this anymore, this is now in ~/.profile
-  #
-  # - name: Add another bin dir to system-wide $PATH.
-  #   become_user: root
-  #   copy:
-  #     dest: /etc/profile.d/custom-path.sh
-  #     content: 'export "PATH=$PATH:~/.local/bin"'
-
-  # - name: pipx ensurepath
-  #   when: pipx_exists is failed
-  #   shell: pipx ensurepath
-  #   tags:
-  #     - pipx
-
-  - name: check python is in update-alternatives
-    shell: update-alternatives --query python
-    register: python_alternative_exists
-    ignore_errors: yes
-
-  - name: set python3 as default python
-    when: python_alternative_exists is failed
-    become_user: root
-    shell: update-alternatives --install {{ lookup('env', 'HOME') }}/.local/bin/python python `which python3` 20
-    tags:
-      - python
-
-  - name: check if cargo is installed
-    shell: command -v cargo
-    register: cargo_exists
-    ignore_errors: yes
-
-  - name: Download Installer
-    when: cargo_exists is failed
-    get_url:
-      url: https://sh.rustup.rs
-      dest: /tmp/sh.rustup.rs
-      mode: '0755'
-      force: 'yes'
-    tags:
-      - rust
-
-  - name: install rust/cargo
-    when: cargo_exists is failed
-    shell: /tmp/sh.rustup.rs -y
-    tags:
-      - rust
-
+    - name: check if cargo is installed
+      shell: command -v cargo
+      register: cargo_exists
+      ignore_errors: yes
+    - name: Download Installer
+      when: cargo_exists is failed
+      get_url:
+        url: https://sh.rustup.rs
+        dest: /tmp/sh.rustup.rs
+        mode: '0755'
+        force: 'yes'
+      tags:
+        - rust
+    - name: install rust/cargo
+      when: cargo_exists is failed
+      shell: /tmp/sh.rustup.rs -y
+      tags:
+        - rust

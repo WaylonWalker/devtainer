@@ -1,272 +1,224 @@
 - hosts: localhost
   tasks:
-
-  - name: Install System Packages required for nvim
-    become_user: root
-    apt:
-      name: 
-        - libtool
-        - libtool-bin
-        - autoconf
-        - automake
-        - cmake
-        - libncurses5-dev
-        - g++
-        - python-dev
-        - python3-dev
-        - python3-pip
+    - name: Install System Packages required for nvim
+      become_user: root
+      apt:
+        name:
+          - libtool
+          - libtool-bin
+          - autoconf
+          - automake
+          - cmake
+          - libncurses5-dev
+          - g++
+          - python-dev
+          - python3-dev
+          - python3-pip
+          - ruby
+          - ruby-dev
+    - name: Fetch Neovim
+      # The next step will fail without --force since they move nightly tag often
+      # I am not sure how to force the next step, so this is the best I have
+      shell: "git fetch --tags origin --force"
+      args:
+        chdir: "{{ lookup('env', 'HOME') }}/third-party/neovim"
+      # don't fail if the repo does not exist
+      ignore_errors: yes
+    - name: Clone Neovim
+      ansible.builtin.git:
+        repo: 'https://github.com/neovim/neovim.git'
+        dest: "{{ lookup('env', 'HOME') }}/third-party/neovim"
+        update: yes
+    - name: Build neovim
+      args:
+        chdir: "{{ lookup('env', 'HOME') }}/third-party/neovim"
+      shell: "make CMAKE_BUILD_TYPE=RelWithDebInfo"
+    - name: Install neovim
+      become_user: root
+      args:
+        chdir: "{{ lookup('env', 'HOME') }}/third-party/neovim"
+      shell: "make install"
+    - name: Check if pynvim venv3 exists
+      stat:
+        path: "{{ lookup('env', 'HOME') }}/.config/nvim/"
+      register: pynvim_venv3_exists
+    - name: Install pynvim venv3
+      when: pynvim_venv3_path.stat.islnk is not defined
+      shell: |
+        cd {{ lookup('env', 'HOME') }}/.config/nvim/
+        python3 -m venv .venv3  --prompt nvim3
+    - name: Install pynvim into venv3
+      pip:
+        name: pynvim
+        virtualenv: "{{ lookup('env', 'HOME') }}/.config/nvim/.venv3"
+    - name: Check if pynvim venv2 exists
+      stat:
+        path: "{{ lookup('env', 'HOME') }}/.config/nvim/"
+      register: pynvim_venv2_path
+    - name: Install neovim venv2
+      when: pynvim_venv2_path.stat.islnk is not defined
+      shell: |
+        cd {{ lookup('env', 'HOME') }}/.config/nvim/
+        python2 -m virtualenv .venv2  --prompt nvim2
+    - name: check is pyflyby installed
+      shell: command -v tidy-imports
+      register: pyflyby_exists
+      ignore_errors: yes
+    - name: install pyflyby
+      when: pyflyby_exists is failed
+      shell: |
+        pipx install pyflyby
+        pipx inject pyflyby black
+    - name: check is black installed
+      shell: command -v black
+      register: black_exists
+      ignore_errors: yes
+      tags: |
+        - black
+    - name: install black
+      when: black_exists is failed
+      shell: pipx install black
+      tags: |
+        - black
+    # Dunk - prettier git diffs
+    # https://github.com/darrenburns/dunk
+    - name: check is dunk installed
+      shell: command -v black
+      register: dunk_exists
+      ignore_errors: yes
+    - name: install dunk
+      when: dunk_exists is failed
+      shell: pipx install dunk
+    - name: check is lolcat installed
+      shell: command -v lolcat
+      register: lolcat_exists
+      ignore_errors: yes
+    - name: install lolcat
+      when: lolcat_exists is failed
+      shell: pipx install lolcat
+    - name: gem environment
+      shell: gem environment
+      tags:
         - ruby
-        - ruby-dev
-
-
-  - name: Fetch Neovim
-    # The next step will fail without --force since they move nightly tag often
-    # I am not sure how to force the next step, so this is the best I have
-    shell: "git fetch --tags origin --force"
-    args:
-      chdir: "{{ lookup('env', 'HOME') }}/third-party/neovim"
-    # don't fail if the repo does not exist
-    ignore_errors: yes
-
-  - name: Clone Neovim
-    ansible.builtin.git:
-      repo: 'https://github.com/neovim/neovim.git'
-      dest: "{{ lookup('env', 'HOME') }}/third-party/neovim"
-      update: yes
-
-  - name: Build neovim
-    args:
-      chdir: "{{ lookup('env', 'HOME') }}/third-party/neovim"
-    shell: "make CMAKE_BUILD_TYPE=RelWithDebInfo"
-
-  - name: Install neovim
-    become_user: root
-    args:
-      chdir: "{{ lookup('env', 'HOME') }}/third-party/neovim"
-    shell: "make install"
-
-  - name: Check if pynvim venv3 exists
-    stat:
-      path: "{{ lookup('env', 'HOME') }}/.config/nvim/"
-    register: pynvim_venv3_exists
-
-  - name: Install pynvim venv3
-    when: pynvim_venv3_path.stat.islnk is not defined
-    shell: |
-      cd {{ lookup('env', 'HOME') }}/.config/nvim/
-      python3 -m venv .venv3  --prompt nvim3
-
-  - name: Install pynvim into venv3
-    pip:
-      name: pynvim
-      virtualenv: "{{ lookup('env', 'HOME') }}/.config/nvim/.venv3"
-
-  - name: Check if pynvim venv2 exists
-    stat:
-      path: "{{ lookup('env', 'HOME') }}/.config/nvim/"
-    register: pynvim_venv2_path
-
-  - name: Install neovim venv2
-    when: pynvim_venv2_path.stat.islnk is not defined
-    shell: |
-      cd {{ lookup('env', 'HOME') }}/.config/nvim/
-      python2 -m virtualenv .venv2  --prompt nvim2
-
-  - name: check is pyflyby installed
-    shell: command -v tidy-imports
-    register: pyflyby_exists
-    ignore_errors: yes
-
-  - name: install pyflyby
-    when: pyflyby_exists is failed
-    shell:  |
-      pipx install pyflyby
-      pipx inject pyflyby black
-
-  - name: check is black installed
-    shell: command -v black
-    register: black_exists
-    ignore_errors: yes
-    tags: |
-      - black
-
-  - name: install black
-    when: black_exists is failed
-    shell: pipx install black
-    tags: |
-      - black
-
-  # Dunk - prettier git diffs
-  # https://github.com/darrenburns/dunk
-  - name: check is dunk installed
-    shell: command -v black
-    register: dunk_exists
-    ignore_errors: yes
-
-  - name: install dunk
-    when: dunk_exists is failed
-    shell: pipx install dunk
-
-  - name: check is lolcat installed
-    shell: command -v lolcat
-    register: lolcat_exists
-    ignore_errors: yes
-
-  - name: install lolcat
-    when: lolcat_exists is failed
-    shell: pipx install lolcat
-
-  - name: gem environment
-    shell: gem environment
-    tags:
-      - ruby
-  - name: gem install neovim
-    community.general.gem:
-      name: neovim
-      state: latest
-      user_install: yes
-    tags:
-      - ruby
-
-  - name: install neovim for nodejs
-    community.general.npm:
-      name: neovim
-      global: yes
-
-  - name: Install pynvim into venv2
-    pip:
-      name: pynvim
-      virtualenv: "{{ lookup('env', 'HOME') }}/.config/nvim/.venv2"
-
-  - name: check is luarocks installed
-    shell: command -v luarocks
-    register: luarocks_exists
-    ignore_errors: yes
-
-  - name: Neovim Plugin Development 1
-    when: luarocks_exists is failed
-    become_user: root
-    apt: name=luarocks
-
-  - name: check is luacheck installed
-    shell: command -v luacheck
-    register: luacheck_exists
-    ignore_errors: yes
-
-  - name: Neovim Plugin Development 2 luacheck
-    when: luacheck_path.stat.islnk is not defined
-    shell: luarocks install luacheck
-    become_user: root
-
-
-  - name: Check if vim-plug is installed
-    stat:
-      path: "{{ lookup('env', 'HOME') }}/.local/share/nvim/site/autoload/plug.vim"
-    register: vim_plug_path
-
-  - name: Install Vim-Plug
-    when: vim_plug_path.stat.islnk is not defined
-    shell: curl -fLo {{ lookup('env', 'HOME') }}/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-  - name: Install vim Plugins
-    ignore_errors: yes
-    shell: nvim -u ~/.config/nvim/plugins.vim +PlugClean +qall
-
-  - name: check is pylsp installed
-    shell: command -v pylsp
-    register: pylsp_exists
-    ignore_errors: yes
-    tags:
-      -lsp
-      - python-lsp
-
-  - name: install python lsp
-    when: pylsp_path.stat.islnk is not defined
-    tags:
-      -lsp
-      - python-lsp
-    block:
-    - name: Setup python-lsp-server
-      shell: pipx install 'python-lsp-server[all]' --force
-
-    - name: Setup pylsp-mypy
-      shell: pipx inject python-lsp-server pylsp-mypy --force
-
-    - name: Setup jedi-language-server
-      shell: pipx install jedi-language-server --force
-
-  - name: check is yaml-language-server installed
-    shell: command -v yaml-language-server
-    register: yamllsp_exists
-    ignore_errors: yes
-    tags:
-      - lsp
-      - yaml-lsp
-
-  - name: Setup yaml language server
-    when: yamllsp_path.stat.islnk is not defined
-    shell: npm i -g yaml-language-server@latest
-    tags:
-      - lsp
-      - yaml-lsp
-
-  - name: check is htmllsp installed
-    shell: command -v vscode-html-language-server
-    register: htmllsp_exists
-    ignore_errors: yes
-    tags:
-      - lsp
-      - html-lsp
-
-  - name: Setup html language server
-    when: htmllsp_path.stat.islnk is not defined
-    shell: npm i -g vscode-langservers-extracted
-    tags:
-      - lsp
-      - html-lsp
-
-  - name: check is bashlsp installed
-    shell: command -v bash-language-server
-    register: bashlsp_exists
-    ignore_errors: yes
-    tags:
-      - lsp
-      - bash-lsp
-
-  - name: Setup bash language server
-    when: bashlsp_path.stat.islnk is not defined
-    shell: npm i -g bash-language-server@latest
-    tags:
-      - lsp
-      - bash-lsp
-
-  - name: check is lualsp installed
-    shell: command -v lua-language-server
-    register: lualsp_exists
-    ignore_errors: yes
-    tags:
-      - lsp
-      - lua-lsp
-
-  - name: Install lua-language-server
-    when: lualsp_path.stat.islnk is not defined
-    tags:
-      - lsp
-      - lua-lsp
-    shell: nix-env -iA nixpkgs.sumneko-lua-language-server
-
-  - name: include sumneko lua-language-server path in .profile
-    blockinfile:
-      dest: "{{ lookup('env', 'HOME') }}/.profile"
-
-      marker: '# {mark} sumneko lua-language-server path added by devtainer'
-      block: |
-        # set PATH so it includes user's lua-language-server bin if it exists
-        if [ -d "$HOME/third-party/lua-language-server/bin/Linux/" ] ; then
-          PATH="$PATH:$HOME/third-party/lua-language-server/bin/Linux/"
-        fi
-      state: present
-    become: yes
-    tags:
-      - lsp
-      - lua-lsp
+    - name: gem install neovim
+      community.general.gem:
+        name: neovim
+        state: latest
+        user_install: yes
+      tags:
+        - ruby
+    - name: install neovim for nodejs
+      community.general.npm:
+        name: neovim
+        global: yes
+    - name: Install pynvim into venv2
+      pip:
+        name: pynvim
+        virtualenv: "{{ lookup('env', 'HOME') }}/.config/nvim/.venv2"
+    - name: check is luarocks installed
+      shell: command -v luarocks
+      register: luarocks_exists
+      ignore_errors: yes
+    - name: Neovim Plugin Development 1
+      when: luarocks_exists is failed
+      become_user: root
+      apt: name=luarocks
+    - name: check is luacheck installed
+      shell: command -v luacheck
+      register: luacheck_exists
+      ignore_errors: yes
+    - name: Neovim Plugin Development 2 luacheck
+      when: luacheck_path.stat.islnk is not defined
+      shell: luarocks install luacheck
+      become_user: root
+    - name: Check if vim-plug is installed
+      stat:
+        path: "{{ lookup('env', 'HOME') }}/.local/share/nvim/site/autoload/plug.vim"
+      register: vim_plug_path
+    - name: Install Vim-Plug
+      when: vim_plug_path.stat.islnk is not defined
+      shell: curl -fLo {{ lookup('env', 'HOME') }}/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    - name: Install vim Plugins
+      ignore_errors: yes
+      shell: nvim -u ~/.config/nvim/plugins.vim +PlugClean +qall
+    - name: check is pylsp installed
+      shell: command -v pylsp
+      register: pylsp_exists
+      ignore_errors: yes
+      tags: -lsp - python-lsp
+    - name: install python lsp
+      when: pylsp_path.stat.islnk is not defined
+      tags: -lsp - python-lsp
+      block:
+        - name: Setup python-lsp-server
+          shell: pipx install 'python-lsp-server[all]' --force
+        - name: Setup pylsp-mypy
+          shell: pipx inject python-lsp-server pylsp-mypy --force
+        - name: Setup jedi-language-server
+          shell: pipx install jedi-language-server --force
+    - name: check is yaml-language-server installed
+      shell: command -v yaml-language-server
+      register: yamllsp_exists
+      ignore_errors: yes
+      tags:
+        - lsp
+        - yaml-lsp
+    - name: Setup yaml language server
+      when: yamllsp_path.stat.islnk is not defined
+      shell: npm i -g yaml-language-server@latest
+      tags:
+        - lsp
+        - yaml-lsp
+    - name: check is htmllsp installed
+      shell: command -v vscode-html-language-server
+      register: htmllsp_exists
+      ignore_errors: yes
+      tags:
+        - lsp
+        - html-lsp
+    - name: Setup html language server
+      when: htmllsp_path.stat.islnk is not defined
+      shell: npm i -g vscode-langservers-extracted
+      tags:
+        - lsp
+        - html-lsp
+    - name: check is bashlsp installed
+      shell: command -v bash-language-server
+      register: bashlsp_exists
+      ignore_errors: yes
+      tags:
+        - lsp
+        - bash-lsp
+    - name: Setup bash language server
+      when: bashlsp_path.stat.islnk is not defined
+      shell: npm i -g bash-language-server@latest
+      tags:
+        - lsp
+        - bash-lsp
+    - name: check is lualsp installed
+      shell: command -v lua-language-server
+      register: lualsp_exists
+      ignore_errors: yes
+      tags:
+        - lsp
+        - lua-lsp
+    - name: Install lua-language-server
+      when: lualsp_path.stat.islnk is not defined
+      tags:
+        - lsp
+        - lua-lsp
+      shell: nix-env -iA nixpkgs.sumneko-lua-language-server
+    - name: include sumneko lua-language-server path in .profile
+      blockinfile:
+        dest: "{{ lookup('env', 'HOME') }}/.profile"
+        marker: '# {mark} sumneko lua-language-server path added by devtainer'
+        block: |
+          # set PATH so it includes user's lua-language-server bin if it exists
+          if [ -d "$HOME/third-party/lua-language-server/bin/Linux/" ] ; then
+            PATH="$PATH:$HOME/third-party/lua-language-server/bin/Linux/"
+          fi
+        state: present
+      become: yes
+      tags:
+        - lsp
+        - lua-lsp

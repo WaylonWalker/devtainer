@@ -1,6 +1,7 @@
 local gears = require("gears")
 local awful = require("awful")
 local xrandr = require("xrandr")
+local poppin = require('poppin')
 
 local naughty = require("naughty")
 
@@ -174,16 +175,13 @@ globalkeys = gears.table.join(
     }),
 
     awful.key({ modkey }, "x", function()
-        awful.prompt.run({
-            prompt = "Run Lua code: ",
-            textbox = awful.screen.focused().mypromptbox.widget,
-            exe_callback = awful.util.eval,
-            history_path = awful.util.get_cache_dir() .. "/history_eval",
-        })
+        poppin.pop("terminal", "kitty -e htop", "top", { width = 1000, height = 300 })
     end, {
         description = "lua execute prompt",
         group = "awesome",
     })
+
+
 )
 
 -- mostly defaults
@@ -343,6 +341,9 @@ for i = 1, 9 do
             group = "tag",
         })
     )
+end
+
+function tag_all()
 end
 
 -- resize gaps

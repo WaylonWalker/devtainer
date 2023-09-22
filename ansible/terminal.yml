@@ -2,7 +2,6 @@
   gather_facts: true
   become: true
   become_user: "{{ lookup('env', 'USER') }}"
-
   pre_tasks:
     - name: update repositories
       apt: update_cache=yes

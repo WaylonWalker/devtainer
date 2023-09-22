@@ -1,61 +1,50 @@
 - hosts: localhost
   tasks:
-
-  - name: touch getty@tty1.service.d
-    become: true
-    ansible.builtin.file:
-      path: /etc/systemd/system/getty@tty1.service.d
-      state: directory
-
-  - name: touch autologin.conf
-    become: true
-    ansible.builtin.file:
-      path: /etc/systemd/system/getty@tty1.service.d/autologin.conf
-      state: touch
-
-  - name: 
-    become: true
-    ansible.builtin.blockinfile:
-      path: /etc/systemd/system/getty@tty1.service.d/autologin.conf
-      block: |
-        [Service]
-        ExecStart=
-        ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin waylon - $TERM
-
-  - name: touch profile
-    become: true
-    ansible.builtin.file:
-      path: "{{ lookup('env', 'HOME') }}/.profile"
-      state: touch
-
-  - name: touch bash_profile
-    become: true
-    ansible.builtin.file:
-      path: "{{ lookup('env', 'HOME') }}/.bash_profile"
-      state: touch
-
-  - name: touch zprofile
-    become: true
-    ansible.builtin.file:
-      path: "{{ lookup('env', 'HOME') }}/.zprofile"
-      state: touch
-
-  - name: 
-    ansible.builtin.blockinfile:
-      path: ~/.profile
-      block: |
-        if [[ -z $DISPLAY ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
-            exec startx
-        fi
-
-  - name: 
-    ansible.builtin.lineinfile:
-      path: ~/.bash_profile
-      line: "[[ -f ~/.profile ]] && . ~/.profile"
-
-  - name: 
-    ansible.builtin.lineinfile:
-      path: ~/.zprofile
-      line: "[[ -f ~/.profile ]] && . ~/.profile"
-
-
+    - name: touch getty@tty1.service.d
+      become: true
+      ansible.builtin.file:
+        path: /etc/systemd/system/getty@tty1.service.d
+        state: directory
+    - name: touch autologin.conf
+      become: true
+      ansible.builtin.file:
+        path: /etc/systemd/system/getty@tty1.service.d/autologin.conf
+        state: touch
+    - name:
+      become: true
+      ansible.builtin.blockinfile:
+        path: /etc/systemd/system/getty@tty1.service.d/autologin.conf
+        block: |
+          [Service]
+          ExecStart=
+          ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin waylon - $TERM
+    - name: touch profile
+      become: true
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.profile"
+        state: touch
+    - name: touch bash_profile
+      become: true
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.bash_profile"
+        state: touch
+    - name: touch zprofile
+      become: true
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.zprofile"
+        state: touch
+    - name:
+      ansible.builtin.blockinfile:
+        path: ~/.profile
+        block: |
+          if [[ -z $DISPLAY ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
+              exec startx
+          fi
+    - name:
+      ansible.builtin.lineinfile:
+        path: ~/.bash_profile
+        line: "[[ -f ~/.profile ]] && . ~/.profile"
+    - name:
+      ansible.builtin.lineinfile:
+        path: ~/.zprofile
+        line: "[[ -f ~/.profile ]] && . ~/.profile"
