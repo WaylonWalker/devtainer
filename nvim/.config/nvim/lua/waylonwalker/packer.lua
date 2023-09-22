@@ -22,6 +22,7 @@ vim.cmd([[packadd packer.nvim]])
 
 return require("packer").startup(function(use)
     use("https://github.com/AndrewRadev/splitjoin.vim")
+    use("https://github.com/ThePrimeagen/lsp-debug-tools.nvim")
     use({
         "themaxmarchuk/tailwindcss-colors.nvim",
         module = "tailwindcss-colors",

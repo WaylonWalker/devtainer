@@ -98,8 +98,8 @@ lsp.ensure_installed({
     "pylsp",
     "ruff_lsp",
     "prosemd_lsp",
-    "tailwindcss-language-server",
-    "tailwindcss-colors",
+    -- "tailwindcss-language-server",
+    -- "tailwindcss-colors",
     -- "sumneko_lua",
     "terraformls",
     "yamlls",
@@ -118,18 +118,21 @@ lsp.configure("sumneko_lua", {
             diagnostics = {
                 globals = { "vim" },
             },
+            inlay_hints = {
+                enabled = true,
+            },
         },
     },
 })
 
-lsp.configure("tailwindcss-colors", {
-    settings = {},
-})
+-- lsp.configure("tailwindcss-colors", {
+--     settings = {},
+-- })
 
 lsp.on_attach(function(client, bufnr)
     -- see :help lsp-zero-keybindings
     -- to learn the available actions
-    require("tailwindcss-colors").buf_attach(bufnr)
+    -- require("tailwindcss-colors").buf_attach(bufnr)
 end)
 
 lsp.configure("pylsp", {
@@ -149,6 +152,9 @@ lsp.configure("pylsp", {
                 jedi_references = { enabled = true },
                 jedi_signature_help = { enabled = true },
                 jedi_symbols = { enabled = true, all_scopes = true },
+                inlay_hints = {
+                    enabled = true,
+                },
             },
         },
     },
@@ -219,7 +225,7 @@ lsp.set_preferences({
     sign_icons = {
         error = "",
         warn = "",
-        hint = "",
+        -- hint = "",
         info = "",
     },
 })
