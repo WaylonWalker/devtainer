@@ -1,5 +1,4 @@
 _min_copier_version: v6.0.0b0
-
 title:
   type: str
 priority:
@@ -8,12 +7,9 @@ priority:
 slug:
   type: str
   default: "{{  title.lower().replace(' ', '-')  }}"
-
 tag1:
   type: str
-
 tag2:
   type: str
-
 tag3:
   type: str

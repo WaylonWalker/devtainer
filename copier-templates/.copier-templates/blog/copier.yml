@@ -4,7 +4,6 @@ title:
 slug:
   type: str
   default: "{{ title.lower().replace(' ', '-') }}"
-
 tag1:
   type: str
   choices:
@@ -18,7 +17,6 @@ tag1:
     - vim
     - catalytic
     - data
-
 tag2:
   type: str
   choices:
@@ -32,7 +30,6 @@ tag2:
     - vim
     - catalytic
     - data
-
 tag3:
   type: str
   choices:

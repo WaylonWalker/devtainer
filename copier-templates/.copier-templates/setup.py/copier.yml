@@ -9,9 +9,8 @@ framework:
     - '"Framework :: Kedro",'
     - '"Framework :: Markata",'
     - ''
-keywords: 
+keywords:
   choices:
     - 'keywords="pipelines, machine learning, data pipelines, data science, data engineering",'
     - ''
-
 _answers_file: .setup-py-copier-answers.yml
