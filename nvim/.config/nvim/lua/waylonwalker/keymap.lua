@@ -54,7 +54,6 @@ set("n", "<c-y>", "<c-^>")
 set("i", "<c-y>", "<c-o><c-^>")
 
 -- set("i", "gqq", "<esc>gqqA")
-set("i", "mm.", "->")
 
 -- git commits
 set("n", "ga", "<cmd>G add %<CR>")
