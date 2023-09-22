@@ -38,8 +38,16 @@ alias lsa="exa -lah --icons --git"
 alias tree="exa -lh --git-ignore --icons --git --tree"
 alias treea="exa -lah --icons --git --tree"
 
+
+fthoughts () {
+    # fetch thoughts
+    curl 'https://thoughts.waylonwalker.com/posts/?page_size=999999' | sqlite-utils insert ~/.config/thoughts/database.db post --pk=id --alter --ignore -
+}
+
 sthoughts () {
-    sqlite-utils search posts.db posts $1 | jq | bat -l json
+    # search thoughts
+    sqlite-utils search ~/.config/thoughts/database.db post "$*" | ~/git/thoughts/format_thought.py | bat --style=plain --color=always --language=markdown
+
 }
 
 alias st=sthoughts
