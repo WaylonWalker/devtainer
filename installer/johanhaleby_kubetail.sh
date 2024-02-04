@@ -1,0 +1,1 @@
+echo 'no assets found'
