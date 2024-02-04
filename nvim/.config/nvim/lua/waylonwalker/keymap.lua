@@ -304,8 +304,8 @@ set("n", "<c-w><c-w>", "<cmd>lua require'waylonwalker.util.toggler'.winmax()<cr>
 set("n", "<leader>qq", "yy<cmd>lua require'waylonwalker.util.window'.open_window()<cr>pkddgqqggyG:q<cr>Vp")
 set("v", "<leader>qq", "d<cmd>lua require'waylonwalker.util.window'.open_window()<cr>pkddgqqggyG:q<cr>P")
 
-set("n", "((", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
-set("n", "))", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
+set("n", "((", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
+set("n", "))", "<cmd>lua vim.diagnostic.goto_next()<CR>")
 
 set("n", "<c-space>", "<cmd>x<cr>")
 
