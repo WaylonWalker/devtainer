@@ -40,9 +40,6 @@ set("v", ">", ">gv")
 -- Paste replace visual selection without copying it
 vim.keymap.set("v", "p", '"_dP')
 
--- Allow gf to open non-existent files
-set("", "gf", ":edit <cfile><CR>")
-
 set("n", "gwc", "vap<cmd>'<,'>w !wc -c<CR>")
 set("n", "ZR", "zR")
 set("n", "ZM", "zM")
