@@ -34,6 +34,45 @@ null_ls.builtins.formatting.tidy_import = h.make_builtin({
     factory = h.formatter_factory,
 })
 
+null_ls.builtins.formatting.djhtml = h.make_builtin({
+    name = "djhtml",
+    meta = {
+        url = "https://github.com/rtts/djhtml",
+        description = "",
+    },
+    method = FORMATTING,
+    filetypes = { "html", "htmldjango" },
+    generator_opts = {
+        command = "djhtml",
+        args = {
+            "$FILENAME",
+        },
+        to_stdin = false,
+        to_temp_file = true,
+    },
+    factory = h.formatter_factory,
+})
+
+null_ls.builtins.formatting.rustywind = h.make_builtin({
+    name = "rustywind",
+    meta = {
+        url = "",
+        description = "",
+    },
+    method = FORMATTING,
+    filetypes = { "html", "htmldjango" },
+    generator_opts = {
+        command = "rustywind",
+        args = {
+            "--write",
+            "$FILENAME",
+        },
+        to_stdin = false,
+        to_temp_file = true,
+    },
+    factory = h.formatter_factory,
+})
+
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 null_ls.setup({
     sources = {
@@ -44,7 +83,9 @@ null_ls.setup({
         null_ls.builtins.formatting.json_tool,
         null_ls.builtins.formatting.fixjson,
         null_ls.builtins.formatting.markdownlint,
-        null_ls.builtins.formatting.prettier,
+        -- null_ls.builtins.formatting.prettier,
+        null_ls.builtins.formatting.djhtml,
+        null_ls.builtins.formatting.rustywind,
         null_ls.builtins.formatting.sqlformat,
         null_ls.builtins.formatting.stylua,
         null_ls.builtins.formatting.tidy_import,
@@ -89,20 +130,25 @@ lsp.preset("recommended")
 
 lsp.ensure_installed({
     "bashls",
+    "docker_compose_language_service",
     "dockerls",
+    "grammarly",
+    "helmls",
     "html",
-    "html-lsp",
     "jedi_language_server",
     "jsonls",
     "marksman",
+    "prosemd_lsp",
     "pylsp",
     "ruff_lsp",
-    "prosemd_lsp",
-    -- "tailwindcss-language-server",
-    -- "tailwindcss-colors",
-    -- "sumneko_lua",
+    "tailwindcss",
+    "taplo",
     "terraformls",
     "yamlls",
+    -- "llm-ls",
+    -- "sumneko_lua",
+    -- "tailwindcss-colors",
+    -- "tailwindcss-language-server",
 })
 
 require("mason-null-ls").setup({
@@ -231,8 +277,8 @@ lsp.set_preferences({
 })
 
 -- " nnoremap <silent> <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
-nnoremap("<silent> (( ", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
-nnoremap("<silent> )) ", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
+nnoremap("<silent>(( ", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
+nnoremap("<silent>)) ", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
 
 nnoremap("<leader>vd", "<cmd>lua vim.lsp.buf.definition()<CR>")
 nnoremap("<leader>vD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
