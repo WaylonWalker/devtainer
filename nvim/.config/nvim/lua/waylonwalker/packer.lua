@@ -21,6 +21,9 @@ local packer_bootstrap = ensure_packer()
 vim.cmd([[packadd packer.nvim]])
 
 return require("packer").startup(function(use)
+    use("jesseleite/nvim-macroni")
+    use("NoahTheDuke/vim-just")
+    use("https://github.com/David-Kunz/gen.nvim")
     use("https://github.com/AndrewRadev/splitjoin.vim")
     use("https://github.com/ThePrimeagen/lsp-debug-tools.nvim")
     use({
@@ -115,7 +118,7 @@ return require("packer").startup(function(use)
         },
     })
     use({
-        "jose-elias-alvarez/null-ls.nvim",
+        "nvimtools/none-ls.nvim",
         config = function()
             require("null-ls").setup()
         end,
