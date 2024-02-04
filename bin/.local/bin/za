@@ -7,6 +7,19 @@ if [ -z $DIR ]; then
     DIR=$HOME/git
 fi
 
+if [ $DIR = "-l" ]; then
+    session_name=`cat $HOME/.zellij_last_session`
+    [ -f $HOME/.zellij_session ] && cat $HOME/.zellij_session > $HOME/.zellij_last_session
+    echo "$session_name" > $HOME/.zellij_session
+    if [ `zellij list-sessions | grep -x $session_name` ]; then
+        zellij attach $session_name
+    else
+        cd $path_name
+        zellij attach -c $session_name
+    fi
+    exit 0
+fi
+
 detach() {
     if [ ! -z "$ZELLIJ" ]; then
         # zellij action switch-mode session
@@ -16,7 +29,12 @@ detach() {
 }
 
 if [ -z "$ZELLIJ" ]; then
-    zellij -c ~/.config/zellij/outer.kdl --layout ~/.config/zellij/outer-layouts/default.kdl
+    if [ `zellij list-sessions | grep -x outer` ]; then
+        zellij attach outer
+    else
+        zellij --config ~/.config/zellij/outer.kdl --layout ~/.config/zellij/outer-layouts/default.kdl --session outer --max-panes=2
+        # zellij --config ~/.config/zellij/outer.kdl --session outer --max-panes=2
+    fi
     exit 1
 fi
 
@@ -43,6 +61,8 @@ if [ -z $session_name ]; then
     exit 0
 fi
 
+[ -f $HOME/.zellij_session ] && cat $HOME/.zellij_session > $HOME/.zellij_last_session
+echo "$session_name" > $HOME/.zellij_session
 
 if [ `zellij list-sessions | grep -x $session_name` ]; then
     zellij attach $session_name
