@@ -4,12 +4,13 @@ ENV PATH="${PATH}:/root/.local/share/bob/nvim-bin"
 ENV PATH="${PATH}:/root/.local/bin"
 COPY installer /installer
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
+    bat \
     curl \
-    gcc \
     g++ \
-    unzip \
+    gcc \
+    git \
     stow \
+    unzip \
     zsh \
     ca-certificates && \
     mkdir ~/.local/bin -p && \
@@ -17,17 +18,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && \
     cd /root/.local/bin
 WORKDIR  /root/.local/bin
-RUN /installer/install.sh
+RUN bash /installer/install.sh
 RUN python -m pip install pipx && \
     python -m pipx ensurepath && \
+    python -m pipx install harlequin && \
+    python -m pipx install ipython && \
     python -m pipx install lolcat && \
-    python -m pipx install harlequin
+    python -m pipx install visidata && \
+    python -m pipx install waylonwalker
 RUN bob install nightly && \
     bob use nightly
 COPY kickstart.nvim /root/.config/nvim
+
 # RUN git clone https://github.com/waylonwalker/kickstart.nvim ~/.config/nvim
 RUN nvim --headless "+Lazy! sync" +qa
-RUN nvim --headless "+TSInstallSync all" +qa
+RUN nvim --headless "+TSInstallSync c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
 RUN nvim --headless "+MasonInstall lua-language-server" +qa
 COPY zsh /root/devtainer/zsh
 COPY bin /root/devtainer/bin
