@@ -50,6 +50,7 @@ update-installers:
     derailed/k9s
     ducaale/xh
     ducaale/xh
+    extrawurst/gitui
     go-task/task
     homeport/termshot
     imsnif/bandwhich
@@ -57,13 +58,11 @@ update-installers:
     jmorganca/ollama
     johanhaleby/kubetail
     mgdm/htmlq
-    mltframework/shotcut
     neovim/neovim
     ogham/dog
     ogham/exa
     packwiz/packwiz
     pemistahl/grex
-    sharkdp/bat
     sharkdp/fd
     sharkdp/pastel
     sirwart/ripsecrets
@@ -74,6 +73,8 @@ update-installers:
     rm -rf installer
     mkdir installer
     touch installer/install.sh
+    echo "#!/usr/bin/env bash" >> installer/install.sh
+    echo "set -e" >> installer/install.sh
     chmod +x installer/install.sh
     for i_prog in $i_progs; do
         file=`echo $i_prog | sed 's/\//_/g'`
@@ -82,4 +83,11 @@ update-installers:
         echo "/installer/$file.sh" >> installer/install.sh
     done
 
+
     echo "mv cli gh" >> installer/install.sh
+
+    echo "
+    if [[ -f /usr/bin/batcat ]]; then
+        ln -s /usr/bin/batcat ~/.local/bin/bat
+    fi
+    " >> installer/install.sh
