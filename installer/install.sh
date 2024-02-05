@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+set -e
 /installer/BurntSushi_ripgrep.sh
 /installer/MordechaiHadad_bob.sh
 /installer/avencera_rustywind.sh
@@ -12,6 +14,7 @@
 /installer/derailed_k9s.sh
 /installer/ducaale_xh.sh
 /installer/ducaale_xh.sh
+/installer/extrawurst_gitui.sh
 /installer/go-task_task.sh
 /installer/homeport_termshot.sh
 /installer/imsnif_bandwhich.sh
@@ -19,13 +22,11 @@
 /installer/jmorganca_ollama.sh
 /installer/johanhaleby_kubetail.sh
 /installer/mgdm_htmlq.sh
-/installer/mltframework_shotcut.sh
 /installer/neovim_neovim.sh
 /installer/ogham_dog.sh
 /installer/ogham_exa.sh
 /installer/packwiz_packwiz.sh
 /installer/pemistahl_grex.sh
-/installer/sharkdp_bat.sh
 /installer/sharkdp_fd.sh
 /installer/sharkdp_pastel.sh
 /installer/sirwart_ripsecrets.sh
@@ -33,3 +34,8 @@
 /installer/topgrade-rs_topgrade.sh
 /installer/zellij-org_zellij.sh
 mv cli gh
+
+if [[ -f /usr/bin/batcat ]]; then
+    ln -s /usr/bin/batcat ~/.local/bin/bat
+fi
+

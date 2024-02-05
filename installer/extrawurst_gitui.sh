@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="mltframework"
-	PROG="shotcut"
+	USER="extrawurst"
+	PROG="gitui"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v24.01.28"
+	RELEASE="v0.24.3"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -84,9 +84,21 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
+	"linux_arm64")
+		URL="https://github.com/extrawurst/gitui/releases/download/v0.24.3/gitui-linux-aarch64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm")
+		URL="https://github.com/extrawurst/gitui/releases/download/v0.24.3/gitui-linux-arm.tar.gz"
+		FTYPE=".tar.gz"
+		;;
 	"linux_amd64")
-		URL="https://github.com/mltframework/shotcut/releases/download/v24.01.28/shotcut-linux-x86_64-240128.AppImage"
-		FTYPE=".bin"
+		URL="https://github.com/extrawurst/gitui/releases/download/v0.24.3/gitui-linux-musl.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"darwin_amd64")
+		URL="https://github.com/extrawurst/gitui/releases/download/v0.24.3/gitui-mac.tar.gz"
+		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
 	esac
@@ -123,7 +135,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "shotcut_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "gitui_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi
