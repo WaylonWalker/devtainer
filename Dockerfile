@@ -25,44 +25,43 @@ RUN echo '[multilib]' >> /etc/pacman.conf && \
 USER devtainer
 
 RUN sudo -u devtainer paru --noconfirm --skipreview --useask -S \
-      bat \
-      cargo \
-      direnv \
-      dua-cli \
-      dust \
-      fd \
-      github-cli \
-      gitui \
-      htop \
-      # ijq-bin \
-      lf-bin \
-      linux-headers \
-      lolcat \
-      man-db \
-      man-pages \
-      neofetch \
-      neovim-nightly-bin \
-      neovim-plug-git \
-      nvm-git \
-      pacman-contrib \
-      pyenv \
-      ripgrep \
-      starship \
-      stow \
-      the_silver_searcher \
-      tldr \
-      tmux \
-      tree \
-      unzip \
-      viddy \
-      zsh \
-      zsh-autosuggestions \
-      zsh-history-substring-search \
-      zsh-syntax-highlighting \
-      zsh-vi-mode-git && \
-      pacman -Qtdq | xargs -r pacman --noconfirm -Rcns && \
-      paccache -rk0 && \
-      rm -rf /home/devtainer/.cache
+    bat \
+    cargo \
+    direnv \
+    dua-cli \
+    dust \
+    fd \
+    github-cli \
+    gitui \
+    htop \
+    # ijq-bin \
+    lf-bin \
+    linux-headers \
+    lolcat \
+    man-db \
+    man-pages \
+    neofetch \
+    neovim-nightly-bin \
+    nvm-git \
+    pacman-contrib \
+    pyenv \
+    ripgrep \
+    starship \
+    stow \
+    the_silver_searcher \
+    tldr \
+    tmux \
+    tree \
+    unzip \
+    viddy \
+    zsh \
+    zsh-autosuggestions \
+    zsh-history-substring-search \
+    zsh-syntax-highlighting \
+    zsh-vi-mode-git && \
+    pacman -Qtdq | xargs -r pacman --noconfirm -Rcns && \
+    paccache -rk0 && \
+    rm -rf /home/devtainer/.cache
 
 RUN mkdir -p /home/devtainer/git/devtainer/
 COPY --chown=devtainer:devtainer . /home/devtainer/git/devtainer/
@@ -74,7 +73,8 @@ COPY --chown=devtainer:devtainer . /home/devtainer/git/devtainer/
 # -t DIR, --target=DIR  Set target to DIR (default is parent of stow dir)
 # -S, --stow            Stow the package names that follow this option
 RUN stow -d /home/devtainer/git/devtainer -t /home/devtainer --stow zsh tmux bin nvim
-RUN nvim -u /home/devtainer/.config/nvim/plugins.vim +PlugInstall +qall
+# RUN nvim -u /home/devtainer/.config/nvim/plugins.vim +PlugInstall +qall
+RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 WORKDIR /home/devtainer
 
 
@@ -96,23 +96,22 @@ WORKDIR /home/devtainer
 
 # RUN paru -S neovim --noconfirm
 
-    # make it as the dockeruser otherwise it becomes owned by root
-    # RUN mkdir /home/dockeruser/.local/share/nvim/site/autoload/ -p
+# make it as the dockeruser otherwise it becomes owned by root
+# RUN mkdir /home/dockeruser/.local/share/nvim/site/autoload/ -p
 
-    # ENV PATH="${PATH}:/home/dockeruser/.local/bin"
-    # RUN pip3 install pipx
-    # RUN pipx run --spec ansible ansible-playbook /devtainer/ansible/local.yml -t core
+# ENV PATH="${PATH}:/home/dockeruser/.local/bin"
+# RUN pip3 install pipx
+# RUN pipx run --spec ansible ansible-playbook /devtainer/ansible/local.yml -t core
 
-    # stow options, I can never remember these
-    # -d DIR, --dir=DIR     Set stow dir to DIR (default is current dir)
-    # -t DIR, --target=DIR  Set target to DIR (default is parent of stow dir)
-    # -S, --stow            Stow the package names that follow this option
-    # RUN stow -d /devtainer -t /home/dockeruser --stow zsh tmux bin nvim
+# stow options, I can never remember these
+# -d DIR, --dir=DIR     Set stow dir to DIR (default is current dir)
+# -t DIR, --target=DIR  Set target to DIR (default is parent of stow dir)
+# -S, --stow            Stow the package names that follow this option
+# RUN stow -d /devtainer -t /home/dockeruser --stow zsh tmux bin nvim
 
-    # RUN pipx run --spec ansible ansible-playbook /devtainer/ansible/local.yml -t "nvim, zsh"
+# RUN pipx run --spec ansible ansible-playbook /devtainer/ansible/local.yml -t "nvim, zsh"
 
 # WORKDIR /home/dockeruser
 
 WORKDIR /home/
 CMD ["zsh"]
-

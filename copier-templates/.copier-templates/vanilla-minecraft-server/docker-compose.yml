@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   mc:
     container_name: walkercraft
@@ -13,8 +12,5 @@ services:
     restart: unless-stopped
     volumes:
       - ./minecraft-data:/data
-
 volumes:
   data:
-    
-

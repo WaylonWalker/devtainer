@@ -1,9 +1,7 @@
 - hosts: localhost
   tasks:
-  - name: Enable a timer unit for dnf-automatic
-    ansible.builtin.systemd:
-      name: NedworkManager
-      state: started
-      enabled: yes
-
-
+    - name: Enable a timer unit for dnf-automatic
+      ansible.builtin.systemd:
+        name: NedworkManager
+        state: started
+        enabled: yes

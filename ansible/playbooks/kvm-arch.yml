@@ -1,17 +1,9 @@
 - hosts: localhost
   tasks:
-  - name: Paru Core Desktop Install
-    shell: >
-      paru -Syu --noconfirm
-      qemu
-      virt-manager
-      virt-viewer
-      dnsmasq
-      vde2
-      bridge-utils
-      openbsd-netcat
-      ebtables
-      libguestfs
+    - name: Paru Core Desktop Install
+      shell: >
+        paru -Syu --noconfirm qemu virt-manager virt-viewer dnsmasq vde2 bridge-utils openbsd-netcat ebtables libguestfs
+
 
 # - name: Add user to the libvirt group
 #   become_user: root

@@ -8,7 +8,6 @@
     - node
     - nvim
     - neovim
-
 - name: Set Global npm directory
   shell: |
     mkdir ~/.local/.npm-global
@@ -19,11 +18,9 @@
     - node
     - nvim
     - neovim
-
 - name: include node_modules path in .profile
   blockinfile:
     dest: "{{ lookup('env', 'HOME') }}/.profile"
-
     marker: '# {mark} npm-global bin added by devtainer'
     block: |
       # set PATH so it includes user's npm-global bin if it exists
@@ -38,7 +35,6 @@
     - node
     - nvim
     - neovim
-
 - name: Install N
   npm:
     name: n
@@ -50,9 +46,7 @@
     - nvim
     - neovim
 - name: Install correct version of Node
-  shell: |
-    export N_PREFIX=~/.local/.n
-    sudo ~/.local/.npm-global/bin/n 14 
+  shell: "export N_PREFIX=~/.local/.n\nsudo ~/.local/.npm-global/bin/n 14 \n"
   tags:
     - install
     - terminal

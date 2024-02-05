@@ -1,5 +1,6 @@
 -- SETUP
 local navic = require("nvim-navic")
+local navbuddy = require("nvim-navbuddy")
 
 local null_ls = require("null-ls")
 
@@ -33,17 +34,58 @@ null_ls.builtins.formatting.tidy_import = h.make_builtin({
     factory = h.formatter_factory,
 })
 
+null_ls.builtins.formatting.djhtml = h.make_builtin({
+    name = "djhtml",
+    meta = {
+        url = "https://github.com/rtts/djhtml",
+        description = "",
+    },
+    method = FORMATTING,
+    filetypes = { "html", "htmldjango" },
+    generator_opts = {
+        command = "djhtml",
+        args = {
+            "$FILENAME",
+        },
+        to_stdin = false,
+        to_temp_file = true,
+    },
+    factory = h.formatter_factory,
+})
+
+null_ls.builtins.formatting.rustywind = h.make_builtin({
+    name = "rustywind",
+    meta = {
+        url = "",
+        description = "",
+    },
+    method = FORMATTING,
+    filetypes = { "html", "htmldjango" },
+    generator_opts = {
+        command = "rustywind",
+        args = {
+            "--write",
+            "$FILENAME",
+        },
+        to_stdin = false,
+        to_temp_file = true,
+    },
+    factory = h.formatter_factory,
+})
+
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 null_ls.setup({
     sources = {
-        -- formatting
+        -- -- formatting
         null_ls.builtins.formatting.beautysh,
         null_ls.builtins.formatting.black.with({ extra_args = { "--fast" } }),
         null_ls.builtins.formatting.isort,
         null_ls.builtins.formatting.json_tool,
-        null_ls.builtins.formatting.jsonfix,
+        null_ls.builtins.formatting.fixjson,
         null_ls.builtins.formatting.markdownlint,
-        null_ls.builtins.formatting.prettier,
+        -- null_ls.builtins.formatting.prettier,
+        null_ls.builtins.formatting.djhtml,
+        null_ls.builtins.formatting.rustywind,
         null_ls.builtins.formatting.sqlformat,
         null_ls.builtins.formatting.stylua,
         null_ls.builtins.formatting.tidy_import,
@@ -55,9 +97,9 @@ null_ls.setup({
         null_ls.builtins.diagnostics.alex,
         null_ls.builtins.diagnostics.eslint,
         null_ls.builtins.diagnostics.markdownlint,
-        null_ls.builtins.diagnostics.proselint,
-        null_ls.builtins.diagnostics.pydocstyle,
-        null_ls.builtins.diagnostics.vale,
+        -- null_ls.builtins.diagnostics.proselint,
+        -- null_ls.builtins.diagnostics.pydocstyle,
+        -- null_ls.builtins.diagnostics.vale,
 
         -- completions
         null_ls.builtins.completion.spell,
@@ -66,12 +108,13 @@ null_ls.setup({
         if client.supports_method("textDocument/formatting") then
             vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
             vim.api.nvim_create_autocmd("BufWritePre", {
+                -- pattern = { "!*.jinja" },
                 -- group = M.waylonwalker_augroup,
                 group = augroup,
                 buffer = bufnr,
                 callback = function()
                     -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
-                    vim.lsp.buf.format()
+                    vim.lsp.buf.format({ async = false })
                 end,
             })
         end
@@ -87,16 +130,25 @@ lsp.preset("recommended")
 
 lsp.ensure_installed({
     "bashls",
+    "docker_compose_language_service",
     "dockerls",
+    "grammarly",
+    "helmls",
     "html",
     "jedi_language_server",
     "jsonls",
     "marksman",
-    "pylsp",
     "prosemd_lsp",
-    "sumneko_lua",
+    "pylsp",
+    "ruff_lsp",
+    "tailwindcss",
+    "taplo",
     "terraformls",
     "yamlls",
+    -- "llm-ls",
+    -- "sumneko_lua",
+    -- "tailwindcss-colors",
+    -- "tailwindcss-language-server",
 })
 
 require("mason-null-ls").setup({
@@ -112,9 +164,22 @@ lsp.configure("sumneko_lua", {
             diagnostics = {
                 globals = { "vim" },
             },
+            inlay_hints = {
+                enabled = true,
+            },
         },
     },
 })
+
+-- lsp.configure("tailwindcss-colors", {
+--     settings = {},
+-- })
+
+lsp.on_attach(function(client, bufnr)
+    -- see :help lsp-zero-keybindings
+    -- to learn the available actions
+    -- require("tailwindcss-colors").buf_attach(bufnr)
+end)
 
 lsp.configure("pylsp", {
     settings = {
@@ -122,7 +187,7 @@ lsp.configure("pylsp", {
             configurationSources = { "flake8" },
             plugins = {
                 pycodestyle = { enabled = false },
-                flake8 = { enabled = true },
+                flake8 = { enabled = false },
                 mypy = {
                     enabled = true,
                     live_mode = true,
@@ -133,6 +198,9 @@ lsp.configure("pylsp", {
                 jedi_references = { enabled = true },
                 jedi_signature_help = { enabled = true },
                 jedi_symbols = { enabled = true, all_scopes = true },
+                inlay_hints = {
+                    enabled = true,
+                },
             },
         },
     },
@@ -155,7 +223,7 @@ local lspkind = require("lspkind")
 local cmp_formatting = {
     format = lspkind.cmp_format({
         mode = "symbol", -- show only symbol annotations
-        maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+        maxwidth = 50,   -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
         ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
     }),
 }
@@ -203,14 +271,14 @@ lsp.set_preferences({
     sign_icons = {
         error = "",
         warn = "",
-        hint = "",
+        -- hint = "",
         info = "",
     },
 })
 
 -- " nnoremap <silent> <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
-nnoremap("<silent> (( ", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
-nnoremap("<silent> )) ", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
+nnoremap("<silent>(( ", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
+nnoremap("<silent>)) ", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
 
 nnoremap("<leader>vd", "<cmd>lua vim.lsp.buf.definition()<CR>")
 nnoremap("<leader>vD", "<cmd>lua vim.lsp.buf.declaration()<CR>")

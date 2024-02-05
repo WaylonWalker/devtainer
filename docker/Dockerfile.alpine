@@ -1,0 +1,4 @@
+FROM alpine:edge
+RUN apk add git lazygit neovim ripgrep g++ --update && \
+    git clone https://github.com/LazyVim/starter ~/.config/nvim && \
+    nvim --headless +qall

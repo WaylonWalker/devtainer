@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   mc:
     container_name: walkercraft
@@ -20,8 +19,5 @@ services:
     volumes:
       - ./minecraft-data:/data
       - ./mods.txt:/extras/mods.txt:ro
-
 volumes:
   data:
-    
-

@@ -16,37 +16,56 @@ alias direnvconda='cp ~/.config/direnv/conda/.envrc . && direnv allow .'
 alias direnvvenv='cp ~/.config/direnv/venv/.envrc . && direnv allow .'
 alias ap='rg --files ~/devtainer/ansible/playbooks | fzf --header "select playbook" | xargs ansible-playbook --ask-become'
 alias pydev='pip install python-lsp-server jedi-language-server mypy flake8 pyflyby ipython'
-
+alias venv=". ./.venv/bin/activate || python3 -m venv .venv --prompt $(basename $PWD) && . ./.venv/bin/activate"
+alias awsrules="aws events list-rules | visidata -f json"
 alias apx="pipx run --spec ansible ansible-playbook ~/devtainer/ansible/local.yml --ask-become-pass"
+alias h='hatch run'
+
+# git
 alias diffstaged="git diff --staged | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmain="git diff main.. | nvim - +Diffurcate '+Telescope find_files'"
+alias diffpr="gh pr diff | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmaster="git diff master.. | nvim - +Diffurcate '+Telescope find_files'"
 alias gc='git commit --verbose'
-alias awsrules="aws events list-rules | visidata -f json"
 alias trackme='git branch --set-upstream-to=origin/$(git symbolic-ref --short HEAD)'
 alias rebasemain='git pull origin main --rebase'
 alias rebasedev='git pull origin develop --rebase'
-alias venv=". ./.venv/bin/activate || python3 -m venv .venv --prompt $(basename $PWD) && . ./.venv/bin/activate"
+alias commit="git diff --staged | lockhart prompt run commit | git commit -evF -"
 
+# exa
 alias ls="exa -lh --git-ignore --icons --git"
 alias lsa="exa -lah --icons --git"
 alias tree="exa -lh --git-ignore --icons --git --tree"
 alias treea="exa -lah --icons --git --tree"
 
+
+fthoughts () {
+    # fetch thoughts
+    curl 'https://thoughts.waylonwalker.com/posts/?page_size=999999' | sqlite-utils insert ~/.config/thoughts/database.db post --pk=id --alter --ignore -
+}
+
+sthoughts () {
+    # search thoughts
+    sqlite-utils search ~/.config/thoughts/database.db post "$*" | ~/git/thoughts/format_thought.py | bat --style=plain --color=always --language=markdown
+
+}
+
+alias st=sthoughts
+
 ewhich () {
-case `command -V $1` in
-    "$1 not found")
-        FILE=`fzf --prompt "$1 not found searching ..." --query $1`
-        [ -z "$FILE" ] && echo "closing" || $EDITOR $FILE;;
-    *"is a shell builtin"*)
-        echo "$1 is a builtin";;
-    *"is an alias"*)
-        $EDITOR ~/.alias +/alias\ $1;;
-    *"is a shell function"*)
-        $EDITOR ~/.alias +/^$1;;
-    *)
-        $EDITOR `which "$1"`;;
-esac
+    case `command -V $1` in
+        "$1 not found")
+            FILE=`fzf --prompt "$1 not found searching ..." --query $1`
+            [ -z "$FILE" ] && echo "closing" || $EDITOR $FILE ;;
+        *"is a shell builtin"*)
+            echo "$1 is a builtin" ;;
+        *"is an alias"*)
+            $EDITOR ~/.alias +/alias\ $1 ;;
+        *"is a shell function"*)
+            $EDITOR ~/.alias +/^$1 ;;
+        *)
+            $EDITOR `which "$1"` ;;
+    esac
 }
 
 alias e=ewhich
@@ -66,7 +85,7 @@ cpr() {
 
 alias :e='nvim '
 
-alias gic='git commit -m ""'
+alias gic='git commit -m "$a"'
 
 
 # alias mu='pipx run --spec mu-repo mu'
@@ -127,39 +146,39 @@ geik (){
 
 # alias ta="tmux attach"
 switch_session() {
-  local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
-  { tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
-    | awk '!seen[$1]++' \
-    | column -t -s'|' \
-    | fzf -q '$' --reverse --prompt 'switch session: ' -1 \
-    | cut -d':' -f1 \
-    | xargs tmux switch-client -t
+    local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
+    { tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
+        | awk '!seen[$1]++' \
+        | column -t -s'|' \
+        | fzf -q '$' --reverse --prompt 'switch session: ' -1 \
+        | cut -d':' -f1 \
+        | xargs tmux switch-client -t
 }
 
 
-vim () { 
-  in_tmux \
-    && nvim \
-    || bash -c "\
+vim () {
+    in_tmux \
+        && nvim \
+        || bash -c "\
     tmux new-session -d;\
     tmux send-keys nvim Space +GFiles C-m;\
     tmux -2 attach-session -d;
     "
-  }
+}
 
 
 in_tmux () {
-  if [ -n "$TMUX" ]; then
-    return 0
-  else
-    return 1
-  fi
+    if [ -n "$TMUX" ]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 
 wup () {
-  cd ~/git/waylonwalkerv2/
-  gatsby develop
+    cd ~/git/waylonwalkerv2/
+    gatsby develop
 }
 
 ep () {
@@ -173,10 +192,10 @@ ep () {
 
 lsn () {
     if [ -z $1 ]
-        then
-            ls -laht | head -n 10
-        else
-            ls -laht | head -n $1
+    then
+        ls -laht | head -n 10
+    else
+        ls -laht | head -n $1
     fi
 }
 
@@ -191,15 +210,14 @@ alias ignore='curl -L https://www.gitignore.io/api/vim,node,data,emacs,python,py
 
 a () {
     source activate "$(conda info --envs | fzf --prompt select-env❯ | awk '{print $1}')"
-    }
-
-fs() {
-local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
-{ tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
-  | awk '!seen[$1]++' \
-  | column -t -s'|' \
-  | fzf -q '$' --reverse --prompt 'switch session: ' -1 \
-  | cut -d':' -f1 \
-  | xargs tmux switch-client -t
 }
 
+fs() {
+    local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
+    { tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
+        | awk '!seen[$1]++' \
+        | column -t -s'|' \
+        | fzf -q '$' --reverse --prompt 'switch session: ' -1 \
+        | cut -d':' -f1 \
+        | xargs tmux switch-client -t
+}
