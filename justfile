@@ -63,7 +63,6 @@ update-installers:
     ogham/exa
     packwiz/packwiz
     pemistahl/grex
-    sharkdp/fd
     sharkdp/pastel
     sirwart/ripsecrets
     starship/starship
@@ -89,5 +88,8 @@ update-installers:
     echo "
     if [[ -f /usr/bin/batcat ]]; then
         ln -s /usr/bin/batcat ~/.local/bin/bat
+    fi
+    if [[ -f /usr/bin/fdfind ]]; then
+        ln -s /usr/bin/fdfind ~/.local/bin/fd
     fi
     " >> installer/install.sh
