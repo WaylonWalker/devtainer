@@ -1,11 +1,13 @@
-From python:3.11-slim-bookworm
+From python:3.10-slim-bookworm
 
 ENV PATH="${PATH}:/root/.local/share/bob/nvim-bin"
 ENV PATH="${PATH}:/root/.local/bin"
+ENV PATH="${PATH}:/root/.local/share/nvim/mason/bin"
 COPY installer /installer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
     curl \
+    fd-find \
     g++ \
     gcc \
     git \
@@ -17,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
     cd /root/.local/bin
+
 WORKDIR  /root/.local/bin
 RUN bash /installer/install.sh
 RUN python -m pip install pipx && \
@@ -28,15 +31,22 @@ RUN python -m pip install pipx && \
     python -m pipx install waylonwalker
 RUN bob install nightly && \
     bob use nightly
-COPY kickstart.nvim /root/.config/nvim
+# COPY kickstart.nvim /root/.config/nvim
 
 # RUN git clone https://github.com/waylonwalker/kickstart.nvim ~/.config/nvim
-RUN nvim --headless "+Lazy! sync" +qa
-RUN nvim --headless "+TSInstallSync c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
-RUN nvim --headless "+MasonInstall lua-language-server" +qa
 COPY zsh /root/devtainer/zsh
 COPY bin /root/devtainer/bin
+COPY nvim /root/devtainer/nvim
 WORKDIR /root/devtainer
 RUN stow zsh
 RUN stow bin
+RUN stow nvim
+RUN nvim --headless "+Lazy! sync" +qa
+# RUN stow lazyvim
 WORKDIR /root
+RUN curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts && \
+# If you want n installed, you can use npm now.\
+npm install -g n
+
+# RUN nvim --headless "+TSInstallSync c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
+RUN nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa

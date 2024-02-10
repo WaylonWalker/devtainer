@@ -27,7 +27,6 @@ set -e
 /installer/ogham_exa.sh
 /installer/packwiz_packwiz.sh
 /installer/pemistahl_grex.sh
-/installer/sharkdp_fd.sh
 /installer/sharkdp_pastel.sh
 /installer/sirwart_ripsecrets.sh
 /installer/starship_starship.sh
@@ -37,5 +36,8 @@ mv cli gh
 
 if [[ -f /usr/bin/batcat ]]; then
     ln -s /usr/bin/batcat ~/.local/bin/bat
+fi
+if [[ -f /usr/bin/fdfind ]]; then
+    ln -s /usr/bin/fdfind ~/.local/bin/fd
 fi
 
