@@ -93,7 +93,7 @@ set("n", "gek", "<cmd>e ~/.config/nvim/lua/waylonwalker/keymap.lua<CR>")
 -- edit lsp-config
 set("n", "gec", "<cmd>e ~/.config/nvim/lua/waylonwalker/plugins/lsp-config.lua<CR>")
 -- edit plugins list
-set("n", "gep", "<cmd>e ~/.config/nvim/lua/waylonwalker/packer.lua<CR>")
+set("n", "gep", "<cmd>e ~/.config/nvim/lua/waylonwalker/lazy.lua<CR>")
 --edit next to me
 set("n", "gee", ":e %:h<C-Z>")
 -- edit nvim settings

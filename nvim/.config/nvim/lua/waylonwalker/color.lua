@@ -12,7 +12,7 @@ vim.o.termguicolors = true
 vim.o.background = 'dark'
 
 
-vim.cmd('colorscheme onedark')
+-- vim.cmd('colorscheme onedark')
 vim.cmd('highlight Normal guibg=NONE ctermbg=NONE')
 vim.cmd('highlight EndOfBuffer guibg=NONE ctermbg=NONE')
 vim.cmd('highlight Normal guibg=NONE ctermbg=NONE')
