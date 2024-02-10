@@ -41,7 +41,7 @@ WORKDIR /root/devtainer
 RUN stow zsh
 RUN stow bin
 RUN stow nvim
-RUN nvim --headless "+Lazy! sync" +qa
+RUN nvim --headless "+Lazy! restore" +qa
 # RUN stow lazyvim
 WORKDIR /root
 RUN curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts && \
