@@ -1,10 +1,10 @@
 # follow symlinks
+# zmodload zsh/zprof
 set -o physical
 
 [ -f ~/.profile ] && source ~/.profile
 [ -f ~/.alias ] && source ~/.alias
 [ -f ~/.alias.local ] && source ~/.alias.local
-
 
 [ -d ~/.erg/bin ] && export PATH=$PATH:/home/waylon/.erg/bin
 [ -d ~/.erg ] && export ERG_PATH=/home/waylon/.erg
@@ -16,11 +16,7 @@ HISTFILE=~/.zsh_history
 SAVEHIST=1000000000
 setopt appendhistory
 setopt share_history
-# setopt extendedhistory
-# setopt histignoredups
-# setopt incappendhistorytime
-#
-#
+
 export PBGOPY_SERVER=http://localhost:9090
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 
@@ -33,10 +29,6 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 # eval "$(dircolors -b ~/.dircolors.256dark)"
-eval "$(starship init zsh)"
-eval "$(direnv hook zsh)"
-export DIRENV_WARN_TIMEOUT=100s
-export DIRENV_LOG_FORMAT=
 
 export FLYCTL_INSTALL="/home/waylon/.fly"
 [ -d "$FLYCTL_INSTALL" ] && export PATH="$FLYCTL_INSTALL/bin:$PATH"
@@ -57,7 +49,6 @@ export QMK_HOME='~/git/qmk_firmware'
 if [[ ! "$PATH" == */root/.local/share/nvim/plugged/fzf/bin* ]]; then
     export PATH="${PATH:+${PATH}:}/root/.local/share/nvim/plugged/fzf/bin"
 fi
-
 # Auto-completion
 # ---------------
 [[ $- == *i* ]] && source "/root/.local/share/nvim/plugged/fzf/shell/completion.zsh" 2> /dev/null
@@ -67,10 +58,18 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 ###
 
+# Setup bob
+#
+# /home/waylon/.local/share/bob/nvim-bin
+if [[ ! "$PATH" == */home/waylon/.local/share/bob/nvim-bin* ]]; then
+    export PATH="/home/waylon/.local/share/bob/nvim-bin:${PATH}}"
+fi
+
+
 
 # autoload -Uz compinit && compinit
-autoload -U +X compinit && compinit
-autoload -U +X bashcompinit && bashcompinit
+# autoload -U +X compinit && compinit
+# autoload -U +X bashcompinit && bashcompinit
 
 zstyle ':completion:*' menu select
 zmodload zsh/complist
@@ -93,7 +92,6 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 
 if [[ -f `command -v zellij` ]] then;
     if [[ -z "$ZELLIJ" ]]; then
-        # ~/.local/bin/za
     fi
 else
     ~/.local/bin/ta
@@ -104,17 +102,15 @@ fi
 [ -d ~/work ] && [ `ls ~/work | wc -l` -gt 0 ] && ln -sf ~/work/* ~/projects/
 [ -d ~/git ] && [ `ls ~/git | wc -l` -gt 0 ] && ln -sf ~/git/* ~/projects/
 
-if [[ `command -v pipx` ]] then;
-    eval "$(register-python-argcomplete pipx)"
-fi
-# eval `dircolors ~/.config/.dracula.dircolors`
-
-export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_1:
-
 if [[ `command -v starship` ]] then;
     eval "$(starship init zsh)"
 fi
 
+if [[ `command -v direnv` ]] then;
+    eval "$(direnv hook zsh)"
+    export DIRENV_WARN_TIMEOUT=100s
+    export DIRENV_LOG_FORMAT=
+fi
 
 autoload -U edit-command-line
 
@@ -158,11 +154,54 @@ bindkey  "^[[3~"  delete-char
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 fpath+=~/.zfunc
-autoload -Uz compinit && compinit
+# autoload -Uz compinit && compinit
 
-cwfetch
+# autoload -Uz compinit
+# if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+#     compinit;
+# else
+#     compinit -C;
+# fi;
+
+# cwfetch
+#
+
+fpath=($HOME/.zsh/completions $fpath)
+
+autoload -U compinit
+compinit -u
+
+## completion from https://github.com/wincent/wincent/blob/85fc42d9e96d408a/aspects/dotfiles/files/.zshrc
+
+# Make completion:
+# - Try exact (case-sensitive) match first.
+# - Then fall back to case-insensitive.
+# - Accept abbreviations after . or _ or - (ie. f.b -> foo.bar).
+# - Substring complete (ie. bar -> foobar).
+zstyle ':completion:*' matcher-list '' '+m:{[:lower:]}={[:upper:]}' '+m:{[:upper:]}={[:lower:]}' '+m:{_-}={-_}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Colorize completions using default `ls` colors.
+zstyle ':completion:*' list-colors ''
+
+# Allow completion of ..<Tab> to ../ and beyond.
+zstyle -e ':completion:*' special-dirs '[[ $PREFIX = (../)#(..) ]] && reply=(..)'
+
+# $CDPATH is overpowered (can allow us to jump to 100s of directories) so tends
+# to dominate completion; exclude path-directories from the tag-order so that
+# they will only be used as a fallback if no completions are found.
+zstyle ':completion:*:complete:(cd|pushd):*' tag-order 'local-directories named-directories'
+
+# Categorize completion suggestions with headings:
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format %F{default}%B%{$__WINCENT[ITALIC_ON]%}--- %d ---%{$__WINCENT[ITALIC_OFF]%}%b%f
+
+# Enable keyboard navigation of completions in menu
+# (not just tab/shift-tab but cursor keys as well):
+zstyle ':completion:*' menu select
+wfetch
+# zprof
