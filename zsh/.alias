@@ -39,14 +39,17 @@ alias tree="exa -lh --git-ignore --icons --git --tree"
 alias treea="exa -lah --icons --git --tree"
 
 
+can-i-touch-grass () {
+    curl -s 'https://play-outside.wayl.one?color=true&n_forecast=2' | xargs -0 -I {} printf "{}";
+}
 fthoughts () {
     # fetch thoughts
-    curl 'https://thoughts.waylonwalker.com/posts/?page_size=999999' | sqlite-utils insert ~/.config/thoughts/database.db post --pk=id --alter --ignore -
+    curl 'https://thoughts.waylonwalker.com/posts/waylonwalker/?page_size=9999999999' | sqlite-utils insert ~/.config/thoughts/database2.db post --pk=id --alter --ignore -
 }
 
 sthoughts () {
     # search thoughts
-    sqlite-utils search ~/.config/thoughts/database.db post "$*" | ~/git/thoughts/format_thought.py | bat --style=plain --color=always --language=markdown
+    sqlite-utils search ~/.config/thoughts/database2.db post "$*" | ~/git/thoughts/format_thought.py | bat --style=plain --color=always --language=markdown
 
 }
 
@@ -221,3 +224,58 @@ fs() {
         | cut -d':' -f1 \
         | xargs tmux switch-client -t
 }
+
+i_progs="
+atuinsh/atuin
+avencera/rustywind
+benbjohnson/litestream
+bootandy/dust
+BurntSushi/ripgrep
+casey/just
+chmln/sd
+cjbassi/ytop
+dalance/procs
+dbrgn/tealdeer
+derailed/k9s
+ducaale/xh
+go-task/task
+homeport/termshot
+imsnif/bandwhich
+imsnif/diskonaut
+jmorganca/ollama
+johanhaleby/kubetail
+kovidgoyal/kitty
+mgdm/htmlq
+mltframework/shotcut
+neovim/neovim
+ogham/dog
+ogham/exa
+packwiz/packwiz
+pemistahl/grex
+sharkdp/bat
+sharkdp/fd
+sharkdp/pastel
+sirwart/ripsecrets
+starship/starship
+topgrade-rs/topgrade
+zellij-org/zellij
+DataDog/ddqa
+ducaale/xh
+wez/wezterm
+        "
+
+i () {
+    pushd ~/.local/bin
+    echo $i_progs | grep $1 | xargs -I {} curl https://i.wayl.one/{} | bash
+    popd
+}
+
+i_fuzzy() {
+    pushd ~/.local/bin
+    echo $progs | fzf --preview 'curl https://i.wayl.one/{}' | xargs -I {} curl https://i.wayl.one/{} | bash
+    popd
+}
+
+
+# curl https://i.wayl.one/derailed/k9s > installer/k9s.sh
+# for each i_prog curl the installer
