@@ -28,14 +28,12 @@ jobs:
           tags: waylonwalker/devtainer:latest
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-#       -
-#         name: Build and push Gatsby
-#         id: docker_build_gatsby
-#         uses: docker/build-push-action@v2
-#         with:
-#           file: ./Dockerfile-Gatsby
-#           push: true
-#           tags: waylonwalker/devtainer:gatsby
-#       -
-#         name: Image digest
-#         run: echo ${{ steps.docker_build_gatsby.outputs.digest }}
+      - name: Build and push slim
+        id: docker_build_slim
+        uses: docker/build-push-action@v2
+        with:
+          file: ./docker/Dockerfile.slim
+          push: true
+          tags: waylonwalker/devtainer:slim
+      - name: Image digest
+        run: echo ${{ steps.docker_build_slim.outputs.digest }}
