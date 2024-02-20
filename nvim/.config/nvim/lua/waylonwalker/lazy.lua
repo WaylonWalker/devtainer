@@ -6,28 +6,41 @@
 --    as they will be available in your neovim runtime.
 require("lazy").setup({
 	{
+		"goolord/alpha-nvim",
+		event = "VimEnter",
+		enabled = true,
+		init = false,
+		opts = require("waylonwalker.plugins.alpha-nvim").opts,
+		config = require("waylonwalker.plugins.alpha-nvim").config,
+	},
+	{ "MunifTanjim/nui.nvim" },
+	{
+		"stevearc/dressing.nvim",
+		opts = {},
+	},
+	{
 		"stevearc/conform.nvim",
 		opts = {},
 	},
 	{ "kyazdani42/nvim-web-devicons" },
-	-- {
-	-- 	"Exafunction/codeium.vim",
-	-- 	config = function()
-	-- 		-- Change '<C-g>' here to any keycode you like.
-	-- 		vim.keymap.set("i", "<C-g>", function()
-	-- 			return vim.fn["codeium#Accept"]()
-	-- 		end, { expr = true })
-	-- 		vim.keymap.set("i", "<c-;>", function()
-	-- 			return vim.fn["codeium#CycleCompletions"](1)
-	-- 		end, { expr = true })
-	-- 		vim.keymap.set("i", "<c-,>", function()
-	-- 			return vim.fn["codeium#CycleCompletions"](-1)
-	-- 		end, { expr = true })
-	-- 		vim.keymap.set("i", "<c-x>", function()
-	-- 			return vim.fn["codeium#Clear"]()
-	-- 		end, { expr = true })
-	-- 	end,
-	-- },
+	{
+		"Exafunction/codeium.vim",
+		config = function()
+			-- Change '<C-g>' here to any keycode you like.
+			vim.keymap.set("i", "<C-g>", function()
+				return vim.fn["codeium#Accept"]()
+			end, { expr = true })
+			vim.keymap.set("i", "<c-;>", function()
+				return vim.fn["codeium#CycleCompletions"](1)
+			end, { expr = true })
+			vim.keymap.set("i", "<c-,>", function()
+				return vim.fn["codeium#CycleCompletions"](-1)
+			end, { expr = true })
+			vim.keymap.set("i", "<c-x>", function()
+				return vim.fn["codeium#Clear"]()
+			end, { expr = true })
+		end,
+	},
 	{
 		"VonHeikemen/lsp-zero.nvim",
 		dependencies = {
@@ -105,7 +118,7 @@ require("lazy").setup({
 
 			-- Useful status updates for LSP
 			-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-			{ "j-hui/fidget.nvim", opts = {} },
+			{ "j-hui/fidget.nvim",       opts = {} },
 			-- Additional lua configuration, makes nvim stuff amazing!
 			"folke/neodev.nvim",
 		},

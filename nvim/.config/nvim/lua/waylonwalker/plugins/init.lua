@@ -6,6 +6,7 @@ M.null_ls = require("waylonwalker.plugins.null-ls")
 M.autoformat = require("waylonwalker.plugins.autoformat")
 M.lualine = require("waylonwalker.plugins.lualine")
 M.treesitter = require("waylonwalker.plugins.treesitter")
+M.alpha_nvim = require("waylonwalker.plugins.alpha-nvim")
 -- M.coverage = require("waylonwalker.plugins.coverage")
 M.navbuddy = require("waylonwalker.plugins.navbuddy")
 return M
