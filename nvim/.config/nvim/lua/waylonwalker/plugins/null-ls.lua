@@ -71,11 +71,12 @@ local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 null_ls.setup({
 	sources = {
 		-- -- formatting
-		null_ls.builtins.formatting.beautysh,
+		null_ls.builtins.formatting.shfmt,
+		-- null_ls.builtins.formatting.beautysh,
 		-- null_ls.builtins.formatting.black.with({ extra_args = { "--fast" } }),
 		null_ls.builtins.formatting.isort,
-		null_ls.builtins.formatting.json_tool,
-		null_ls.builtins.formatting.fixjson,
+		-- null_ls.builtins.formatting.json_tool,
+		-- null_ls.builtins.formatting.fixjson,
 		null_ls.builtins.formatting.markdownlint,
 		-- null_ls.builtins.formatting.prettier,
 		null_ls.builtins.formatting.djhtml,
@@ -83,15 +84,15 @@ null_ls.setup({
 		null_ls.builtins.formatting.sqlformat,
 		null_ls.builtins.formatting.stylua,
 		null_ls.builtins.formatting.tidy_import,
-		null_ls.builtins.formatting.trim_newlines,
-		null_ls.builtins.formatting.trim_whitespace,
+		-- null_ls.builtins.formatting.trim_newlines,
+		-- null_ls.builtins.formatting.trim_whitespace,
 		null_ls.builtins.formatting.yamlfmt,
-		null_ls.builtins.formatting.ruff,
-		null_ls.builtins.formatting.ruff_format,
+		-- null_ls.builtins.formatting.ruff,
+		-- null_ls.builtins.formatting.ruff_format,
 
 		-- diagnostics
 		-- null_ls.builtins.diagnostics.alex,
-		null_ls.builtins.diagnostics.eslint,
+		-- null_ls.builtins.diagnostics.eslint,
 		null_ls.builtins.diagnostics.markdownlint,
 		-- null_ls.builtins.diagnostics.proselint,
 		-- null_ls.builtins.diagnostics.pydocstyle,
