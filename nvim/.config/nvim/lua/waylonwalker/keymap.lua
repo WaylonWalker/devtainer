@@ -77,6 +77,8 @@ set("n", "<c-h>", "<c-w>h")
 
 -- edit hidden files
 set("n", "geh", "<cmd>Telescope find_files hidden=true<CR>")
+-- open nvim tree
+set("n", "gej", "<cmd>NvimTreeToggle<CR>")
 -- edit nvim dotfiles
 set("n", "gen", "<cmd>Telescope find_files cwd=~/.config/nvim<CR>")
 --

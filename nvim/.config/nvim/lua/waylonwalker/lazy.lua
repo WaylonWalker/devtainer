@@ -6,6 +6,35 @@
 --    as they will be available in your neovim runtime.
 require("lazy").setup({
 	{
+		"nvim-tree/nvim-tree.lua",
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+		},
+		config = function()
+			require("waylonwalker.plugins.nvim-tree").setup()
+		end,
+	},
+	{
+		"stevearc/aerial.nvim",
+		opts = {},
+		config = function()
+			require("aerial").setup({
+				-- optionally use on_attach to set keymaps when aerial has attached to a buffer
+				on_attach = function(bufnr)
+					-- Jump forwards/backwards with '{' and '}'
+					vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+					vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+					vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!left<CR>")
+				end,
+			})
+		end,
+		-- Optional dependencies
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-tree/nvim-web-devicons",
+		},
+	},
+	{
 		"goolord/alpha-nvim",
 		event = "VimEnter",
 		enabled = true,
