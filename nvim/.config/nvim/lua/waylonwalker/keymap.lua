@@ -313,4 +313,6 @@ set("n", "))", "<cmd>lua vim.diagnostic.goto_next()<CR>")
 
 set("n", "<c-space>", "<cmd>x<cr>")
 
+vim.api.nvim_create_user_command("PreCommit", "!pre-commit run --files %", {})
+
 return M

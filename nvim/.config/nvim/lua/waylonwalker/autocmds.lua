@@ -37,6 +37,19 @@ if settings.lazy_auto_sync then
 	})
 end
 
+M.pre_commit = function()
+	vim.api.nvim_command("PreCommit")
+end
+
+if settings.pre_commit then
+	-- source plugins.lua and run PackerSync on save
+	autocmd({ "BufWritePost" }, {
+		group = M.waylonwalker_augroup,
+		pattern = { "*.py" },
+		callback = M.pre_commit,
+	})
+end
+
 autocmd("BufWritePre", {
 	group = M.waylonwalker_augroup,
 	pattern = "*",

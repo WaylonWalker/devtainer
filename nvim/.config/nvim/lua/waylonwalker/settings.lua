@@ -2,9 +2,10 @@ local M = {}
 M.packer_auto_sync = true
 M.lazy_auto_sync = true
 M.auto_format = true
+M.pre_commit = false
 
 function M.print()
-    print(vim.inspect(M))
+	print(vim.inspect(M))
 end
 
 -- M.auto_format = {
@@ -18,4 +19,3 @@ end
 --
 
 return M
-
