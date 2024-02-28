@@ -11,7 +11,11 @@ get_os () {
 
 get_os
 # os=`lsb_release -d | awk '{printf "%s %s", $2, $3}'`
-rootFree=`lsblk | awk '{if (length($7)==1) print  $4}'`
+if [[ `command -v lsblk` ]]; then
+	rootFree=`lsblk | awk '{if (length($7)==1) print  $4}'`
+else
+	rootFree=''
+fi
 # check of system has the free command
 if command -v free &> /dev/null; then
     memAvailable=`free -m | grep "Mem" | awk '{printf "%.1fG", $7/1024}'`
@@ -19,7 +23,11 @@ else
     memAvailable='-'
 fi
 cpuTemp=`echo ?`  #`sensors | grep CPU | awk '{print $2}' | sed 's/+//' | tr -d '\n'`
-loadAvg=`cat /proc/loadavg | awk '{printf "%s %s %s", $1, $2, $3}'`
+if [[ -f /proc/loadavg ]]; then
+	loadAvg=`cat /proc/loadavg | awk '{printf "%s %s %s", $1, $2, $3}'`
+else
+	loadAvg=''
+fi
 if ! command -v /opt/cisco/anyconnect/bin/vpn &> /dev/null; then
         proxy=
 elif [[ "$(/opt/cisco/anyconnect/bin/vpn status)"  == *"state: Disconnected"* ]]; then
