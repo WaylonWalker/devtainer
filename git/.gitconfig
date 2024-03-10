@@ -1,5 +1,5 @@
 [credential "https://github.com"]
-    helper = 
+    helper =
     helper = !gh auth git-credential
 [credential]
     helper = store
@@ -8,8 +8,9 @@
     email = waylon@waylonwalker.com
     signingkey = 66E2BF2B4190EFE4
 [core]
-    editor = nvim -u ~/.config/nvim/init-git.vim -c startinsert
-    excludesfile = /home/u_walkews/.global-gitignore
+    ; editor = nvim -u ~/.config/nvim/init.vim -c startinsert
+    editor = nvim -c startinsert
+    excludesfile = ~/.global-gitignore
     pager = bat --style=plain
 [init]
     defaultBranch = main
@@ -31,3 +32,5 @@
     pager = no
 [pager]
 	diff = bat --plain
+[alias]
+	squash-all = "!f(){ git reset $(git commit-tree HEAD^{tree} -m \"${1:-A new start}\");};f"

@@ -3,12 +3,32 @@
 keybinds clear-defaults=true { // will clear all default keybinds
     normal {
         bind "Alt g" {
-            Run "za" {
+            Run "/home/waylon/.local/share/hatch/env/virtual/zellij-sessionizer/HygyYI9r/zellij-sessionizer/bin/zellij-sessionizer" "switch" "fzf" {
                 floating "true"
                 direction "fullscreen"
                 };
             FocusPreviousPane;
             CloseFocus;
+            ToggleFocusFullscreen;
+            }
+        bind "Alt b" {
+            Run "/home/waylon/.local/share/hatch/env/virtual/zellij-sessionizer/HygyYI9r/zellij-sessionizer/bin/zellij-sessionizer" "switch" "last" {
+                floating "true"
+                direction "fullscreen"
+                };
+            FocusPreviousPane;
+            CloseFocus;
+            ToggleFocusFullscreen;
+            }
+        bind "Alt s" {
+            Run "/home/waylon/.local/share/hatch/env/virtual/zellij-sessionizer/HygyYI9r/zellij-sessionizer/bin/zellij-sessionizer" "i" {
+                floating true
+                close_on_exit true
+                direction "fullscreen"
+                };
+            FocusPreviousPane;
+            CloseFocus;
+            ToggleFocusFullscreen;
             }
     }
 }
@@ -80,7 +100,7 @@ theme "dracula"
 // The name of the default layout to load on startup
 // Default: "default"
 //
-default_layout "full"
+//default_layout "full"
 
 // Choose the mode that zellij uses when starting up.
 // Default: normal

@@ -49,8 +49,9 @@ fthoughts () {
 
 sthoughts () {
     # search thoughts
+    # sqlite-utils enable-fts ~/.config/thoughts/database2.db post title message tags
+    # sqlite-utils populate-fts ~/.config/thoughts/database2.db post title message tags
     sqlite-utils search ~/.config/thoughts/database2.db post "$*" | ~/git/thoughts/format_thought.py | bat --style=plain --color=always --language=markdown
-
 }
 
 alias st=sthoughts

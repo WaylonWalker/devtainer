@@ -10,12 +10,12 @@ vim.g.maplocalleader = " "
 local M = {}
 
 local function bind(op, outer_opts)
-    outer_opts = outer_opts or { noremap = true }
-    return function(lhs, rhs, opts)
-        opts = vim.tbl_extend("force", outer_opts, opts or {})
-        vim.keymap.set(op, lhs, rhs, opts)
-        -- vim.api.nvim_set_keymap(op, lhs, rhs, opts)
-    end
+	outer_opts = outer_opts or { noremap = true }
+	return function(lhs, rhs, opts)
+		opts = vim.tbl_extend("force", outer_opts, opts or {})
+		vim.keymap.set(op, lhs, rhs, opts)
+		-- vim.api.nvim_set_keymap(op, lhs, rhs, opts)
+	end
 end
 
 M.nmap = bind("n", { noremap = false })
@@ -118,56 +118,56 @@ set("n", "gei", "<cmd>Telescope find_files cwd=~/git/waylonwalker.com<CR>")
 set("n", "geit", "<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,date==today,--fast<cr>")
 -- edit drafts
 set(
-    "n",
-    "geid",
-    "<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,status=='draft',--sort,date,--reverse,--fast<cr>"
+	"n",
+	"geid",
+	"<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,status=='draft',--sort,date,--reverse,--fast<cr>"
 )
 -- edit tils
 set(
-    "n",
-    "geil",
-    "<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='til',--sort,date,--reverse,--fast<cr>"
+	"n",
+	"geil",
+	"<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='til',--sort,date,--reverse,--fast<cr>"
 )
 -- edit gratitude journals
 set(
-    "n",
-    "geig",
-    "<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='gratitude',--sort,date,--fast<cr>"
+	"n",
+	"geig",
+	"<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='gratitude',--sort,date,--fast<cr>"
 )
 --  set('n', 'geik', '<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,'kedro' in tags,--sort,date,--reverse<cr>')
 --  edit draft posts
 set(
-    "n",
-    "geid",
-    "<cmd>lua require('telescope.builtin').find_files({find_command={'markata', 'list', '--map', 'path', '--filter', 'status=='draft' and templateKey!='gratitude'', '--sort', 'date', '--fast'}})<cr>"
+	"n",
+	"geid",
+	"<cmd>lua require('telescope.builtin').find_files({find_command={'markata', 'list', '--map', 'path', '--filter', 'status=='draft' and templateKey!='gratitude'', '--sort', 'date', '--fast'}})<cr>"
 )
 -- edit kedro posts
 set(
-    "n",
-    "geik",
-    "<cmd>lua require('telescope.builtin').find_files({find_command={'markata', 'list', '--map', 'path', '--filter', ''kedro' in tags', '--sort', 'date', '--reverse'}})<cr>"
+	"n",
+	"geik",
+	"<cmd>lua require('telescope.builtin').find_files({find_command={'markata', 'list', '--map', 'path', '--filter', ''kedro' in tags', '--sort', 'date', '--reverse'}})<cr>"
 )
 -- edit draft kedro
 set(
-    "n",
-    "geidk",
-    "<cmd>lua require('telescope.builtin').find_files({find_command={'markata', 'list', '--map', 'path', '--filter', ''kedro' in tags and status != 'published'', '--sort', 'date', '--reverse'}})<cr>"
+	"n",
+	"geidk",
+	"<cmd>lua require('telescope.builtin').find_files({find_command={'markata', 'list', '--map', 'path', '--filter', ''kedro' in tags and status != 'published'', '--sort', 'date', '--reverse'}})<cr>"
 )
 
 -- go to the internet
 set(
-    "n",
-    "gow",
-    "<cmd>lua os.execute('xdg-open https://waylonwalker.com/' .. vim.api.nvim_buf_get_name(0):match(\"^.+/(.+)$\"):gsub('.md', '') .. '/ > /dev/null 2>&1')<cr>"
+	"n",
+	"gow",
+	"<cmd>lua os.execute('xdg-open https://waylonwalker.com/' .. vim.api.nvim_buf_get_name(0):match(\"^.+/(.+)$\"):gsub('.md', '') .. '/ > /dev/null 2>&1')<cr>"
 )
 set("n", "goo", "<cmd>Telegraph 'xdg-open \"{cWORD}\"'<cr>")
 
 set("n", "<leader>e", ":e %:h<C-Z>")
 
 set(
-    "n",
-    "gpu",
-    "<cmd>lua require'telegraph'.telegraph({how='tmux_popup', cmd='nvim --headless -c \"autocmd User PackerComplete quitall\" -c \"PackerSync\"'})<cr>"
+	"n",
+	"gpu",
+	"<cmd>lua require'telegraph'.telegraph({how='tmux_popup', cmd='nvim --headless -c \"autocmd User PackerComplete quitall\" -c \"PackerSync\"'})<cr>"
 )
 
 set("n", "Q", "@@")
@@ -245,21 +245,21 @@ set("n", "gh", "<cmd>lua vim.lsp.buf.signature_help()<CR>")
 
 -- lookatme slides for the current file in a tmux session
 set(
-    "n",
-    "<leader><leader>s",
-    "<cmd>lua require'telegraph'.telegraph({cmd='pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme {filepath} --live-reload --style gruvbox-dark', how='tmux'})<CR>"
+	"n",
+	"<leader><leader>s",
+	"<cmd>lua require'telegraph'.telegraph({cmd='pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme {filepath} --live-reload --style gruvbox-dark', how='tmux'})<CR>"
 )
 -- lookatme slides for the current file in a tmux popup
 set(
-    "n",
-    "<leader><leader>S",
-    "<cmd>lua require'telegraph'.telegraph({cmd='pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme {filepath} --live-reload --style gruvbox-dark', how='tmux_popup'})<CR>"
+	"n",
+	"<leader><leader>S",
+	"<cmd>lua require'telegraph'.telegraph({cmd='pipx run --spec git+https://github.com/waylonwalker/lookatme lookatme {filepath} --live-reload --style gruvbox-dark', how='tmux_popup'})<CR>"
 )
 -- visidata the current word in a tmux session
 set(
-    "n",
-    "<leader><leader>vd",
-    "<cmd>lua require'telegraph'.telegraph({cmd='pipx run visidata {cWORD}', how='tmux'})<CR>"
+	"n",
+	"<leader><leader>vd",
+	"<cmd>lua require'telegraph'.telegraph({cmd='pipx run visidata {cWORD}', how='tmux'})<CR>"
 )
 -- open a manpage
 set("n", "<leader><leader>m", ":Telegraph man")
@@ -269,23 +269,23 @@ set("n", "<leader><leader>M", ":lua require'telegraph'.telegraph({how='tmux_popu
 set("n", "<leader><leader>i", "<cmd>Telegraph feh {cWORD}<CR>")
 -- run the current file in ipython in a tmux popup
 set(
-    "n",
-    "<leader><leader>e",
-    "<cmd>lua require'telegraph'.telegraph({cmd='lockhart prompt run edit --edit --file=\"{filepath}\" --overwrite'})<cr>"
+	"n",
+	"<leader><leader>e",
+	"<cmd>lua require'telegraph'.telegraph({cmd='lockhart prompt run edit --edit --file=\"{filepath}\" --overwrite'})<cr>"
 )
 
 set(
-    "n",
-    "<leader><leader>r",
-    "<cmd>lua require'telegraph'.telegraph({cmd='zsh -c \"ipython {filepath} -i\"', how='tmux_popup'})<CR>"
+	"n",
+	"<leader><leader>r",
+	"<cmd>lua require'telegraph'.telegraph({cmd='zsh -c \"ipython {filepath} -i\"', how='tmux_popup'})<CR>"
 )
 -- run zsh in a popup
 set("n", "<leader><leader>z", "<cmd>lua require'telegraph'.telegraph({cmd='zsh', how='tmux_popup'})<CR>")
 -- set the title
 set(
-    "n",
-    "<leader>t",
-    "<cmd>lua require'telegraph'.telegraph({how='execute', cmd='echo \"{cline}\" > ~/.config/title/title.txt'})<cr>"
+	"n",
+	"<leader>t",
+	"<cmd>lua require'telegraph'.telegraph({how='execute', cmd='echo \"{cline}\" > ~/.config/title/title.txt'})<cr>"
 )
 -- open the current word in brave
 set("n", "<leader><leader>b", "<cmd>lua  require'telegraph'.telegraph({cmd='brave {cWORD}', how='subprocess'})<CR>")

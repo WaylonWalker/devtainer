@@ -19,7 +19,7 @@ function install {
 	PROG="grex"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v1.4.4"
+	RELEASE="v1.4.5"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,15 +80,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/pemistahl/grex/releases/download/v1.4.4/grex-v1.4.4-aarch64-apple-darwin.tar.gz"
+		URL="https://github.com/pemistahl/grex/releases/download/v1.4.5/grex-v1.4.5-aarch64-apple-darwin.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm64")
+		URL="https://github.com/pemistahl/grex/releases/download/v1.4.5/grex-v1.4.5-aarch64-unknown-linux-musl.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/pemistahl/grex/releases/download/v1.4.4/grex-v1.4.4-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/pemistahl/grex/releases/download/v1.4.5/grex-v1.4.5-x86_64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/pemistahl/grex/releases/download/v1.4.4/grex-v1.4.4-x86_64-unknown-linux-musl.tar.gz"
+		URL="https://github.com/pemistahl/grex/releases/download/v1.4.5/grex-v1.4.5-x86_64-unknown-linux-musl.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

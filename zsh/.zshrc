@@ -5,6 +5,7 @@ set -o physical
 [ -f ~/.profile ] && source ~/.profile
 [ -f ~/.alias ] && source ~/.alias
 [ -f ~/.alias.local ] && source ~/.alias.local
+[ -f ~/.cargo.env ] && source ~/.cargo.env
 
 [ -d ~/.erg/bin ] && export PATH=$PATH:/home/waylon/.erg/bin
 [ -d ~/.erg ] && export ERG_PATH=/home/waylon/.erg
@@ -205,3 +206,4 @@ zstyle ':completion:*:descriptions' format %F{default}%B%{$__WINCENT[ITALIC_ON]%
 zstyle ':completion:*' menu select
 wfetch
 # zprof
+#

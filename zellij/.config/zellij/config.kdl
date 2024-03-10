@@ -160,6 +160,8 @@ keybinds {
         bind "Alt -" { Resize "Decrease"; }
         bind "Alt [" { PreviousSwapLayout; }
         bind "Alt ]" { NextSwapLayout; }
+        bind "Alt A" { PreviousSwapLayout; }
+        bind "Alt a" { NextSwapLayout; }
         bind "Alt e" { Run "lf"; }
         bind "Alt g" { Run "gitui"; }
         bind "Alt w" { Run "zellij" "list-sessions"; }

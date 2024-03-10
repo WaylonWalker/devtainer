@@ -29,10 +29,10 @@ def activate_extension(extension):
 
 
 extensions = [
-    "rich",
-    "markata",
+    # "rich",
+    # "markata",
     "pyflyby",
-    "darkmark",
+    # "darkmark",
 ]
 for extension in extensions:
     activate_extension(extension)

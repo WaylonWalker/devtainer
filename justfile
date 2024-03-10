@@ -42,6 +42,7 @@ update-installers:
     benbjohnson/litestream
     bootandy/dust
     casey/just
+    charmbracelet/vhs
     chmln/sd
     cjbassi/ytop
     cli/cli

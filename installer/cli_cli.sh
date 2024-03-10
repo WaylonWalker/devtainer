@@ -19,7 +19,7 @@ function install {
 	PROG="cli"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v2.43.1"
+	RELEASE="v2.45.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,27 +80,27 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"linux_386")
-		URL="https://github.com/cli/cli/releases/download/v2.43.1/gh_2.43.1_linux_386.tar.gz"
+		URL="https://github.com/cli/cli/releases/download/v2.45.0/gh_2.45.0_linux_386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/cli/cli/releases/download/v2.43.1/gh_2.43.1_linux_amd64.tar.gz"
+		URL="https://github.com/cli/cli/releases/download/v2.45.0/gh_2.45.0_linux_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/cli/cli/releases/download/v2.43.1/gh_2.43.1_linux_arm64.tar.gz"
+		URL="https://github.com/cli/cli/releases/download/v2.45.0/gh_2.45.0_linux_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/cli/cli/releases/download/v2.43.1/gh_2.43.1_linux_armv6.tar.gz"
+		URL="https://github.com/cli/cli/releases/download/v2.45.0/gh_2.45.0_linux_armv6.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/cli/cli/releases/download/v2.43.1/gh_2.43.1_macOS_amd64.zip"
+		URL="https://github.com/cli/cli/releases/download/v2.45.0/gh_2.45.0_macOS_amd64.zip"
 		FTYPE=".zip"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/cli/cli/releases/download/v2.43.1/gh_2.43.1_macOS_arm64.zip"
+		URL="https://github.com/cli/cli/releases/download/v2.45.0/gh_2.45.0_macOS_arm64.zip"
 		FTYPE=".zip"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

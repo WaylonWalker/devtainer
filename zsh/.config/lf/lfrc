@@ -1,3 +1,4 @@
+set cleaner ~/.config/lf/cleaner
 set previewer bat
 set preview true
 set hidden true
@@ -32,3 +33,6 @@ map <a-l> set ratios 1:50:100
 map <a-h> set ratios 1:1:1
 map gre set ratios 1:1:1
 map <a-e> quit
+
+set previewer ~/.config/lf/preview
+set cleaner ~/.config/lf/cleaner

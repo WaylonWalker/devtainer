@@ -6,6 +6,7 @@ set -e
 /installer/benbjohnson_litestream.sh
 /installer/bootandy_dust.sh
 /installer/casey_just.sh
+/installer/charmbracelet_vhs.sh
 /installer/chmln_sd.sh
 /installer/cjbassi_ytop.sh
 /installer/cli_cli.sh

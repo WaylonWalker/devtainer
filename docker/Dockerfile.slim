@@ -1,4 +1,4 @@
-From python:3.10-slim-bookworm
+From python:3.11
 
 ENV PATH="${PATH}:/root/.local/share/bob/nvim-bin"
 ENV PATH="${PATH}:/root/.local/bin"
@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \
     gcc \
     git \
+    ffmpeg \
     stow \
     unzip \
     zsh \
@@ -22,13 +23,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR  /root/.local/bin
 RUN bash /installer/install.sh
-RUN python -m pip install pipx && \
-    python -m pipx ensurepath && \
-    python -m pipx install harlequin && \
-    python -m pipx install ipython && \
-    python -m pipx install lolcat && \
-    python -m pipx install visidata && \
-    python -m pipx install waylonwalker
+# installer does not work with the release format of ttyd
+RUN curl --fail -# -L https://github.com/tsl0922/ttyd/releases/download/1.7.4/ttyd.x86_64 > /bin/ttyd && \
+    chmod +x /bin/ttyd
+RUN python -m pip install uv && \
+    uv pip install \
+        harlequin \
+        ipython \
+        lolcat \
+        visidata \ 
+        waylonwalker --system
 RUN bob install nightly && \
     bob use nightly
 # COPY kickstart.nvim /root/.config/nvim
@@ -50,3 +54,16 @@ npm install -g n
 
 # RUN nvim --headless "+TSInstallSync c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
 RUN nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
+
+RUN apt update && apt install -y chromium
+# Expose port
+RUN useradd -u 1976 -U -s /bin/false vhs
+EXPOSE 1976
+ENV VHS_PORT "1976"
+ENV VHS_HOST "0.0.0.0"
+ENV VHS_GID "1976"
+ENV VHS_UID "1976"
+ENV VHS_KEY_PATH "/vhs/vhs"
+ENV VHS_AUTHORIZED_KEYS_PATH ""
+ENV VHS_NO_SANDBOX "true"
+ENTRYPOINT ["zsh"]
