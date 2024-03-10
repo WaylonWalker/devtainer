@@ -2,16 +2,14 @@
 <img src='artwork/devtainer.png' align='center' width='200'/>
 </p>
 <h1 align='center'>devtainer</h1>
+
+![](vhs/welcome.gif)
+
 My personal development docker container base image
 
 ---
 
-⚠⚠ docker image currently broken as I upgrade to nvim 0.5.5 ⚠⚠
-
----
-
 ## Getting Started
-
 
 ``` bash
 sudo apt update && apt upgrade
@@ -21,7 +19,6 @@ pip install pipx
 ```
 
 # Motivation
-
 
 This container comes pre-built with all of my favorite command line tools that
 I use most often.  I was getting sick of how much system resources vscode hogs
