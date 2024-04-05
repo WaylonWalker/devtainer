@@ -41,6 +41,9 @@ M.setup = function() -- Brief Aside: **What is LSP?**
 			local map = function(keys, func, desc)
 				vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 			end
+			local vmap = function(keys, func, desc)
+				vim.keymap.set("v", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
+			end
 
 			-- Jump to the definition of the word under your cursor.
 			--  This is where a variable was first declared, or where a function is defined, etc.
@@ -74,6 +77,10 @@ M.setup = function() -- Brief Aside: **What is LSP?**
 			-- Execute a code action, usually your cursor needs to be on top of an error
 			-- or a suggestion from your LSP for this to activate.
 			map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
+
+			-- Execute a code action, usually your cursor needs to be on top of an error
+			-- or a suggestion from your LSP for this to activate.
+			vmap("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
 
 			-- Opens a popup that displays documentation about the word under your cursor
 			--  See `:help K` for why this keymap
@@ -173,7 +180,6 @@ M.setup = function() -- Brief Aside: **What is LSP?**
 	--
 	--  You can press `g?` for help in this menu
 	require("mason").setup()
-
 	-- You can add other tools here that you want Mason to install
 	-- for you, so that they are available from within Neovim.
 	local ensure_installed = vim.tbl_keys(servers or {})
