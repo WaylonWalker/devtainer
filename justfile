@@ -85,6 +85,8 @@ update-installers:
 
 
     echo "mv cli gh" >> installer/install.sh
+    echo "mv tealdeer tldr" >> installer/install.sh
+    echo "tldr --update" >> installer/install.sh
 
     echo "
     if [[ -f /usr/bin/batcat ]]; then
