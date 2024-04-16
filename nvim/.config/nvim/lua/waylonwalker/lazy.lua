@@ -347,6 +347,14 @@ require("lazy").setup({
 			require("dbee").setup( --[[optional config]])
 		end,
 	},
+	{
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		config = function()
+			require("waylonwalker.plugins.harpoon").setup()
+		end,
+	},
 	-- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
 	--       These are some example plugins that I've included in the kickstart repository.
 	--       Uncomment any of the lines below to enable them.
