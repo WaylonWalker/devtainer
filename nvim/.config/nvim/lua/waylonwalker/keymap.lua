@@ -32,8 +32,8 @@ set("n", "<c-u>", "<c-u>zz")
 -- quickfix
 set("n", "<c-j>", "<cmd>cnext<cr>")
 set("n", "<c-k>", "<cmd>cprev<cr>")
-set("n", "<F4>", "<cmd>cnext<cr>")
-set("n", "<F5>", "<cmd>cprev<cr>")
+-- set("n", "<F4>", "<cmd>cnext<cr>")
+-- set("n", "<F5>", "<cmd>cprev<cr>")
 
 -- Reselect visual selection after indenting
 set("v", "<", "<gv")
