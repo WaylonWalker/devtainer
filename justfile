@@ -1,40 +1,103 @@
-set shell := ["bash", "-c"]
+export registry := "docker.io"
+export repository := "waylonwalker"
+export ntfy_url := "https://ntfy.wayl.one"
+export ntfy_channel := "deployments"
+export docker := "podman"
+
 default:
   @just --choose
-base: build deploy
+
+build-deploy: build deploy
+
+build: build-latest build-alpine build-slim
+deploy: deploy-latest deploy-alpine deploy-slim
+
+latest: build-latest deploy-latest
 alpine: build-alpine deploy-alpine
 slim: build-slim deploy-slim
 
-build:
-    docker build -t registry.wayl.one/devtainer:latest .
+build-latest:
+    #!/usr/bin/env bash
+    set -euxo pipefail
 
-deploy:
-    docker push registry.wayl.one/devtainer
-    curl -d "released devtainer to https://registry-ui.wayl.one/#!/taglist/devtainer" https://ntfy.wayl.one/deployments
+    {{ docker }} build -f docker/Dockerfile -t {{ registry }}/{{ repository }}/devtainer:latest .
+
+deploy-latest:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:latest
+    curl -d "released devtainer" {{ ntfy_url }}/{{ ntfy_channel }}
 
 build-alpine:
-    docker build -f docker/Dockerfile.alpine -t registry.wayl.one/devtainer:alpine .
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} build -f docker/Dockerfile.alpine -t {{ registry }}/{{ repository }}/devtainer:alpine .
 
 deploy-alpine:
-    docker push registry.wayl.one/devtainer:alpine
-    curl -d "released devtainer:alpine to https://registry-ui.wayl.one/#!/taglist/devtainer" https://ntfy.wayl.one/deployments
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:alpine
+    curl -d "released devtainer:alpine" {{ ntfy_url }}/{{ ntfy_channel }}
+
+build-kdenlive:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} build -f docker/Dockerfile.kdenlive -t {{ registry }}/{{ repository }}/kdenlive .
+
+deploy-kdenlive:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} push {{ registry }}/{{ repository }}/kdenlive
+    curl -d "released devtainer:kdenlive" {{ ntfy_url }}/{{ ntfy_channel }}
+
+build-nautilus:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} build -f docker/Dockerfile.nautilus -t {{ registry }}/{{ repository }}/nautilus .
+    {{ docker }} push {{ registry }}/{{ repository }}/nautilus
+    curl -d "released devtainer:nautilus" {{ ntfy_url }}/{{ ntfy_channel }}
+
+build-thunar:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} build -f docker/Dockerfile.thunar -t {{ registry }}/{{ repository }}/thunar .
+    {{ docker }} push {{ registry }}/{{ repository }}/thunar
+    curl -d "released devtainer:thunar" {{ ntfy_url }}/{{ ntfy_channel }}
 
 
 deploy-fokais:
-    docker tag registry.wayl.one/devtainer:alpine registry.fokais.com/devtainer:alpine
-    docker tag registry.wayl.one/devtainer:slim registry.fokais.com/devtainer:slim
-    docker push registry.fokais.com/devtainer:alpine
-    docker push registry.fokais.com/devtainer:slim
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} tag {{ registry }}/{{ repository }}/devtainer:alpine registry.fokais.com/devtainer:alpine
+    {{ docker }} tag {{ registry }}/{{ repository }}/devtainer:slim registry.fokais.com/devtainer:slim
+    {{ docker }} push registry.fokais.com/devtainer:alpine
+    {{ docker }} push registry.fokais.com/devtainer:slim
 
 build-slim:
-    docker build -f docker/Dockerfile.slim -t registry.wayl.one/devtainer:slim .
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} build -f docker/Dockerfile.slim -t {{ registry }}/{{ repository }}/devtainer:slim .
 deploy-slim:
-    docker push registry.wayl.one/devtainer:slim
-    curl -d "released devtainer:slim to https://registry-ui.wayl.one/#!/taglist/devtainer" https://ntfy.wayl.one/deployments
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:slim
+    curl -d "released devtainer:slim to https://registry-ui.wayl.one/#!/taglist/devtainer" {{ ntfy_url }}/{{ ntfy_channel }}
 
 
 update-installers:
-    #!/usr/bin/env sh
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
     i_progs="
     BurntSushi/ripgrep
     MordechaiHadad/bob
@@ -52,6 +115,7 @@ update-installers:
     ducaale/xh
     ducaale/xh
     extrawurst/gitui
+    eza-community/eza
     go-task/task
     homeport/termshot
     imsnif/bandwhich
@@ -61,13 +125,14 @@ update-installers:
     mgdm/htmlq
     neovim/neovim
     ogham/dog
-    ogham/exa
     packwiz/packwiz
     pemistahl/grex
     sharkdp/pastel
     sirwart/ripsecrets
     starship/starship
+    sxyazi/yazi
     topgrade-rs/topgrade
+    twpayne/chezmoi
     zellij-org/zellij
     "
     rm -rf installer
