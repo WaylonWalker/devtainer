@@ -161,3 +161,8 @@ update-installers:
         ln -s /usr/bin/fdfind ~/.local/bin/fd
     fi
     " >> installer/install.sh
+
+distrobox-assemble:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    distrobox-assemble create --file distrobox/distrobox.ini
