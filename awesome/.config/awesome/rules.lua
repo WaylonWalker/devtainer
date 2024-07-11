@@ -2,7 +2,6 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
 
-
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
 clientbuttons = gears.table.join(
@@ -19,7 +18,7 @@ awful.rules.rules = {
         rule = {},
         properties = {
             -- border_width = beautiful.border_width,
-            border_width = 2, 
+            border_width = 2,
             border_color = beautiful.border_normal,
             focus = awful.client.focus.filter,
             -- focus = true,
@@ -31,13 +30,19 @@ awful.rules.rules = {
         },
     },
 
-    { rule = { name = "Microsoft Teams" }, properties = { tag = "6", floating = false, switchtotag = true, type = "normal" } },
-    { rule = { name = "Steam" }, properties = { tag = "1", floating = false, switchtotag = true, type = "normal" } },
-    { rule = { name = "Multiversus" }, properties = { tag = "1", floating = false, switchtotag = true, type = "normal" } },
-    { rule = { class = "obs" }, properties = { tag = "8", floating = false, switchtotag = true, type = "normal" } },
-    { rule = { name = "PolyMc" }, properties = { tag = "8", floating = false, switchtotag = true, type = "normal" } },
-    { rule = { class = "Gimp" }, properties = { tag = "3", floating = false, switchtotag = true, type = "normal" } },
-    { rule = { class = "Polybar" }, properties = {border_width = 0} },
+    {
+        rule = { name = "Microsoft Teams" },
+        properties = { tag = "6", floating = false, switchtotag = true, type = "normal" },
+    },
+    { rule = { name = "Steam" },    properties = { tag = "1", floating = false, switchtotag = true, type = "normal" } },
+    {
+        rule = { name = "Multiversus" },
+        properties = { tag = "1", floating = false, switchtotag = true, type = "normal" },
+    },
+    { rule = { class = "obs" },     properties = { tag = "8", floating = false, switchtotag = true, type = "normal" } },
+    { rule = { name = "PolyMc" },   properties = { tag = "8", floating = false, switchtotag = true, type = "normal" } },
+    { rule = { class = "Gimp" },    properties = { tag = "3", floating = false, switchtotag = true, type = "normal" } },
+    { rule = { class = "Polybar" }, properties = { border_width = 0 } },
 
     -- Floating clients.
     {
@@ -73,14 +78,12 @@ awful.rules.rules = {
     -- Fullscreen clients.
     {
         rule_any = {
-            instance = {
-            },
+            instance = {},
             class = {
                 "Steam",
             },
 
-            name = {
-            },
+            name = {},
             role = {
                 "AlarmWindow", -- Thunderbird's calendar.
                 "pop-up", -- e.g. Google Chrome's (detached) Developer Tools.
@@ -88,6 +91,7 @@ awful.rules.rules = {
         },
         properties = { floating = true },
     },
+    { rule = { name = "Ulauncher - Application Launcher" }, properties = { border_width = 0 } },
 
     -- Add titlebars to normal clients and dialogs
     -- { rule_any = {type = { "normal", "dialog" }
