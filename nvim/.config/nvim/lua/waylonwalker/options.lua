@@ -48,3 +48,6 @@ vim.opt.wildmode =
 vim.opt.wrap = false                   -- soft line wraps
 vim.opt.wrapscan = true                -- searches wrap around the file
 vim.cmd("filetype plugin on")
+
+-- add templates/** to path
+vim.opt.path:append("templates/**")
