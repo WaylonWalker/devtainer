@@ -7,7 +7,7 @@ M.setup = function()
 	-- REQUIRED
 
 	vim.keymap.set("n", "<F10>", function()
-		harpoon:list():append()
+		harpoon:list():add()
 	end)
 	vim.keymap.set("n", "<F9>", function()
 		harpoon.ui:toggle_quick_menu(harpoon:list())
