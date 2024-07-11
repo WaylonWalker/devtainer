@@ -33,10 +33,19 @@ alias rebasedev='git pull origin develop --rebase'
 alias commit="git diff --staged | lockhart prompt run commit | git commit -evF -"
 
 # exa
-alias ls="exa -lh --git-ignore --icons --git"
-alias lsa="exa -lah --icons --git"
-alias tree="exa -lh --git-ignore --icons --git --tree"
-alias treea="exa -lah --icons --git --tree"
+if [[ $(command -v exa) ]]; then
+    alias ls="exa -lh --git-ignore --icons --git"
+    alias lsa="exa -lah --icons --git"
+    alias tree="exa -lh --git-ignore --icons --git --tree"
+    alias treea="exa -lah --icons --git --tree"
+fi
+
+if [[ $(command -v eza) ]]; then
+    alias ls="eza -lh --git-ignore --icons --git"
+    alias lsa="eza -lah --icons --git"
+    alias tree="eza -lh --git-ignore --icons --git --tree"
+    alias treea="eza -lah --icons --git --tree"
+fi
 
 
 can-i-touch-grass () {
