@@ -19,7 +19,7 @@ function install {
 	PROG="neovim"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.9.5"
+	RELEASE="v0.10.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,11 +66,6 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
-		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
-		if [[ $OS = "darwin" ]]; then
-			ARCH="amd64"
-		fi
-		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -85,11 +80,15 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"linux_amd64")
-		URL="https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.tar.gz"
+		URL="https://github.com/neovim/neovim/releases/download/v0.10.0/nvim-linux64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"darwin_arm64")
+		URL="https://github.com/neovim/neovim/releases/download/v0.10.0/nvim-macos-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-macos.tar.gz"
+		URL="https://github.com/neovim/neovim/releases/download/v0.10.0/nvim-macos-x86_64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

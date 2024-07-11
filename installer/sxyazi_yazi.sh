@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="casey"
-	PROG="just"
+	USER="sxyazi"
+	PROG="yazi"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="1.27.0"
+	RELEASE="v0.2.5"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,24 +80,20 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-aarch64-apple-darwin.tar.gz"
-		FTYPE=".tar.gz"
+		URL="https://github.com/sxyazi/yazi/releases/download/v0.2.5/yazi-aarch64-apple-darwin.zip"
+		FTYPE=".zip"
 		;;
 	"linux_arm64")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-aarch64-unknown-linux-musl.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"linux_arm")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-arm-unknown-linux-musleabihf.tar.gz"
-		FTYPE=".tar.gz"
+		URL="https://github.com/sxyazi/yazi/releases/download/v0.2.5/yazi-aarch64-unknown-linux-gnu.zip"
+		FTYPE=".zip"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-x86_64-apple-darwin.tar.gz"
-		FTYPE=".tar.gz"
+		URL="https://github.com/sxyazi/yazi/releases/download/v0.2.5/yazi-x86_64-apple-darwin.zip"
+		FTYPE=".zip"
 		;;
 	"linux_amd64")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-x86_64-unknown-linux-musl.tar.gz"
-		FTYPE=".tar.gz"
+		URL="https://github.com/sxyazi/yazi/releases/download/v0.2.5/yazi-x86_64-unknown-linux-gnu.zip"
+		FTYPE=".zip"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
 	esac
@@ -134,7 +130,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "just_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "yazi_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

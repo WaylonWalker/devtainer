@@ -16,6 +16,7 @@ set -e
 /installer/ducaale_xh.sh
 /installer/ducaale_xh.sh
 /installer/extrawurst_gitui.sh
+/installer/eza-community_eza.sh
 /installer/go-task_task.sh
 /installer/homeport_termshot.sh
 /installer/imsnif_bandwhich.sh
@@ -25,15 +26,18 @@ set -e
 /installer/mgdm_htmlq.sh
 /installer/neovim_neovim.sh
 /installer/ogham_dog.sh
-/installer/ogham_exa.sh
 /installer/packwiz_packwiz.sh
 /installer/pemistahl_grex.sh
 /installer/sharkdp_pastel.sh
 /installer/sirwart_ripsecrets.sh
 /installer/starship_starship.sh
+/installer/sxyazi_yazi.sh
 /installer/topgrade-rs_topgrade.sh
+/installer/twpayne_chezmoi.sh
 /installer/zellij-org_zellij.sh
 mv cli gh
+mv tealdeer tldr
+tldr --update
 
 if [[ -f /usr/bin/batcat ]]; then
     ln -s /usr/bin/batcat ~/.local/bin/bat

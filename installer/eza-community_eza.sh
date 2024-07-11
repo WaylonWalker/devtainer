@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="ogham"
-	PROG="exa"
+	USER="eza-community"
+	PROG="eza"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.10.1"
+	RELEASE="v0.18.16"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -84,17 +84,17 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
+	"linux_arm64")
+		URL="https://github.com/eza-community/eza/releases/download/v0.18.16/eza_aarch64-unknown-linux-gnu.tar.gz"
+		FTYPE=".tar.gz"
+		;;
 	"linux_arm")
-		URL="https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-armv7-v0.10.1.zip"
-		FTYPE=".zip"
+		URL="https://github.com/eza-community/eza/releases/download/v0.18.16/eza_arm-unknown-linux-gnueabihf.tar.gz"
+		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-x86_64-musl-v0.10.1.zip"
-		FTYPE=".zip"
-		;;
-	"darwin_amd64")
-		URL="https://github.com/ogham/exa/releases/download/v0.10.1/exa-macos-x86_64-v0.10.1.zip"
-		FTYPE=".zip"
+		URL="https://github.com/eza-community/eza/releases/download/v0.18.16/eza_x86_64-unknown-linux-gnu.tar.gz"
+		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
 	esac
@@ -131,7 +131,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "exa_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "eza_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

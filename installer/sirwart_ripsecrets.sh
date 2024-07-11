@@ -19,7 +19,7 @@ function install {
 	PROG="ripsecrets"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.1.7"
+	RELEASE="v0.1.8"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,15 +80,15 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/sirwart/ripsecrets/releases/download/v0.1.7/ripsecrets-0.1.7-aarch64-apple-darwin.tar.gz"
+		URL="https://github.com/sirwart/ripsecrets/releases/download/v0.1.8/ripsecrets-0.1.8-aarch64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/sirwart/ripsecrets/releases/download/v0.1.7/ripsecrets-0.1.7-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/sirwart/ripsecrets/releases/download/v0.1.8/ripsecrets-0.1.8-x86_64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/sirwart/ripsecrets/releases/download/v0.1.7/ripsecrets-0.1.7-x86_64-unknown-linux-gnu.tar.gz"
+		URL="https://github.com/sirwart/ripsecrets/releases/download/v0.1.8/ripsecrets-0.1.8-x86_64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

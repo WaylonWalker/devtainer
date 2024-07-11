@@ -19,7 +19,7 @@ function install {
 	PROG="dust"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.9.0"
+	RELEASE="v1.0.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -85,19 +85,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"linux_arm64")
-		URL="https://github.com/bootandy/dust/releases/download/v0.9.0/dust-v0.9.0-aarch64-unknown-linux-gnu.tar.gz"
+		URL="https://github.com/bootandy/dust/releases/download/v1.0.0/dust-v1.0.0-aarch64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/bootandy/dust/releases/download/v0.9.0/dust-v0.9.0-arm-unknown-linux-gnueabihf.tar.gz"
+		URL="https://github.com/bootandy/dust/releases/download/v1.0.0/dust-v1.0.0-arm-unknown-linux-gnueabihf.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/bootandy/dust/releases/download/v0.9.0/dust-v0.9.0-i686-unknown-linux-gnu.tar.gz"
+		URL="https://github.com/bootandy/dust/releases/download/v1.0.0/dust-v1.0.0-i686-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/bootandy/dust/releases/download/v0.9.0/dust-v0.9.0-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/bootandy/dust/releases/download/v1.0.0/dust-v1.0.0-x86_64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
