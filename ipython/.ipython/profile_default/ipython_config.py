@@ -29,7 +29,7 @@ def activate_extension(extension):
 
 
 extensions = [
-    # "rich",
+    "rich",
     # "markata",
     "pyflyby",
     # "darkmark",
