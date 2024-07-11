@@ -8,6 +8,5 @@
 --  ╰──────────────────────────╯
 --
 
-waylonwalker = require'waylonwalker'
+waylonwalker = require("waylonwalker")
 ww = waylonwalker
-
