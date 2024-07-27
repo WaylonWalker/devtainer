@@ -2,6 +2,8 @@
 set -e
 /installer/BurntSushi_ripgrep.sh
 /installer/MordechaiHadad_bob.sh
+/installer/Slackadays_Clipboard.sh
+/installer/atuinsh_atuin.sh
 /installer/avencera_rustywind.sh
 /installer/benbjohnson_litestream.sh
 /installer/bootandy_dust.sh
@@ -18,6 +20,7 @@ set -e
 /installer/extrawurst_gitui.sh
 /installer/eza-community_eza.sh
 /installer/go-task_task.sh
+/installer/gokcehan_lf.sh
 /installer/homeport_termshot.sh
 /installer/imsnif_bandwhich.sh
 /installer/imsnif_diskonaut.sh
@@ -36,6 +39,7 @@ set -e
 /installer/twpayne_chezmoi.sh
 /installer/zellij-org_zellij.sh
 mv cli gh
+mv Clipboard cp
 mv tealdeer tldr
 tldr --update
 

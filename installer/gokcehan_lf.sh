@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="MordechaiHadad"
-	PROG="bob"
+	USER="gokcehan"
+	PROG="lf"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v3.0.1"
+	RELEASE="r32"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,11 +66,6 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
-		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
-		if [[ $OS = "darwin" ]]; then
-			ARCH="amd64"
-		fi
-		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -84,21 +79,69 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"linux_arm64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-linux-aarch64.zip"
-		FTYPE=".zip"
+	"darwin_amd64")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-darwin-amd64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"darwin_arm64")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-darwin-arm64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"freebsd_386")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-freebsd-386.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"freebsd_amd64")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-freebsd-amd64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"freebsd_arm")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-freebsd-arm.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_386")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-linux-386.tar.gz"
+		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-linux-x86_64-openssl.zip"
-		FTYPE=".zip"
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-linux-amd64.tar.gz"
+		FTYPE=".tar.gz"
 		;;
-	"darwin_arm")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-macos-arm-openssl.zip"
-		FTYPE=".zip"
+	"linux_arm")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-linux-arm.tar.gz"
+		FTYPE=".tar.gz"
 		;;
-	"darwin_amd64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-macos-x86_64-openssl.zip"
-		FTYPE=".zip"
+	"linux_arm64")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-linux-arm64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"netbsd_386")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-netbsd-386.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"netbsd_amd64")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-netbsd-amd64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"netbsd_arm")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-netbsd-arm.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"openbsd_386")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-openbsd-386.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"openbsd_amd64")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-openbsd-amd64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"openbsd_arm")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-openbsd-arm.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"openbsd_arm64")
+		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-openbsd-arm64.tar.gz"
+		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
 	esac
@@ -135,7 +178,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "bob_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "lf_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

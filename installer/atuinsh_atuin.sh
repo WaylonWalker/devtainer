@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="MordechaiHadad"
-	PROG="bob"
+	USER="atuinsh"
+	PROG="atuin"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v3.0.1"
+	RELEASE="v18.3.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,11 +66,6 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
-		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
-		if [[ $OS = "darwin" ]]; then
-			ARCH="amd64"
-		fi
-		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -84,21 +79,21 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
+	"darwin_arm64")
+		URL="https://github.com/atuinsh/atuin/releases/download/v18.3.0/atuin-aarch64-apple-darwin-update"
+		FTYPE=".bin"
+		;;
 	"linux_arm64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-linux-aarch64.zip"
-		FTYPE=".zip"
-		;;
-	"linux_amd64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-linux-x86_64-openssl.zip"
-		FTYPE=".zip"
-		;;
-	"darwin_arm")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-macos-arm-openssl.zip"
-		FTYPE=".zip"
+		URL="https://github.com/atuinsh/atuin/releases/download/v18.3.0/atuin-aarch64-unknown-linux-gnu-update"
+		FTYPE=".bin"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-macos-x86_64-openssl.zip"
-		FTYPE=".zip"
+		URL="https://github.com/atuinsh/atuin/releases/download/v18.3.0/atuin-x86_64-apple-darwin-update"
+		FTYPE=".bin"
+		;;
+	"linux_amd64")
+		URL="https://github.com/atuinsh/atuin/releases/download/v18.3.0/atuin-x86_64-unknown-linux-gnu-update"
+		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
 	esac
@@ -135,7 +130,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "bob_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "atuin_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

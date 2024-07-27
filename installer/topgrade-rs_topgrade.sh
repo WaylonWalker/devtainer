@@ -19,7 +19,7 @@ function install {
 	PROG="topgrade"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v14.0.1"
+	RELEASE="v15.0.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,11 +66,6 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
-		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
-		if [[ $OS = "darwin" ]]; then
-			ARCH="amd64"
-		fi
-		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -84,20 +79,24 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
+	"darwin_arm64")
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v15.0.0/topgrade-v15.0.0-aarch64-apple-darwin.tar.gz"
+		FTYPE=".tar.gz"
+		;;
 	"linux_arm64")
-		URL="https://github.com/topgrade-rs/topgrade/releases/download/v14.0.1/topgrade-v14.0.1-aarch64-unknown-linux-musl.tar.gz"
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v15.0.0/topgrade-v15.0.0-aarch64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/topgrade-rs/topgrade/releases/download/v14.0.1/topgrade-v14.0.1-armv7-unknown-linux-gnueabihf.tar.gz"
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v15.0.0/topgrade-v15.0.0-armv7-unknown-linux-gnueabihf.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/topgrade-rs/topgrade/releases/download/v14.0.1/topgrade-v14.0.1-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v15.0.0/topgrade-v15.0.0-x86_64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/topgrade-rs/topgrade/releases/download/v14.0.1/topgrade-v14.0.1-x86_64-unknown-linux-gnu.tar.gz"
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v15.0.0/topgrade-v15.0.0-x86_64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

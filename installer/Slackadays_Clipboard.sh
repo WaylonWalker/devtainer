@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="MordechaiHadad"
-	PROG="bob"
+	USER="Slackadays"
+	PROG="Clipboard"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v3.0.1"
+	RELEASE="0.9.0.1"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,11 +66,6 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
-		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
-		if [[ $OS = "darwin" ]]; then
-			ARCH="amd64"
-		fi
-		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -84,20 +79,32 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"linux_arm64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-linux-aarch64.zip"
+	"freebsd_amd64")
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-freebsd-amd64.zip"
 		FTYPE=".zip"
 		;;
 	"linux_amd64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-linux-x86_64-openssl.zip"
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-linux-amd64.zip"
 		FTYPE=".zip"
 		;;
-	"darwin_arm")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-macos-arm-openssl.zip"
+	"linux_arm64")
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-linux-arm64.zip"
 		FTYPE=".zip"
 		;;
-	"darwin_amd64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v3.0.1/bob-macos-x86_64-openssl.zip"
+	"linux_arm")
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-linux-armhf.zip"
+		FTYPE=".zip"
+		;;
+	"darwin_arm64")
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-macos-arm64-amd64.zip"
+		FTYPE=".zip"
+		;;
+	"netbsd_amd64")
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-netbsd-amd64.zip"
+		FTYPE=".zip"
+		;;
+	"openbsd_amd64")
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-openbsd-amd64.zip"
 		FTYPE=".zip"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
@@ -135,7 +142,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "bob_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "Clipboard_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

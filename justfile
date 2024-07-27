@@ -12,6 +12,9 @@ build-deploy: build deploy
 build: build-latest build-alpine build-slim
 deploy: deploy-latest deploy-alpine deploy-slim
 
+login:
+    podman login {{ registry }}/{{ repository }}/devtainer
+
 latest: build-latest deploy-latest
 alpine: build-alpine deploy-alpine
 slim: build-slim deploy-slim
@@ -101,6 +104,8 @@ update-installers:
     i_progs="
     BurntSushi/ripgrep
     MordechaiHadad/bob
+    Slackadays/Clipboard
+    atuinsh/atuin
     avencera/rustywind
     benbjohnson/litestream
     bootandy/dust
@@ -117,6 +122,7 @@ update-installers:
     extrawurst/gitui
     eza-community/eza
     go-task/task
+    gokcehan/lf
     homeport/termshot
     imsnif/bandwhich
     imsnif/diskonaut
@@ -150,6 +156,7 @@ update-installers:
 
 
     echo "mv cli gh" >> installer/install.sh
+    echo "mv Clipboard cp" >> installer/install.sh
     echo "mv tealdeer tldr" >> installer/install.sh
     echo "tldr --update" >> installer/install.sh
 

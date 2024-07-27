@@ -19,7 +19,7 @@ function install {
 	PROG="just"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="1.27.0"
+	RELEASE="1.32.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,6 +66,11 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
+		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
+		if [[ $OS = "darwin" ]]; then
+			ARCH="amd64"
+		fi
+		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -79,24 +84,12 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"darwin_arm64")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-aarch64-apple-darwin.tar.gz"
+	"darwin_386")
+		URL="https://github.com/casey/just/releases/download/1.32.0/just-1.32.0-aarch64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
-	"linux_arm64")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-aarch64-unknown-linux-musl.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"linux_arm")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-arm-unknown-linux-musleabihf.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"darwin_amd64")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-x86_64-apple-darwin.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"linux_amd64")
-		URL="https://github.com/casey/just/releases/download/1.27.0/just-1.27.0-x86_64-unknown-linux-musl.tar.gz"
+	"linux_386")
+		URL="https://github.com/casey/just/releases/download/1.32.0/just-1.32.0-aarch64-unknown-linux-musl.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

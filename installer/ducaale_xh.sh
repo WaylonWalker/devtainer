@@ -19,7 +19,7 @@ function install {
 	PROG="xh"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.22.0"
+	RELEASE="v0.22.2"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,23 +80,23 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.22.0/xh-v0.22.0-aarch64-apple-darwin.tar.gz"
+		URL="https://github.com/ducaale/xh/releases/download/v0.22.2/xh-v0.22.2-aarch64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.22.0/xh-v0.22.0-aarch64-unknown-linux-musl.tar.gz"
+		URL="https://github.com/ducaale/xh/releases/download/v0.22.2/xh-v0.22.2-aarch64-unknown-linux-musl.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/ducaale/xh/releases/download/v0.22.0/xh-v0.22.0-arm-unknown-linux-gnueabihf.tar.gz"
+		URL="https://github.com/ducaale/xh/releases/download/v0.22.2/xh-v0.22.2-arm-unknown-linux-gnueabihf.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.22.0/xh-v0.22.0-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/ducaale/xh/releases/download/v0.22.2/xh-v0.22.2-x86_64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.22.0/xh-v0.22.0-x86_64-unknown-linux-musl.tar.gz"
+		URL="https://github.com/ducaale/xh/releases/download/v0.22.2/xh-v0.22.2-x86_64-unknown-linux-musl.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
