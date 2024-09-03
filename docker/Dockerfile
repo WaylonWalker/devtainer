@@ -6,15 +6,22 @@ ENV PATH="${PATH}:/root/.local/share/nvim/mason/bin"
 COPY installer /installer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
+    cargo \
     curl \
+    entr \
     fd-find \
+    ffmpeg \
+    fzf \
     g++ \
     gcc \
     git \
-    ffmpeg \
-    fzf \
+    golang \
+    ripgrep \
+    sqlite3 \
     stow \
+    tmux \
     unzip \
+    xclip \
     xclip \
     zsh \
     ca-certificates && \
