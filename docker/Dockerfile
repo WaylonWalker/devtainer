@@ -57,9 +57,7 @@ RUN stow nvim
 RUN nvim --headless "+Lazy! restore" +qa
 # RUN stow lazyvim
 WORKDIR /root
-RUN curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts && \
-# If you want n installed, you can use npm now.\
-npm install -g n
+RUN curl -L https://bit.ly/n-install | bash -s -- -y lts
 
 # RUN nvim --headless "+TSInstallSync c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
 RUN nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
