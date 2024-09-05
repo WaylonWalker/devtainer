@@ -207,3 +207,7 @@ zstyle ':completion:*' menu select
 wfetch
 # zprof
 #
+
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh)"

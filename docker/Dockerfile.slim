@@ -8,12 +8,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
     curl \
     fd-find \
+    ffmpeg \
     g++ \
     gcc \
     git \
-    ffmpeg \
+    htop \
+    screenfetch \
     stow \
+    tmux \
     unzip \
+    xclip \
     zsh \
     ca-certificates && \
     mkdir ~/.local/bin -p && \
@@ -30,6 +34,14 @@ RUN python -m pip install uv && \
     uv pip install \
         harlequin \
         ipython \
+        sqlite-utils \
+        pynvim \
+        neovim \
+        djhtml \
+        sqlformat \
+        tidy-imports \
+        pyflyby \
+        ruff \
         lolcat \
         visidata \ 
         waylonwalker --system
@@ -66,4 +78,5 @@ ENV VHS_UID "1976"
 ENV VHS_KEY_PATH "/vhs/vhs"
 ENV VHS_AUTHORIZED_KEYS_PATH ""
 ENV VHS_NO_SANDBOX "true"
+RUN mv ~/.local/bin/* /usr/bin/
 ENTRYPOINT ["zsh"]

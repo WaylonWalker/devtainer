@@ -39,14 +39,12 @@ set -e
 /installer/twpayne_chezmoi.sh
 /installer/zellij-org_zellij.sh
 mv cli gh
-mv Clipboard cp
 mv tealdeer tldr
 tldr --update
 
 if [[ -f /usr/bin/batcat ]]; then
-    ln -s /usr/bin/batcat ~/.local/bin/bat
+	ln -s /usr/bin/batcat ~/.local/bin/bat
 fi
 if [[ -f /usr/bin/fdfind ]]; then
-    ln -s /usr/bin/fdfind ~/.local/bin/fd
+	ln -s /usr/bin/fdfind ~/.local/bin/fd
 fi
-

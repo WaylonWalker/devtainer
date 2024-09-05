@@ -19,7 +19,7 @@ function install {
 	PROG="procs"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.14.5"
+	RELEASE="v0.14.6"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,11 +66,6 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
-		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
-		if [[ $OS = "darwin" ]]; then
-			ARCH="amd64"
-		fi
-		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -84,12 +79,16 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
+	"darwin_arm64")
+		URL="https://github.com/dalance/procs/releases/download/v0.14.6/procs-v0.14.6-aarch64-mac.zip"
+		FTYPE=".zip"
+		;;
 	"linux_amd64")
-		URL="https://github.com/dalance/procs/releases/download/v0.14.5/procs-v0.14.5-x86_64-linux.zip"
+		URL="https://github.com/dalance/procs/releases/download/v0.14.6/procs-v0.14.6-x86_64-linux.zip"
 		FTYPE=".zip"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/dalance/procs/releases/download/v0.14.5/procs-v0.14.5-x86_64-mac.zip"
+		URL="https://github.com/dalance/procs/releases/download/v0.14.6/procs-v0.14.6-x86_64-mac.zip"
 		FTYPE=".zip"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

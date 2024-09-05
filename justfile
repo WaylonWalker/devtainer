@@ -169,6 +169,9 @@ update-installers:
     fi
     " >> installer/install.sh
 
+    curl -L https://bit.ly/n-install > installer/n.sh
+    chmod +x installer/n.sh
+
 distrobox-assemble:
     #!/usr/bin/env bash
     set -euxo pipefail
