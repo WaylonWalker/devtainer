@@ -16,12 +16,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     git \
     golang \
+    podman \
     ripgrep \
     sqlite3 \
     stow \
     tmux \
     unzip \
-    xclip \
+    vlc \
     xclip \
     zsh \
     ca-certificates && \

@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="charmbracelet"
-	PROG="vhs"
+	USER="svenstaro"
+	PROG="miniserve"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.8.0"
+	RELEASE="v0.28.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,28 +80,28 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Darwin_arm64.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"darwin_amd64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Darwin_x86_64.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"linux_arm")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_arm.tar.gz"
-		FTYPE=".tar.gz"
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-aarch64-apple-darwin"
+		FTYPE=".bin"
 		;;
 	"linux_arm64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_arm64.tar.gz"
-		FTYPE=".tar.gz"
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-aarch64-unknown-linux-gnu"
+		FTYPE=".bin"
 		;;
-	"linux_386")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_i386.tar.gz"
-		FTYPE=".tar.gz"
+	"linux_arm")
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-arm-unknown-linux-musleabihf"
+		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_x86_64.tar.gz"
-		FTYPE=".tar.gz"
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-riscv64gc-unknown-linux-gnu"
+		FTYPE=".bin"
+		;;
+	"darwin_amd64")
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-x86_64-apple-darwin"
+		FTYPE=".bin"
+		;;
+	"freebsd_amd64")
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-x86_64-unknown-freebsd"
+		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
 	esac
@@ -138,7 +138,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "vhs_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "miniserve_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

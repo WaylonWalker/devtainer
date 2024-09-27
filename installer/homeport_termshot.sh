@@ -19,7 +19,7 @@ function install {
 	PROG="termshot"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.2.8"
+	RELEASE="v0.2.9"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,19 +80,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_amd64")
-		URL="https://github.com/homeport/termshot/releases/download/v0.2.8/termshot_0.2.8_darwin_amd64.tar.gz"
+		URL="https://github.com/homeport/termshot/releases/download/v0.2.9/termshot_0.2.9_darwin_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/homeport/termshot/releases/download/v0.2.8/termshot_0.2.8_darwin_arm64.tar.gz"
+		URL="https://github.com/homeport/termshot/releases/download/v0.2.9/termshot_0.2.9_darwin_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/homeport/termshot/releases/download/v0.2.8/termshot_0.2.8_linux_amd64.tar.gz"
+		URL="https://github.com/homeport/termshot/releases/download/v0.2.9/termshot_0.2.9_linux_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/homeport/termshot/releases/download/v0.2.8/termshot_0.2.8_linux_arm64.tar.gz"
+		URL="https://github.com/homeport/termshot/releases/download/v0.2.9/termshot_0.2.9_linux_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

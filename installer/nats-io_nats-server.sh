@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="charmbracelet"
-	PROG="vhs"
+	USER="nats-io"
+	PROG="nats-server"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.8.0"
+	RELEASE="v2.10.21"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -79,28 +79,32 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"darwin_arm64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Darwin_arm64.tar.gz"
-		FTYPE=".tar.gz"
-		;;
 	"darwin_amd64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Darwin_x86_64.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.21/nats-server-v2.10.21-darwin-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
-	"linux_arm")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_arm.tar.gz"
+	"darwin_arm64")
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.21/nats-server-v2.10.21-darwin-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
-	"linux_arm64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_arm64.tar.gz"
+	"freebsd_amd64")
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.21/nats-server-v2.10.21-freebsd-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_386")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_i386.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.21/nats-server-v2.10.21-linux-386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_x86_64.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.21/nats-server-v2.10.21-linux-amd64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm")
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.21/nats-server-v2.10.21-linux-arm6.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm64")
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.21/nats-server-v2.10.21-linux-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
@@ -138,7 +142,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "vhs_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "nats-server_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

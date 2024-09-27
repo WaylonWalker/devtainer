@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="charmbracelet"
-	PROG="vhs"
+	USER="bitnami-labs"
+	PROG="sealed-secrets"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.8.0"
+	RELEASE="v0.27.1"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -79,28 +79,24 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"darwin_arm64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Darwin_arm64.tar.gz"
-		FTYPE=".tar.gz"
-		;;
 	"darwin_amd64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Darwin_x86_64.tar.gz"
+		URL="https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.1/kubeseal-0.27.1-darwin-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
-	"linux_arm")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_arm.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"linux_arm64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_arm64.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"linux_386")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_i386.tar.gz"
+	"darwin_arm64")
+		URL="https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.1/kubeseal-0.27.1-darwin-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.8.0/vhs_0.8.0_Linux_x86_64.tar.gz"
+		URL="https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.1/kubeseal-0.27.1-linux-amd64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm")
+		URL="https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.1/kubeseal-0.27.1-linux-arm.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm64")
+		URL="https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.1/kubeseal-0.27.1-linux-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
@@ -138,7 +134,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "vhs_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "sealed-secrets_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

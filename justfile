@@ -108,6 +108,7 @@ update-installers:
     atuinsh/atuin
     avencera/rustywind
     benbjohnson/litestream
+    bitnami-labs/sealed-secrets 
     bootandy/dust
     casey/just
     charmbracelet/vhs
@@ -118,7 +119,6 @@ update-installers:
     dbrgn/tealdeer
     derailed/k9s
     ducaale/xh
-    ducaale/xh
     extrawurst/gitui
     eza-community/eza
     go-task/task
@@ -128,7 +128,10 @@ update-installers:
     imsnif/diskonaut
     jmorganca/ollama
     johanhaleby/kubetail
+    jqlang/jq
     mgdm/htmlq
+    nats-io/nats-server
+    nats-io/natscli
     neovim/neovim
     ogham/dog
     packwiz/packwiz
@@ -136,6 +139,7 @@ update-installers:
     sharkdp/pastel
     sirwart/ripsecrets
     starship/starship
+    svenstaro/miniserve
     sxyazi/yazi
     topgrade-rs/topgrade
     twpayne/chezmoi
@@ -155,10 +159,15 @@ update-installers:
     done
 
 
+
     echo "mv cli gh" >> installer/install.sh
     echo "mv Clipboard cp" >> installer/install.sh
     echo "mv tealdeer tldr" >> installer/install.sh
     echo "tldr --update" >> installer/install.sh
+    echo "mv sealed-secrets kubeseal" >> installer/install.sh
+
+    echo 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"' >> installer/install.sh
+    echo 'curl https://raw.githubusercontent.com/ahmetb/kubectx/refs/heads/master/kubectx > ~/.local/bin/kubectx' >> installer/install.sh
 
     echo "
     if [[ -f /usr/bin/batcat ]]; then

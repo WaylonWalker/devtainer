@@ -6,6 +6,7 @@ set -e
 /installer/atuinsh_atuin.sh
 /installer/avencera_rustywind.sh
 /installer/benbjohnson_litestream.sh
+/installer/bitnami-labs_sealed-secrets.sh
 /installer/bootandy_dust.sh
 /installer/casey_just.sh
 /installer/charmbracelet_vhs.sh
@@ -16,7 +17,6 @@ set -e
 /installer/dbrgn_tealdeer.sh
 /installer/derailed_k9s.sh
 /installer/ducaale_xh.sh
-/installer/ducaale_xh.sh
 /installer/extrawurst_gitui.sh
 /installer/eza-community_eza.sh
 /installer/go-task_task.sh
@@ -26,7 +26,10 @@ set -e
 /installer/imsnif_diskonaut.sh
 /installer/jmorganca_ollama.sh
 /installer/johanhaleby_kubetail.sh
+/installer/jqlang_jq.sh
 /installer/mgdm_htmlq.sh
+/installer/nats-io_nats-server.sh
+/installer/nats-io_natscli.sh
 /installer/neovim_neovim.sh
 /installer/ogham_dog.sh
 /installer/packwiz_packwiz.sh
@@ -34,17 +37,23 @@ set -e
 /installer/sharkdp_pastel.sh
 /installer/sirwart_ripsecrets.sh
 /installer/starship_starship.sh
+/installer/svenstaro_miniserve.sh
 /installer/sxyazi_yazi.sh
 /installer/topgrade-rs_topgrade.sh
 /installer/twpayne_chezmoi.sh
 /installer/zellij-org_zellij.sh
 mv cli gh
+mv Clipboard cp
 mv tealdeer tldr
 tldr --update
+mv sealed-secrets kubeseal
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+curl https://raw.githubusercontent.com/ahmetb/kubectx/refs/heads/master/kubectx > ~/.local/bin/kubectx
 
 if [[ -f /usr/bin/batcat ]]; then
-	ln -s /usr/bin/batcat ~/.local/bin/bat
+    ln -s /usr/bin/batcat ~/.local/bin/bat
 fi
 if [[ -f /usr/bin/fdfind ]]; then
-	ln -s /usr/bin/fdfind ~/.local/bin/fd
+    ln -s /usr/bin/fdfind ~/.local/bin/fd
 fi
+
