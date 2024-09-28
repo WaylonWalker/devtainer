@@ -61,12 +61,16 @@ RUN nvim --headless "+Lazy! restore" +qa
 # RUN curl -L https://bit.ly/n-install | bash -s -- -y lts
 WORKDIR /root/util/
 # RUN bash /installer/n.sh -y lts
-RUN curl -L https://bit.ly/n-install | bash -s -- -y lts
+# RUN curl -L https://bit.ly/n-install | bash -s -- -y lts
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+RUN apt-get install -y nodejs
 
 RUN nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
 ENV PATH="${PATH}:/root/n/bin"
 RUN npm i -g tailwindcss
 RUN nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
+
+RUN chsh -s $(which zsh)
 
 RUN apt update && apt install -y chromium
 # Expose port
