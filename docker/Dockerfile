@@ -1,4 +1,4 @@
-From python:3.11
+From docker.io/python:3.11
 
 ENV PATH="${PATH}:/root/.local/share/bob/nvim-bin"
 ENV PATH="${PATH}:/root/.local/bin"
