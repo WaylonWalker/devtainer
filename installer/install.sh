@@ -45,10 +45,10 @@ set -e
 mv cli gh
 mv Clipboard cp
 mv tealdeer tldr
+mv natscli nats
 tldr --update
 mv sealed-secrets kubeseal
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-curl https://raw.githubusercontent.com/ahmetb/kubectx/refs/heads/master/kubectx > ~/.local/bin/kubectx
 
 if [[ -f /usr/bin/batcat ]]; then
     ln -s /usr/bin/batcat ~/.local/bin/bat

@@ -163,11 +163,11 @@ update-installers:
     echo "mv cli gh" >> installer/install.sh
     echo "mv Clipboard cp" >> installer/install.sh
     echo "mv tealdeer tldr" >> installer/install.sh
+    echo "mv natscli nats" >> installer/install.sh
     echo "tldr --update" >> installer/install.sh
     echo "mv sealed-secrets kubeseal" >> installer/install.sh
 
     echo 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"' >> installer/install.sh
-    echo 'curl https://raw.githubusercontent.com/ahmetb/kubectx/refs/heads/master/kubectx > ~/.local/bin/kubectx' >> installer/install.sh
 
     echo "
     if [[ -f /usr/bin/batcat ]]; then
