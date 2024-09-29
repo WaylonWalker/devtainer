@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="dbrgn"
-	PROG="tealdeer"
+	USER="jesseduffield"
+	PROG="lazydocker"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v1.6.1"
+	RELEASE="v0.23.3"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,11 +66,6 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
-		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
-		if [[ $OS = "darwin" ]]; then
-			ARCH="amd64"
-		fi
-		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -84,17 +79,25 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"linux_arm")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-linux-arm-musleabi"
-		FTYPE=".bin"
-		;;
-	"linux_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-linux-i686-musl"
-		FTYPE=".bin"
+	"darwin_arm64")
+		URL="https://github.com/jesseduffield/lazydocker/releases/download/v0.23.3/lazydocker_0.23.3_Darwin_arm64.tar.gz"
+		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-macos-x86_64"
-		FTYPE=".bin"
+		URL="https://github.com/jesseduffield/lazydocker/releases/download/v0.23.3/lazydocker_0.23.3_Darwin_x86_64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm64")
+		URL="https://github.com/jesseduffield/lazydocker/releases/download/v0.23.3/lazydocker_0.23.3_Linux_arm64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm")
+		URL="https://github.com/jesseduffield/lazydocker/releases/download/v0.23.3/lazydocker_0.23.3_Linux_armv6.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_amd64")
+		URL="https://github.com/jesseduffield/lazydocker/releases/download/v0.23.3/lazydocker_0.23.3_Linux_x86.tar.gz"
+		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
 	esac
@@ -131,7 +134,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "tealdeer_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "lazydocker_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

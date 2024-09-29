@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="dbrgn"
-	PROG="tealdeer"
+	USER="bcicen"
+	PROG="ctop"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v1.6.1"
+	RELEASE="v0.7.7"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -84,16 +84,20 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"linux_arm")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-linux-arm-musleabi"
+	"darwin_amd64")
+		URL="https://github.com/bcicen/ctop/releases/download/v0.7.7/ctop-0.7.7-darwin-amd64"
 		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-linux-i686-musl"
+		URL="https://github.com/bcicen/ctop/releases/download/v0.7.7/ctop-0.7.7-linux-amd64"
 		FTYPE=".bin"
 		;;
-	"darwin_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-macos-x86_64"
+	"linux_arm")
+		URL="https://github.com/bcicen/ctop/releases/download/v0.7.7/ctop-0.7.7-linux-arm"
+		FTYPE=".bin"
+		;;
+	"linux_arm64")
+		URL="https://github.com/bcicen/ctop/releases/download/v0.7.7/ctop-0.7.7-linux-arm64"
 		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
@@ -131,7 +135,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "tealdeer_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "ctop_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

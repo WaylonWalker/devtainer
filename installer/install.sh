@@ -5,6 +5,7 @@ set -e
 /installer/Slackadays_Clipboard.sh
 /installer/atuinsh_atuin.sh
 /installer/avencera_rustywind.sh
+/installer/bcicen_ctop.sh
 /installer/benbjohnson_litestream.sh
 /installer/bitnami-labs_sealed-secrets.sh
 /installer/bootandy_dust.sh
@@ -24,6 +25,8 @@ set -e
 /installer/homeport_termshot.sh
 /installer/imsnif_bandwhich.sh
 /installer/imsnif_diskonaut.sh
+/installer/jesseduffield_lazydocker.sh
+/installer/jesseduffield_lazygit.sh
 /installer/jmorganca_ollama.sh
 /installer/johanhaleby_kubetail.sh
 /installer/jqlang_jq.sh

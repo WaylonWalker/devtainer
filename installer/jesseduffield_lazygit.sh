@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="dbrgn"
-	PROG="tealdeer"
+	USER="jesseduffield"
+	PROG="lazygit"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v1.6.1"
+	RELEASE="v0.44.1"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,11 +66,6 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
-		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
-		if [[ $OS = "darwin" ]]; then
-			ARCH="amd64"
-		fi
-		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -84,17 +79,45 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"linux_arm")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-linux-arm-musleabi"
-		FTYPE=".bin"
-		;;
-	"linux_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-linux-i686-musl"
-		FTYPE=".bin"
+	"darwin_arm64")
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Darwin_arm64.tar.gz"
+		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-macos-x86_64"
-		FTYPE=".bin"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Darwin_x86_64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"freebsd_386")
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_freebsd_32-bit.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"freebsd_arm64")
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_freebsd_arm64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"freebsd_arm")
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_freebsd_armv6.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"freebsd_amd64")
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_freebsd_x86_64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_386")
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Linux_32-bit.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm64")
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Linux_arm64.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_arm")
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Linux_armv6.tar.gz"
+		FTYPE=".tar.gz"
+		;;
+	"linux_amd64")
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Linux_x86_64.tar.gz"
+		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
 	esac
@@ -131,7 +154,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "tealdeer_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "lazygit_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

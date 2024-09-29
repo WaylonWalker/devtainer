@@ -107,6 +107,7 @@ update-installers:
     Slackadays/Clipboard
     atuinsh/atuin
     avencera/rustywind
+    bcicen/ctop
     benbjohnson/litestream
     bitnami-labs/sealed-secrets 
     bootandy/dust
@@ -126,6 +127,8 @@ update-installers:
     homeport/termshot
     imsnif/bandwhich
     imsnif/diskonaut
+    jesseduffield/lazydocker
+    jesseduffield/lazygit
     jmorganca/ollama
     johanhaleby/kubetail
     jqlang/jq
