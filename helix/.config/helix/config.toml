@@ -1,0 +1,52 @@
+ theme = "dracula_transparant"
+
+[editor]
+line-number = "relative"
+shell = ["zsh", "-c"]
+
+[keys.insert]
+j = { j = "normal_mode" }
+
+[keys.select]
+y = ['yank', 'yank_to_clipboard']
+d = ["yank_main_selection_to_clipboard", "delete_selection"]
+p = "paste_clipboard_after"
+P = "paste_clipboard_before"
+
+[keys.normal." "]
+y = 'yank'
+d = "delete_selection"
+p = "paste_after"
+P = "paste_before"
+
+[keys.normal]
+y = ['yank', 'yank_to_clipboard']
+p = "paste_clipboard_after"
+P = "paste_clipboard_before"
+
+esc = ["collapse_selection", "keep_primary_selection"]
+0 = "goto_line_start"
+"$" = "goto_line_end"
+"^" = "goto_first_nonwhitespace"
+G = "goto_file_end"
+Y = ["extend_to_line_end", "yank_main_selection_to_clipboard", "collapse_selection"]
+"C-n" = "goto_next_diag"
+"C-p" = "goto_prev_diag"
+
+[keys.normal.space]
+p = "file_picker"
+
+[keys.normal.g.e]
+c = ":config-open"
+t = ":open ~/.tmux.conf"
+a = ":open ~/.alias"
+z = ":open ~/.zshrc"
+l = ":open ~/.config/helix/languages.toml"
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.file-picker]
+hidden = false

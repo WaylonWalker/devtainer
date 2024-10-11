@@ -43,18 +43,32 @@ RUN python -m pip install uv && \
         lolcat \
         visidata \ 
         waylonwalker --system
+
 RUN bob install nightly && \
     bob use nightly
+
+RUN mkdir /root/downloads && \
+    cd /root/downloads && \
+    wget https://github.com/helix-editor/helix/releases/download/24.07/helix-24.07-x86_64-linux.tar.xz && \
+    tar -xf helix-24.07-x86_64-linux.tar.xz && \
+    mv helix-24.07-x86_64-linux/hx /usr/local/bin/hx && \
+    mkdir -p /usr/local/share/helix/runtime && \
+    mv helix-24.07-x86_64-linux/runtime/* /usr/local/share/helix/runtime/ && \
+    cd .. && \
+    rm -rf /root/downloads
+
 # COPY kickstart.nvim /root/.config/nvim
 
 # RUN git clone https://github.com/waylonwalker/kickstart.nvim ~/.config/nvim
 COPY zsh /root/devtainer/zsh
 COPY bin /root/devtainer/bin
 COPY nvim /root/devtainer/nvim
+COPY helix /root/devtainer/helix
 WORKDIR /root/devtainer
 RUN stow zsh
-RUN stow bin
+RUN stow bin -t /usr/local/bin
 RUN stow nvim
+RUN stow helix
 RUN nvim --headless "+Lazy! restore" +qa
 # RUN stow lazyvim
 # WORKDIR /root

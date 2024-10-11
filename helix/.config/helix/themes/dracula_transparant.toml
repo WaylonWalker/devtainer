@@ -1,0 +1,9 @@
+inherits = "dracula"
+"ui.background" = { fg = "foreground" }
+"ui.menu" = { fg = "white" }
+"ui.popup" = { fg = "white" }
+"ui.window" = { fg = "white" }
+"ui.help" = { fg = "light-gray" }
+
+"ui.statusline" = { fg = "gray" }
+"ui.statusline.inactive" = { fg = "black" }
