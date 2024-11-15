@@ -164,13 +164,23 @@ update-installers:
 
 
     echo "mv cli gh" >> installer/install.sh
-    echo "mv Clipboard cp" >> installer/install.sh
     echo "mv tealdeer tldr" >> installer/install.sh
     echo "mv natscli nats" >> installer/install.sh
     echo "tldr --update" >> installer/install.sh
     echo "mv sealed-secrets kubeseal" >> installer/install.sh
 
-    echo 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"' >> installer/install.sh
+    echo "
+    # install kubectl
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"' >> installer/install.sh
+    "
+
+    echo "
+    # install terraform
+    curl https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip -o terraform.zip
+    unzip terraform.zip
+    chmod +x terraform
+    mv terraform /usr/local/bin
+    "
 
     echo "
     if [[ -f /usr/bin/batcat ]]; then
@@ -180,6 +190,9 @@ update-installers:
         ln -s /usr/bin/fdfind ~/.local/bin/fd
     fi
     " >> installer/install.sh
+
+
+
 
     curl -L https://bit.ly/n-install > installer/n.sh
     chmod +x installer/n.sh
