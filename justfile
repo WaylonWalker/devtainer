@@ -3,6 +3,7 @@ export repository := "waylonwalker"
 export ntfy_url := "https://ntfy.wayl.one"
 export ntfy_channel := "deployments"
 export docker := "podman"
+export DATE_TAG := `date +%Y%m%d%H%M%S`
 
 default:
   @just --choose
@@ -19,19 +20,21 @@ latest: build-latest deploy-latest
 alpine: build-alpine deploy-alpine
 slim: build-slim deploy-slim
 
+
 build-latest:
     #!/usr/bin/env bash
     set -euxo pipefail
 
-    {{ docker }} build -f docker/Dockerfile -t {{ registry }}/{{ repository }}/devtainer:latest .
+    {{ docker }} build -f docker/Dockerfile -t {{ registry }}/{{ repository }}/devtainer:latest -t {{ registry }}/{{ repository }}/devtainer:${DATE_TAG} .
 
 deploy-latest:
     #!/usr/bin/env bash
     set -euxo pipefail
 
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:${DATE_TAG}
     {{ docker }} push {{ registry }}/{{ repository }}/devtainer:latest
-    curl -d "released devtainer" {{ ntfy_url }}/{{ ntfy_channel }}
-
+    curl -d "released devtainer:latest and devtainer:${DATE_TAG}" {{ ntfy_url }}/{{ ntfy_channel }}
+    
 build-alpine:
     #!/usr/bin/env bash
     set -euxo pipefail
