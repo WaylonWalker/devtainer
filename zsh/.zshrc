@@ -211,3 +211,6 @@ wfetch
 . "$HOME/.atuin/bin/env"
 
 eval "$(atuin init zsh)"
+
+# start_tmux
+[ -f ~/.local/bin/ta ] && ~/.local/bin/ta

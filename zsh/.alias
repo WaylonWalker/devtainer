@@ -1,6 +1,5 @@
 export EDITOR=nvim
 
-# alias vim=nvim
 [ -f /usr/bin/batcat ] && alias cat=batcat
 [ -f /usr/bin/bat ] && alias cat=bat
 
@@ -15,6 +14,7 @@ fi
 # check for docker-compose, alias to podman-compose if does not exist
 [ ! -f /usr/bin/docker-compose ] && [ -f /usr/bin/podman-compose ] && alias docker-compose=podman-compose
 
+alias hx=~/Downloads/squashfs-root/AppRun
 alias new-post=~/git/ww3/new-post
 alias np=~/git/ww3/new-post
 alias pid="ps -aux | grep -v grep | grep "
@@ -28,7 +28,7 @@ alias direnvconda='cp ~/.config/direnv/conda/.envrc . && direnv allow .'
 alias direnvvenv='cp ~/.config/direnv/venv/.envrc . && direnv allow .'
 alias ap='rg --files ~/devtainer/ansible/playbooks | fzf --header "select playbook" | xargs ansible-playbook --ask-become'
 alias pydev='pip install python-lsp-server jedi-language-server mypy flake8 pyflyby ipython'
-alias venv=". ./.venv/bin/activate || python3 -m venv .venv --prompt $(basename $PWD) && . ./.venv/bin/activate"
+alias venv=". ./.venv/bin/activate || uv venv && . ./.venv/bin/activate"
 alias awsrules="aws events list-rules | visidata -f json"
 alias apx="pipx run --spec ansible ansible-playbook ~/devtainer/ansible/local.yml --ask-become-pass"
 alias h='hatch run'
