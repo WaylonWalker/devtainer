@@ -1,4 +1,4 @@
-require'nvim-treesitter.configs'.setup {
+require("nvim-treesitter.configs").setup({
   ensure_installed = {
     "python",
     "regex",
@@ -9,26 +9,35 @@ require'nvim-treesitter.configs'.setup {
     "rst",
     "html",
     "json",
-    "yaml"
+    "yaml",
   }, -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   highlight = {
-    enable = true
+    enable = true,
   },
   playground = {
     enable = true,
     disable = {},
-    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-    persist_queries = false -- Whether the query persists across vim sessions
+    updatetime = 25,       -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false, -- Whether the query persists across vim sessions
   },
-swap = {
+  swap = {
     enable = true,
     swap_next = {
-    ["<leader>fj"] = "@function.outer",
+      ["<leader>fj"] = "@function.outer",
     },
     swap_previous = {
-    ["<leader>fk"] = "@function.outer",
+      ["<leader>fk"] = "@function.outer",
     },
-},
+  },
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = "<leader>o",
+      scope_incremental = "<leader>O",
+      node_incremental = "<leader>o",
+      node_decremental = "<leader>i",
+    },
+  },
   textobjects = {
     select = {
       enable = true,
@@ -50,14 +59,13 @@ swap = {
         -- },
       },
     },
-      lsp_interop = {
+    lsp_interop = {
       enable = true,
-      border = 'none',
+      border = "none",
       peek_definition_code = {
         ["gh"] = "@function.outer",
         ["gH"] = "@class.outer",
       },
     },
   },
-}
-
+})
