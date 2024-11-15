@@ -18,6 +18,8 @@ y = 'yank'
 d = "delete_selection"
 p = "paste_after"
 P = "paste_before"
+o = "expand_selection"
+i = "shrink_selection"
 
 [keys.normal]
 y = ['yank', 'yank_to_clipboard']
