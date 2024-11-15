@@ -19,7 +19,7 @@ function install {
 	PROG="procs"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.14.6"
+	RELEASE="v0.14.8"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,15 +80,15 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/dalance/procs/releases/download/v0.14.6/procs-v0.14.6-aarch64-mac.zip"
+		URL="https://github.com/dalance/procs/releases/download/v0.14.8/procs-v0.14.8-aarch64-mac.zip"
 		FTYPE=".zip"
 		;;
 	"linux_amd64")
-		URL="https://github.com/dalance/procs/releases/download/v0.14.6/procs-v0.14.6-x86_64-linux.zip"
+		URL="https://github.com/dalance/procs/releases/download/v0.14.8/procs-v0.14.8-x86_64-linux.zip"
 		FTYPE=".zip"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/dalance/procs/releases/download/v0.14.6/procs-v0.14.6-x86_64-mac.zip"
+		URL="https://github.com/dalance/procs/releases/download/v0.14.8/procs-v0.14.8-x86_64-mac.zip"
 		FTYPE=".zip"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

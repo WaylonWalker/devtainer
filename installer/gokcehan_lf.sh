@@ -19,7 +19,7 @@ function install {
 	PROG="lf"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="r32"
+	RELEASE="r33"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,67 +80,67 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_amd64")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-darwin-amd64.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-darwin-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-darwin-arm64.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-darwin-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_386")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-freebsd-386.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-freebsd-386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_amd64")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-freebsd-amd64.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-freebsd-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_arm")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-freebsd-arm.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-freebsd-arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_386")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-linux-386.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-linux-386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-linux-amd64.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-linux-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-linux-arm.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-linux-arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-linux-arm64.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-linux-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"netbsd_386")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-netbsd-386.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-netbsd-386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"netbsd_amd64")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-netbsd-amd64.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-netbsd-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"netbsd_arm")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-netbsd-arm.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-netbsd-arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"openbsd_386")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-openbsd-386.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-openbsd-386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"openbsd_amd64")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-openbsd-amd64.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-openbsd-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"openbsd_arm")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-openbsd-arm.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-openbsd-arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"openbsd_arm64")
-		URL="https://github.com/gokcehan/lf/releases/download/r32/lf-openbsd-arm64.tar.gz"
+		URL="https://github.com/gokcehan/lf/releases/download/r33/lf-openbsd-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

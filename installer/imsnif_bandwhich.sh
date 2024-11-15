@@ -19,7 +19,7 @@ function install {
 	PROG="bandwhich"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.23.0"
+	RELEASE="v0.23.1"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,23 +80,23 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.0/bandwhich-v0.23.0-aarch64-apple-darwin.tar.gz"
+		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.1/bandwhich-v0.23.1-aarch64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.0/bandwhich-v0.23.0-aarch64-linux-android.tar.gz"
+		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.1/bandwhich-v0.23.1-aarch64-linux-android.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.0/bandwhich-v0.23.0-armv7-unknown-linux-gnueabihf.tar.gz"
+		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.1/bandwhich-v0.23.1-armv7-unknown-linux-gnueabihf.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.0/bandwhich-v0.23.0-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.1/bandwhich-v0.23.1-x86_64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.0/bandwhich-v0.23.0-x86_64-unknown-linux-gnu.tar.gz"
+		URL="https://github.com/imsnif/bandwhich/releases/download/v0.23.1/bandwhich-v0.23.1-x86_64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

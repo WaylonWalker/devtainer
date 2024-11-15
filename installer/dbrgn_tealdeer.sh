@@ -19,7 +19,7 @@ function install {
 	PROG="tealdeer"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v1.6.1"
+	RELEASE="v1.7.1"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,11 +66,6 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
-		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
-		if [[ $OS = "darwin" ]]; then
-			ARCH="amd64"
-		fi
-		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -84,16 +79,24 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
+	"linux_arm64")
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-linux-aarch64-musl"
+		FTYPE=".bin"
+		;;
 	"linux_arm")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-linux-arm-musleabi"
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-linux-arm-musleabi"
 		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-linux-i686-musl"
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-linux-i686-musl"
+		FTYPE=".bin"
+		;;
+	"darwin_arm64")
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-macos-aarch64"
 		FTYPE=".bin"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.6.1/tealdeer-macos-x86_64"
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-macos-x86_64"
 		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

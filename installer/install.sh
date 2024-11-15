@@ -46,12 +46,10 @@ set -e
 /installer/twpayne_chezmoi.sh
 /installer/zellij-org_zellij.sh
 mv cli gh
-mv Clipboard cp
 mv tealdeer tldr
 mv natscli nats
 tldr --update
 mv sealed-secrets kubeseal
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 
 if [[ -f /usr/bin/batcat ]]; then
     ln -s /usr/bin/batcat ~/.local/bin/bat

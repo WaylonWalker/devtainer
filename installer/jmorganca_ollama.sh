@@ -19,7 +19,7 @@ function install {
 	PROG="ollama"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.3.12"
+	RELEASE="v0.4.1"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -85,15 +85,15 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_amd64")
-		URL="https://github.com/ollama/ollama/releases/download/v0.3.12/ollama-darwin"
+		URL="https://github.com/ollama/ollama/releases/download/v0.4.1/ollama-darwin"
 		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/ollama/ollama/releases/download/v0.3.12/ollama-linux-amd64-rocm.tgz"
+		URL="https://github.com/ollama/ollama/releases/download/v0.4.1/ollama-linux-amd64-rocm.tgz"
 		FTYPE=".tgz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/ollama/ollama/releases/download/v0.3.12/ollama-linux-arm64.tgz"
+		URL="https://github.com/ollama/ollama/releases/download/v0.4.1/ollama-linux-arm64.tgz"
 		FTYPE=".tgz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

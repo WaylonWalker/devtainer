@@ -19,7 +19,7 @@ function install {
 	PROG="Clipboard"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="0.9.0.1"
+	RELEASE="0.9.1"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,31 +80,35 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"freebsd_amd64")
-		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-freebsd-amd64.zip"
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.1/clipboard-freebsd-amd64.zip"
 		FTYPE=".zip"
 		;;
 	"linux_amd64")
-		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-linux-amd64.zip"
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.1/clipboard-linux-amd64.zip"
 		FTYPE=".zip"
 		;;
 	"linux_arm64")
-		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-linux-arm64.zip"
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.1/clipboard-linux-arm64.zip"
 		FTYPE=".zip"
 		;;
 	"linux_arm")
-		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-linux-armhf.zip"
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.1/clipboard-linux-armhf.zip"
+		FTYPE=".zip"
+		;;
+	"darwin_amd64")
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.1/clipboard-macos-amd64.zip"
 		FTYPE=".zip"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-macos-arm64-amd64.zip"
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.1/clipboard-macos-arm64.zip"
 		FTYPE=".zip"
 		;;
 	"netbsd_amd64")
-		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-netbsd-amd64.zip"
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.1/clipboard-netbsd-amd64.zip"
 		FTYPE=".zip"
 		;;
 	"openbsd_amd64")
-		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.0.1/clipboard-openbsd-amd64.zip"
+		URL="https://github.com/Slackadays/Clipboard/releases/download/0.9.1/clipboard-openbsd-amd64.zip"
 		FTYPE=".zip"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
