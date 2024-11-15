@@ -54,6 +54,7 @@ require("lazy").setup({
 	{ "kyazdani42/nvim-web-devicons" },
 	{
 		"Exafunction/codeium.vim",
+		enabled = not os.getenv("DOCKER_BUILD"), -- Disable during Docker build
 		config = function()
 			-- Change '<C-g>' here to any keycode you like.
 			vim.keymap.set("i", "<C-g>", function()

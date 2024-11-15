@@ -1,5 +1,6 @@
 From docker.io/python:3.11
 
+ENV DOCKER_BUILD=true
 ENV PATH="${PATH}:/root/.local/share/bob/nvim-bin"
 ENV PATH="${PATH}:/root/.local/bin"
 ENV PATH="${PATH}:/root/.local/share/nvim/mason/bin"
@@ -33,9 +34,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR  /usr/local/bin
 RUN bash /installer/install.sh
+# RUN cargo install fastmod
+
 # installer does not work with the release format of ttyd
 RUN curl --fail -# -L https://github.com/tsl0922/ttyd/releases/download/1.7.4/ttyd.x86_64 > /bin/ttyd && \
     chmod +x /bin/ttyd
+
 RUN python -m pip install uv && \
     uv pip install \
         harlequin \
@@ -65,11 +69,11 @@ COPY bin /root/devtainer/bin
 COPY nvim /root/devtainer/nvim
 COPY helix /root/devtainer/helix
 WORKDIR /root/devtainer
+
 RUN stow zsh
 RUN stow bin -t /usr/local/bin
 RUN stow nvim
 RUN stow helix
-RUN nvim --headless "+Lazy! restore" +qa
 # RUN stow lazyvim
 # WORKDIR /root
 # RUN curl -L https://bit.ly/n-install | bash -s -- -y lts
@@ -78,10 +82,11 @@ WORKDIR /root/util/
 # RUN curl -L https://bit.ly/n-install | bash -s -- -y lts
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
 RUN apt-get install -y nodejs
-
-RUN nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
 ENV PATH="${PATH}:/root/n/bin"
 RUN npm i -g tailwindcss
+
+RUN nvim --headless "+Lazy! restore" +qa
+RUN nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
 RUN nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
 
 RUN chsh -s $(which zsh)
@@ -97,4 +102,5 @@ ENV VHS_UID "1976"
 ENV VHS_KEY_PATH "/vhs/vhs"
 ENV VHS_AUTHORIZED_KEYS_PATH ""
 ENV VHS_NO_SANDBOX "true"
+ENV DOCKER_BUILD=
 ENTRYPOINT ["zsh"]
