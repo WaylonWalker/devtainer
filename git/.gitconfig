@@ -34,3 +34,4 @@
 	diff = bat --plain
 [alias]
 	squash-all = "!f(){ git reset $(git commit-tree HEAD^{tree} -m \"${1:-A new start}\");};f"
+	restage = !git diff --name-only --cached | xargs git add
