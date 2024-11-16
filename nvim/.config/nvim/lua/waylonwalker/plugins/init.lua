@@ -1,5 +1,5 @@
 local M = {}
--- M.cmp = require("waylonwalker.plugins.cmp")
+M.cmp = require("waylonwalker.plugins.cmp")
 M.fugitive = require("waylonwalker.plugins.fugitive")
 -- M.lsp_config = require("waylonwalker.plugins.lsp-config")
 M.null_ls = require("waylonwalker.plugins.null-ls")
