@@ -130,7 +130,7 @@ M.setup = function() -- Brief Aside: **What is LSP?**
 	--
 	local servers = {
 
-		ruff_lsp = {},
+		ruff = {},
 		jedi_language_server = {},
 		-- clangd = {},
 		-- gopls = {},
