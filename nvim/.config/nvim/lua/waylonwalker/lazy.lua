@@ -5,6 +5,8 @@
 --  You can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
 require("lazy").setup({
+	{ "nvzone/volt", lazy = true },
+	{ "nvzone/menu", lazy = true },
 	{
 		"nvim-tree/nvim-tree.lua",
 		dependencies = {

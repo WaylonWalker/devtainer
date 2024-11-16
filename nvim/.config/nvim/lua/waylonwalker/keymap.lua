@@ -314,7 +314,18 @@ set("n", "))", "<cmd>lua vim.diagnostic.goto_next()<CR>")
 set("n", "<c-n>", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
 set("n", "<c-p>", "<cmd>lua vim.diagnostic.goto_next()<CR>")
 
-set("n", "<c-space>", "<cmd>x<cr>")
+-- Keyboard users
+vim.keymap.set("n", "<C-t>", function()
+	require("menu").open("default")
+end, {})
+
+-- mouse users + nvimtree users!
+vim.keymap.set("n", "<RightMouse>", function()
+	vim.cmd.exec('"normal! \\<RightMouse>"')
+
+	local options = vim.bo.ft == "NvimTree" and "nvimtree" or "default"
+	require("menu").open(options, { mouse = true })
+end, {})
 
 vim.api.nvim_create_user_command("PreCommit", "!pre-commit run --files %", {})
 
