@@ -185,8 +185,8 @@ set("n", "<leader>x", "<cmd>x<cr>")
 
 set("n", "<leader>p", "<cmd>Telescope find_files<cr>")
 set("n", "<leader>F", "<cmd>Telescope<cr>")
-set("n", "<leader>o", "<cmd>Telescope old_files<cr>")
-set("n", "<leader>q", "<cmd>Telescope lsp_document_diagnostics<cr>")
+-- set("n", "<leader>o", "<cmd>Telescope old_files<cr>")
+set("n", "<leader>d", "<cmd>Telescope lsp_document_diagnostics<cr>")
 set("n", "<leader>ff", "<cmd>Telescope find_files<cr>")
 set("n", "<leader>fb", "<cmd>Telescope buffers<cr>")
 set("n", "<leader>fd", "<cmd>Telescope lsp_document_symbols<cr>")
@@ -310,6 +310,9 @@ set("v", "<leader>qq", "d<cmd>lua require'waylonwalker.util.window'.open_window(
 
 set("n", "((", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
 set("n", "))", "<cmd>lua vim.diagnostic.goto_next()<CR>")
+
+set("n", "<c-n>", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
+set("n", "<c-p>", "<cmd>lua vim.diagnostic.goto_next()<CR>")
 
 set("n", "<c-space>", "<cmd>x<cr>")
 
