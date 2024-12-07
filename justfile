@@ -150,6 +150,7 @@ update-installers:
     topgrade-rs/topgrade
     twpayne/chezmoi
     zellij-org/zellij
+    argoproj/argo-cd
     "
     rm -rf installer
     mkdir installer
@@ -164,7 +165,26 @@ update-installers:
         echo "/installer/$file.sh" >> installer/install.sh
     done
 
+    echo "
+    # install terraform
+    curl https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip -o terraform.zip
+    unzip terraform.zip
+    chmod +x terraform
+    mv terraform /usr/local/bin
+    " > installer/install_terraform.sh
 
+    echo "/installer/install_terraform.sh" >> installer/install.sh
+
+    echo "
+    # install kubectl
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"' >> installer/install.sh
+    " > installer/install_kubectl.sh
+
+    echo "/installer/install_kubectl.sh" >> installer/install.sh
+
+    curl -fsSL -o installer/install_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    chmod 700 installer/install_helm.sh
+    echo "/installer/install_helm.sh" >> installer/install.sh
 
     echo "mv cli gh" >> installer/install.sh
     echo "mv tealdeer tldr" >> installer/install.sh
@@ -172,18 +192,7 @@ update-installers:
     echo "tldr --update" >> installer/install.sh
     echo "mv sealed-secrets kubeseal" >> installer/install.sh
 
-    echo "
-    # install kubectl
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"' >> installer/install.sh
-    "
 
-    echo "
-    # install terraform
-    curl https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip -o terraform.zip
-    unzip terraform.zip
-    chmod +x terraform
-    mv terraform /usr/local/bin
-    "
 
     echo "
     if [[ -f /usr/bin/batcat ]]; then
