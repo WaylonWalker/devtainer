@@ -4,6 +4,7 @@ export ntfy_url := "https://ntfy.wayl.one"
 export ntfy_channel := "deployments"
 export docker := "podman"
 export DATE_TAG := `date +%Y%m%d%H%M%S`
+export version := `cat version`
 
 default:
   @just --choose
@@ -24,14 +25,22 @@ slim: build-slim deploy-slim
 build-latest:
     #!/usr/bin/env bash
     set -euxo pipefail
+    echo building latest
+    echo building ${DATE_TAG}
+    echo building ${version}
 
-    {{ docker }} build -f docker/Dockerfile -t {{ registry }}/{{ repository }}/devtainer:latest -t {{ registry }}/{{ repository }}/devtainer:${DATE_TAG} .
+
+    {{ docker }} build -f docker/Dockerfile -t {{ registry }}/{{ repository }}/devtainer:latest -t {{ registry }}/{{ repository }}/devtainer:${DATE_TAG} -t {{ registry }}/{{ repository }}/devtainer:${version} .
 
 deploy-latest:
     #!/usr/bin/env bash
     set -euxo pipefail
 
+    echo pushing ${DATE_TAG}
     {{ docker }} push {{ registry }}/{{ repository }}/devtainer:${DATE_TAG}
+    echo pushing ${version}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:${version}
+    echo pushing latest
     {{ docker }} push {{ registry }}/{{ repository }}/devtainer:latest
     curl -d "released devtainer:latest and devtainer:${DATE_TAG}" {{ ntfy_url }}/{{ ntfy_channel }}
     
