@@ -21,6 +21,13 @@ setopt share_history
 export PBGOPY_SERVER=http://localhost:9090
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 
+# nvim-manager
+export NVIM_MANAGER_GITHUB_REPO=https://github.com/WaylonWalker/devtainer
+export NVIM_CONFIG_PATH=nvim/.config/nvim
+export NVIM_MANAGER_INSTALL_DIR=$HOME/.config
+export NVIM_MANAGER_PREFIX="nvim-waylonwalker-"
+export NVIM_APPNAME=$NVIM_MANAGER_PREFIX-0.0.1
+
 # unsetopt BEEP
 
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
