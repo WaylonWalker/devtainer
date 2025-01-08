@@ -160,6 +160,7 @@ update-installers:
     twpayne/chezmoi
     zellij-org/zellij
     argoproj/argo-cd
+    waylonwalker/nvim-manager
     "
     rm -rf installer
     mkdir installer
