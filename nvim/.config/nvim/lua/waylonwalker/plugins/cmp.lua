@@ -12,7 +12,8 @@ cmp.setup({
         end,
     },
     completion = {
-        completeopt = "menu,menuone,noinsert",
+        -- autocomplete = { require("cmp.types").cmp.TriggerEvent.TextChanged },
+        -- completeopt = "menu,menuone,noinsert",
     },
     mapping = cmp.mapping.preset.insert({
         ["<C-n>"] = cmp.mapping.select_next_item(),
@@ -45,6 +46,7 @@ cmp.setup({
     }),
     sources = {
         { name = "nvim_lsp" },
+        { name = "buffer" },
         { name = "luasnip" },
         { name = "path" },
     },

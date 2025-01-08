@@ -19,7 +19,7 @@ function install {
 	PROG="atuin"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v18.3.0"
+	RELEASE="v18.4.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,19 +80,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/atuinsh/atuin/releases/download/v18.3.0/atuin-aarch64-apple-darwin-update"
+		URL="https://github.com/atuinsh/atuin/releases/download/v18.4.0/atuin-aarch64-apple-darwin-update"
 		FTYPE=".bin"
 		;;
 	"linux_arm64")
-		URL="https://github.com/atuinsh/atuin/releases/download/v18.3.0/atuin-aarch64-unknown-linux-gnu-update"
+		URL="https://github.com/atuinsh/atuin/releases/download/v18.4.0/atuin-aarch64-unknown-linux-gnu-update"
 		FTYPE=".bin"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/atuinsh/atuin/releases/download/v18.3.0/atuin-x86_64-apple-darwin-update"
+		URL="https://github.com/atuinsh/atuin/releases/download/v18.4.0/atuin-x86_64-apple-darwin-update"
 		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/atuinsh/atuin/releases/download/v18.3.0/atuin-x86_64-unknown-linux-gnu-update"
+		URL="https://github.com/atuinsh/atuin/releases/download/v18.4.0/atuin-x86_64-unknown-linux-gnu-update"
 		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

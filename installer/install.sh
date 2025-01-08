@@ -45,6 +45,11 @@ set -e
 /installer/topgrade-rs_topgrade.sh
 /installer/twpayne_chezmoi.sh
 /installer/zellij-org_zellij.sh
+/installer/argoproj_argo-cd.sh
+/installer/waylonwalker_nvim-manager.sh
+/installer/install_terraform.sh
+/installer/install_kubectl.sh
+/installer/install_helm.sh
 mv cli gh
 mv tealdeer tldr
 mv natscli nats

@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="ducaale"
-	PROG="xh"
+	USER="waylonwalker"
+	PROG="nvim-manager"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.23.1"
+	RELEASE="v0.0.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -66,6 +66,11 @@ function install {
 	if uname -m | grep -E '(arm|arch)64' > /dev/null; then
 		ARCH="arm64"
 		
+		# no m1 assets. if on mac arm64, rosetta allows fallback to amd64
+		if [[ $OS = "darwin" ]]; then
+			ARCH="amd64"
+		fi
+		
 	elif uname -m | grep 64 > /dev/null; then
 		ARCH="amd64"
 	elif uname -m | grep arm > /dev/null; then
@@ -79,24 +84,12 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"darwin_arm64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-aarch64-apple-darwin.tar.gz"
-		FTYPE=".tar.gz"
-		;;
 	"linux_arm64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-aarch64-unknown-linux-musl.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"linux_arm")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-arm-unknown-linux-gnueabihf.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"darwin_amd64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/WaylonWalker/nvim-manager/releases/download/v0.0.0/nvim-manager-0.0.0-aarch64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-x86_64-unknown-linux-musl.tar.gz"
+		URL="https://github.com/WaylonWalker/nvim-manager/releases/download/v0.0.0/nvim-manager-0.0.0-x86_64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
@@ -134,7 +127,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "xh_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "nvim-manager_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

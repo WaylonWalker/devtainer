@@ -4,7 +4,19 @@
 --
 --  You can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
+local is_docker = os.getenv("DOCKER_BUILD") == "true"
 require("lazy").setup({
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		event = { "BufReadPost", "BufNewFile" },
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter-textobjects",
+		},
+		config = function()
+			require("waylonwalker.plugins.treesitter")
+		end,
+	},
 	{ "nvzone/volt", lazy = true },
 	{ "nvzone/menu", lazy = true },
 	{
@@ -56,7 +68,7 @@ require("lazy").setup({
 	{ "kyazdani42/nvim-web-devicons" },
 	{
 		"Exafunction/codeium.vim",
-		enabled = not os.getenv("DOCKER_BUILD"), -- Disable during Docker build
+		enabled = not is_docker,
 		config = function()
 			-- Change '<C-g>' here to any keycode you like.
 			vim.keymap.set("i", "<C-g>", function()
@@ -335,21 +347,21 @@ require("lazy").setup({
 		build = ":TSUpdate",
 	},
 
-	{
-		"kndndrj/nvim-dbee",
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-		},
-		build = function()
-			-- Install tries to automatically detect the install method.
-			-- if it fails, try calling it with one of these parameters:
-			--    "curl", "wget", "bitsadmin", "go"
-			require("dbee").install()
-		end,
-		config = function()
-			require("dbee").setup( --[[optional config]])
-		end,
-	},
+	-- {
+	-- 	"kndndrj/nvim-dbee",
+	-- 	dependencies = {
+	-- 		"MunifTanjim/nui.nvim",
+	-- 	},
+	-- 	build = function()
+	-- 		-- Install tries to automatically detect the install method.
+	-- 		-- if it fails, try calling it with one of these parameters:
+	-- 		--    "curl", "wget", "bitsadmin", "go"
+	-- 		require("dbee").install()
+	-- 	end,
+	-- 	config = function()
+	-- 		require("dbee").setup( --[[optional config]])
+	-- 	end,
+	-- },
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",

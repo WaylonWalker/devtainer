@@ -15,11 +15,11 @@ function fail {
 }
 function install {
 	#settings
-	USER="ducaale"
-	PROG="xh"
+	USER="argoproj"
+	PROG="argo-cd"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.23.1"
+	RELEASE="v2.13.3"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -79,25 +79,21 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"darwin_arm64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-aarch64-apple-darwin.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"linux_arm64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-aarch64-unknown-linux-musl.tar.gz"
-		FTYPE=".tar.gz"
-		;;
-	"linux_arm")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-arm-unknown-linux-gnueabihf.tar.gz"
-		FTYPE=".tar.gz"
-		;;
 	"darwin_amd64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-x86_64-apple-darwin.tar.gz"
-		FTYPE=".tar.gz"
+		URL="https://github.com/argoproj/argo-cd/releases/download/v2.13.3/argocd-darwin-amd64"
+		FTYPE=".bin"
+		;;
+	"darwin_arm64")
+		URL="https://github.com/argoproj/argo-cd/releases/download/v2.13.3/argocd-darwin-arm64"
+		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/ducaale/xh/releases/download/v0.23.1/xh-v0.23.1-x86_64-unknown-linux-musl.tar.gz"
-		FTYPE=".tar.gz"
+		URL="https://github.com/argoproj/argo-cd/releases/download/v2.13.3/argocd-linux-amd64"
+		FTYPE=".bin"
+		;;
+	"linux_arm64")
+		URL="https://github.com/argoproj/argo-cd/releases/download/v2.13.3/argocd-linux-arm64"
+		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
 	esac
@@ -134,7 +130,7 @@ function install {
 		unzip -o -qq tmp.zip || fail "unzip failed"
 		rm tmp.zip || fail "cleanup failed"
 	elif [[ $FTYPE = ".bin" ]]; then
-		bash -c "$GET $URL" > "xh_${OS}_${ARCH}" || fail "download failed"
+		bash -c "$GET $URL" > "argo-cd_${OS}_${ARCH}" || fail "download failed"
 	else
 		fail "unknown file type: $FTYPE"
 	fi

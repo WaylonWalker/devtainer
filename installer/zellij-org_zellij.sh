@@ -19,7 +19,7 @@ function install {
 	PROG="zellij"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.41.1"
+	RELEASE="v0.41.2"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,19 +80,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/zellij-org/zellij/releases/download/v0.41.1/zellij-aarch64-apple-darwin.tar.gz"
+		URL="https://github.com/zellij-org/zellij/releases/download/v0.41.2/zellij-aarch64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/zellij-org/zellij/releases/download/v0.41.1/zellij-aarch64-unknown-linux-musl.tar.gz"
+		URL="https://github.com/zellij-org/zellij/releases/download/v0.41.2/zellij-aarch64-unknown-linux-musl.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/zellij-org/zellij/releases/download/v0.41.1/zellij-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/zellij-org/zellij/releases/download/v0.41.2/zellij-x86_64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/zellij-org/zellij/releases/download/v0.41.1/zellij-x86_64-unknown-linux-musl.tar.gz"
+		URL="https://github.com/zellij-org/zellij/releases/download/v0.41.2/zellij-x86_64-unknown-linux-musl.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
