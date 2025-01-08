@@ -1,6 +1,7 @@
 export EDITOR=nvim
 
 [ -f /usr/bin/batcat ] && alias cat=batcat
+[ -f /usr/bin/batcat ] && alias bat=batcat
 [ -f /usr/bin/bat ] && alias cat=bat
 
 # check for docker, alias to podman if does not exist
@@ -13,6 +14,7 @@ fi
 
 # check for docker-compose, alias to podman-compose if does not exist
 [ ! -f /usr/bin/docker-compose ] && [ -f /usr/bin/podman-compose ] && alias docker-compose=podman-compose
+
 
 alias hx=~/Downloads/squashfs-root/AppRun
 alias new-post=~/git/ww3/new-post
