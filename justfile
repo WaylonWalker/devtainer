@@ -223,3 +223,20 @@ distrobox-assemble:
     #!/usr/bin/env bash
     set -euxo pipefail
     distrobox-assemble create --file distrobox/distrobox.ini
+
+delete-tag:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    # Get the version
+    VERSION=$(cat version)
+    
+    # Delete the tag
+    git tag -d "v$VERSION"
+    git push origin ":refs/tags/v$VERSION"
+
+create-tag:
+    #!/usr/bin/env bash
+    VERSION=$(cat version)
+    git tag -a "v$VERSION" -m "Release v$VERSION"
+    git push origin "v$VERSION"
