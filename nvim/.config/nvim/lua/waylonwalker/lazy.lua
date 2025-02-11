@@ -1,25 +1,5 @@
--- [[ Configure plugins ]]
--- NOTE: Here is where you install your plugins.
---  You can configure plugins using the `config` key.
---
---  You can also configure plugins after the setup call,
---    as they will be available in your neovim runtime.
 local is_docker = os.getenv("DOCKER_BUILD") == "true"
 -- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"--branch=stable",
-		lazyrepo,
-		lazypath,
-	})
-end
-vim.opt.rtp:prepend(lazypath)
-
 require("lazy").setup({
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -48,16 +28,12 @@ require("lazy").setup({
 		opts = {},
 		config = function()
 			require("aerial").setup({
-				-- optionally use on_attach to set keymaps when aerial has attached to a buffer
 				on_attach = function(bufnr)
-					-- Jump forwards/backwards with '{' and '}'
 					vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
 					vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
-					vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!left<CR>")
 				end,
 			})
 		end,
-		-- Optional dependencies
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 			"nvim-tree/nvim-web-devicons",
@@ -84,21 +60,6 @@ require("lazy").setup({
 	{
 		"Exafunction/codeium.vim",
 		enabled = not is_docker,
-		config = function()
-			-- Change '<C-g>' here to any keycode you like.
-			vim.keymap.set("i", "<C-g>", function()
-				return vim.fn["codeium#Accept"]()
-			end, { expr = true })
-			vim.keymap.set("i", "<c-;>", function()
-				return vim.fn["codeium#CycleCompletions"](1)
-			end, { expr = true })
-			vim.keymap.set("i", "<c-,>", function()
-				return vim.fn["codeium#CycleCompletions"](-1)
-			end, { expr = true })
-			vim.keymap.set("i", "<c-x>", function()
-				return vim.fn["codeium#Clear"]()
-			end, { expr = true })
-		end,
 	},
 	{
 		"VonHeikemen/lsp-zero.nvim",
@@ -130,16 +91,13 @@ require("lazy").setup({
 					"nvimtools/none-ls.nvim",
 				},
 				config = function()
-					require("waylonwalker.plugins.null-ls") -- require your null-ls config here (example below)
+					require("waylonwalker.plugins.null-ls")
 				end,
 			},
 		},
 	},
 	{
 		"nvimtools/none-ls.nvim",
-		-- config = function()
-		-- 	require("null-ls").setup()
-		-- end,
 		dependencies = { "nvim-lua/plenary.nvim" },
 	},
 	{
@@ -156,7 +114,6 @@ require("lazy").setup({
 			"neovim/nvim-lspconfig",
 		},
 	},
-	-- NOTE: First, some plugins that don't require any configuration
 
 	-- Git related plugins
 	"tpope/vim-fugitive",
@@ -165,25 +122,6 @@ require("lazy").setup({
 	-- Detect tabstop and shiftwidth automatically
 	"tpope/vim-sleuth",
 
-	-- NOTE: This is where your plugins related to LSP can be installed.
-	--  The configuration is done below. Search for lspconfig to find it below.
-	-- {
-	-- 	-- LSP Configuration & Plugins
-	-- 	"neovim/nvim-lspconfig",
-	-- 	dependencies = {
-	-- 		-- Automatically install LSPs to stdpath for neovim
-	-- 		{ "williamboman/mason.nvim", config = true },
-	-- 		"williamboman/mason-lspconfig.nvim",
-	--
-	-- 		-- Useful status updates for LSP
-	-- 		-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-	-- 		{ "j-hui/fidget.nvim",       opts = {} },
-	-- 		-- Additional lua configuration, makes nvim stuff amazing!
-	-- 		"folke/neodev.nvim",
-	-- 	},
-	-- },
-	--
-	--
 	{ -- LSP Configuration & Plugins
 		"neovim/nvim-lspconfig",
 		dependencies = {
@@ -362,21 +300,6 @@ require("lazy").setup({
 		build = ":TSUpdate",
 	},
 
-	-- {
-	-- 	"kndndrj/nvim-dbee",
-	-- 	dependencies = {
-	-- 		"MunifTanjim/nui.nvim",
-	-- 	},
-	-- 	build = function()
-	-- 		-- Install tries to automatically detect the install method.
-	-- 		-- if it fails, try calling it with one of these parameters:
-	-- 		--    "curl", "wget", "bitsadmin", "go"
-	-- 		require("dbee").install()
-	-- 	end,
-	-- 	config = function()
-	-- 		require("dbee").setup( --[[optional config]])
-	-- 	end,
-	-- },
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
@@ -385,17 +308,4 @@ require("lazy").setup({
 			require("waylonwalker.plugins.harpoon").setup()
 		end,
 	},
-	-- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
-	--       These are some example plugins that I've included in the kickstart repository.
-	--       Uncomment any of the lines below to enable them.
-	-- require 'kickstart.plugins.autoformat',
-	-- require 'kickstart.plugins.debug',
-
-	-- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-	--    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-	--    up-to-date with whatever is in the kickstart repo.
-	--    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-	--
-	--    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-	-- { import = 'custom.plugins' },
 }, {})

@@ -12,13 +12,11 @@
 -- require'waylonwalker'
 local M = {}
 
-M.lazy = require("waylonwalker.lazy")
-
 M.setup = require("waylonwalker.setup")
 M.settings = require("waylonwalker.settings")
+M.lazy = require("waylonwalker.lazy")
 M.options = require("waylonwalker.options")
 M.globals = require("waylonwalker.globals")
--- M.packer = require("waylonwalker.packer")
 M.keymap = require("waylonwalker.keymap")
 M.autocmds = require("waylonwalker.autocmds")
 M.util = require("waylonwalker.util")

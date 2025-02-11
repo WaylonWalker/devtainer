@@ -314,6 +314,8 @@ set("n", "))", "<cmd>lua vim.diagnostic.goto_next()<CR>")
 set("n", "<c-n>", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
 set("n", "<c-p>", "<cmd>lua vim.diagnostic.goto_next()<CR>")
 
+set("n", "<leader>a", "<cmd>AerialToggle!left<CR>")
+
 -- Keyboard users
 vim.keymap.set("n", "<C-t>", function()
 	require("menu").open("default")
@@ -326,6 +328,19 @@ vim.keymap.set("n", "<RightMouse>", function()
 	local options = vim.bo.ft == "NvimTree" and "nvimtree" or "default"
 	require("menu").open(options, { mouse = true })
 end, {})
+
+set("i", "<C-g>", function()
+	return vim.fn["codeium#Accept"]()
+end, { expr = true })
+set("i", "<c-;>", function()
+	return vim.fn["codeium#CycleCompletions"](1)
+end, { expr = true })
+set("i", "<c-,>", function()
+	return vim.fn["codeium#CycleCompletions"](-1)
+end, { expr = true })
+set("i", "<c-x>", function()
+	return vim.fn["codeium#Clear"]()
+end, { expr = true })
 
 vim.api.nvim_create_user_command("PreCommit", "!pre-commit run --files %", {})
 vim.api.nvim_create_user_command("QQ", "q!", {})
