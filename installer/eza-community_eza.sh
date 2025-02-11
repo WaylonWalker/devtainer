@@ -19,7 +19,7 @@ function install {
 	PROG="eza"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.20.15"
+	RELEASE="v0.20.20"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -85,15 +85,15 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"linux_arm64")
-		URL="https://github.com/eza-community/eza/releases/download/v0.20.15/eza_aarch64-unknown-linux-gnu.tar.gz"
+		URL="https://github.com/eza-community/eza/releases/download/v0.20.20/eza_aarch64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/eza-community/eza/releases/download/v0.20.15/eza_arm-unknown-linux-gnueabihf.tar.gz"
+		URL="https://github.com/eza-community/eza/releases/download/v0.20.20/eza_arm-unknown-linux-gnueabihf.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/eza-community/eza/releases/download/v0.20.15/eza_x86_64-unknown-linux-gnu.tar.gz"
+		URL="https://github.com/eza-community/eza/releases/download/v0.20.20/eza_x86_64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

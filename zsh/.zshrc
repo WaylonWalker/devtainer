@@ -9,6 +9,7 @@ set -o physical
 
 [ -d ~/.erg/bin ] && export PATH=$PATH:/home/waylon/.erg/bin
 [ -d ~/.erg ] && export ERG_PATH=/home/waylon/.erg
+[ -d ~/minio-binaries ] && export PATH=$PATH:~/minio-binaries
 
 # set history
 HISTFILESIZE=1000000000
@@ -22,11 +23,11 @@ export PBGOPY_SERVER=http://localhost:9090
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 
 # nvim-manager
-export NVIM_MANAGER_GITHUB_REPO=https://github.com/WaylonWalker/devtainer
+export NVIM_MANAGER_REPO=https://github.com/WaylonWalker/devtainer
 export NVIM_CONFIG_PATH=nvim/.config/nvim
 export NVIM_MANAGER_INSTALL_DIR=$HOME/.config
-export NVIM_MANAGER_PREFIX="nvim-waylonwalker-"
-export NVIM_APPNAME=$NVIM_MANAGER_PREFIX-0.0.1
+export NVIM_MANAGER_PREFIX="nvim-waylonwalker"
+export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.0.2
 
 # unsetopt BEEP
 

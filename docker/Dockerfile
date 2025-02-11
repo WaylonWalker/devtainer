@@ -1,12 +1,16 @@
 From docker.io/python:3.11
 
-ENV DOCKER_BUILD=true
+ENV DOCKER_BUILD=1
 ENV PATH="${PATH}:/root/.local/share/bob/nvim-bin"
 ENV PATH="${PATH}:/root/.local/bin"
 ENV PATH="${PATH}:/root/.local/share/nvim/mason/bin"
+ENV PATH="${PATH}:/root/n/bin"
+ENV PATH="${PATH}:/root/devtainer/one-shot-apps"
 COPY installer /installer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
+    ca-certificates \
+    chromium \
     cargo \
     curl \
     entr \
@@ -17,6 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     git \
     golang \
+    pciutils \
     podman \
     ripgrep \
     sqlite3 \
@@ -26,7 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vlc \
     xclip \
     zsh \
-    ca-certificates && \
+    && \
     mkdir ~/.local/bin -p && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
@@ -35,6 +40,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR  /usr/local/bin
 RUN bash /installer/install.sh
 # RUN cargo install fastmod
+
+RUN apt-get update && apt-get install -y --no-install-recommends windsurf && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
 
 # installer does not work with the release format of ttyd
 RUN curl --fail -# -L https://github.com/tsl0922/ttyd/releases/download/1.7.4/ttyd.x86_64 > /bin/ttyd && \
@@ -48,8 +57,8 @@ RUN python -m pip install uv && \
         visidata \ 
         waylonwalker --system
 
-RUN bob install nightly && \
-    bob use nightly
+RUN bob install v0.10.3 && \
+    bob use v0.10.3
 
 RUN mkdir /root/downloads && \
     cd /root/downloads && \
@@ -66,6 +75,7 @@ RUN mkdir /root/downloads && \
 # RUN git clone https://github.com/waylonwalker/kickstart.nvim ~/.config/nvim
 COPY zsh /root/devtainer/zsh
 COPY bin /root/devtainer/bin
+COPY one-shot-apps /root/devtainer/one-shot-apps
 COPY nvim /root/devtainer/nvim
 COPY helix /root/devtainer/helix
 WORKDIR /root/devtainer
@@ -82,8 +92,8 @@ WORKDIR /root/util/
 # RUN curl -L https://bit.ly/n-install | bash -s -- -y lts
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
 RUN apt-get install -y nodejs
-ENV PATH="${PATH}:/root/n/bin"
-RUN npm i -g tailwindcss
+RUN node -v && npm -v   # Verify the installation
+RUN /bin/npm i -g tailwindcss
 
 RUN nvim --headless "+Lazy! restore" +qa
 RUN nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
@@ -91,7 +101,6 @@ RUN nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp h
 
 RUN chsh -s $(which zsh)
 
-RUN apt update && apt install -y chromium
 # Expose port
 RUN useradd -u 1976 -U -s /bin/false vhs
 EXPOSE 1976

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -e
+set -o pipefail
+set -u
 /installer/BurntSushi_ripgrep.sh
 /installer/MordechaiHadad_bob.sh
 /installer/Slackadays_Clipboard.sh
@@ -27,7 +29,6 @@ set -e
 /installer/imsnif_diskonaut.sh
 /installer/jesseduffield_lazydocker.sh
 /installer/jesseduffield_lazygit.sh
-/installer/jmorganca_ollama.sh
 /installer/johanhaleby_kubetail.sh
 /installer/jqlang_jq.sh
 /installer/mgdm_htmlq.sh
@@ -47,15 +48,30 @@ set -e
 /installer/zellij-org_zellij.sh
 /installer/argoproj_argo-cd.sh
 /installer/waylonwalker_nvim-manager.sh
-/installer/install_terraform.sh
 /installer/install_kubectl.sh
 /installer/install_helm.sh
+/installer/install_ollama.sh
+
+# https://min.io/docs/minio/linux/reference/minio-mc.html
+curl https://dl.min.io/client/mc/release/linux-amd64/mc \
+--create-dirs \
+-o $HOME/minio-binaries/mc
+
+chmod +x $HOME/minio-binaries/mc
+export PATH=$PATH:$HOME/minio-binaries/
+
+mc --help
+
+/installer/install_windsurf.sh
 mv cli gh
 mv tealdeer tldr
 mv natscli nats
 tldr --update
 mv sealed-secrets kubeseal
 
+if [[ ! -d ~/.local/bin ]]; then
+    mkdir -p ~/.local/bin
+fi
 if [[ -f /usr/bin/batcat ]]; then
     ln -s /usr/bin/batcat ~/.local/bin/bat
 fi

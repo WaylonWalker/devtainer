@@ -328,5 +328,6 @@ vim.keymap.set("n", "<RightMouse>", function()
 end, {})
 
 vim.api.nvim_create_user_command("PreCommit", "!pre-commit run --files %", {})
+vim.api.nvim_create_user_command("QQ", "q!", {})
 
 return M

@@ -19,3 +19,16 @@ style  = 'fg:#FF10F0'
 when = '[[ ! -n "${VIRTUAL_ENV}" ]]'
 style = "bold red"
 format = '[ NO PYTHON VENV SET ]($style)'
+
+[custom.nvim-manager-system]
+when = '[[ ! -n "${NVIM_APPNAME}" ]]'
+style = "bold yellow"
+symbol = '[ ](fg:#15AABF)'
+format = '$symbol[USING SYSTEM NVIM]($style)'
+
+[env_var.NVIM_APPNAME]
+style = "green"
+symbol = '[ ](fg:#15AABF)'
+format = '[$symbol${env_value}]($style)'
+variable = "NVIM_APPNAME"
+

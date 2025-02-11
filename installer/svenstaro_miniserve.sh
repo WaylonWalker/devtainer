@@ -19,7 +19,7 @@ function install {
 	PROG="miniserve"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.28.0"
+	RELEASE="v0.29.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,27 +80,27 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-aarch64-apple-darwin"
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.29.0/miniserve-0.29.0-aarch64-apple-darwin"
 		FTYPE=".bin"
 		;;
 	"linux_arm64")
-		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-aarch64-unknown-linux-gnu"
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.29.0/miniserve-0.29.0-aarch64-unknown-linux-gnu"
 		FTYPE=".bin"
 		;;
 	"linux_arm")
-		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-arm-unknown-linux-musleabihf"
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.29.0/miniserve-0.29.0-arm-unknown-linux-musleabihf"
 		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-riscv64gc-unknown-linux-gnu"
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.29.0/miniserve-0.29.0-riscv64gc-unknown-linux-gnu"
 		FTYPE=".bin"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-x86_64-apple-darwin"
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.29.0/miniserve-0.29.0-x86_64-apple-darwin"
 		FTYPE=".bin"
 		;;
 	"freebsd_amd64")
-		URL="https://github.com/svenstaro/miniserve/releases/download/v0.28.0/miniserve-0.28.0-x86_64-unknown-freebsd"
+		URL="https://github.com/svenstaro/miniserve/releases/download/v0.29.0/miniserve-0.29.0-x86_64-unknown-freebsd"
 		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

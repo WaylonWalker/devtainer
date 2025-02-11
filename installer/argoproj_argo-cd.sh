@@ -19,7 +19,7 @@ function install {
 	PROG="argo-cd"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v2.13.3"
+	RELEASE="v2.14.2"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,19 +80,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_amd64")
-		URL="https://github.com/argoproj/argo-cd/releases/download/v2.13.3/argocd-darwin-amd64"
+		URL="https://github.com/argoproj/argo-cd/releases/download/v2.14.2/argocd-darwin-amd64"
 		FTYPE=".bin"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/argoproj/argo-cd/releases/download/v2.13.3/argocd-darwin-arm64"
+		URL="https://github.com/argoproj/argo-cd/releases/download/v2.14.2/argocd-darwin-arm64"
 		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/argoproj/argo-cd/releases/download/v2.13.3/argocd-linux-amd64"
+		URL="https://github.com/argoproj/argo-cd/releases/download/v2.14.2/argocd-linux-amd64"
 		FTYPE=".bin"
 		;;
 	"linux_arm64")
-		URL="https://github.com/argoproj/argo-cd/releases/download/v2.13.3/argocd-linux-arm64"
+		URL="https://github.com/argoproj/argo-cd/releases/download/v2.14.2/argocd-linux-arm64"
 		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

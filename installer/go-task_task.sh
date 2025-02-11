@@ -19,7 +19,7 @@ function install {
 	PROG="task"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v3.40.1"
+	RELEASE="v3.41.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,43 +80,43 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_amd64")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_darwin_amd64.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_darwin_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_darwin_arm64.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_darwin_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_386")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_freebsd_386.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_freebsd_386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_amd64")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_freebsd_amd64.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_freebsd_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_arm")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_freebsd_arm.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_freebsd_arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_arm64")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_freebsd_arm64.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_freebsd_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_386")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_linux_386.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_linux_386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_linux_amd64.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_linux_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_linux_arm.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_linux_arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/go-task/task/releases/download/v3.40.1/task_linux_arm64.tar.gz"
+		URL="https://github.com/go-task/task/releases/download/v3.41.0/task_linux_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

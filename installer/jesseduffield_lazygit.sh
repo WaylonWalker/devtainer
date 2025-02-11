@@ -19,7 +19,7 @@ function install {
 	PROG="lazygit"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.44.1"
+	RELEASE="v0.45.2"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,43 +80,43 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Darwin_arm64.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_Darwin_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Darwin_x86_64.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_Darwin_x86_64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_386")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_freebsd_32-bit.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_freebsd_32-bit.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_arm64")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_freebsd_arm64.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_freebsd_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_arm")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_freebsd_armv6.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_freebsd_armv6.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_amd64")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_freebsd_x86_64.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_freebsd_x86_64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_386")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Linux_32-bit.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_Linux_32-bit.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Linux_arm64.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_Linux_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Linux_armv6.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_Linux_armv6.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Linux_x86_64.tar.gz"
+		URL="https://github.com/jesseduffield/lazygit/releases/download/v0.45.2/lazygit_0.45.2_Linux_x86_64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

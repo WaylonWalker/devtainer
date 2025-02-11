@@ -1,3 +1,26 @@
+## 0.1.2
+
+* update installers
+* add minio client `mc`
+* setup `slim_install.sh`
+* add nvim-manager starship prompt
+* use uv for `venv` alias
+* enable nvidia on devtainer distrobox for use with ollama
+* add ghostty distrobox
+* fix Dockerfile
+* add syntax highlighting for `Containerfile` in nvim
+* add just testnvim to run quick local tests of a fresh nvim install
+
+## 0.1.1
+
+* update installers
+* add gh extension gh-dash
+* add NVIM_APPNAME to starship
+* update venv alias to not echo error if venv doesn't exist
+* add s3-cleanup one-shot-app
+* add clock one-shot-app
+* install one-shot-apps in container
+
 ## 0.1.0
 
 * add tailscale and fuser host commands to devtainer distrobox

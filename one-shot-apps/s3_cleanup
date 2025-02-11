@@ -1,0 +1,280 @@
+#!/usr/bin/env -S uv run --quiet --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "boto3",
+#     "typer",
+#     "rich"
+# ]
+# ///
+
+import boto3
+from datetime import datetime, timezone
+from rich.console import Console
+from rich.table import Table
+import traceback
+import typer
+
+app = typer.Typer()
+console = Console()
+
+DEFAULT_SOFT_DELETE_DIR = "soft-delete/"
+
+
+def human_readable_size(size: int) -> str:
+    """Convert bytes to a human-readable format."""
+    for unit in ["B", "KB", "MB", "GB", "TB"]:
+        if size < 1024:
+            return f"{size:.2f} {unit}"
+        size /= 1024
+    return f"{size:.2f} PB"
+
+
+def calculate_file_age(last_modified: datetime) -> str:
+    """Calculate the age of the file from the current time."""
+    now = datetime.now(timezone.utc)
+    age = now - last_modified
+    days = age.days
+    if days > 0:
+        return f"{days} days"
+    hours, remainder = divmod(age.seconds, 3600)
+    minutes = remainder // 60
+    if hours > 0:
+        return f"{hours} hours"
+    return f"{minutes} minutes"
+
+
+@app.command()
+def clean(
+    bucket_name: str = typer.Argument(..., help="The name of the S3 bucket."),
+    substring: str = typer.Argument(
+        ..., help="The substring to search for in file names."
+    ),
+    dry_run: bool = typer.Option(
+        False, help="If set, no files will be deleted; only listed."
+    ),
+    soft_delete: bool = typer.Option(
+        False,
+        help="If set, files will be moved to a soft delete directory instead of permanently deleted.",
+    ),
+    soft_delete_dir: str = typer.Option(
+        DEFAULT_SOFT_DELETE_DIR, help="The directory to move soft-deleted files to."
+    ),
+    max_age: int = typer.Option(None, help="Maximum age of files to include, in days."),
+    min_age: int = typer.Option(None, help="Minimum age of files to include, in days."),
+):
+    """Delete or soft-delete files in an S3 bucket that contain a specific substring in their names."""
+    s3 = boto3.client("s3")
+
+    try:
+        # List all objects in the bucket
+        response = s3.list_objects_v2(Bucket=bucket_name)
+
+        if "Contents" not in response:
+            console.print("[bold yellow]No files found in the bucket.[/bold yellow]")
+            return
+
+        now = datetime.now(timezone.utc)
+
+        def file_within_age_range(obj):
+            file_age = (now - obj["LastModified"]).days
+            if max_age is not None and file_age > max_age:
+                return False
+            if min_age is not None and file_age < min_age:
+                return False
+            return True
+
+        files_to_process = [
+            obj
+            for obj in response["Contents"]
+            if substring in obj["Key"] and file_within_age_range(obj)
+        ]
+
+        if not files_to_process:
+            console.print(
+                "[bold yellow]No files matching criteria found in the bucket.[/bold yellow]"
+            )
+            return
+
+        if dry_run:
+            console.print(
+                "[bold blue]Dry run mode: The following files would be processed:[/bold blue]"
+            )
+            table = Table(title="Files to be Processed")
+            table.add_column("File Name", style="cyan", no_wrap=True)
+            table.add_column("Size", style="magenta", justify="right")
+            table.add_column("Age", style="green", justify="right")
+            table.add_column("Action", style="yellow", no_wrap=True)
+
+            total_size = 0
+            for obj in files_to_process:
+                human_size = human_readable_size(obj["Size"])
+                file_age = calculate_file_age(obj["LastModified"])
+                action = (
+                    f"[bold yellow]-> {soft_delete_dir}{obj['Key']}[/bold yellow]"
+                    if soft_delete
+                    else "[bold red]DELETE[/bold red]"
+                )
+                table.add_row(obj["Key"], human_size, file_age, action)
+                total_size += obj["Size"]
+
+            console.print(table)
+            console.print(
+                f"\n[bold green]Summary:[/bold green] {len(files_to_process)} files, Total Size: {human_readable_size(total_size)}, Operation: {'Soft Delete' if soft_delete else 'Delete'}"
+            )
+
+        else:
+            for obj in files_to_process:
+                file_key = obj["Key"]
+                if soft_delete:
+                    copy_source = {"Bucket": bucket_name, "Key": file_key}
+                    new_key = f"{soft_delete_dir}{file_key}"
+                    s3.copy_object(
+                        CopySource=copy_source, Bucket=bucket_name, Key=new_key
+                    )
+                    s3.delete_object(Bucket=bucket_name, Key=file_key)
+                    console.print(
+                        f"[bold yellow]Moved to soft-delete:[/bold yellow] {file_key} -> {new_key}"
+                    )
+                else:
+                    s3.delete_object(Bucket=bucket_name, Key=file_key)
+                    console.print(f"[bold red]Deleted:[/bold red] {file_key}")
+
+            console.print(
+                f"[bold green]Operation completed. {len(files_to_process)} files processed. Operation: {'Soft Delete' if soft_delete else 'Delete'}[/bold green]"
+            )
+
+    except Exception as e:
+        console.print(f"[bold red]Error:[/bold red] {e}", style="red")
+
+
+@app.command()
+def clear_soft_delete(
+    bucket_name: str = typer.Argument(..., help="The name of the S3 bucket."),
+    soft_delete_dir: str = typer.Option(
+        DEFAULT_SOFT_DELETE_DIR, help="The soft delete directory to clear."
+    ),
+    dry_run: bool = typer.Option(
+        False, help="If set, no files will be deleted; only listed."
+    ),
+):
+    """Remove all files in the soft delete directory."""
+    s3 = boto3.client("s3")
+
+    try:
+        response = s3.list_objects_v2(Bucket=bucket_name, Prefix=soft_delete_dir)
+
+        if "Contents" not in response:
+            console.print(
+                f"[bold yellow]No files found in the soft delete directory '{soft_delete_dir}'.[/bold yellow]"
+            )
+            return
+
+        files_to_delete = [obj for obj in response["Contents"]]
+
+        if dry_run:
+            console.print(
+                "[bold blue]Dry run mode: The following files would be deleted from the soft delete directory:[/bold blue]"
+            )
+            table = Table(title="Files to be Deleted")
+            table.add_column("File Name", style="cyan", no_wrap=True)
+            table.add_column("Size", style="magenta", justify="right")
+            total_size = 0
+
+            for obj in files_to_delete:
+                human_size = human_readable_size(obj["Size"])
+                table.add_row(obj["Key"], human_size)
+                total_size += obj["Size"]
+
+            console.print(table)
+            console.print(
+                f"\n[bold green]Summary:[/bold green] {len(files_to_delete)} files, Total Size: {human_readable_size(total_size)}"
+            )
+        else:
+            for file_key in files_to_delete:
+                file_key = file_key["Key"]
+                s3.delete_object(Bucket=bucket_name, Key=file_key)
+                console.print(
+                    f"[bold red]Deleted from soft-delete:[/bold red] {file_key}"
+                )
+
+            console.print(
+                f"[bold green]Soft delete directory '{soft_delete_dir}' cleared. {len(files_to_delete)} files removed.[/bold green]"
+            )
+
+    except Exception as e:
+        console.print(f"[bold red]Error:[/bold red] {e}", style="red")
+        console.print("[bold red]Operation failed.[/bold red]")
+
+        console.print(traceback.format_exc())
+
+
+@app.command()
+def undo_soft_delete(
+    bucket_name: str = typer.Argument(..., help="The name of the S3 bucket."),
+    soft_delete_dir: str = typer.Option(
+        DEFAULT_SOFT_DELETE_DIR, help="The soft delete directory to restore from."
+    ),
+    dry_run: bool = typer.Option(
+        False, help="If set, no files will be restored; only listed."
+    ),
+):
+    """Restore all files from the soft delete directory to their original locations."""
+    s3 = boto3.client("s3")
+
+    try:
+        response = s3.list_objects_v2(Bucket=bucket_name, Prefix=soft_delete_dir)
+
+        if "Contents" not in response:
+            console.print(
+                f"[bold yellow]No files found in the soft delete directory '{soft_delete_dir}'.[/bold yellow]"
+            )
+            return
+
+        files_to_restore = [obj for obj in response["Contents"]]
+
+        if dry_run:
+            console.print(
+                "[bold blue]Dry run mode: The following files would be restored:[/bold blue]"
+            )
+            table = Table(title="Files to be Restored")
+            table.add_column("File Name", style="cyan", no_wrap=True)
+            table.add_column("Size", style="magenta", justify="right")
+            table.add_column("Original Location", style="green", no_wrap=True)
+            total_size = 0
+
+            for obj in files_to_restore:
+                human_size = human_readable_size(obj["Size"])
+                original_key = obj["Key"][len(soft_delete_dir) :]
+                table.add_row(obj["Key"], human_size, original_key)
+                total_size += obj["Size"]
+
+            console.print(table)
+            console.print(
+                f"\n[bold green]Summary:[/bold green] {len(files_to_restore)} files, Total Size: {human_readable_size(total_size)}"
+            )
+        else:
+            for obj in files_to_restore:
+                file_key = obj["Key"]
+                original_key = file_key[
+                    len(soft_delete_dir) :
+                ]  # Remove the soft delete prefix
+                copy_source = {"Bucket": bucket_name, "Key": file_key}
+                s3.copy_object(
+                    CopySource=copy_source, Bucket=bucket_name, Key=original_key
+                )
+                s3.delete_object(Bucket=bucket_name, Key=file_key)
+                console.print(
+                    f"[bold green]Restored:[/bold green] {file_key} -> {original_key}"
+                )
+
+            console.print(
+                f"[bold green]Restoration completed. {len(files_to_restore)} files restored.[/bold green]"
+            )
+
+    except Exception as e:
+        console.print(f"[bold red]Error:[/bold red] {e}", style="red")
+
+
+if __name__ == "__main__":
+    app()
