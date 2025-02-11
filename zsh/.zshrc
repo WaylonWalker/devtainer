@@ -27,7 +27,7 @@ export NVIM_MANAGER_REPO=https://github.com/WaylonWalker/devtainer
 export NVIM_CONFIG_PATH=nvim/.config/nvim
 export NVIM_MANAGER_INSTALL_DIR=$HOME/.config
 export NVIM_MANAGER_PREFIX="nvim-waylonwalker"
-export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.0.2
+export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.1.2
 
 # unsetopt BEEP
 
