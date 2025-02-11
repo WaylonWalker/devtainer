@@ -316,9 +316,6 @@ update-installers:
     fi
     " >> installer/install.sh
 
-
-
-
     curl -L https://bit.ly/n-install > installer/n.sh
     chmod +x installer/n.sh
 
@@ -330,28 +327,59 @@ distrobox-assemble:
 delete-tag:
     #!/usr/bin/env bash
     set -euo pipefail
-    
-    # Get the version
     VERSION=$(cat version)
-    
-    # Delete the tag
     git tag -d "v$VERSION"
     git push origin ":refs/tags/v$VERSION"
 
 create-tag:
     #!/usr/bin/env bash
+    set -euo pipefail
     VERSION=$(cat version)
-    git tag -a "v$VERSION" -m "Release v$VERSION"
-    git push origin "v$VERSION"
+    if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+        echo "Error: Tag v$VERSION already exists."
+    else
+        echo "Creating tag v$VERSION"
+        git tag -a "v$VERSION" -m "Release v$VERSION"
+        git push origin "v$VERSION"
+    fi
+
+preview-release:
+    #!/usr/bin/env bash
+    VERSION=$(cat version)
+    ./scripts/get_release_notes.py "$VERSION" > release_notes.tmp.md
+    cat release_notes.tmp.md
+    rm release_notes.tmp.md
+    if ! git rev-parse "v$VERSION" >/dev/null 2>&1; then
+        echo "Error: Tag v$VERSION does not exist."
+        exit 1
+    else
+        echo "Tag v$VERSION exists. Ready for release"
+    fi
+
+create-release:
+    #!/usr/bin/env bash
+    VERSION=$(cat version)
+    ./scripts/get_release_notes.py "$VERSION" > release_notes.tmp.md
+    gh release create "v$VERSION" \
+        --title "v$VERSION" \
+        --notes-file release_notes.tmp.md
+    rm release_notes.tmp.md
+
+delete-release:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    VERSION=$(cat version)
+    gh release delete "v$VERSION"
+
 
 testnvim:
     rm ~/.cache/wwtest -rf
     rm ~/.local/share/wwtest -rf
     rm ~/.config/wwtest -rf
     cp -r nvim/.config/nvim/ ~/.config/wwtest
-    NVIM_APPNAME=wwtest nvim --headless "+Lazy sync" +qa
-    NVIM_APPNAME=wwtest nvim --headless "+TSUpdateSync" "+sleep 5000m" +qa
-    NVIM_APPNAME=wwtest nvim --headless "+MasonUpdate" +qa
-    NVIM_APPNAME=wwtest nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue just" +qa
-    NVIM_APPNAME=wwtest nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
+    # NVIM_APPNAME=wwtest nvim --headless "+Lazy sync" +qa
+    # NVIM_APPNAME=wwtest nvim --headless "+TSUpdateSync" "+sleep 5000m" +qa
+    # NVIM_APPNAME=wwtest nvim --headless "+MasonUpdate" +qa
+    # NVIM_APPNAME=wwtest nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue just" +qa
+    # NVIM_APPNAME=wwtest nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
     NVIM_APPNAME=wwtest nvim
