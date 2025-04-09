@@ -345,4 +345,8 @@ end, { expr = true })
 vim.api.nvim_create_user_command("PreCommit", "!pre-commit run --files %", {})
 vim.api.nvim_create_user_command("QQ", "q!", {})
 
+-- datetime inserters put =strftime('%Y-%m-%d')
+set("n", "<leader>dd", "<cmd>put =strftime('%Y-%m-%d')<cr>", { noremap = true, silent = true })
+set("n", "<leader>dt", "<cmd>put =strftime('%Y-%m-%d %H:%M:%S')<cr>", { noremap = true, silent = true })
+
 return M
