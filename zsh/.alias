@@ -67,12 +67,12 @@ can-i-touch-grass () {
 fthoughts () {
     # fetch thoughts
     curl 'https://thoughts.waylonwalker.com/posts/waylonwalker/?page_size=9999999999' | sqlite-utils insert ~/.config/thoughts/database2.db post --pk=id --alter --ignore -
+    sqlite-utils enable-fts ~/.config/thoughts/database2.db post title message tags
+    sqlite-utils populate-fts ~/.config/thoughts/database2.db post title message tags
 }
 
 sthoughts () {
     # search thoughts
-    # sqlite-utils enable-fts ~/.config/thoughts/database2.db post title message tags
-    # sqlite-utils populate-fts ~/.config/thoughts/database2.db post title message tags
     sqlite-utils search ~/.config/thoughts/database2.db post "$*" | ~/git/thoughts/format_thought.py | bat --style=plain --color=always --language=markdown
 }
 
