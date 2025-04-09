@@ -19,7 +19,7 @@ function install {
 	PROG="nats-server"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v2.10.25"
+	RELEASE="v2.11.1"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,31 +80,31 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_amd64")
-		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.25/nats-server-v2.10.25-darwin-amd64.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.11.1/nats-server-v2.11.1-darwin-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.25/nats-server-v2.10.25-darwin-arm64.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.11.1/nats-server-v2.11.1-darwin-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_amd64")
-		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.25/nats-server-v2.10.25-freebsd-amd64.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.11.1/nats-server-v2.11.1-freebsd-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_386")
-		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.25/nats-server-v2.10.25-linux-386.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.11.1/nats-server-v2.11.1-linux-386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.25/nats-server-v2.10.25-linux-amd64.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.11.1/nats-server-v2.11.1-linux-amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.25/nats-server-v2.10.25-linux-arm6.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.11.1/nats-server-v2.11.1-linux-arm6.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/nats-io/nats-server/releases/download/v2.10.25/nats-server-v2.10.25-linux-arm64.tar.gz"
+		URL="https://github.com/nats-io/nats-server/releases/download/v2.11.1/nats-server-v2.11.1-linux-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

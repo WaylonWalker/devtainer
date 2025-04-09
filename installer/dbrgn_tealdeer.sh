@@ -19,7 +19,7 @@ function install {
 	PROG="tealdeer"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v1.7.1"
+	RELEASE="v1.7.2"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,23 +80,23 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"linux_arm64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-linux-aarch64-musl"
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.2/tealdeer-linux-aarch64-musl"
 		FTYPE=".bin"
 		;;
 	"linux_arm")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-linux-arm-musleabi"
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.2/tealdeer-linux-arm-musleabi"
 		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-linux-i686-musl"
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.2/tealdeer-linux-i686-musl"
 		FTYPE=".bin"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-macos-aarch64"
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.2/tealdeer-macos-aarch64"
 		FTYPE=".bin"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.1/tealdeer-macos-x86_64"
+		URL="https://github.com/tealdeer-rs/tealdeer/releases/download/v1.7.2/tealdeer-macos-x86_64"
 		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

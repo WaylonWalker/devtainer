@@ -19,7 +19,7 @@ function install {
 	PROG="topgrade"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v16.0.2"
+	RELEASE="v16.0.3"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,23 +80,23 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.2/topgrade-v16.0.2-aarch64-apple-darwin.tar.gz"
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.3/topgrade-v16.0.3-aarch64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.2/topgrade-v16.0.2-aarch64-unknown-linux-gnu.tar.gz"
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.3/topgrade-v16.0.3-aarch64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.2/topgrade-v16.0.2-armv7-unknown-linux-gnueabihf.tar.gz"
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.3/topgrade-v16.0.3-armv7-unknown-linux-gnueabihf.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.2/topgrade-v16.0.2-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.3/topgrade-v16.0.3-x86_64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.2/topgrade-v16.0.2-x86_64-unknown-linux-gnu.tar.gz"
+		URL="https://github.com/topgrade-rs/topgrade/releases/download/v16.0.3/topgrade-v16.0.3-x86_64-unknown-linux-gnu.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

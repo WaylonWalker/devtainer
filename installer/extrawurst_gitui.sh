@@ -85,19 +85,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"linux_arm64")
-		URL="https://github.com/extrawurst/gitui/releases/download/v0.27.0/gitui-linux-aarch64.tar.gz"
+		URL="https://github.com/gitui-org/gitui/releases/download/v0.27.0/gitui-linux-aarch64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/extrawurst/gitui/releases/download/v0.27.0/gitui-linux-arm.tar.gz"
+		URL="https://github.com/gitui-org/gitui/releases/download/v0.27.0/gitui-linux-arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/extrawurst/gitui/releases/download/v0.27.0/gitui-linux-x86_64.tar.gz"
+		URL="https://github.com/gitui-org/gitui/releases/download/v0.27.0/gitui-linux-x86_64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/extrawurst/gitui/releases/download/v0.27.0/gitui-mac-x86.tar.gz"
+		URL="https://github.com/gitui-org/gitui/releases/download/v0.27.0/gitui-mac-x86.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

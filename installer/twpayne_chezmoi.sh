@@ -19,7 +19,7 @@ function install {
 	PROG="chezmoi"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v2.59.1"
+	RELEASE="v2.62.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,59 +80,59 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_amd64")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi-darwin-amd64"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi-darwin-amd64"
 		FTYPE=".bin"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi-darwin-arm64"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi-darwin-arm64"
 		FTYPE=".bin"
 		;;
 	"linux_amd64")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi-linux-amd64"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi-linux-amd64"
 		FTYPE=".bin"
 		;;
 	"freebsd_amd64")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_freebsd_amd64.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_freebsd_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_arm")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_freebsd_arm.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_freebsd_arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_arm64")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_freebsd_arm64.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_freebsd_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_386")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_freebsd_i386.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_freebsd_i386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_linux_arm.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_linux_arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_linux_arm64.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_linux_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_386")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_linux_i386.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_linux_i386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"openbsd_amd64")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_openbsd_amd64.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_openbsd_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"openbsd_arm")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_openbsd_arm.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_openbsd_arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"openbsd_arm64")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_openbsd_arm64.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_openbsd_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"openbsd_386")
-		URL="https://github.com/twpayne/chezmoi/releases/download/v2.59.1/chezmoi_2.59.1_openbsd_i386.tar.gz"
+		URL="https://github.com/twpayne/chezmoi/releases/download/v2.62.0/chezmoi_2.62.0_openbsd_i386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
