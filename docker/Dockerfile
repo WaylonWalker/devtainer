@@ -1,4 +1,4 @@
-From docker.io/python:3.11
+From docker.io/ubuntu:24.04
 
 ENV DOCKER_BUILD=1
 ENV PATH="${PATH}:/root/.local/share/bob/nvim-bin"
@@ -10,8 +10,8 @@ COPY installer /installer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
     ca-certificates \
-    chromium \
     cargo \
+    chromium-browser \
     curl \
     entr \
     fd-find \
@@ -21,6 +21,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     git \
     golang \
+    libbz2-dev \
+    libc6-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    make \
     pciutils \
     podman \
     ripgrep \
@@ -30,6 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     vlc \
     xclip \
+    zlib1g-dev \
     zsh \
     && \
     mkdir ~/.local/bin -p && \
@@ -49,19 +56,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends windsurf && \
 RUN curl --fail -# -L https://github.com/tsl0922/ttyd/releases/download/1.7.4/ttyd.x86_64 > /bin/ttyd && \
     chmod +x /bin/ttyd
 
-RUN python -m pip install uv && \
-    uv pip install \
-        harlequin \
-        ipython \
-        lolcat \
-        visidata \ 
-        waylonwalker --system
+ENV PATH="/root/.venv/bin:$PATH"
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    uv python install 3.10 3.11 3.12 && \
+    uv venv /root/.venv --python 3.11 && \
+    uv tool install harlequin && \
+    uv tool install ipython && \
+    uv tool install lolcat && \
+    uv tool install visidata && \
+    uv tool install waylonwalker
 
 RUN bob install v0.10.3 && \
+    bob install v0.10.4 && \
+    bob install v0.11.0 && \
     bob use v0.10.3
 
 RUN mkdir /root/downloads && \
     cd /root/downloads && \
+    apt-get update && apt-get install -y --no-install-recommends wget && \
+    rm -rf /var/lib/apt/lists/* && \
     wget https://github.com/helix-editor/helix/releases/download/24.07/helix-24.07-x86_64-linux.tar.xz && \
     tar -xf helix-24.07-x86_64-linux.tar.xz && \
     mv helix-24.07-x86_64-linux/hx /usr/local/bin/hx && \
@@ -92,7 +105,10 @@ WORKDIR /root/util/
 # RUN curl -L https://bit.ly/n-install | bash -s -- -y lts
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
 RUN apt-get install -y nodejs
-RUN node -v && npm -v   # Verify the installation
+RUN node -v && \
+    npm -v && \  # Verify the installation
+    mkdir -p /usr/local/share/.npm-global && \
+    npm config set prefix /usr/local/share/.npm-global
 RUN /bin/npm i -g tailwindcss
 
 RUN nvim --headless "+Lazy! restore" +qa

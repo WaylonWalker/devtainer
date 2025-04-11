@@ -1,3 +1,12 @@
+## 0.1.3
+
+* fix npm install directory
+* versioned distrobox.ini
+* converted from python3.11 image to ubuntu:24.04
+* updated nvim to v0.11.0
+* update installers
+* add date keymap for nvim
+
 ## 0.1.2
 
 * update installers

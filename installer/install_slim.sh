@@ -33,7 +33,7 @@ set -u
 curl https://dl.min.io/client/mc/release/linux-amd64/mc --create-dirs -o /home/waylon/minio-binaries/mc
 
 chmod +x /home/waylon/minio-binaries/mc
-export PATH=/home/waylon/.local/share/bob/nvim-bin:/home/waylon/.fly/bin:/home/waylon/.cargo/bin:/home/waylon/go/bin:/home/waylon/.local/bin:/home/waylon/.local/.npm-global/bin/:/home/waylon/.npm/node_modules/bin/:/home/waylon/.atuin/bin:/home/waylon/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/home/waylon/minio-binaries:/root/.local/share/nvim/plugged/fzf/bin}:/home/waylon/minio-binaries/
+export PATH=/home/waylon/.local/share/bob/nvim-bin:/home/waylon/.fly/bin:/home/waylon/.local/share/uv/python/cpython-3.10.16-linux-x86_64-gnu/bin:/home/waylon/.cargo/bin:/home/waylon/go/bin:/home/waylon/.local/bin:/home/waylon/.local/.npm-global/bin/:/home/waylon/.npm-global/bin:/home/waylon/.npm/node_modules/bin/:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/home/waylon/.atuin/bin:/home/waylon/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/root/.venv/bin:/root/.local/share/bob/nvim-bin:/root/.local/bin:/root/.local/share/nvim/mason/bin:/root/n/bin:/root/devtainer/one-shot-apps:/snap/bin:/home/waylon/minio-binaries:/root/.local/share/nvim/plugged/fzf/bin}:/home/waylon/minio-binaries/
 
 mc --help
 

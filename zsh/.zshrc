@@ -27,16 +27,18 @@ export NVIM_MANAGER_REPO=https://github.com/WaylonWalker/devtainer
 export NVIM_CONFIG_PATH=nvim/.config/nvim
 export NVIM_MANAGER_INSTALL_DIR=$HOME/.config
 export NVIM_MANAGER_PREFIX="nvim-waylonwalker"
-export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.1.2
+export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.1.3
 
 # unsetopt BEEP
 
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
 export PATH="$HOME/.npm/node_modules/bin/:$PATH"
+export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="$HOME/.local/.npm-global/bin/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$(dirname $(uv python find 3.10)):$PATH"
 # eval "$(dircolors -b ~/.dircolors.256dark)"
 
 export FLYCTL_INSTALL="/home/waylon/.fly"
