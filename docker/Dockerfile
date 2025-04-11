@@ -103,10 +103,10 @@ RUN stow helix
 WORKDIR /root/util/
 # RUN bash /installer/n.sh -y lts
 # RUN curl -L https://bit.ly/n-install | bash -s -- -y lts
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-RUN apt-get install -y nodejs
-RUN node -v && \
-    npm -v && \  # Verify the installation
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    node -v && \
+    npm -v && \
     mkdir -p /usr/local/share/.npm-global && \
     npm config set prefix /usr/local/share/.npm-global
 RUN /bin/npm i -g tailwindcss
