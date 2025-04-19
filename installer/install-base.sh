@@ -32,13 +32,13 @@ PACKAGES=(
 )
 
 install_arch() {
-	pacman -Syu --noconfirm
-	pacman -S --noconfirm base-devel "${PACKAGES[@]/pip/python-pip}"
+	sudo pacman -Syu --noconfirm
+	sudo pacman -S --noconfirm base-devel "${PACKAGES[@]/pip/python-pip}"
 }
 
 install_alpine() {
-	apk update
-	apk add --no-cache alpine-sdk \
+	sudo apk update
+	sudo apk add --no-cache alpine-sdk \
 		bash \
 		"${PACKAGES[@]/pip/py3-pip}" \
 		python3 \
@@ -50,8 +50,8 @@ install_alpine() {
 }
 
 install_debian() {
-	apt-get update
-	apt-get install -y --no-install-recommends \
+	sudo apt-get update
+	sudo apt-get install -y --no-install-recommends \
 		build-essential \
 		"${PACKAGES[@]/pip/python3-pip}" \
 		libbz2-dev \
@@ -59,13 +59,13 @@ install_debian() {
 		libreadline-dev \
 		libsqlite3-dev \
 		libssl-dev
-	apt-get clean
-	rm -rf /var/lib/apt/lists/*
+	sudo apt-get clean
+	sudo rm -rf /var/lib/apt/lists/*
 }
 
 install_fedora() {
-	dnf groupinstall -y "Development Tools"
-	dnf install -y \
+	sudo dnf groupinstall -y "Development Tools"
+	sudo dnf install -y \
 		"${PACKAGES[@]/pip/python3-pip}" \
 		bzip2-devel \
 		glibc-devel \
