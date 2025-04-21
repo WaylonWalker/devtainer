@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if command -v sudo >/dev/null 2>&1; then
+	SUDO="sudo"
+else
+	SUDO=""
+fi
 # Universal packages across Arch, Alpine, Debian, Ubuntu, Fedora
 PACKAGES=(
 	bat
@@ -32,13 +37,13 @@ PACKAGES=(
 )
 
 install_arch() {
-	pacman -Syu --noconfirm
-	pacman -S --noconfirm base-devel "${PACKAGES[@]/pip/python-pip}"
+	$SUDO pacman -Syu --noconfirm
+	$SUDO pacman -S --noconfirm base-devel "${PACKAGES[@]/pip/python-pip}"
 }
 
 install_alpine() {
-	apk update
-	apk add --no-cache alpine-sdk \
+	$SUDO apk update
+	$SUDO apk add --no-cache alpine-sdk \
 		bash \
 		"${PACKAGES[@]/pip/py3-pip}" \
 		python3 \
@@ -50,8 +55,8 @@ install_alpine() {
 }
 
 install_debian() {
-	apt-get update
-	apt-get install -y --no-install-recommends \
+	$SUDO apt-get update
+	$SUDO apt-get install -y --no-install-recommends \
 		build-essential \
 		"${PACKAGES[@]/pip/python3-pip}" \
 		libbz2-dev \
@@ -59,13 +64,13 @@ install_debian() {
 		libreadline-dev \
 		libsqlite3-dev \
 		libssl-dev
-	apt-get clean
-	rm -rf /var/lib/apt/lists/*
+	$SUDO apt-get clean
+	$SUDO rm -rf /var/lib/apt/lists/*
 }
 
 install_fedora() {
-	dnf groupinstall -y "Development Tools"
-	dnf install -y \
+	$SUDO dnf groupinstall -y "Development Tools"
+	$SUDO dnf install -y \
 		"${PACKAGES[@]/pip/python3-pip}" \
 		bzip2-devel \
 		glibc-devel \
