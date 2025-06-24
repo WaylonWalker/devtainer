@@ -10,6 +10,35 @@ vim.opt.backup = true             -- automatically save a backup file
 vim.opt.backupdir:remove(".")     -- keep backups out of the current directory
 vim.opt.breakindent = true        -- maintain indent when wrapping indented lines
 vim.opt.clipboard = "unnamedplus" -- Use Linux system clipboard
+if vim.fn.has("unix") == 1 then
+  if os.getenv("WAYLAND_DISPLAY") then
+    vim.g.clipboard = {
+      name = "wl-clipboard",
+      copy = {
+        ["+"] = { "wl-copy", "--foreground", "--type", "text/plain" },
+        ["*"] = { "wl-copy", "--foreground", "--type", "text/plain" },
+      },
+      paste = {
+        ["+"] = { "wl-paste", "--no-newline" },
+        ["*"] = { "wl-paste", "--no-newline" },
+      },
+      cache_enabled = true,
+    }
+  else
+    vim.g.clipboard = {
+      name = "xclip",
+      copy = {
+        ["+"] = { "xclip", "-selection", "clipboard" },
+        ["*"] = { "xclip", "-selection", "primary" },
+      },
+      paste = {
+        ["+"] = { "xclip", "-selection", "clipboard", "-o" },
+        ["*"] = { "xclip", "-selection", "primary", "-o" },
+      },
+      cache_enabled = true,
+    }
+  end
+end
 vim.opt.cmdheight = 0
 vim.cmd([[ autocmd RecordingEnter * set cmdheight=1 ]])
 vim.cmd([[ autocmd RecordingLeave * set cmdheight=0 ]])
