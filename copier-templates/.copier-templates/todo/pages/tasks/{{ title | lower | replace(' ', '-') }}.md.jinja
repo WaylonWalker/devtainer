@@ -1,11 +1,9 @@
 ---
 date: {{ '%Y-%m-%d %H:%M:%S' | strftime }}
-priority: 0
 status: todo
 tags:
-- {{ tag1 }}
-- {{ tag2 }}
-- {{ tag3 }}
+  - task
+  - backlog
 templateKey: task
-title: {{ title }}
+title: {{ title | title }}
 ---
