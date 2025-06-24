@@ -19,7 +19,7 @@ function install {
 	PROG="k9s"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.50.2"
+	RELEASE="v0.50.6"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,35 +80,35 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_amd64")
-		URL="https://github.com/derailed/k9s/releases/download/v0.50.2/k9s_Darwin_amd64.tar.gz"
+		URL="https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_Darwin_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/derailed/k9s/releases/download/v0.50.2/k9s_Darwin_arm64.tar.gz"
+		URL="https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_Darwin_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_amd64")
-		URL="https://github.com/derailed/k9s/releases/download/v0.50.2/k9s_Freebsd_amd64.tar.gz"
+		URL="https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_Freebsd_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_arm64")
-		URL="https://github.com/derailed/k9s/releases/download/v0.50.2/k9s_Freebsd_arm64.tar.gz"
+		URL="https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_Freebsd_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_arm")
-		URL="https://github.com/derailed/k9s/releases/download/v0.50.2/k9s_Freebsd_armv7.tar.gz"
+		URL="https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_Freebsd_armv7.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/derailed/k9s/releases/download/v0.50.2/k9s_Linux_amd64.tar.gz"
+		URL="https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_Linux_amd64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/derailed/k9s/releases/download/v0.50.2/k9s_Linux_arm64.tar.gz"
+		URL="https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_Linux_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/derailed/k9s/releases/download/v0.50.2/k9s_Linux_armv7.tar.gz"
+		URL="https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_Linux_armv7.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

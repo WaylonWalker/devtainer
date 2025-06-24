@@ -19,7 +19,7 @@ function install {
 	PROG="bob"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v4.0.3"
+	RELEASE="v4.1.1"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -84,20 +84,20 @@ function install {
 	URL=""
 	FTYPE=""
 	case "${OS}_${ARCH}" in
-	"linux_arm64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v4.0.3/bob-linux-aarch64.zip"
+	"linux_arm")
+		URL="https://github.com/MordechaiHadad/bob/releases/download/v4.1.1/bob-linux-arm-appimage.zip"
 		FTYPE=".zip"
 		;;
 	"linux_amd64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v4.0.3/bob-linux-x86_64-openssl.zip"
+		URL="https://github.com/MordechaiHadad/bob/releases/download/v4.1.1/bob-linux-x86_64-appimage.zip"
 		FTYPE=".zip"
 		;;
 	"darwin_arm")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v4.0.3/bob-macos-arm-openssl.zip"
+		URL="https://github.com/MordechaiHadad/bob/releases/download/v4.1.1/bob-macos-arm-openssl.zip"
 		FTYPE=".zip"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/MordechaiHadad/bob/releases/download/v4.0.3/bob-macos-x86_64-openssl.zip"
+		URL="https://github.com/MordechaiHadad/bob/releases/download/v4.1.1/bob-macos-x86_64-openssl.zip"
 		FTYPE=".zip"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

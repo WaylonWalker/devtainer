@@ -19,7 +19,7 @@ function install {
 	PROG="jq"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="jq-1.7.1"
+	RELEASE="jq-1.8.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -85,19 +85,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"linux_amd64")
-		URL="https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64"
+		URL="https://github.com/jqlang/jq/releases/download/jq-1.8.0/jq-linux-amd64"
 		FTYPE=".bin"
 		;;
 	"linux_arm64")
-		URL="https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-arm64"
+		URL="https://github.com/jqlang/jq/releases/download/jq-1.8.0/jq-linux-arm64"
 		FTYPE=".bin"
 		;;
 	"linux_arm")
-		URL="https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-armel"
+		URL="https://github.com/jqlang/jq/releases/download/jq-1.8.0/jq-linux-armel"
 		FTYPE=".bin"
 		;;
 	"linux_386")
-		URL="https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-i386"
+		URL="https://github.com/jqlang/jq/releases/download/jq-1.8.0/jq-linux-i386"
 		FTYPE=".bin"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

@@ -19,7 +19,7 @@ function install {
 	PROG="starship"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v1.22.1"
+	RELEASE="v1.23.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,27 +80,27 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/starship/starship/releases/download/v1.22.1/starship-aarch64-apple-darwin.tar.gz"
+		URL="https://github.com/starship/starship/releases/download/v1.23.0/starship-aarch64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/starship/starship/releases/download/v1.22.1/starship-aarch64-unknown-linux-musl.tar.gz"
+		URL="https://github.com/starship/starship/releases/download/v1.23.0/starship-aarch64-unknown-linux-musl.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/starship/starship/releases/download/v1.22.1/starship-arm-unknown-linux-musleabihf.tar.gz"
+		URL="https://github.com/starship/starship/releases/download/v1.23.0/starship-arm-unknown-linux-musleabihf.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/starship/starship/releases/download/v1.22.1/starship-i686-unknown-linux-musl.tar.gz"
+		URL="https://github.com/starship/starship/releases/download/v1.23.0/starship-i686-unknown-linux-musl.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/starship/starship/releases/download/v1.22.1/starship-x86_64-apple-darwin.tar.gz"
+		URL="https://github.com/starship/starship/releases/download/v1.23.0/starship-x86_64-apple-darwin.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"freebsd_amd64")
-		URL="https://github.com/starship/starship/releases/download/v1.22.1/starship-x86_64-unknown-freebsd.tar.gz"
+		URL="https://github.com/starship/starship/releases/download/v1.23.0/starship-x86_64-unknown-freebsd.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

@@ -2,6 +2,21 @@
 set -e
 set -o pipefail
 set -u
+safe_mv() {
+	src=$1 dest=$2
+	[ -e "$src" ] || return 0
+	if mv "$src" "$dest" 2>/dev/null; then
+		return 0
+	fi
+
+	# plain mv failed → try with sudo if it exists
+	if command -v sudo >/dev/null 2>&1; then
+		sudo mv "$src" "$dest"
+	else
+		echo "Error: mv $src → $dest failed (permission denied), and sudo not found." >&2
+		exit 1
+	fi
+}
 /installer/BurntSushi_ripgrep.sh
 /installer/MordechaiHadad_bob.sh
 /installer/Slackadays_Clipboard.sh

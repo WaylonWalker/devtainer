@@ -19,7 +19,7 @@ function install {
 	PROG="vhs"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.9.0"
+	RELEASE="v0.10.0"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,27 +80,27 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.9.0/vhs_0.9.0_Darwin_arm64.tar.gz"
+		URL="https://github.com/charmbracelet/vhs/releases/download/v0.10.0/vhs_0.10.0_Darwin_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.9.0/vhs_0.9.0_Darwin_x86_64.tar.gz"
+		URL="https://github.com/charmbracelet/vhs/releases/download/v0.10.0/vhs_0.10.0_Darwin_x86_64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.9.0/vhs_0.9.0_Linux_arm.tar.gz"
+		URL="https://github.com/charmbracelet/vhs/releases/download/v0.10.0/vhs_0.10.0_Linux_arm.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_arm64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.9.0/vhs_0.9.0_Linux_arm64.tar.gz"
+		URL="https://github.com/charmbracelet/vhs/releases/download/v0.10.0/vhs_0.10.0_Linux_arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_386")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.9.0/vhs_0.9.0_Linux_i386.tar.gz"
+		URL="https://github.com/charmbracelet/vhs/releases/download/v0.10.0/vhs_0.10.0_Linux_i386.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/charmbracelet/vhs/releases/download/v0.9.0/vhs_0.9.0_Linux_x86_64.tar.gz"
+		URL="https://github.com/charmbracelet/vhs/releases/download/v0.10.0/vhs_0.10.0_Linux_x86_64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
