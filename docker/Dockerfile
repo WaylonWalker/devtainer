@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     vlc \
     xclip \
+    wl-clipboard \
     zlib1g-dev \
     zsh \
     && \
