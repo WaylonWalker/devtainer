@@ -218,9 +218,9 @@ wfetch
 # zprof
 #
 
-. "$HOME/.atuin/bin/env"
+[[ -f "$HOME/.atuin/bin/env" ]] && . "$HOME/.atuin/bin/env"
 
-eval "$(atuin init zsh)"
+[[ -f "$HOME/.atuin/bin/env" ]] && eval "$(atuin init zsh)"
 
 if [[ -z "$BROWSER" ]]; then
 	DEFAULT_BROWSER_DESKTOP=$(xdg-settings get default-web-browser 2>/dev/null)
