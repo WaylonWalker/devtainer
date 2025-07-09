@@ -222,5 +222,82 @@ wfetch
 
 eval "$(atuin init zsh)"
 
+if [[ -z "$BROWSER" ]]; then
+	DEFAULT_BROWSER_DESKTOP=$(xdg-settings get default-web-browser 2>/dev/null)
+
+	if [[ -n "$DEFAULT_BROWSER_DESKTOP" ]]; then
+		# Extract the Exec line from the .desktop file
+		if [[ -f "/usr/share/applications/$DEFAULT_BROWSER_DESKTOP" ]]; then
+			BROWSER_EXEC=$(grep -m1 '^Exec=' "/usr/share/applications/$DEFAULT_BROWSER_DESKTOP")
+		elif [[ -f "$HOME/.local/share/applications/$DEFAULT_BROWSER_DESKTOP" ]]; then
+			BROWSER_EXEC=$(grep -m1 '^Exec=' "$HOME/.local/share/applications/$DEFAULT_BROWSER_DESKTOP")
+		fi
+
+		# Clean up the Exec command (strip placeholders like %u, %U)
+		BROWSER=$(echo "$BROWSER_EXEC" | sed -E 's/^Exec=//' | sed -E 's/ ?%[a-zA-Z]//g')
+	fi
+
+	# If we couldn't detect it from .desktop, try common fallbacks
+	for candidate in brave chromium google-chrome firefox; do
+		if command -v $candidate >/dev/null && [[ -z "$BROWSER" ]]; then
+			BROWSER=$candidate
+		fi
+	done
+
+	# Final fallback
+	export BROWSER="${BROWSER:-xdg-open}"
+fi
+
+# Create a desktop launcher for a web app
+web2app() {
+	if [ "$#" -ne 3 ]; then
+		echo "Usage: web2app <AppName> <AppURL> <IconURL> (IconURL must be in PNG -- use https://dashboardicons.com)"
+		return 1
+	fi
+
+	local APP_NAME="$1"
+	local APP_URL="$2"
+	local ICON_URL="$3"
+	local ICON_DIR="$HOME/.local/share/applications/icons"
+	local DESKTOP_FILE="$HOME/.local/share/applications/${APP_NAME}.desktop"
+	local ICON_PATH="${ICON_DIR}/${APP_NAME}.png"
+
+	mkdir -p "$ICON_DIR"
+
+	if ! curl -sL -o "$ICON_PATH" "$ICON_URL"; then
+		echo "Error: Failed to download icon."
+		return 1
+	fi
+
+	cat >"$DESKTOP_FILE" <<EOF
+[Desktop Entry]
+Version=1.0
+Name=$APP_NAME
+Comment=$APP_NAME
+Exec=$BROWSER --new-window --ozone-platform=wayland --app="$APP_URL" --name="$APP_NAME" --class="$APP_NAME"
+Terminal=false
+Type=Application
+Icon=$ICON_PATH
+StartupNotify=true
+EOF
+
+	chmod +x "$DESKTOP_FILE"
+}
+
+web2app-remove() {
+	if [ "$#" -ne 1 ]; then
+		echo "Usage: web2app-remove <AppName>"
+		return 1
+	fi
+
+	local APP_NAME="$1"
+	local ICON_DIR="$HOME/.local/share/applications/icons"
+	local DESKTOP_FILE="$HOME/.local/share/applications/${APP_NAME}.desktop"
+	local ICON_PATH="${ICON_DIR}/${APP_NAME}.png"
+
+	rm "$DESKTOP_FILE"
+	rm "$ICON_PATH"
+}
+
 # start_tmux
 [ -f ~/.local/bin/ta ] && ~/.local/bin/ta

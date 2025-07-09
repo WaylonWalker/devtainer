@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     vlc \
     xclip \
+    wl-clipboard \
     zlib1g-dev \
     zsh \
     && \
@@ -60,6 +61,7 @@ ENV PATH="/root/.venv/bin:$PATH"
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
     uv python install 3.10 3.11 3.12 && \
     uv venv /root/.venv --python 3.11 && \
+    uv tool install podman-compose && \
     uv tool install harlequin && \
     uv tool install ipython && \
     uv tool install lolcat && \

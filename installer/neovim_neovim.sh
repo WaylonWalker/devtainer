@@ -19,7 +19,7 @@ function install {
 	PROG="neovim"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.11.0"
+	RELEASE="v0.11.2"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,19 +80,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"linux_arm64")
-		URL="https://github.com/neovim/neovim/releases/download/v0.11.0/nvim-linux-arm64.tar.gz"
+		URL="https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"linux_amd64")
-		URL="https://github.com/neovim/neovim/releases/download/v0.11.0/nvim-linux-x86_64.tar.gz"
+		URL="https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-x86_64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/neovim/neovim/releases/download/v0.11.0/nvim-macos-arm64.tar.gz"
+		URL="https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-macos-arm64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/neovim/neovim/releases/download/v0.11.0/nvim-macos-x86_64.tar.gz"
+		URL="https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-macos-x86_64.tar.gz"
 		FTYPE=".tar.gz"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

@@ -1,0 +1,12 @@
+---
+date: {{ '%Y-%m-%d %H:%M:%S' | strftime }}
+templateKey: glossary
+subroute: glossary
+title: {{ title | title }}
+tags:
+  - glossary
+published: True
+output_html: markout/glossary/{{ title | lower | replace(' ', '-') | replace('.', '-') | replace('_', '-') }}/index.html
+
+---
+

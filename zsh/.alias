@@ -247,3 +247,5 @@ fs() {
         | cut -d':' -f1 \
         | xargs tmux switch-client -t
 }
+
+gi() { curl -sL https://www.toptal.com/developers/gitignore/api/$@ ;};

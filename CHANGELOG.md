@@ -1,3 +1,17 @@
+## 0.1.4
+
+* chore: update installers
+* chore(nvim): update lazy-lock
+* feat(nvim): spellcheck <https://waylonwalker.com/my-nvim-spellcheck-setup/>
+* feat(nvim): wayland clipboard support
+* feat(container): wayland clipboard support
+* feat(container): add podman-compose
+* feat(container): add neofetch
+* feat(container): add /usr/local/bin/aws for aws cli v2
+* feat(zsh): add gi git ignore tool
+* feat(templates): add daily and glossary templates
+* feat(bin): add webapps installer inspired by DHH/omacom
+
 ## 0.1.3
 
 * fix npm install directory

@@ -19,7 +19,7 @@ function install {
 	PROG="natscli"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v0.2.1"
+	RELEASE="v0.2.3"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,31 +80,31 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_amd64")
-		URL="https://github.com/nats-io/natscli/releases/download/v0.2.1/nats-0.2.1-darwin-amd64.zip"
+		URL="https://github.com/nats-io/natscli/releases/download/v0.2.3/nats-0.2.3-darwin-amd64.zip"
 		FTYPE=".zip"
 		;;
 	"darwin_arm64")
-		URL="https://github.com/nats-io/natscli/releases/download/v0.2.1/nats-0.2.1-darwin-arm64.zip"
+		URL="https://github.com/nats-io/natscli/releases/download/v0.2.3/nats-0.2.3-darwin-arm64.zip"
 		FTYPE=".zip"
 		;;
 	"freebsd_amd64")
-		URL="https://github.com/nats-io/natscli/releases/download/v0.2.1/nats-0.2.1-freebsd-amd64.zip"
+		URL="https://github.com/nats-io/natscli/releases/download/v0.2.3/nats-0.2.3-freebsd-amd64.zip"
 		FTYPE=".zip"
 		;;
 	"linux_386")
-		URL="https://github.com/nats-io/natscli/releases/download/v0.2.1/nats-0.2.1-linux-386.zip"
+		URL="https://github.com/nats-io/natscli/releases/download/v0.2.3/nats-0.2.3-linux-386.zip"
 		FTYPE=".zip"
 		;;
 	"linux_amd64")
-		URL="https://github.com/nats-io/natscli/releases/download/v0.2.1/nats-0.2.1-linux-amd64.zip"
+		URL="https://github.com/nats-io/natscli/releases/download/v0.2.3/nats-0.2.3-linux-amd64.zip"
 		FTYPE=".zip"
 		;;
 	"linux_arm")
-		URL="https://github.com/nats-io/natscli/releases/download/v0.2.1/nats-0.2.1-linux-arm6.zip"
+		URL="https://github.com/nats-io/natscli/releases/download/v0.2.3/nats-0.2.3-linux-arm6.zip"
 		FTYPE=".zip"
 		;;
 	"linux_arm64")
-		URL="https://github.com/nats-io/natscli/releases/download/v0.2.1/nats-0.2.1-linux-arm64.zip"
+		URL="https://github.com/nats-io/natscli/releases/download/v0.2.3/nats-0.2.3-linux-arm64.zip"
 		FTYPE=".zip"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;

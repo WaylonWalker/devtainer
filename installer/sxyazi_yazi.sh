@@ -19,7 +19,7 @@ function install {
 	PROG="yazi"
 	ASPROG=""
 	MOVE="false"
-	RELEASE="v25.4.8"
+	RELEASE="v25.5.31"
 	INSECURE="false"
 	OUT_DIR="$(pwd)"
 	GH="https://github.com"
@@ -80,19 +80,19 @@ function install {
 	FTYPE=""
 	case "${OS}_${ARCH}" in
 	"darwin_arm64")
-		URL="https://github.com/sxyazi/yazi/releases/download/v25.4.8/yazi-aarch64-apple-darwin.zip"
+		URL="https://github.com/sxyazi/yazi/releases/download/v25.5.31/yazi-aarch64-apple-darwin.zip"
 		FTYPE=".zip"
 		;;
 	"linux_arm64")
-		URL="https://github.com/sxyazi/yazi/releases/download/v25.4.8/yazi-aarch64-unknown-linux-gnu.zip"
+		URL="https://github.com/sxyazi/yazi/releases/download/v25.5.31/yazi-aarch64-unknown-linux-gnu.zip"
 		FTYPE=".zip"
 		;;
 	"linux_amd64")
-		URL="https://github.com/sxyazi/yazi/releases/download/v25.4.8/yazi-i686-unknown-linux-gnu.zip"
+		URL="https://github.com/sxyazi/yazi/releases/download/v25.5.31/yazi-i686-unknown-linux-gnu.zip"
 		FTYPE=".zip"
 		;;
 	"darwin_amd64")
-		URL="https://github.com/sxyazi/yazi/releases/download/v25.4.8/yazi-x86_64-apple-darwin.zip"
+		URL="https://github.com/sxyazi/yazi/releases/download/v25.5.31/yazi-x86_64-apple-darwin.zip"
 		FTYPE=".zip"
 		;;
 	*) fail "No asset for platform ${OS}-${ARCH}";;
