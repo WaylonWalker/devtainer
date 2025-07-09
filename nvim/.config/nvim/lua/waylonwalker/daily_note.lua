@@ -1,4 +1,76 @@
--- Dependencies: os.date, vim.fn, vim.cmd
+-- # Daily Note Neovim Plugin - Features & Usage
+--
+-- ## Features
+--
+-- - **Automatic Daily Note Creation & Opening**
+--   - Checks for today's note in `pages/daily` (filename: `YYYY-MM-DD*-notes.md`).
+--   - If missing, creates a new note using a Copier template (`~/.copier-templates/daily`).
+--   - Opens the note in Neovim.
+--
+-- - **Task Creation from Word or Wiki Link**
+--   - Creates a new "task" note using Copier (`~/.copier-templates/todo`).
+--   - Uses the word under cursor or selected wiki link (`[[link]]`) as the task title.
+--
+-- - **Telescope Integration**
+--   - Find files in the daily notes directory (`pages/daily`).
+--   - Live grep for links to the current file's slug or a word/link under cursor.
+--   - Find files by word or wiki link under cursor.
+--
+-- - **Slug Copying**
+--   - Copies the current file's slug (filename without extension, wrapped as `[[slug]]`) to the system clipboard.
+--
+-- - **Wiki Link Insertion**
+--   - Surrounds the word under cursor with double brackets (`[[word]]`) for easy wiki linking.
+--
+-- ## Usage
+--
+-- ### Commands
+--
+-- | Command         | Description                                                    |
+-- |-----------------|----------------------------------------------------------------|
+-- | `:DailyNote`    | Open (or create) today's daily note.                           |
+-- | `:Daily`        | Alias for `:DailyNote`.                                        |
+-- | `:DailyFiles`   | Open Telescope to search daily notes in `pages/daily`.         |
+-- | `:CreateTask`   | Create a new task note from the word or wiki link under cursor.|
+-- | `:CopySlug`     | Copy current file's slug as `[[slug]]` to the clipboard.       |
+-- | `:GrepSlug`     | Telescope live_grep for links to the current file's slug.      |
+-- | `:GrepSlugWord` | Telescope live_grep for links to word/link under cursor.       |
+-- | `:FindSlugWord` | Telescope find_files for the word/link under cursor.           |
+--
+-- ### Keymaps
+--
+-- | Mode | Mapping         | Action                                                        |
+-- |------|----------------|---------------------------------------------------------------|
+-- | n    | `<leader>dn`   | Open (or create) today's daily note.                          |
+-- | n    | `<leader>df`   | Telescope find files in `pages/daily`.                        |
+-- | n    | `<leader>ct`   | Create a new task note from word/link under cursor.           |
+-- | n    | `<leader>ys`   | Copy current file's slug as `[[slug]]` to clipboard.          |
+-- | n    | `<leader>gs`   | Telescope live_grep for links to current file's slug.         |
+-- | n    | `<leader>gw`   | Telescope live_grep for links to word/link under cursor.      |
+-- | n    | `<leader>fw`   | Telescope find_files for word/link under cursor.              |
+-- | n    | `<leader>[[`   | Surround word under cursor with double brackets (`[[word]]`). |
+--
+-- ### Dependencies
+--
+-- - **os.date** (Lua stdlib): for date formatting.
+-- - **vim.fn** (Neovim API): for file globbing, clipboard, etc.
+-- - **vim.cmd** (Neovim API): to execute Neovim commands.
+-- - **Telescope.nvim**: for `find_files` and `live_grep` functionality.
+-- - **copier** (external CLI): for using note/task templates (`copier copy ...`).
+--
+-- > **Note:** The plugin expects `copier` templates at `~/.copier-templates/daily` and `~/.copier-templates/todo` and relies on the external `copier` binary being available in your shell.
+--
+-- ---
+--
+-- ## Example Workflow
+--
+-- 1. Press `<leader>dn` or run `:DailyNote` to open today's note. If it doesn't exist, it is created.
+-- 2. Position cursor on a word or link and press `<leader>ct` or run `:CreateTask` to make a new task note.
+-- 3. Use `<leader>df` or `:DailyFiles` to browse all daily notes.
+-- 4. Copy the current file's slug with `<leader>ys` or `:CopySlug`.
+-- 5. Search for links to the current file or word/link with `<leader>gs`, `<leader>gw`, `<leader>fw`.
+--
+-- ---
 
 local M = {}
 
