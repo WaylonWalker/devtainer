@@ -10,6 +10,7 @@
 * feat(container): add /usr/local/bin/aws for aws cli v2
 * feat(zsh): add gi git ignore tool
 * feat(templates): add daily and glossary templates
+* feat(bin): add webapps installer inspired by DHH/omacom
 
 ## 0.1.3
 
