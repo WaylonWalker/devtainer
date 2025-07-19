@@ -135,6 +135,25 @@ function M.CreateTask()
   vim.cmd("mode")
 end
 
+function M.CreateContact()
+  local word = get_link_or_word()
+  if word == nil or word == "" then
+    print("No word under cursor to use as contact title.")
+    return
+  end
+
+  local clean_word = word:gsub("[%-_%s]+$", ""):gsub('"', '\\"')
+  local safe_word = clean_word:gsub('"', '\\"')
+  local cmd = string.format('copier copy ~/.copier-templates/contact . -d "name=%s"', safe_word)
+  local result = os.execute(cmd)
+  if result ~= 0 then
+    print("Failed to create contact with copier.")
+  else
+    print("contact created with title: " .. word)
+  end
+  vim.cmd("mode")
+end
+
 vim.api.nvim_create_user_command("DailyNote", function()
   M.check_and_open_daily_note()
 end, {})
@@ -154,6 +173,10 @@ vim.api.nvim_create_user_command("CreateTask", function()
   M.CreateTask()
 end, {})
 
+vim.api.nvim_create_user_command("CreateContact", function()
+  M.CreateContact()
+end, {})
+
 vim.keymap.set("n", "<leader>dn", M.check_and_open_daily_note)
 vim.keymap.set("n", "<leader>df", function()
   require("telescope.builtin").find_files({
@@ -163,6 +186,7 @@ vim.keymap.set("n", "<leader>df", function()
 end)
 
 vim.keymap.set("n", "<leader>ct", M.CreateTask)
+vim.keymap.set("n", "<leader>cc", M.CreateContact)
 
 -- require("telekasten").setup({
 --   home = vim.fn.expand("~/work/notes"), -- Put the name of your notes directory here
@@ -258,4 +282,3 @@ vim.keymap.set("n", "<leader>[[", function()
 end, { noremap = true, silent = true, desc = "Surround word with [[ ]]" })
 
 return M
-
