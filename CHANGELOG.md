@@ -18,6 +18,7 @@
   * removed `💡` as it was lighting up on every line of python, ruff gives you code action everywhere.
 * feat(nvim): `<leader><CR>` closes all popups as well as `noh`
 * feat(nvim): add diagnodtic_or_spell bindings depending on filetype
+* feat(tmux): add clipboard support for wayland
 
 ## 0.1.3
 
