@@ -310,10 +310,16 @@ set("n", "<leader>qq", "yy<cmd>lua require'waylonwalker.util.window'.open_window
 set("v", "<leader>qq", "d<cmd>lua require'waylonwalker.util.window'.open_window()<cr>pkddgqqggyG:q<cr>P")
 
 set("n", "((", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
+set("n", ")(", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
 set("n", "))", "<cmd>lua vim.diagnostic.goto_next()<CR>")
+set("n", "()", "<cmd>lua vim.diagnostic.goto_next()<CR>")
 
 set("n", "<c-n>", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
 set("n", "<c-p>", "<cmd>lua vim.diagnostic.goto_next()<CR>")
+
+vim.keymap.set("n", "<leader>e", function()
+	vim.diagnostic.open_float(nil, { focus = false })
+end, { desc = "Show diagnostic float" })
 
 set("n", "<leader>a", "<cmd>AerialToggle!left<CR>")
 
@@ -346,8 +352,33 @@ end, { expr = true })
 vim.api.nvim_create_user_command("PreCommit", "!pre-commit run --files %", {})
 vim.api.nvim_create_user_command("QQ", "q!", {})
 
-set("n", "<f4>", "]s")
-set("n", "<f5>", "[s")
-set("n", "<f6>", "<cmd>Telescope spell_suggest<cr>")
+-- set("n", "<f4>", "]s")
+-- set("n", "<f5>", "[s")
+-- set("n", "<f6>", "<cmd>Telescope spell_suggest<cr>")
+local function diagnostic_or_spell(dir)
+	return function()
+		if vim.bo.filetype == "markdown" then
+			-- Use normal keys for spell navigation
+			vim.api.nvim_feedkeys(dir == "next" and "]s" or "[s", "n", false)
+		else
+			-- Use diagnostic navigation
+			if dir == "next" then
+				vim.diagnostic.goto_next()
+			else
+				vim.diagnostic.goto_prev()
+			end
+		end
+	end
+end
+
+set("n", "<F4>", diagnostic_or_spell("next"), { desc = "Previous diagnostic or spelling error" })
+set("n", "<F5>", diagnostic_or_spell("prev"), { desc = "Next diagnostic or spelling error" })
+set("n", "<F6>", function()
+	if vim.bo.filetype == "markdown" then
+		vim.cmd("Telescope spell_suggest")
+	else
+		vim.lsp.buf.code_action({ apply = true })
+	end
+end, { desc = "Auto-fix or spell suggest" })
 
 return M

@@ -1,6 +1,8 @@
 local is_docker = os.getenv("DOCKER_BUILD") == "true"
 -- Bootstrap lazy.nvim
 require("lazy").setup({
+	{ "echasnovski/mini.nvim", version = false },
+
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
@@ -12,8 +14,8 @@ require("lazy").setup({
 			require("waylonwalker.plugins.treesitter")
 		end,
 	},
-	{ "nvzone/volt", lazy = true },
-	{ "nvzone/menu", lazy = true },
+	{ "nvzone/volt",           lazy = true },
+	{ "nvzone/menu",           lazy = true },
 	{
 		"nvim-tree/nvim-tree.lua",
 		dependencies = {
@@ -62,40 +64,35 @@ require("lazy").setup({
 		enabled = not is_docker,
 	},
 	{
-		"VonHeikemen/lsp-zero.nvim",
+		"neovim/nvim-lspconfig",
 		dependencies = {
-			-- LSP Support
-			{ "neovim/nvim-lspconfig" },
-			{ "williamboman/mason.nvim" },
-			{ "williamboman/mason-lspconfig.nvim" },
-			{ "onsails/lspkind.nvim" },
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
+			"hrsh7th/cmp-nvim-lsp",
+			"nvim-telescope/telescope.nvim",
+		},
+		config = function()
+			require("waylonwalker.plugins.lsp")
+		end,
+	},
 
-			-- Autocompletion
-			{ "hrsh7th/nvim-cmp" },
-			{ "hrsh7th/cmp-buffer" },
-			{ "hrsh7th/cmp-path" },
-			{ "saadparwaiz1/cmp_luasnip" },
-			{ "hrsh7th/cmp-nvim-lsp" },
-			{ "hrsh7th/cmp-nvim-lua" },
-
-			-- Snippets
-			{ "L3MON4D3/LuaSnip" },
-			{ "rafamadriz/friendly-snippets" },
-
-			{ "williamboman/mason.nvim" },
-			{
-				"jay-babu/mason-null-ls.nvim",
-				event = { "BufReadPre", "BufNewFile" },
-				dependencies = {
-					"williamboman/mason.nvim",
-					"nvimtools/none-ls.nvim",
+	{
+		"nvimdev/lspsaga.nvim",
+		config = function()
+			require("lspsaga").setup({
+				ui = {
+					code_action = "",
 				},
-				config = function()
-					require("waylonwalker.plugins.null-ls")
-				end,
-			},
+			})
+		end,
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter", -- optional
+			"nvim-tree/nvim-web-devicons", -- optional
 		},
 	},
+
+	{ "j-hui/fidget.nvim" },
+
 	{
 		"nvimtools/none-ls.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
@@ -121,21 +118,6 @@ require("lazy").setup({
 
 	-- Detect tabstop and shiftwidth automatically
 	"tpope/vim-sleuth",
-
-	{ -- LSP Configuration & Plugins
-		"neovim/nvim-lspconfig",
-		dependencies = {
-			-- Automatically install LSPs and related tools to stdpath for neovim
-			"williamboman/mason.nvim",
-			"williamboman/mason-lspconfig.nvim",
-			"WhoIsSethDaniel/mason-tool-installer.nvim",
-
-			-- Useful status updates for LSP.
-			-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-			{ "j-hui/fidget.nvim", opts = {} },
-		},
-		config = require("waylonwalker.plugins.lsp-config").setup,
-	},
 	{
 		-- Autocompletion
 		"hrsh7th/nvim-cmp",
@@ -177,27 +159,21 @@ require("lazy").setup({
 				end
 
 				-- Navigation
-				map({ "n", "v" }, "]c", function()
+				map("n", "<f1>", function()
 					if vim.wo.diff then
-						return "]c"
+						vim.cmd.normal({ "<f1>", bang = true })
+					else
+						gs.nav_hunk("next")
 					end
-					vim.schedule(function()
-						gs.next_hunk()
-					end)
-					return "<Ignore>"
-				end, { expr = true, desc = "Jump to next hunk" })
+				end)
 
-				map({ "n", "v" }, "[c", function()
+				map("n", "<f2>", function()
 					if vim.wo.diff then
-						return "[c"
+						vim.cmd.normal({ "<f2>", bang = true })
+					else
+						gs.nav_hunk("prev")
 					end
-					vim.schedule(function()
-						gs.prev_hunk()
-					end)
-					return "<Ignore>"
-				end, { expr = true, desc = "Jump to previous hunk" })
-
-				-- Actions
+				end) -- Actions
 				-- visual mode
 				map("v", "<leader>hs", function()
 					gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })

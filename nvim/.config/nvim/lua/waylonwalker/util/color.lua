@@ -29,6 +29,13 @@ M.nobg = function()
 	vim.cmd("highlight CursorLineNr ctermbg=NONE guibg=NONE")
 	vim.cmd("highlight SignColumn ctermbg=NONE guibg=NONE")
 	vim.cmd("nohl")
+
+	-- Close all floating windows
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if vim.api.nvim_win_get_config(win).relative ~= "" then
+			vim.api.nvim_win_close(win, true)
+		end
+	end
 end
 
 api.nvim_set_keymap(
