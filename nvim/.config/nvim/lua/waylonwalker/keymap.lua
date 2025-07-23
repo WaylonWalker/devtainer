@@ -109,7 +109,7 @@ set("n", "get", "<cmd>e ~/.tmux.conf<CR>")
 -- edit pyflyby
 set("n", "gef", "<cmd>e ~/.pyflyby<CR>")
 -- edit ipython config
-set("n", "gel", "<cmd>Telescope find_files cwd=~/.config/nvim<CR>")
+set("n", "gel", "<cmd>Telescope find_files cwd=~/.config/nvim/lua/waylonwalker/<CR>")
 
 -- go edit my website
 -- edit blog posts
@@ -349,5 +349,25 @@ vim.api.nvim_create_user_command("QQ", "q!", {})
 set("n", "<f4>", "]s")
 set("n", "<f5>", "[s")
 set("n", "<f6>", "<cmd>Telescope spell_suggest<cr>")
+
+local function insert_at_cursor(str)
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local before = line:sub(1, col)
+  local after = line:sub(col + 1)
+  vim.api.nvim_set_current_line(before .. str .. after)
+end
+
+vim.keymap.set("n", "<leader>dt", function()
+  insert_at_cursor(os.date("%Y-%m-%d %H:%M:%S"))
+end, { desc = "Insert current date and time" })
+
+vim.keymap.set("n", "<leader>dd", function()
+  insert_at_cursor(os.date("%Y-%m-%d"))
+end, { desc = "Insert current date" })
+
+vim.keymap.set("n", "<leader>dw", function()
+  insert_at_cursor(os.date("%A %Y-%m-%d %H:%M:%S"))
+end, { desc = "Insert current weekday, date and time" })
 
 return M
