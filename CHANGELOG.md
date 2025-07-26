@@ -19,6 +19,7 @@
 * feat(nvim): `<leader><CR>` closes all popups as well as `noh`
 * feat(nvim): add diagnodtic_or_spell bindings depending on filetype
 * feat(tmux): add clipboard support for wayland
+* feat(docker.arch): arch container working again
 
 ## 0.1.3
 
