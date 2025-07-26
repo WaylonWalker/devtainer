@@ -1,6 +1,21 @@
 local is_docker = os.getenv("DOCKER_BUILD") == "true"
 -- Bootstrap lazy.nvim
 require("lazy").setup({
+	{ 'dylanaraps/wal.vim' },
+	{
+		"dgagn/diagflow.nvim",
+		event = "LspAttach",
+		opts = {
+			enable = true,
+			padding = 2,
+			format = function(diagnostic)
+				return diagnostic.message -- just show message, skip source or severity
+			end,
+			scope = "line",
+			render = "inline", -- Render at end of line
+			max_width = 80,
+		},
+	},
 	{ "echasnovski/mini.nvim", version = false },
 
 	{
@@ -14,8 +29,8 @@ require("lazy").setup({
 			require("waylonwalker.plugins.treesitter")
 		end,
 	},
-	{ "nvzone/volt",           lazy = true },
-	{ "nvzone/menu",           lazy = true },
+	{ "nvzone/volt", lazy = true },
+	{ "nvzone/menu", lazy = true },
 	{
 		"nvim-tree/nvim-tree.lua",
 		dependencies = {

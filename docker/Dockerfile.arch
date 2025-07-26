@@ -34,13 +34,12 @@ RUN sudo -u devtainer paru --noconfirm --skipreview --useask -S \
     github-cli \
     gitui \
     htop \
-    # ijq-bin \
-    lf-bin \
+    exa \
     linux-headers \
     lolcat \
     man-db \
     man-pages \
-    neofetch \
+    aur/neofetch \
     neovim-nightly-bin \
     nvm-git \
     pacman-contrib \
@@ -53,7 +52,7 @@ RUN sudo -u devtainer paru --noconfirm --skipreview --useask -S \
     tmux \
     tree \
     unzip \
-    viddy \
+    # viddy-bin \
     zsh \
     zsh-autosuggestions \
     zsh-history-substring-search \
@@ -74,7 +73,12 @@ COPY --chown=devtainer:devtainer . /home/devtainer/git/devtainer/
 # -S, --stow            Stow the package names that follow this option
 RUN stow -d /home/devtainer/git/devtainer -t /home/devtainer --stow zsh tmux bin nvim
 # RUN nvim -u /home/devtainer/.config/nvim/plugins.vim +PlugInstall +qall
-RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+ENV DOCKER_BUILD=true
+# RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+RUN nvim --headless "+Lazy! restore" +qa
+RUN nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
+# RUN nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
+ENV DOCKER_BUILD=
 WORKDIR /home/devtainer
 
 

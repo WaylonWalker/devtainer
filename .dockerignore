@@ -3,6 +3,7 @@ README.md
 CHANGELOG.md
 docker-compose.yml
 Dockerfile
+Dockerfile.arch
 awesome
 kitty
 nix
