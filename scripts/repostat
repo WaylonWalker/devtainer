@@ -28,10 +28,11 @@ Main workflows:
 - show-plan: view migration plan entries (mirror/move/etc.)
 
 Environment variables (optional):
-- GIT_MIGRATOR_DB   : path to sqlite db (default: ~/.local/state/git-migrator/repos.db)
-- GIT_MIGRATOR_ROOT : root directory for local repos (default: ~/git)
-- GIT_MIGRATOR_GH   : gh CLI command name (default: "gh")
-- GIT_MIGRATOR_TEA  : tea CLI command name (default: "tea")
+- GIT_MIGRATOR_DB       : path to sqlite db (default: ~/.local/state/git-migrator/repos.db)
+- GIT_MIGRATOR_ROOT     : root directory for local repos (default: ~/git)
+- GIT_MIGRATOR_GH       : gh CLI command name (default: "gh")
+- GIT_MIGRATOR_TEA      : tea CLI command name (default: "tea")
+- GIT_MIGRATOR_TEA_LOGIN: tea login name to use (default: "git.wayl.one")
 
 Usage examples:
 
@@ -47,6 +48,17 @@ This script is intentionally conservative for destructive operations: the
 "mirror" and "move" workflows only record decisions into the migration_plan
 table. You can later write a follow-up tool that reads from migration_plan to
 actually create Forgejo repos / mirrors and adjust GitHub settings.
+
+Fuzzy picker
+------------
+
+Interactive selection uses `fzf` if it is installed on your system. If `fzf`
+is not found in $PATH, it falls back to a simple text-based picker.
+
+So for best experience:
+
+    sudo pacman -S fzf      # or your distro's equivalent
+
 """
 
 from __future__ import annotations
@@ -54,11 +66,12 @@ from __future__ import annotations
 import json
 import os
 import shlex
+import shutil
 import sqlite3
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import typer
 from rich import box
@@ -94,6 +107,7 @@ def gh_cmd() -> str:
 
 def tea_cmd() -> str:
     return os.environ.get("GIT_MIGRATOR_TEA", "tea")
+
 
 def tea_login() -> str:
     return os.environ.get("GIT_MIGRATOR_TEA_LOGIN", "git.wayl.one")
@@ -152,12 +166,12 @@ def init_db(conn: sqlite3.Connection) -> None:
         );
 
         CREATE TABLE IF NOT EXISTS migration_plan (
-            id               INTEGER PRIMARY KEY AUTOINCREMENT,
-            github_full_name TEXT,
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            github_full_name  TEXT,
             forgejo_full_name TEXT,
-            local_path       TEXT,
-            plan             TEXT NOT NULL,
-            created_at       TEXT DEFAULT (datetime('now'))
+            local_path        TEXT,
+            plan              TEXT NOT NULL,
+            created_at        TEXT DEFAULT (datetime('now'))
         );
         """
     )
@@ -244,7 +258,7 @@ def has_readme(path: Path) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Fuzzy selection helper
+# Fuzzy selection helpers (fzf + fallback)
 # ---------------------------------------------------------------------------
 
 
@@ -272,13 +286,8 @@ def fuzzy_score(query: str, text: str) -> int:
     return score
 
 
-def choose_fuzzy(items: Sequence[object], label_fn) -> Optional[object]:
-    """Interactive fuzzy picker.
-
-    - Ask for a search query
-    - Show top matches
-    - Let user choose an index, next page, or quit
-    """
+def _choose_fuzzy_fallback(items: Sequence[object], label_fn) -> Optional[object]:
+    """Old-school text picker used when fzf is unavailable."""
 
     if not items:
         console.print("[yellow]No items to choose from.[/yellow]")
@@ -330,6 +339,58 @@ def choose_fuzzy(items: Sequence[object], label_fn) -> Optional[object]:
         console.print("[red]Out of range.[/red]")
 
 
+def choose_interactive(items: Sequence[object], label_fn) -> Optional[object]:
+    """Interactive picker that prefers fzf if available.
+
+    - If `fzf` is installed, pipe all items into it and return the selected one.
+    - Otherwise, fall back to the simple text-based picker.
+    """
+
+    if not items:
+        console.print("[yellow]No items to choose from.[/yellow]")
+        return None
+
+    if shutil.which("fzf") is None:
+        console.print("[yellow]fzf not found in PATH, using simple picker instead.[/yellow]")
+        return _choose_fuzzy_fallback(items, label_fn)
+
+    # Build lines in the format: "<index>\t<label>"
+    lines: list[str] = []
+    for idx, it in enumerate(items):
+        label = label_fn(it)
+        lines.append(f"{idx}\t{label}")
+
+    try:
+        proc = subprocess.run(
+            ["fzf", "--ansi"],
+            input="\n".join(lines),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        console.print("[yellow]fzf command not found, falling back to simple picker.[/yellow]")
+        return _choose_fuzzy_fallback(items, label_fn)
+
+    if proc.returncode != 0 or not proc.stdout:
+        # User likely pressed ESC / Ctrl-C / no selection
+        return None
+
+    selected_line = proc.stdout.strip().splitlines()[-1]
+    idx_str = selected_line.split("\t", 1)[0]
+    try:
+        idx = int(idx_str)
+    except ValueError:
+        console.print("[red]Failed to parse fzf selection; falling back to simple picker.[/red]")
+        return _choose_fuzzy_fallback(items, label_fn)
+
+    if 0 <= idx < len(items):
+        return items[idx]
+    console.print("[red]fzf returned out-of-range index; ignoring selection.[/red]")
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Refresh commands
 # ---------------------------------------------------------------------------
@@ -355,18 +416,21 @@ def refresh(
             "--limit",
             "1000",
             "--json",
-            ",".join([
-                "name",
-                "owner",
-                "sshUrl",
-                "url",                # replaces cloneUrl
-                "isArchived",         # replaces archived
-                "isPrivate",          # replaces private
-                "isFork",             # replaces fork
-                "description",
-                "updatedAt",
-                "pushedAt",
-            ]),
+            ",".join(
+                [
+                    "name",
+                    "nameWithOwner",
+                    "owner",
+                    "sshUrl",
+                    "url",  # HTTPS clone URL
+                    "isArchived",
+                    "isPrivate",
+                    "isFork",
+                    "description",
+                    "updatedAt",
+                    "pushedAt",
+                ]
+            ),
         ]
         data = run_json(cmd)
         cur.execute("DELETE FROM github_repos")
@@ -377,7 +441,9 @@ def refresh(
                 else item.get("owner")
             )
 
-            full_name = item.get("nameWithOwner") or f"{owner_login}/{item['name']}"
+            full_name = item.get("nameWithOwner") or (
+                f"{owner_login}/{item['name']}" if owner_login else item["name"]
+            )
 
             cur.execute(
                 """
@@ -410,11 +476,13 @@ def refresh(
         # We optimistically assume `tea repos ls --output json` exists.
         # If not, we degrade gracefully.
         try:
-            data = run_json([tea_cmd(), "repos", "ls", '--login', tea_login(), "--output", "json"])
+            data = run_json(
+                [tea_cmd(), "repos", "ls", "-l", tea_login(), "--output", "json"]
+            )
         except typer.Exit:
             console.print(
                 "[yellow]Skipping Forgejo refresh: failed to run `tea repos ls --output json`.\n"
-                "You may need to upgrade tea or adjust the command in this script.[/yellow]"
+                "You may need to upgrade tea, fix your login, or adjust the command in this script.[/yellow]"
             )
             data = []
 
@@ -423,10 +491,20 @@ def refresh(
             for item in data:
                 # tea JSON schema is not super well-documented; we handle common fields.
                 name = item.get("name") or item.get("repoName")
-                owner = item.get("owner", {}).get("name") if isinstance(item.get("owner"), dict) else item.get("owner_name")
-                full_name = item.get("full_name") or (f"{owner}/{name}" if owner and name else name)
+                owner = (
+                    item.get("owner", {}).get("name")
+                    if isinstance(item.get("owner"), dict)
+                    else item.get("owner_name")
+                )
+                full_name = item.get("full_name") or (
+                    f"{owner}/{name}" if owner and name else name
+                )
                 ssh_url = item.get("ssh_url") or item.get("sshUrl")
-                https_url = item.get("clone_url") or item.get("html_url") or item.get("cloneUrl")
+                https_url = (
+                    item.get("clone_url")
+                    or item.get("html_url")
+                    or item.get("cloneUrl")
+                )
                 private = int(bool(item.get("private")))
                 mirror = int(bool(item.get("mirror")))
                 description = item.get("description")
@@ -483,7 +561,9 @@ def refresh(
                 )
                 count += 1
             conn.commit()
-            console.print(f"Indexed [green]{count}[/green] local directories under {root}.")
+            console.print(
+                f"Indexed [green]{count}[/green] local directories under {root}."
+            )
 
     console.print("[green]Refresh complete.[/green]")
 
@@ -503,7 +583,9 @@ def show_missing() -> None:
     cur.execute("SELECT * FROM local_repos ORDER BY name")
     rows = cur.fetchall()
     if not rows:
-        console.print("[yellow]No local repos recorded. Run `refresh --local` first.[/yellow]")
+        console.print(
+            "[yellow]No local repos recorded. Run `refresh --local` first.[/yellow]"
+        )
         raise typer.Exit(0)
 
     missing_git = [r for r in rows if not r["has_git"]]
@@ -555,7 +637,9 @@ def show_only_github() -> None:
     cur.execute("SELECT * FROM github_repos")
     gh_rows = cur.fetchall()
     if not gh_rows:
-        console.print("[yellow]No GitHub repos in DB. Run `refresh --github` first.[/yellow]")
+        console.print(
+            "[yellow]No GitHub repos in DB. Run `refresh --github` first.[/yellow]"
+        )
         raise typer.Exit(0)
 
     cur.execute("SELECT DISTINCT name FROM forgejo_repos")
@@ -564,11 +648,17 @@ def show_only_github() -> None:
     cur.execute("SELECT DISTINCT name FROM local_repos")
     local_names = {r[0] for r in cur.fetchall()}
 
-    only = [r for r in gh_rows if r["name"] not in forgejo_names and r["name"] not in local_names]
+    only = [
+        r
+        for r in gh_rows
+        if r["name"] not in forgejo_names and r["name"] not in local_names
+    ]
 
     console.rule("GitHub-only repos (by name)")
     if not only:
-        console.print("[green]Every GitHub repo has a Forgejo/local counterpart by name.[/green]")
+        console.print(
+            "[green]Every GitHub repo has a Forgejo/local counterpart by name.[/green]"
+        )
         return
 
     table = Table(show_header=True, header_style="bold magenta", box=box.SIMPLE)
@@ -612,12 +702,20 @@ def pick_newrepo() -> None:
     cur.execute("SELECT * FROM local_repos ORDER BY name")
     rows = cur.fetchall()
     if not rows:
-        console.print("[yellow]No local repos in DB. Run `refresh --local` first.[/yellow]")
+        console.print(
+            "[yellow]No local repos in DB. Run `refresh --local` first.[/yellow]"
+        )
         raise typer.Exit(0)
 
-    candidates = [r for r in rows if (not r["has_git"] or not r["primary_remote"] or not r["has_readme"])]
+    candidates = [
+        r
+        for r in rows
+        if (not r["has_git"] or not r["primary_remote"] or not r["has_readme"])
+    ]
     if not candidates:
-        console.print("[green]Every local repo has .git, remote, and README. Nothing to do.[/green]")
+        console.print(
+            "[green]Every local repo has .git, remote, and README. Nothing to do.[/green]"
+        )
         return
 
     console.print(
@@ -625,7 +723,7 @@ def pick_newrepo() -> None:
     )
 
     while True:
-        picked = choose_fuzzy(
+        picked = choose_interactive(
             candidates,
             label_fn=lambda r: f"{r['name']} :: {r['path']} [git={bool(r['has_git'])}, readme={bool(r['has_readme'])}]",
         )
@@ -644,7 +742,9 @@ def pick_newrepo() -> None:
         try:
             subprocess.run(cmd, shell=True, check=True)
         except subprocess.CalledProcessError as exc:
-            console.print(f"[red]newrepo failed with exit code {exc.returncode}[/red]")
+            console.print(
+                f"[red]newrepo failed with exit code {exc.returncode}[/red]"
+            )
             continue
 
         # Re-scan this directory
@@ -665,9 +765,15 @@ def pick_newrepo() -> None:
         # Update candidate set
         cur.execute("SELECT * FROM local_repos ORDER BY name")
         rows = cur.fetchall()
-        candidates = [r for r in rows if (not r["has_git"] or not r["primary_remote"] or not r["has_readme"])]
+        candidates = [
+            r
+            for r in rows
+            if (not r["has_git"] or not r["primary_remote"] or not r["has_readme"])
+        ]
         if not candidates:
-            console.print("[green]All local repos now have .git, remote, and README.[/green]")
+            console.print(
+                "[green]All local repos now have .git, remote, and README.[/green]"
+            )
             break
 
 
@@ -693,7 +799,9 @@ def _load_github_repos(conn: sqlite3.Connection) -> list[GHRepo]:
     repos: list[GHRepo] = []
 
     if not rows:
-        console.print("[yellow]No GitHub repos in DB. Run `refresh --github` first.[/yellow]")
+        console.print(
+            "[yellow]No GitHub repos in DB. Run `refresh --github` first.[/yellow]"
+        )
         return repos
 
     for r in rows:
@@ -710,14 +818,18 @@ def _load_github_repos(conn: sqlite3.Connection) -> list[GHRepo]:
     return repos
 
 
-def _filter_github_only(conn: sqlite3.Connection, repos: list[GHRepo]) -> list[GHRepo]:
+def _filter_github_only(
+    conn: sqlite3.Connection, repos: list[GHRepo]
+) -> list[GHRepo]:
     cur = conn.cursor()
     cur.execute("SELECT DISTINCT name FROM forgejo_repos")
     forgejo_names = {r[0] for r in cur.fetchall()}
     cur.execute("SELECT DISTINCT name FROM local_repos")
     local_names = {r[0] for r in cur.fetchall()}
 
-    return [r for r in repos if r.name not in forgejo_names and r.name not in local_names]
+    return [
+        r for r in repos if r.name not in forgejo_names and r.name not in local_names
+    ]
 
 
 def _pick_gh_repos_for_plan(plan: str) -> None:
@@ -736,7 +848,7 @@ def _pick_gh_repos_for_plan(plan: str) -> None:
     cur = conn.cursor()
 
     while True:
-        picked = choose_fuzzy(
+        picked = choose_interactive(
             repos,
             label_fn=lambda r: f"{r.full_name} :: private={r.private}, archived={r.archived}, fork={r.fork}",
         )
@@ -868,7 +980,9 @@ def stats() -> None:
 
     cur.execute("SELECT COUNT(*) FROM local_repos WHERE has_git = 0")
     missing_git = int(cur.fetchone()[0])
-    cur.execute("SELECT COUNT(*) FROM local_repos WHERE has_git = 1 AND (primary_remote IS NULL OR primary_remote = '')")
+    cur.execute(
+        "SELECT COUNT(*) FROM local_repos WHERE has_git = 1 AND (primary_remote IS NULL OR primary_remote = '')"
+    )
     missing_remote = int(cur.fetchone()[0])
     cur.execute("SELECT COUNT(*) FROM local_repos WHERE has_readme = 0")
     missing_readme = int(cur.fetchone()[0])
@@ -894,12 +1008,20 @@ def stats() -> None:
     if gh_count == 0:
         console.print("- Run [cyan]refresh --github[/cyan] to pull your GitHub repos.")
     if fj_count == 0:
-        console.print("- Run [cyan]refresh --forgejo[/cyan] to pull your Forgejo repos (via tea).")
+        console.print(
+            "- Run [cyan]refresh --forgejo[/cyan] to pull your Forgejo repos (via tea)."
+        )
     if missing_git or missing_remote or missing_readme:
-        console.print("- Run [cyan]show-missing[/cyan] and [cyan]pick-newrepo[/cyan] to clean up local repos.")
+        console.print(
+            "- Run [cyan]show-missing[/cyan] and [cyan]pick-newrepo[/cyan] to clean up local repos."
+        )
     if gh_count and fj_count:
-        console.print("- Run [cyan]show-only-github[/cyan] to see repos that exist only on GitHub.")
-        console.print("- Use [cyan]pick-mirror[/cyan] or [cyan]pick-move[/cyan] to mark migration intents.")
+        console.print(
+            "- Run [cyan]show-only-github[/cyan] to see repos that exist only on GitHub."
+        )
+        console.print(
+            "- Use [cyan]pick-mirror[/cyan] or [cyan]pick-move[/cyan] to mark migration intents."
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -909,3 +1031,4 @@ def stats() -> None:
 
 if __name__ == "__main__":  # pragma: no cover
     app()
+
