@@ -4,60 +4,70 @@
 # dependencies = [
 #     "typer",
 #     "rich",
+#     "pydantic",
+#     "pydantic-settings",
 # ]
 # ///
 
-"""
-Repo Migration Helper
+"""repostat
+============
 
 A Typer-based CLI to help you migrate repositories between GitHub and Forgejo,
-and keep track of everything that lives in ~/git.
+and keep track of everything that lives in ``~/git``.
 
 It uses:
-- gh CLI to list GitHub repositories
-- tea (Gitea/Forgejo CLI) to list Forgejo repositories
+
+- ``gh`` CLI to list GitHub repositories
+- ``tea`` (Gitea/Forgejo CLI) to list Forgejo repositories
 - SQLite to cache/organize data for quick queries and interactive workflows
 
-Main workflows:
-- refresh: pull latest data from GitHub / Forgejo / local ~/git
-- show-missing: show local repos missing .git, a remote, or a README
-- show-only-github: repos only on GitHub (not in Forgejo and not in ~/git)
-- pick-newrepo: fuzzy-pick local dirs to run `newrepo` in
-- pick-mirror: fuzzy-pick GitHub repos to mark for mirroring to Forgejo
-- pick-move: fuzzy-pick GitHub repos to mark for moving to Forgejo
-- show-plan: view migration plan entries (mirror/move/etc.)
+Main workflows (subcommands):
 
-Environment variables (optional):
-- GIT_MIGRATOR_DB       : path to sqlite db (default: ~/.local/state/git-migrator/repos.db)
-- GIT_MIGRATOR_ROOT     : root directory for local repos (default: ~/git)
-- GIT_MIGRATOR_GH       : gh CLI command name (default: "gh")
-- GIT_MIGRATOR_TEA      : tea CLI command name (default: "tea")
-- GIT_MIGRATOR_TEA_LOGIN: tea login name to use (default: "git.wayl.one")
+- ``repostat refresh``          – pull latest data from GitHub / Forgejo / local ``~/git``
+- ``repostat show-missing``     – show local repos missing ``.git``, a remote, or a README
+- ``repostat show-only-github`` – repos only on GitHub (not in Forgejo and not in ``~/git``)
+- ``repostat pick-newrepo``     – fuzzy-pick local dirs to run ``newrepo`` in
+- ``repostat pick-mirror``      – fuzzy-pick GitHub repos to mark for mirroring to Forgejo
+- ``repostat pick-move``        – fuzzy-pick GitHub repos to mark for moving to Forgejo
+- ``repostat show-plan``        – view migration plan entries (mirror/move/etc.)
+- ``repostat stats``            – show a quick summary (this is also the *default* command)
 
-Usage examples:
+Environment variables (via pydantic-settings):
 
-    repo_migrator.py refresh
-    repo_migrator.py show-missing
-    repo_migrator.py show-only-github
-    repo_migrator.py pick-newrepo
-    repo_migrator.py pick-mirror
-    repo_migrator.py pick-move
-    repo_migrator.py show-plan
+All settings are prefixed with ``GIT_MIGRATOR_``.
+
+- ``GIT_MIGRATOR_DB``        – path to sqlite db (default: ``~/.local/state/git-migrator/repos.db``)
+- ``GIT_MIGRATOR_ROOT``      – root directory for local repos (default: ``~/git``)
+- ``GIT_MIGRATOR_GH``        – gh CLI command name (default: ``gh``)
+- ``GIT_MIGRATOR_TEA``       – tea CLI command name (default: ``tea``)
+- ``GIT_MIGRATOR_TEA_LOGIN`` – tea login name to use (default: ``git.wayl.one``)
+
+Usage examples::
+
+    repostat               # runs the default command: stats
+    repostat stats
+    repostat refresh
+    repostat refresh --github False --forgejo False  # only local
+    repostat show-missing
+    repostat pick-newrepo
+    repostat pick-mirror
+    repostat pick-move
+    repostat show-plan
 
 This script is intentionally conservative for destructive operations: the
-"mirror" and "move" workflows only record decisions into the migration_plan
-table. You can later write a follow-up tool that reads from migration_plan to
-actually create Forgejo repos / mirrors and adjust GitHub settings.
+"mirror" and "move" workflows only record decisions into the ``migration_plan``
+table. You can later write a follow-up tool that reads from ``migration_plan``
+to actually create Forgejo repos / mirrors and adjust GitHub settings.
 
 Fuzzy picker
 ------------
 
-Interactive selection uses `fzf` if it is installed on your system. If `fzf`
-is not found in $PATH, it falls back to a simple text-based picker.
+Interactive selection uses ``fzf`` if it is installed on your system. If
+``fzf`` is not found in ``$PATH``, it falls back to a simple text-based picker.
 
-So for best experience:
+So for best experience, install ``fzf`` at the OS level, for example::
 
-    sudo pacman -S fzf      # or your distro's equivalent
+    sudo pacman -S fzf
 
 """
 
@@ -74,6 +84,8 @@ from pathlib import Path
 from typing import List, Optional, Sequence, Tuple
 
 import typer
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from rich import box
 from rich.console import Console
 from rich.table import Table
@@ -83,34 +95,31 @@ console = Console()
 
 
 # ---------------------------------------------------------------------------
-# Config helpers
+# Settings (pydantic-settings)
 # ---------------------------------------------------------------------------
 
 
-def db_path() -> Path:
-    env = os.environ.get("GIT_MIGRATOR_DB")
-    if env:
-        return Path(env).expanduser()
-    return Path.home() / ".local" / "state" / "git-migrator" / "repos.db"
+class Settings(BaseSettings):
+    """Configuration for repostat.
+
+    Values are loaded from environment variables with prefix ``GIT_MIGRATOR_``.
+
+    Examples::
+
+        export GIT_MIGRATOR_ROOT=~/src
+        export GIT_MIGRATOR_TEA_LOGIN=git.waylonwalker.com
+    """
+
+    model_config = SettingsConfigDict(env_prefix="GIT_MIGRATOR_", extra="ignore")
+
+    db: Path = Field(default_factory=lambda: Path.home() / ".local" / "state" / "git-migrator" / "repos.db")
+    root: Path = Field(default_factory=lambda: Path.home() / "git")
+    gh: str = "gh"
+    tea: str = "tea"
+    tea_login: str = "git.wayl.one"
 
 
-def local_root() -> Path:
-    env = os.environ.get("GIT_MIGRATOR_ROOT")
-    if env:
-        return Path(env).expanduser()
-    return Path.home() / "git"
-
-
-def gh_cmd() -> str:
-    return os.environ.get("GIT_MIGRATOR_GH", "gh")
-
-
-def tea_cmd() -> str:
-    return os.environ.get("GIT_MIGRATOR_TEA", "tea")
-
-
-def tea_login() -> str:
-    return os.environ.get("GIT_MIGRATOR_TEA_LOGIN", "git.wayl.one")
+settings = Settings()
 
 
 # ---------------------------------------------------------------------------
@@ -119,7 +128,7 @@ def tea_login() -> str:
 
 
 def get_conn() -> sqlite3.Connection:
-    path = db_path()
+    path = settings.db
     path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
@@ -342,7 +351,7 @@ def _choose_fuzzy_fallback(items: Sequence[object], label_fn) -> Optional[object
 def choose_interactive(items: Sequence[object], label_fn) -> Optional[object]:
     """Interactive picker that prefers fzf if available.
 
-    - If `fzf` is installed, pipe all items into it and return the selected one.
+    - If ``fzf`` is installed, pipe all items into it and return the selected one.
     - Otherwise, fall back to the simple text-based picker.
     """
 
@@ -410,7 +419,7 @@ def refresh(
     if github:
         console.rule("GitHub repos")
         cmd = [
-            gh_cmd(),
+            settings.gh,
             "repo",
             "list",
             "--limit",
@@ -477,7 +486,15 @@ def refresh(
         # If not, we degrade gracefully.
         try:
             data = run_json(
-                [tea_cmd(), "repos", "ls", "-l", tea_login(), "--output", "json"]
+                [
+                    settings.tea,
+                    "repos",
+                    "ls",
+                    "-l",
+                    settings.tea_login,
+                    "--output",
+                    "json",
+                ]
             )
         except typer.Exit:
             console.print(
@@ -536,7 +553,7 @@ def refresh(
 
     if local:
         console.rule("Local repos")
-        root = local_root()
+        root = settings.root
         if not root.exists():
             console.print(f"[yellow]Local root does not exist:[/yellow] {root}")
         else:
@@ -584,7 +601,7 @@ def show_missing() -> None:
     rows = cur.fetchall()
     if not rows:
         console.print(
-            "[yellow]No local repos recorded. Run `refresh --local` first.[/yellow]"
+            "[yellow]No local repos recorded. Run `repostat refresh --local` first.[/yellow]"
         )
         raise typer.Exit(0)
 
@@ -625,7 +642,7 @@ def show_missing() -> None:
 
 @app.command("show-only-github")
 def show_only_github() -> None:
-    """Show repos that exist on GitHub but not in Forgejo or ~/git.
+    """Show repos that exist on GitHub but not in Forgejo or ``~/git``.
 
     Matching is done by repo *name* (not owner), which is good enough for
     a first pass and visible in the table output.
@@ -638,7 +655,7 @@ def show_only_github() -> None:
     gh_rows = cur.fetchall()
     if not gh_rows:
         console.print(
-            "[yellow]No GitHub repos in DB. Run `refresh --github` first.[/yellow]"
+            "[yellow]No GitHub repos in DB. Run `repostat refresh --github` first.[/yellow]"
         )
         raise typer.Exit(0)
 
@@ -687,13 +704,13 @@ def show_only_github() -> None:
 
 @app.command("pick-newrepo")
 def pick_newrepo() -> None:
-    """Fuzzy-pick local dirs to run `newrepo` in.
+    """Fuzzy-pick local dirs to run ``newrepo`` in.
 
     This is aimed at the workflow "create .git, a remote, and README".
     It looks for local entries missing .git, a remote, or a README and lets
     you interactively pick directories. For each selected directory it:
 
-    - runs `cd <path> && newrepo`
+    - runs ``cd <path> && newrepo``
     - then rescans that directory to update the DB
     """
 
@@ -703,7 +720,7 @@ def pick_newrepo() -> None:
     rows = cur.fetchall()
     if not rows:
         console.print(
-            "[yellow]No local repos in DB. Run `refresh --local` first.[/yellow]"
+            "[yellow]No local repos in DB. Run `repostat refresh --local` first.[/yellow]"
         )
         raise typer.Exit(0)
 
@@ -800,7 +817,7 @@ def _load_github_repos(conn: sqlite3.Connection) -> list[GHRepo]:
 
     if not rows:
         console.print(
-            "[yellow]No GitHub repos in DB. Run `refresh --github` first.[/yellow]"
+            "[yellow]No GitHub repos in DB. Run `repostat refresh --github` first.[/yellow]"
         )
         return repos
 
@@ -894,9 +911,9 @@ def _pick_gh_repos_for_plan(plan: str) -> None:
 def pick_mirror() -> None:
     """Fuzzy-pick GitHub repos to *mirror* into Forgejo.
 
-    This does NOT perform the mirroring itself; it records a migration_plan
-    entry with plan="mirror". A follow-up tool can then read those entries
-    and use Forgejo's migration/mirror APIs or UI.
+    This does NOT perform the mirroring itself; it records a ``migration_plan``
+    entry with ``plan="mirror"``. A follow-up tool can then read those
+    entries and use Forgejo's migration/mirror APIs or UI.
     """
 
     _pick_gh_repos_for_plan("mirror")
@@ -907,12 +924,13 @@ def pick_move() -> None:
     """Fuzzy-pick GitHub repos to *move* into Forgejo.
 
     Moving typically means:
+
     - create a normal repo on Forgejo
     - push all history to Forgejo
     - optionally archive or make the GitHub repo private / read-only
 
-    This command only records the intent as migration_plan entries with
-    plan="move".
+    This command only records the intent as ``migration_plan`` entries with
+    ``plan="move"``.
     """
 
     _pick_gh_repos_for_plan("move")
@@ -925,7 +943,7 @@ def pick_move() -> None:
 
 @app.command("show-plan")
 def show_plan() -> None:
-    """Show current migration_plan entries (mirror/move/etc.)."""
+    """Show current ``migration_plan`` entries (mirror/move/etc.)."""
 
     conn = get_conn()
     cur = conn.cursor()
@@ -959,7 +977,7 @@ def show_plan() -> None:
 
 
 # ---------------------------------------------------------------------------
-# stats: quick overview / suggestions
+# stats: quick overview / suggestions (and default command)
 # ---------------------------------------------------------------------------
 
 
@@ -1004,24 +1022,38 @@ def stats() -> None:
     console.print()
     console.print("[bold]Suggested next steps:[/bold]")
     if loc_count == 0:
-        console.print("- Run [cyan]refresh --local[/cyan] to index ~/git.")
+        console.print("- Run [cyan]repostat refresh --local[/cyan] to index ~/git.")
     if gh_count == 0:
-        console.print("- Run [cyan]refresh --github[/cyan] to pull your GitHub repos.")
+        console.print("- Run [cyan]repostat refresh --github[/cyan] to pull your GitHub repos.")
     if fj_count == 0:
         console.print(
-            "- Run [cyan]refresh --forgejo[/cyan] to pull your Forgejo repos (via tea)."
+            "- Run [cyan]repostat refresh --forgejo[/cyan] to pull your Forgejo repos (via tea)."
         )
     if missing_git or missing_remote or missing_readme:
         console.print(
-            "- Run [cyan]show-missing[/cyan] and [cyan]pick-newrepo[/cyan] to clean up local repos."
+            "- Run [cyan]repostat show-missing[/cyan] and [cyan]repostat pick-newrepo[/cyan] to clean up local repos."
         )
     if gh_count and fj_count:
         console.print(
-            "- Run [cyan]show-only-github[/cyan] to see repos that exist only on GitHub."
+            "- Run [cyan]repostat show-only-github[/cyan] to see repos that exist only on GitHub."
         )
         console.print(
-            "- Use [cyan]pick-mirror[/cyan] or [cyan]pick-move[/cyan] to mark migration intents."
+            "- Use [cyan]repostat pick-mirror[/cyan] or [cyan]repostat pick-move[/cyan] to mark migration intents."
         )
+
+
+# Typer callback to make `repostat` default to `stats`
+
+
+@app.callback(invoke_without_command=True)
+def main(ctx: typer.Context) -> None:  # pragma: no cover - tiny glue function
+    """Entry point for repostat.
+
+    If no subcommand is provided, this runs :func:`stats`.
+    """
+
+    if ctx.invoked_subcommand is None:
+        stats()
 
 
 # ---------------------------------------------------------------------------
