@@ -182,6 +182,14 @@ def init_db(conn: sqlite3.Connection) -> None:
             plan              TEXT NOT NULL,
             created_at        TEXT DEFAULT (datetime('now'))
         );
+
+        CREATE TABLE IF NOT EXISTS apply_history (
+            id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+            migration_plan_id  INTEGER NOT NULL,
+            applied_at         TEXT DEFAULT (datetime('now')),
+            notes              TEXT,
+            FOREIGN KEY (migration_plan_id) REFERENCES migration_plan(id)
+        );
         """
     )
     conn.commit()
@@ -941,9 +949,12 @@ def pick_move() -> None:
 # ---------------------------------------------------------------------------
 
 
-@app.command("show-plan")
-def show_plan() -> None:
-    """Show current ``migration_plan`` entries (mirror/move/etc.)."""
+@app.command("plan")
+def plan() -> None:
+    """Show the current migration *plan* (Terraform-style).
+
+    This is the main view of what will happen when you run ``repostat apply``.
+    """
 
     conn = get_conn()
     cur = conn.cursor()
@@ -953,6 +964,11 @@ def show_plan() -> None:
     console.rule("Migration plan")
     if not rows:
         console.print("[yellow]No migration_plan entries yet.[/yellow]")
+        console.print()
+        console.print("[bold]Next steps:[/bold]")
+        console.print("- Use [cyan]repostat pick-mirror[/cyan] or [cyan]repostat pick-move[/cyan] to add items to the plan.")
+        console.print("- Run [cyan]repostat history[/cyan] to view previous apply runs.")
+        console.print("- Run [cyan]repostat refresh[/cyan] to sync GitHub / Forgejo / local state.")
         return
 
     table = Table(show_header=True, header_style="bold green", box=box.SIMPLE)
@@ -974,11 +990,164 @@ def show_plan() -> None:
         )
 
     console.print(table)
+    console.print()
+    console.print("[bold]Next steps:[/bold]")
+    console.print("- Run [cyan]repostat apply[/cyan] to record an apply of this plan.")
+    console.print("- Run [cyan]repostat history[/cyan] to see previous apply runs.")
+
+
+# Alias: keep the old name for muscle memory
+@app.command("show-plan")
+def show_plan_alias() -> None:
+    """Alias for :func:`plan` (kept for muscle memory)."""
+
+    plan()
+
+
+# ---------------------------------------------------------------------------
+# apply / history: terraform-style workflow
+# ---------------------------------------------------------------------------
+
+
+@app.command()
+def apply() -> None:
+    """Record an *apply* of the current migration plan.
+
+    This does **not** perform any network or Git operations yet; it simply
+    snapshots the current ``migration_plan`` table into ``apply_history`` so
+    that you can track when you considered a plan "applied".
+    """
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM migration_plan ORDER BY created_at DESC, id DESC")
+    rows = cur.fetchall()
+
+    console.rule("Apply migration plan")
+    if not rows:
+        console.print("[yellow]No migration_plan entries to apply.[/yellow]")
+        console.print()
+        console.print("[bold]Next steps:[/bold]")
+        console.print("- Run [cyan]repostat plan[/cyan] (or [cyan]repostat show-plan[/cyan]) to see the current plan.")
+        console.print("- Use [cyan]repostat pick-mirror[/cyan] or [cyan]repostat pick-move[/cyan] to build a plan.")
+        return
+
+    table = Table(show_header=True, header_style="bold green", box=box.SIMPLE)
+    table.add_column("ID", justify="right")
+    table.add_column("Plan")
+    table.add_column("GitHub")
+    table.add_column("Forgejo")
+    table.add_column("Local path")
+
+    for r in rows:
+        table.add_row(
+            str(r["id"]),
+            r["plan"],
+            r["github_full_name"] or "",
+            r["forgejo_full_name"] or "",
+            r["local_path"] or "",
+        )
+
+    console.print(table)
+
+    confirm = input("Record this apply in history? [y/N]: ").strip().lower()
+    if confirm not in {"y", "yes"}:
+        console.print("[yellow]Apply aborted; nothing recorded.[/yellow]")
+        console.print()
+        console.print("[bold]Next steps:[/bold]")
+        console.print("- Run [cyan]repostat plan[/cyan] to review the plan again.")
+        console.print("- Run [cyan]repostat history[/cyan] to inspect previous applies.")
+        return
+
+    for r in rows:
+        cur.execute(
+            "INSERT INTO apply_history (migration_plan_id, notes) VALUES (?, ?)",
+            (r["id"], "applied via `repostat apply`"),
+        )
+    conn.commit()
+
+    console.print("[green]Apply recorded in history.[/green]")
+    console.print()
+    console.print("[bold]Next steps:[/bold]")
+    console.print("- Run [cyan]repostat refresh[/cyan] to sync current repo state.")
+    console.print("- Run [cyan]repostat history[/cyan] to view apply history.")
+
+
+@app.command()
+def history() -> None:
+    """Show apply history for migration plans.
+
+    Each row represents a call to ``repostat apply`` and which plan entries
+    were included in that apply.
+    """
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT
+            h.id            AS history_id,
+            h.applied_at    AS applied_at,
+            h.notes         AS notes,
+            p.id            AS plan_id,
+            p.plan          AS plan,
+            p.github_full_name,
+            p.forgejo_full_name,
+            p.local_path
+        FROM apply_history h
+        JOIN migration_plan p ON p.id = h.migration_plan_id
+        ORDER BY h.applied_at DESC, h.id DESC
+        """
+    )
+    rows = cur.fetchall()
+
+    console.rule("Apply history")
+    if not rows:
+        console.print("[yellow]No applies recorded yet.[/yellow]")
+        console.print()
+        console.print("[bold]Next steps:[/bold]")
+        console.print("- Run [cyan]repostat plan[/cyan] to see the current plan.")
+        console.print("- Run [cyan]repostat apply[/cyan] to record an apply.")
+        return
+
+    table = Table(show_header=True, header_style="bold green", box=box.SIMPLE)
+    table.add_column("History ID", justify="right")
+    table.add_column("Applied at")
+    table.add_column("Plan ID", justify="right")
+    table.add_column("Plan")
+    table.add_column("GitHub")
+    table.add_column("Forgejo")
+    table.add_column("Local path")
+    table.add_column("Notes")
+
+    for r in rows:
+        table.add_row(
+            str(r["history_id"]),
+            r["applied_at"] or "",
+            str(r["plan_id"]),
+            r["plan"],
+            r["github_full_name"] or "",
+            r["forgejo_full_name"] or "",
+            r["local_path"] or "",
+            r["notes"] or "",
+        )
+
+    console.print(table)
+    console.print()
+    console.print("[bold]Next steps:[/bold]")
+    console.print("- Run [cyan]repostat plan[/cyan] to review the current plan.")
+    console.print("- Run [cyan]repostat apply[/cyan] to record a new apply.")
 
 
 # ---------------------------------------------------------------------------
 # stats: quick overview / suggestions (and default command)
 # ---------------------------------------------------------------------------
+
+
+# @app.command(): quick overview / suggestions (and default command)
+# # ---------------------------------------------------------------------------
 
 
 @app.command()
@@ -1007,6 +1176,8 @@ def stats() -> None:
 
     cur.execute("SELECT COUNT(*) FROM migration_plan")
     plan_count = int(cur.fetchone()[0])
+    cur.execute("SELECT COUNT(*) FROM apply_history")
+    history_count = int(cur.fetchone()[0])
 
     console.rule("Repo stats")
     table = Table(show_header=False, box=box.MINIMAL_DOUBLE_HEAD)
@@ -1017,6 +1188,7 @@ def stats() -> None:
     table.add_row("Local missing remote", str(missing_remote))
     table.add_row("Local missing README", str(missing_readme))
     table.add_row("Migration plan entries", str(plan_count))
+    table.add_row("Apply history entries", str(history_count))
     console.print(table)
 
     console.print()
@@ -1033,6 +1205,15 @@ def stats() -> None:
         console.print(
             "- Run [cyan]repostat show-missing[/cyan] and [cyan]repostat pick-newrepo[/cyan] to clean up local repos."
         )
+    if plan_count == 0:
+        console.print(
+            "- Build a plan with [cyan]repostat pick-mirror[/cyan] or [cyan]repostat pick-move[/cyan]."
+        )
+    else:
+        console.print("- Review the current plan with [cyan]repostat plan[/cyan].")
+        console.print("- Record an apply with [cyan]repostat apply[/cyan].")
+    if history_count:
+        console.print("- Inspect previous applies with [cyan]repostat history[/cyan].")
     if gh_count and fj_count:
         console.print(
             "- Run [cyan]repostat show-only-github[/cyan] to see repos that exist only on GitHub."
