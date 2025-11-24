@@ -426,24 +426,48 @@ def refresh(
 
     if forgejo:
         console.rule("Forgejo repos (tea)")
+        all_items: list[dict] = []
+        page = 1
+        per_page = 50  # Forgejo max per page
+
         try:
-            data = run_json(
-                [
-                    settings.tea,
-                    "repos",
-                    "ls",
-                    "--login",
-                    settings.tea_login,
-                    "--output",
-                    "json",
-                ]
-            )
+            while True:
+                page_items = run_json(
+                    [
+                        settings.tea,
+                        "repos",
+                        "ls",
+                        "--login",
+                        settings.tea_login,
+                        "--output",
+                        "json",
+                        "--limit",
+                        str(per_page),
+                        "--page",
+                        str(page),
+                    ]
+                )
+
+                # tea returns [] when there are no more repos
+                if not page_items:
+                    break
+
+                all_items.extend(page_items)
+
+                # If we got fewer than per_page, this was the last page
+                if len(page_items) < per_page:
+                    break
+
+                page += 1
+
         except typer.Exit:
             console.print(
                 "[yellow]Skipping Forgejo refresh: failed to run `tea repos ls --output json`.\n"
                 "You may need to upgrade tea, fix your login, or adjust the command in this script.[/yellow]"
             )
-            data = []
+            all_items = []
+
+        data = all_items
 
         if data:
             cur.execute("DELETE FROM forgejo_repos")
@@ -492,7 +516,6 @@ def refresh(
                 )
             conn.commit()
             console.print(f"Stored [green]{len(data)}[/green] Forgejo repos.")
-
     if local:
         console.rule("Local repos")
         root = settings.root
@@ -577,6 +600,199 @@ def show_missing() -> None:
 # ---------------------------------------------------------------------------
 # Show repos only in GitHub
 # ---------------------------------------------------------------------------
+
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Optional
+# (you already import dataclass/Path/Optional; just add `field` if needed)
+
+CHECK = "[green]✓[/green]"
+CROSS = "[red]✗[/red]"
+DOT = "[dim]·[/dim]"
+
+
+@dataclass
+class ProjectStatus:
+    name: str
+    github: bool = False
+    forgejo: bool = False
+    local_path: Path | None = None
+    local_clean: bool | None = None
+    local_branch: str | None = None
+    worktrees: list[str] = field(default_factory=list)
+
+
+def git_output(args: list[str], cwd: Path) -> str:
+    """Run a git command in `cwd` and return stdout ('' on error)."""
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(cwd), *args],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        return ""
+    return proc.stdout.strip()
+
+
+def git_is_clean(path: Path) -> bool | None:
+    """Return True/False if repo is clean/dirty, or None if not a git repo."""
+    if not git_has_git_dir(path):
+        return None
+    out = git_output(["status", "--porcelain"], path)
+    return out == ""
+
+
+def git_current_branch(path: Path) -> str | None:
+    if not git_has_git_dir(path):
+        return None
+    out = git_output(["rev-parse", "--abbrev-ref", "HEAD"], path)
+    return out or None
+
+
+def git_worktrees(path: Path) -> list[str]:
+    """Return worktrees as `branch@/path/to/worktree` strings."""
+    if not git_has_git_dir(path):
+        return []
+
+    out = git_output(["worktree", "list", "--porcelain"], path)
+    if not out:
+        return []
+
+    worktrees: list[str] = []
+    current_path: str | None = None
+    current_branch: str | None = None
+
+    for line in out.splitlines():
+        if line.startswith("worktree "):
+            current_path = line.split(" ", 1)[1]
+        elif line.startswith("branch "):
+            current_branch = line.split(" ", 1)[1]
+        elif line == "" and current_path:
+            # end of block
+            label = f"{current_branch or '?'}@{current_path}"
+            worktrees.append(label)
+            current_path = None
+            current_branch = None
+
+    if current_path:
+        label = f"{current_branch or '?'}@{current_path}"
+        worktrees.append(label)
+
+    return worktrees
+
+
+def _get_project(
+    projects: dict[str, ProjectStatus],
+    name: str,
+) -> ProjectStatus:
+    if name not in projects:
+        projects[name] = ProjectStatus(name=name)
+    return projects[name]
+
+def load_github_projects(conn: sqlite3.Connection) -> dict[str, ProjectStatus]:
+    """Load GitHub repos into a {name -> ProjectStatus} mapping."""
+    projects: dict[str, ProjectStatus] = {}
+    cur = conn.cursor()
+    cur.execute("SELECT name FROM github_repos")
+    for (name,) in cur.fetchall():
+        _get_project(projects, name).github = True
+    return projects
+
+
+def load_forgejo_projects(
+    conn: sqlite3.Connection,
+    projects: dict[str, ProjectStatus],
+) -> None:
+    """Mark repos that exist in Forgejo."""
+    cur = conn.cursor()
+    cur.execute("SELECT name FROM forgejo_repos")
+    for (name,) in cur.fetchall():
+        _get_project(projects, name).forgejo = True
+
+
+def load_local_projects(
+    conn: sqlite3.Connection,
+    projects: dict[str, ProjectStatus],
+) -> None:
+    """Attach local path / git status / worktrees."""
+    cur = conn.cursor()
+    cur.execute("SELECT path, name, has_git FROM local_repos")
+    for row in cur.fetchall():
+        path = Path(row["path"])
+        name = row["name"]
+        has_git_flag = bool(row["has_git"])
+
+        proj = _get_project(projects, name)
+        proj.local_path = path if path.exists() else None
+
+        if has_git_flag and path.exists():
+            proj.local_clean = git_is_clean(path)
+            proj.local_branch = git_current_branch(path)
+            proj.worktrees = git_worktrees(path)
+        else:
+            proj.local_clean = None
+            proj.local_branch = None
+            proj.worktrees = []
+
+
+@app.command("show")
+def show() -> None:
+    """Show combined status for GitHub, Forgejo, and local repos."""
+
+    conn = get_conn()
+    try:
+        projects = load_github_projects(conn)
+        load_forgejo_projects(conn, projects)
+        load_local_projects(conn, projects)
+    finally:
+        conn.close()
+
+    if not projects:
+        console.print(
+            "[yellow]No repos in DB yet. Run `repostat refresh` first.[/yellow]"
+        )
+        raise typer.Exit(0)
+
+    console.rule("Repository overview")
+
+    table = Table(show_header=True, header_style="bold cyan", box=box.SIMPLE)
+    table.add_column("Name")
+    table.add_column("GitHub", justify="center")
+    table.add_column("Forgejo", justify="center")
+    table.add_column("Local", justify="center")
+    table.add_column("Clean", justify="center")
+    table.add_column("Branch")
+    table.add_column("Worktrees")
+
+    for name in sorted(projects.keys(), key=str.lower):
+        p = projects[name]
+
+        github_cell = CHECK if p.github else DOT
+        forgejo_cell = CHECK if p.forgejo else DOT
+        local_cell = CHECK if p.local_path else DOT
+
+        if p.local_clean is None:
+            clean_cell = DOT
+        else:
+            clean_cell = CHECK if p.local_clean else CROSS
+
+        worktrees_str = "\n".join(p.worktrees) if p.worktrees else ""
+
+        table.add_row(
+            name,
+            github_cell,
+            forgejo_cell,
+            local_cell,
+            clean_cell,
+            p.local_branch or "",
+            worktrees_str,
+        )
+
+    console.print(table)
+
 
 
 @app.command("show-only-github")
@@ -790,6 +1006,18 @@ def _filter_github_not_in_forgejo(
 
     return [r for r in repos if r.name not in forgejo_names]
 
+def _filter_fork(repos: list[GHRepo]) -> list[GHRepo]:
+    return [r for r in repos if not r.fork]
+
+def _filter_archived(repos: list[GHRepo]) -> list[GHRepo]:
+    return [r for r in repos if not r.archived]
+
+def _filter_fork_only(repos: list[GHRepo]) -> list[GHRepo]:
+    return [r for r in repos if r.fork]
+
+def _filter_has_git(repos: list[GHRepo]) -> list[GHRepo]:
+    return [r for r in repos if not r.has_git]
+
 def _pick_gh_repos_for_plan(plan: str) -> None:
     conn = get_conn()
     repos = _load_github_repos(conn)
@@ -805,6 +1033,12 @@ def _pick_gh_repos_for_plan(plan: str) -> None:
 
     # NEW: actual candidate list excludes repos already in Forgejo
     candidate_repos = _filter_github_not_in_forgejo(conn, repos)
+    candidate_repos = _filter_archived(candidate_repos)
+    if plan == "rm":
+        candidate_repos = _filter_fork_only(candidate_repos)
+    else:
+        candidate_repos = _filter_fork(candidate_repos)
+
     if not candidate_repos:
         console.print(
             "[green]All GitHub repos already exist in Forgejo by name; nothing to pick for move.[/green]"
@@ -1147,8 +1381,8 @@ def execute_move_plan_row(conn: sqlite3.Connection, row: sqlite3.Row) -> None:
     ]
     if description:
         tea_cmd.extend(["--description", description])
-    if homepage:
-        tea_cmd.extend(["--homepage", homepage])
+    # if homepage:
+    #     tea_cmd.extend(["--homepage", homepage])
 
     try:
         proc = subprocess.run(
@@ -1239,6 +1473,37 @@ def execute_move_plan_row(conn: sqlite3.Connection, row: sqlite3.Row) -> None:
         f"[green]Plan {plan_id}: successfully moved {github_full} to {forgejo_http_url}.[/green]"
     )
 
+def execute_rm_plan_row(conn, r):
+    """uses gh cli to delete a GitHub repo"""
+
+    github_full = r["github_full_name"]
+    console.print(f"Plan {r['id']}: removing GitHub repo {github_full}")
+
+    try:
+        subprocess.run(
+            [settings.gh, "repo", "delete", github_full, '--yes'],
+            check=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        console.print(f"Plan {r['id']}: failed to remove GitHub repo {github_full}")
+        console.print(exc.stderr)
+        console.print('you may need to set permissions to allo gh to delete_repo')
+        console.print('gh auth refresh -h github.com -s delete_repo')
+        raise
+
+    console.print(f"Plan {r['id']}: successfully removed GitHub repo {github_full}")
+
+    # --- record history + clear from plan ------------------------------------
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO apply_history (migration_plan_id, notes) VALUES (?, ?)",
+        (r["id"], "removed via `repostat apply`"),
+    )
+    cur.execute("DELETE FROM migration_plan WHERE id = ?", (r["id"],))
+    conn.commit()
+
+
 @app.command()
 def apply() -> None:
     """Apply the current migration plan.
@@ -1287,6 +1552,9 @@ def apply() -> None:
         if plan_type == "move":
             # This will also add to apply_history and delete the plan row
             execute_move_plan_row(conn, r)
+        if plan_type =="rm":
+            # This will also add to apply_history and delete the plan row
+            execute_rm_plan_row(conn, r)
         else:
             # Default behavior: just record an apply and clear from plan
             cur.execute(
@@ -1443,6 +1711,66 @@ def stats() -> None:
             "- Use [cyan]repostat mirror[/cyan] or [cyan]repostat move[/cyan] to mark migration intents."
         )
 
+@app.command("plan-rm")
+def plan_rm(
+    plan_id: int = typer.Argument(..., help="ID from `repostat plan`"),
+) -> None:
+    """Remove a single entry from the migration plan by ID."""
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT id, plan, github_full_name, forgejo_full_name, local_path "
+        "FROM migration_plan WHERE id = ?",
+        (plan_id,),
+    )
+    row = cur.fetchone()
+
+    if row is None:
+        console.print(f"[red]No migration_plan entry with id {plan_id}.[/red]")
+        raise typer.Exit(1)
+
+    console.rule("Remove from migration plan")
+    table = Table(show_header=True, header_style="bold green", box=box.SIMPLE)
+    table.add_column("ID", justify="right")
+    table.add_column("Plan")
+    table.add_column("GitHub")
+    table.add_column("Forgejo")
+    table.add_column("Local path")
+
+    table.add_row(
+        str(row["id"]),
+        row["plan"],
+        row["github_full_name"] or "",
+        row["forgejo_full_name"] or "",
+        row["local_path"] or "",
+    )
+    console.print(table)
+
+    confirm = input(f"Remove plan entry {plan_id}? [y/N]: ").strip().lower()
+    if confirm not in {"y", "yes"}:
+        console.print("[yellow]Aborted; nothing removed.[/yellow]")
+        raise typer.Exit(0)
+
+    cur.execute("DELETE FROM migration_plan WHERE id = ?", (plan_id,))
+    conn.commit()
+    console.print(f"[green]Removed plan entry {plan_id} from migration_plan.[/green]")
+
+@app.command("plan-rm-all")
+def plan_rm_all() -> None:
+    """Remove all entries from the migration plan."""
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM migration_plan")
+    conn.commit()
+    console.print("[green]Removed all migration_plan entries.[/green]")
+
+@app.command("rm-fork")
+def pick_rm_fork() -> None:
+    """delete a repo from github"""
+
+    _pick_gh_repos_for_plan("rm")
 
 # ---------------------------------------------------------------------------
 # Typer callback (default to stats)
