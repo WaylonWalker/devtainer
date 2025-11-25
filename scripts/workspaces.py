@@ -6,6 +6,7 @@
 #     "rich",
 #     "pydantic",
 #     "pydantic-settings",
+#     "iterfzf",
 # ]
 # ///
 
@@ -14,16 +15,20 @@ import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Tuple, Dict
+from typing import List, Optional, Tuple
 
 import typer
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt
+from iterfzf import iterfzf
 
-app = typer.Typer(help="Workspace management tool")
+app = typer.Typer(
+    help="Workspace management tool",
+    invoke_without_command=True,
+)
 console = Console()
 
 
@@ -50,23 +55,40 @@ class Settings(BaseSettings):
         description="Logical name of the workspace group (e.g. 'git', 'work', 'personal').",
     )
 
-    class Config:
-        env_prefix = ""
-        env_file = None
-        env_nested_delimiter = "__"
-        fields = {
-            "workspaces_name": {"env": ["WORKSPACES_NAME"]},
-        }
+    # pydantic v2-style config
+    model_config = SettingsConfigDict(
+        env_prefix="",
+        env_file=None,
+        env_nested_delimiter="__",
+        # map env vars explicitly
+        extra="ignore",
+    )
+
+    @classmethod
+    def from_env_and_override(cls, override_workspaces_name: Optional[str]) -> "Settings":
+        """
+        Construct settings honoring:
+        1. CLI override
+        2. WORKSPACES_NAME env
+        3. default "git"
+        """
+        # First, load from env (WORKSPACES_NAME)
+        s = cls()
+        if override_workspaces_name is not None:
+            s.workspaces_name = override_workspaces_name
+        # We still want WORKSPACES_NAME to be honored even though
+        # we don't use "fields" config anymore:
+        env_val = os.getenv("WORKSPACES_NAME")
+        if env_val and override_workspaces_name is None:
+            s.workspaces_name = env_val
+        return s
 
 
 def resolve_paths(workspaces_name: Optional[str]) -> Tuple[Settings, Path, Path]:
     """
     Build Settings and derived paths, honoring CLI override of workspaces_name.
     """
-    base_settings = Settings()
-    if workspaces_name:
-        base_settings.workspaces_name = workspaces_name
-
+    base_settings = Settings.from_env_and_override(workspaces_name)
     name = base_settings.workspaces_name
     repos_dir = Path(os.path.expanduser(f"~/{name}")).resolve()
     workspaces_dir = Path(os.path.expanduser(f"~/{name}.workspaces")).resolve()
@@ -87,17 +109,18 @@ class GitStatus:
     @property
     def indicator(self) -> str:
         """
-        Build ASCII indicator like:
-        - clean: "  0/0 "
-        - ahead 1, behind 0, dirty: "↑1  "
-        - behind 2, dirty: "  ↓2*"
-        Combined: f"{ahead}/{behind}{'*' if dirty else ''}"
+        Build ASCII indicator:
+        - clean: "·"
+        - ahead 1: "↑1"
+        - behind 2: "↓2"
+        - both ahead/behind: "↑1 ↓2"
+        - add '*' when dirty, e.g. "↑1*" or "↑1 ↓2*"
         """
         parts: List[str] = []
         if self.ahead:
             parts.append(f"↑{self.ahead}")
         if self.behind:
-            parts.append(f"↓{self.behhind}")
+            parts.append(f"↓{self.behind}")
         base = " ".join(parts) if parts else "·"
         if self.dirty:
             base += "*"
@@ -112,10 +135,6 @@ def get_git_status(repo_path: Path) -> GitStatus:
     - '# branch.ab +A -B' for ahead/behind
     - any non-comment line for dirty
     """
-    if not (repo_path / ".git").exists() and not (repo_path / ".git").is_dir():
-        # Might be a worktree; just try git commands
-        pass
-
     try:
         out = subprocess.check_output(
             ["git", "status", "--porcelain=v2", "--branch"],
@@ -157,7 +176,8 @@ def get_current_branch(repo_path: Path) -> Optional[str]:
 
 
 def ensure_git_repo(path: Path) -> bool:
-    return (path / ".git").exists() or (path / ".git").is_dir()
+    # Works for repos and worktrees (.git file or dir)
+    return (path / ".git").exists()
 
 
 def run_cmd(cmd: List[str], cwd: Optional[Path] = None) -> Tuple[int, str, str]:
@@ -236,7 +256,7 @@ def write_workspace_readme(ws_dir: Path, name: str, description: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Commands
+# Commands / main callback
 # ---------------------------------------------------------------------------
 
 
@@ -255,6 +275,8 @@ def main(
 ):
     """
     Manage workspaces and associated Git worktrees.
+
+    If no command is given, this will list workspaces.
     """
     settings, repos_dir, workspaces_dir = resolve_paths(workspaces_name)
     ctx.obj = {
@@ -262,6 +284,12 @@ def main(
         "repos_dir": repos_dir,
         "workspaces_dir": workspaces_dir,
     }
+
+    # Default behavior when no subcommand is provided:
+    if ctx.invoked_subcommand is None:
+        # Call the list_workspaces command programmatically
+        list_workspaces(ctx)
+        raise typer.Exit(0)
 
 
 def get_ctx_paths(ctx: typer.Context) -> Tuple[Settings, Path, Path]:
@@ -284,7 +312,7 @@ def list_workspaces(
     - workspace description (from README markdown, everything after H1)
     - included repos with git status indicators
     """
-    settings, repos_dir, workspaces_dir = get_ctx_paths(ctx)
+    _settings, _repos_dir, workspaces_dir = get_ctx_paths(ctx)
     workspaces_dir.mkdir(parents=True, exist_ok=True)
 
     table = Table(title=f"Workspaces ({workspaces_dir})")
@@ -337,7 +365,7 @@ def create_workspace(
     - Creates directory under workspaces_dir.
     - Creates README with format '# <name>\\n\\n<description>'.
     """
-    settings, repos_dir, workspaces_dir = get_ctx_paths(ctx)
+    _settings, _repos_dir, workspaces_dir = get_ctx_paths(ctx)
     workspaces_dir.mkdir(parents=True, exist_ok=True)
 
     if not name:
@@ -379,7 +407,7 @@ def list_repos(
     - current branch
     - ahead/behind/dirty indicators
     """
-    settings, repos_dir, workspaces_dir = get_ctx_paths(ctx)
+    _settings, _repos_dir, workspaces_dir = get_ctx_paths(ctx)
     ws_dir = find_workspace_dir(workspaces_dir, workspace)
 
     if not ws_dir.exists():
@@ -403,7 +431,7 @@ def list_repos(
     console.print(table)
 
 
-# ---------------- add-repos ----------------
+# ---------------- add-repo ----------------
 
 
 def list_all_repos(repos_dir: Path) -> List[Path]:
@@ -421,37 +449,14 @@ def list_all_repos(repos_dir: Path) -> List[Path]:
 
 def pick_repo_with_iterfzf(repos: List[Path]) -> Optional[Path]:
     """
-    Use iterfzf to pick a repo from a list of paths.
-
-    Falls back to returning None if iterfzf not installed or user cancels.
+    Use iterfzf (Python library) to pick a repo from a list of paths.
     """
     if not repos:
         return None
 
-    # Build a list of names to display (just directory names).
     names = [r.name for r in repos]
+    choice = iterfzf(names, prompt="pick a repo> ")
 
-    try:
-        proc = subprocess.Popen(
-            ["fzf"],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True,
-        )
-    except FileNotFoundError:
-        console.print("[red]iterfzf not found on PATH. Please install iterfzf.[/red]")
-        return None
-
-    # Send names to iterfzf
-    input_data = "\n".join(names)
-    out, _ = proc.communicate(input_data)
-
-    if proc.returncode != 0:
-        # user cancelled or error
-        return None
-
-    choice = out.strip()
     if not choice:
         return None
 
@@ -491,7 +496,7 @@ def add_repo(
     - Creates a worktree for branch named after the workspace
       into workspace_dir / repo_name.
     """
-    settings, repos_dir, workspaces_dir = get_ctx_paths(ctx)
+    _settings, repos_dir, workspaces_dir = get_ctx_paths(ctx)
     ws_dir = find_workspace_dir(workspaces_dir, workspace)
     if not ws_dir.exists():
         console.print(f"[red]Workspace '{ws_dir.name}' does not exist at {ws_dir}[/red]")
@@ -532,13 +537,13 @@ def add_repo(
 
     # Ensure branch exists or create it
     branch = ws_name
-    code, out, err = run_cmd(["git", "rev-parse", "--verify", branch], cwd=repo_path)
+    code, _out, err = run_cmd(["git", "rev-parse", "--verify", branch], cwd=repo_path)
     if code != 0:
         # create branch from current HEAD
         console.print(
             f"[yellow]Branch '{branch}' does not exist in {repo_path.name}; creating it.[/yellow]"
         )
-        code, out, err = run_cmd(["git", "branch", branch], cwd=repo_path)
+        code, _out, err = run_cmd(["git", "branch", branch], cwd=repo_path)
         if code != 0:
             console.print(
                 f"[red]Failed to create branch '{branch}' in {repo_path.name}:[/red]\n{err}"
@@ -547,7 +552,7 @@ def add_repo(
 
     # Create worktree
     ws_dir.mkdir(parents=True, exist_ok=True)
-    code, out, err = run_cmd(
+    code, _out, err = run_cmd(
         ["git", "worktree", "add", str(target_dir), branch],
         cwd=repo_path,
     )
