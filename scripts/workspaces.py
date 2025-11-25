@@ -15,597 +15,572 @@ import os
 import re
 import subprocess
 from dataclasses import dataclass
-from functools import lru_cache
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 
 import typer
-from pydantic import Field
+from pydantic import Field, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from rich.console import Console
 from rich.table import Table
-from rich.text import Text
+from rich.prompt import Prompt
 
-app = typer.Typer(help="Manage git workspaces built out of worktrees from a repos directory.")
+app = typer.Typer(help="Workspace management tool")
 console = Console()
 
 
-# =========================
-# Settings
-# =========================
+# -------------------------
+# Settings / Configuration
+# -------------------------
 
 
 class WorkspaceSettings(BaseSettings):
     """
-    Application settings.
+    Configuration for workspace management.
 
-    Resolution order (lowest to highest precedence):
-    - defaults
-    - .env file (if present)
-    - environment variables
-    - CLI options (we pass them in explicitly)
+    Resolution order:
+    - CLI flags (handled separately)
+    - Environment variables
+    - Defaults below
     """
 
-    repos_dir: Path = Field(default=Path("~/git").expanduser())
-    workspaces_root: Path = Field(default=Path("~/git.workspaces").expanduser())
-
-    model_config = SettingsConfigDict(
-        env_prefix="WORKSPACES_",
-        env_file=".workspaces.env",
-        extra="ignore",
+    # Base workspace root choice:
+    # - CLI flag: --workspace-root
+    # - ENV: WORKSPACES_DIR
+    # - Default: ~/git
+    base_workspaces_dir: Path = Field(
+        default=Path("~/git").expanduser(),
+        validation_alias="WORKSPACES_DIR",
     )
 
+    model_config = SettingsConfigDict(extra="ignore")
 
-@lru_cache(maxsize=32)
-def get_settings(
-    repos_dir: Optional[Path] = None,
-    workspaces_root: Optional[Path] = None,
-) -> WorkspaceSettings:
-    kwargs = {}
-    if repos_dir is not None:
-        kwargs["repos_dir"] = repos_dir
-    if workspaces_root is not None:
-        kwargs["workspaces_root"] = workspaces_root
-    return WorkspaceSettings(**kwargs)
+    @property
+    def repos_dir(self) -> Path:
+        # repos_dir = workspaces_dir from spec
+        return self.base_workspaces_dir
+
+    @property
+    def workspaces_dir(self) -> Path:
+        # workspaces_dir = workspaces_dir + ".workspaces"
+        return Path(str(self.base_workspaces_dir) + ".workspaces")
 
 
-# =========================
-# Domain models
-# =========================
+def get_settings(workspaces_dir_override: Optional[Path]) -> WorkspaceSettings:
+    """
+    Build settings from env/default and then override base_workspaces_dir if flag is passed.
+    """
+    try:
+        settings = WorkspaceSettings()
+    except ValidationError as e:
+        console.print("[red]Error loading settings:[/red]", e)
+        raise typer.Exit(1)
+
+    if workspaces_dir_override is not None:
+        settings.base_workspaces_dir = workspaces_dir_override.expanduser()
+
+    return settings
+
+
+# -------------------------
+# Models / Helpers
+# -------------------------
 
 
 @dataclass
-class GitStatusSummary:
+class GitStatus:
     ahead: int = 0
     behind: int = 0
     dirty: bool = False
 
     @property
-    def is_clean(self) -> bool:
-        return self.ahead == 0 and self.behind == 0 and not self.dirty
-
-    def ascii_indicator(self) -> str:
+    def ascii(self) -> str:
         """
-        Simple ASCII indicators:
-
-        - ahead:  ↑N
+        Simple ascii indicators:
+        - ahead: ↑N
         - behind: ↓N
-        - dirty:  *
-        - clean:  ·
+        - dirty: *
+        Examples:
+          clean: "."
+          ahead 1, clean: "↑1"
+          behind 2, dirty: "↓2*"
+          ahead 1, behind 1, dirty: "↑1↓1*"
         """
         parts: List[str] = []
         if self.ahead:
             parts.append(f"↑{self.ahead}")
         if self.behind:
             parts.append(f"↓{self.behind}")
+        s = "".join(parts) or "."
         if self.dirty:
-            parts.append("*")
-        if not parts:
-            parts.append("·")
-        return " ".join(parts)
-
-
-@dataclass
-class RepoInfo:
-    name: str
-    path: Path
-    git_root: Optional[Path]
-    status: Optional[GitStatusSummary]
-
-
-@dataclass
-class WorkspaceInfo:
-    name: str
-    path: Path
-    description: str
-    repos: List[RepoInfo]
-
-
-# =========================
-# Git helpers
-# =========================
+            s += "*"
+        return s
 
 
 def run_git(args: List[str], cwd: Path) -> Tuple[int, str, str]:
-    proc = subprocess.run(
+    result = subprocess.run(
         ["git", *args],
         cwd=str(cwd),
+        text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True,
     )
-    return proc.returncode, proc.stdout.strip(), proc.stderr.strip()
+    return result.returncode, result.stdout, result.stderr
 
 
-def get_git_root(path: Path) -> Optional[Path]:
-    code, out, _ = run_git(["rev-parse", "--show-toplevel"], cwd=path)
-    if code != 0:
+def get_git_status(repo_path: Path) -> Optional[GitStatus]:
+    if not (repo_path / ".git").exists() and not (repo_path / ".git").is_dir():
+        # It might be a worktree (gitdir is not directly here), but `git` should still work
+        if not (repo_path / ".git").exists():
+            # Try assuming it is a git repo/worktree anyway
+            pass
+
+    # Determine upstream
+    rc, out, _ = run_git(["rev-parse", "--abbrev-ref", "@{upstream}"], cwd=repo_path)
+    has_upstream = rc == 0
+
+    ahead = 0
+    behind = 0
+    if has_upstream:
+        rc2, out2, _ = run_git(["rev-list", "--left-right", "--count", "HEAD...@{upstream}"], cwd=repo_path)
+        if rc2 == 0:
+            # output: "<behind> <ahead>\n"
+            try:
+                behind_s, ahead_s = out2.strip().split()
+                behind = int(behind_s)
+                ahead = int(ahead_s)
+            except ValueError:
+                pass
+
+    rc3, out3, _ = run_git(["status", "--porcelain"], cwd=repo_path)
+    if rc3 != 0:
         return None
-    return Path(out)
+
+    dirty = bool(out3.strip())
+    return GitStatus(ahead=ahead, behind=behind, dirty=dirty)
 
 
-def get_git_status_summary(path: Path) -> Optional[GitStatusSummary]:
-    # Ensure it's a git repo
-    if get_git_root(path) is None:
+def get_current_branch(repo_path: Path) -> Optional[str]:
+    rc, out, _ = run_git(["rev-parse", "--abbrev-ref", "HEAD"], cwd=repo_path)
+    if rc != 0:
         return None
-
-    # ahead / behind
-    code, out, _ = run_git(
-        ["rev-list", "--left-right", "--count", "@{u}...HEAD"],
-        cwd=path,
-    )
-    ahead = behind = 0
-    if code == 0 and out:
-        try:
-            behind_str, ahead_str = out.split()
-            behind = int(behind_str)
-            ahead = int(ahead_str)
-        except Exception:
-            ahead = behind = 0
-
-    # dirty?
-    code, out, _ = run_git(["status", "--porcelain"], cwd=path)
-    dirty = bool(out.strip()) if code == 0 else False
-
-    return GitStatusSummary(ahead=ahead, behind=behind, dirty=dirty)
+    return out.strip()
 
 
-# =========================
-# Workspace helpers
-# =========================
+def ensure_dir(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
 
 
-def read_workspace_description(readme_path: Path) -> str:
+def read_workspace_readme_description(readme_path: Path) -> str:
     """
-    Read the workspace description from README:
-    everything after the first H1 (`# ...`) heading.
+    Read description from workspace README.
+
+    Spec: workspace description (read from the readme, everything after the h1 title)
+
+    Expect format:
+        # <name>
+
+        <description...>
     """
     if not readme_path.is_file():
         return ""
 
-    text = readme_path.read_text(encoding="utf-8", errors="ignore")
-    lines = text.splitlines()
+    content = readme_path.read_text(encoding="utf-8")
+    lines = content.splitlines()
 
-    found_h1 = False
+    # Find first H1
     desc_lines: List[str] = []
-
+    found_h1 = False
     for line in lines:
         if not found_h1:
-            if re.match(r"^#\s+", line.strip()):
+            if re.match(r"^#\s+", line):
                 found_h1 = True
             continue
+        # after H1
         desc_lines.append(line)
 
-    # strip leading/trailing blank lines
-    while desc_lines and desc_lines[0].strip() == "":
+    # strip leading blank lines
+    while desc_lines and not desc_lines[0].strip():
         desc_lines.pop(0)
-    while desc_lines and desc_lines[-1].strip() == "":
-        desc_lines.pop()
-
     return "\n".join(desc_lines).strip()
 
 
-def discover_workspaces(workspaces_root: Path) -> List[WorkspaceInfo]:
-    workspaces: List[WorkspaceInfo] = []
-    if not workspaces_root.is_dir():
-        return workspaces
-
-    for child in sorted(workspaces_root.iterdir()):
-        if not child.is_dir():
-            continue
-        readme = child / "README.md"
-        description = read_workspace_description(readme)
-        workspaces.append(
-            WorkspaceInfo(
-                name=child.name,
-                path=child,
-                description=description,
-                repos=[],
-            )
-        )
-    return workspaces
+def write_workspace_readme(path: Path, name: str, description: str) -> None:
+    content = f"# {name}\n\n{description.strip()}\n"
+    path.write_text(content, encoding="utf-8")
 
 
-def discover_workspace_repos(workspace_path: Path) -> List[RepoInfo]:
-    repos: List[RepoInfo] = []
-    if not workspace_path.is_dir():
-        return repos
-
-    for child in sorted(workspace_path.iterdir()):
-        if not child.is_dir():
-            continue
-        git_root = get_git_root(child)
-        status = get_git_status_summary(child) if git_root else None
-        repos.append(
-            RepoInfo(
-                name=child.name,
-                path=child,
-                git_root=git_root,
-                status=status,
-            )
-        )
-    return repos
-
-
-def discover_repos_in_repos_dir(repos_dir: Path) -> List[Path]:
-    if not repos_dir.is_dir():
+def list_dirs(path: Path) -> List[Path]:
+    if not path.exists():
         return []
-    return [p for p in sorted(repos_dir.iterdir()) if p.is_dir()]
+    return sorted([p for p in path.iterdir() if p.is_dir()])
 
 
-# =========================
-# CLI utilities
-# =========================
+def is_git_repo(path: Path) -> bool:
+    # For repos_dir, we expect a main non-worktree repo: .git dir or file
+    if (path / ".git").exists():
+        return True
+    # As a fallback, try `git rev-parse` (handles bare repos, etc.)
+    rc, _, _ = run_git(["rev-parse", "--git-dir"], cwd=path)
+    return rc == 0
 
 
-def resolve_current_workspace(
-    workspaces_root: Path,
-    workspace_name: Optional[str],
-) -> WorkspaceInfo:
+def fuzzy_select(items: List[str]) -> Optional[str]:
     """
-    Resolve a workspace by name. If not provided, and there is only one workspace,
-    use that. Otherwise, require explicit name.
+    Use iterfzf to select item.
+
+    Returns selected item or None if cancelled.
     """
-    workspaces = discover_workspaces(workspaces_root)
-    if not workspaces:
-        console.print("[red]No workspaces found.[/red]")
-        raise typer.Exit(code=1)
-
-    if workspace_name:
-        for ws in workspaces:
-            if ws.name == workspace_name:
-                ws.repos = discover_workspace_repos(ws.path)
-                return ws
-        console.print(f"[red]Workspace '{workspace_name}' not found.[/red]")
-        raise typer.Exit(code=1)
-
-    if len(workspaces) == 1:
-        ws = workspaces[0]
-        ws.repos = discover_workspace_repos(ws.path)
-        return ws
-
-    console.print(
-        "[red]Multiple workspaces exist. Please specify --workspace NAME.[/red]"
-    )
-    raise typer.Exit(code=1)
-
-
-def ensure_iterfzf_exists() -> None:
-    from shutil import which
-
-    if which("iterfzf") is None:
-        console.print(
-            "[red]iterfzf is required for this command but is not installed or "
-            "not on PATH.[/red]"
-        )
-        raise typer.Exit(code=1)
-
-
-def run_iterfzf(candidates: List[str]) -> Optional[str]:
-    """
-    Run iterfzf with the given candidates. Return the selected line or None if
-    the user cancelled.
-    """
-    ensure_iterfzf_exists()
-    proc = subprocess.Popen(
-        ["iterfzf"],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-    assert proc.stdin is not None
-    proc.stdin.write("\n".join(candidates))
-    proc.stdin.close()
-    out, _ = proc.communicate()
-    if proc.returncode != 0:
+    if not items:
         return None
-    return out.strip() or None
+
+    try:
+        proc = subprocess.Popen(
+            ["iterfzf"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except FileNotFoundError:
+        console.print("[red]iterfzf is not installed or not in PATH.[/red]")
+        return None
+
+    assert proc.stdin is not None
+    assert proc.stdout is not None
+
+    proc.stdin.write("\n".join(items))
+    proc.stdin.close()
+
+    out = proc.stdout.read().strip()
+    proc.wait()
+    if proc.returncode != 0 or not out:
+        return None
+    return out
 
 
-# =========================
+# -------------------------
+# CLI options helpers
+# -------------------------
+
+
+def common_workspace_root_option() -> Path:
+    return typer.Option(
+        None,
+        "--workspace-root",
+        "-w",
+        help=(
+            "Base workspaces directory. "
+            "Defaults to ENV WORKSPACES_DIR or ~/git. "
+            "repos_dir = workspace_root, workspaces_dir = workspace_root + '.workspaces'"
+        ),
+        dir_okay=True,
+        file_okay=False,
+        resolve_path=True,
+        envvar=None,
+    )
+
+
+workspace_root_option = typer.Option(
+    None,
+    "--workspace-root",
+    "-w",
+    help=(
+        "Base workspaces directory. "
+        "Defaults to ENV WORKSPACES_DIR or ~/git. "
+        "repos_dir = workspace_root, workspaces_dir = workspace_root + '.workspaces'"
+    ),
+    dir_okay=True,
+    file_okay=False,
+    resolve_path=True,
+)
+
+workspace_name_option = typer.Option(
+    None,
+    "--workspace",
+    "-W",
+    help="Workspace name (directory under workspaces_dir). "
+    "If omitted for some commands, may prompt or infer from CWD.",
+)
+
+
+# -------------------------
 # Commands
-# =========================
+# -------------------------
 
 
 @app.command("list-workspaces")
 def list_workspaces(
-    repos_dir: Optional[Path] = typer.Option(
-        None,
-        "--repos-dir",
-        help="Directory containing base repos (default: $WORKSPACES_REPOS_DIR or ~/git).",
-    ),
-    workspaces_root: Optional[Path] = typer.Option(
-        None,
-        "--workspaces-root",
-        "--workspaces-dir",
-        help=(
-            "Directory containing workspace directories "
-            "(default: $WORKSPACES_WORKSPACES_ROOT or ~/git.workspaces)."
-        ),
-    ),
-) -> None:
+    workspace_root: Optional[Path] = workspace_root_option,
+):
     """
-    List workspaces: name, description, and included repos with git indicators.
+    List all workspaces.
+    Shows workspace name, description, and included repos with git indicators.
     """
-    settings = get_settings(
-        repos_dir=repos_dir,
-        workspaces_root=workspaces_root,
-    )
-    workspaces = discover_workspaces(settings.workspaces_root)
-    if not workspaces:
-        console.print(
-            f"[yellow]No workspaces found in {settings.workspaces_root}.[/yellow]"
-        )
-        raise typer.Exit(code=0)
+    settings = get_settings(workspace_root)
+    workspaces_dir = settings.workspaces_dir
+    ensure_dir(workspaces_dir)
 
-    table = Table(title="Workspaces", show_lines=False)
-    table.add_column("Workspace", style="cyan", no_wrap=True)
-    table.add_column("Description", style="white")
-    table.add_column("Repos", style="magenta")
+    ws_dirs = list_dirs(workspaces_dir)
+    if not ws_dirs:
+        console.print(f"[yellow]No workspaces found in {workspaces_dir}[/yellow]")
+        raise typer.Exit(0)
 
-    for ws in workspaces:
-        repos = discover_workspace_repos(ws.path)
-        repos_lines: List[str] = []
-        for r in repos:
-            indicator = r.status.ascii_indicator() if r.status else "?"
-            repos_lines.append(f"{r.name} [{indicator}]")
-        repos_text = "\n".join(repos_lines) if repos_lines else "-"
-        desc_summary = ws.description.splitlines()[0] if ws.description else ""
-        table.add_row(ws.name, desc_summary, repos_text)
+    table = Table(title=f"Workspaces in {workspaces_dir}")
+    table.add_column("Workspace")
+    table.add_column("Description")
+    table.add_column("Repos")
+
+    for ws in ws_dirs:
+        name = ws.name
+        readme = ws / "readme.md"
+        desc = read_workspace_readme_description(readme)
+
+        # list repos under workspace directory (excluding readme.md etc.)
+        repo_dirs = [p for p in ws.iterdir() if p.is_dir()]
+        repo_statuses: List[str] = []
+        for rd in sorted(repo_dirs, key=lambda p: p.name):
+            status = get_git_status(rd)
+            if status is None:
+                indicator = "?"
+            else:
+                indicator = status.ascii
+            repo_statuses.append(f"{rd.name} [{indicator}]")
+        repos_summary = "\n".join(repo_statuses) if repo_statuses else "-"
+
+        table.add_row(name, desc or "-", repos_summary)
 
     console.print(table)
+
+
+def _resolve_workspace_from_cwd(settings: WorkspaceSettings) -> Optional[str]:
+    """
+    Try to infer workspace name from current directory:
+    if cwd is inside settings.workspaces_dir/<workspace>/..., return <workspace>.
+    """
+    cwd = Path.cwd().resolve()
+    ws_root = settings.workspaces_dir.resolve()
+    try:
+        rel = cwd.relative_to(ws_root)
+    except ValueError:
+        return None
+    # first path component is workspace name
+    parts = rel.parts
+    if not parts:
+        return None
+    return parts[0]
+
+
+def _require_workspace_name(
+    settings: WorkspaceSettings, workspace: Optional[str]
+) -> str:
+    """
+    Get workspace name using the precedence:
+    - explicit CLI flag
+    - inferred from CWD
+    - prompt user to choose from existing
+    """
+    workspaces_dir = settings.workspaces_dir
+    ensure_dir(workspaces_dir)
+
+    if workspace:
+        return workspace
+
+    inferred = _resolve_workspace_from_cwd(settings)
+    if inferred:
+        return inferred
+
+    options = [p.name for p in list_dirs(workspaces_dir)]
+    if not options:
+        console.print(
+            f"[red]No workspaces exist yet in {workspaces_dir}. "
+            f"Create one first with `create-workspace`.[/red]"
+        )
+        raise typer.Exit(1)
+
+    console.print("[yellow]No workspace specified; please choose one.[/yellow]")
+    selected = fuzzy_select(options)
+    if selected is None:
+        console.print("[red]No workspace selected.[/red]")
+        raise typer.Exit(1)
+    return selected
 
 
 @app.command("create-workspace")
 def create_workspace(
-    name: Optional[str] = typer.Option(
-        None,
-        "--name",
-        "-n",
-        help="Workspace name (also used as directory name).",
-    ),
+    name: Optional[str] = typer.Option(None, "--name", "-n", help="Workspace name."),
     description: Optional[str] = typer.Option(
-        None,
-        "--description",
-        "-d",
-        help="Workspace description. If omitted, will be prompted.",
+        None, "--description", "-d", help="Workspace description."
     ),
-    workspaces_root: Optional[Path] = typer.Option(
-        None,
-        "--workspaces-root",
-        "--workspaces-dir",
-        help=(
-            "Directory containing workspace directories "
-            "(default: $WORKSPACES_WORKSPACES_ROOT or ~/git.workspaces)."
-        ),
-    ),
-) -> None:
+    workspace_root: Optional[Path] = workspace_root_option,
+):
     """
-    Create a new workspace with a README.md containing name and description.
+    Create a new workspace directory with a README.
+
+    README format: `# <name>\\n\\n<description>`
     """
-    settings = get_settings(workspaces_root=workspaces_root)
+    settings = get_settings(workspace_root)
+    workspaces_dir = settings.workspaces_dir
+    ensure_dir(workspaces_dir)
 
     if not name:
-        name = typer.prompt("Workspace name")
-    if not name:
-        console.print("[red]Workspace name cannot be empty.[/red]")
-        raise typer.Exit(code=1)
+        name = Prompt.ask("Workspace name")
+    if not description:
+        description = Prompt.ask("Workspace description")
 
-    if description is None:
-        description = typer.prompt("Workspace description", default="")
-
-    ws_dir = settings.workspaces_root / name
+    ws_dir = workspaces_dir / name
     if ws_dir.exists():
-        console.print(f"[red]Workspace '{name}' already exists at {ws_dir}.[/red]")
-        raise typer.Exit(code=1)
+        console.print(f"[red]Workspace '{name}' already exists at {ws_dir}[/red]")
+        raise typer.Exit(1)
 
-    ws_dir.mkdir(parents=True, exist_ok=False)
+    ws_dir.mkdir(parents=True)
+    readme = ws_dir / "readme.md"
+    write_workspace_readme(readme, name=name, description=description or "")
 
-    readme_path = ws_dir / "README.md"
-    readme_content = f"# {name}\n\n{description or ''}\n"
-    readme_path.write_text(readme_content, encoding="utf-8")
-
-    console.print(f"[green]Created workspace[/green] [cyan]{name}[/cyan] at {ws_dir}")
+    console.print(f"[green]Created workspace[/green] {name} at {ws_dir}")
 
 
 @app.command("list-repos")
 def list_repos(
-    workspace: Optional[str] = typer.Option(
-        None,
-        "--workspace",
-        "-w",
-        help="Workspace name. If omitted and only one workspace exists, that is used.",
-    ),
-    repos_dir: Optional[Path] = typer.Option(
-        None,
-        "--repos-dir",
-        help="Directory containing base repos (default: $WORKSPACES_REPOS_DIR or ~/git).",
-    ),
-    workspaces_root: Optional[Path] = typer.Option(
-        None,
-        "--workspaces-root",
-        "--workspaces-dir",
-        help=(
-            "Directory containing workspace directories "
-            "(default: $WORKSPACES_WORKSPACES_ROOT or ~/git.workspaces)."
-        ),
-    ),
-) -> None:
+    workspace: Optional[str] = workspace_name_option,
+    workspace_root: Optional[Path] = workspace_root_option,
+):
     """
-    List repos and branches in the current (or specified) workspace, with git indicators.
+    List repos and current branch in a workspace.
+    Shows repo name, branch, and git status ascii/int indicators.
     """
-    settings = get_settings(
-        repos_dir=repos_dir,
-        workspaces_root=workspaces_root,
-    )
-    ws = resolve_current_workspace(settings.workspaces_root, workspace)
+    settings = get_settings(workspace_root)
+    workspaces_dir = settings.workspaces_dir
+    ensure_dir(workspaces_dir)
 
-    repos = discover_workspace_repos(ws.path)
-    if not repos:
-        console.print(
-            f"[yellow]No repos found in workspace '{ws.name}' ({ws.path}).[/yellow]"
-        )
-        raise typer.Exit(code=0)
+    ws_name = _require_workspace_name(settings, workspace)
+    ws_dir = workspaces_dir / ws_name
+    if not ws_dir.is_dir():
+        console.print(f"[red]Workspace '{ws_name}' does not exist at {ws_dir}[/red]")
+        raise typer.Exit(1)
 
-    table = Table(title=f"Repos in workspace '{ws.name}'", show_lines=False)
-    table.add_column("Repo", style="cyan", no_wrap=True)
-    table.add_column("Branch", style="green", no_wrap=True)
-    table.add_column("Status", style="magenta", no_wrap=True)
-    table.add_column("Path", style="white")
+    repo_dirs = [p for p in ws_dir.iterdir() if p.is_dir()]
 
-    for r in repos:
-        branch = "?"
-        if r.git_root:
-            code, out, _ = run_git(["rev-parse", "--abbrev-ref", "HEAD"], cwd=r.path)
-            if code == 0 and out:
-                branch = out
-        indicator = r.status.ascii_indicator() if r.status else "?"
-        table.add_row(r.name, branch, indicator, str(r.path))
+    if not repo_dirs:
+        console.print(f"[yellow]No repos found in workspace '{ws_name}'[/yellow]")
+        raise typer.Exit(0)
+
+    table = Table(title=f"Repos in workspace '{ws_name}'")
+    table.add_column("Repo")
+    table.add_column("Branch")
+    table.add_column("Status (↑ahead ↓behind *)")
+
+    for rd in sorted(repo_dirs, key=lambda p: p.name):
+        branch = get_current_branch(rd) or "?"
+        status = get_git_status(rd)
+        indicator = status.ascii if status else "?"
+        table.add_row(rd.name, branch, indicator)
 
     console.print(table)
 
 
-@app.command("add-repo")
-def add_repo(
-    workspace: Optional[str] = typer.Option(
-        None,
-        "--workspace",
-        "-w",
-        help="Workspace name. Default: current workspace (if only one exists).",
-    ),
-    repos_dir: Optional[Path] = typer.Option(
-        None,
-        "--repos-dir",
-        help="Directory containing base repos (default: $WORKSPACES_REPOS_DIR or ~/git).",
-    ),
-    workspaces_root: Optional[Path] = typer.Option(
-        None,
-        "--workspaces-root",
-        "--workspaces-dir",
-        help=(
-            "Directory containing workspace directories "
-            "(default: $WORKSPACES_WORKSPACES_ROOT or ~/git.workspaces)."
-        ),
-    ),
-) -> None:
+@app.command("add-repos")
+def add_repos(
+    workspace: Optional[str] = workspace_name_option,
+    workspace_root: Optional[Path] = workspace_root_option,
+):
     """
-    Add repos to a workspace:
+    Add repos to a workspace.
 
-    - Use iterfzf to pick a repo from repos_dir (all directories)
-    - Checkout a worktree on branch with the name of the workspace into the workspace
-      under directory named by the repo.
+    - Uses iterfzf to pick repo(s) from repos_dir
+    - For each selected repo, creates a git worktree on branch named exactly as the workspace
+      inside the workspace directory under a folder named after the repo.
     """
-    settings = get_settings(
-        repos_dir=repos_dir,
-        workspaces_root=workspaces_root,
+    settings = get_settings(workspace_root)
+    repos_dir = settings.repos_dir
+    workspaces_dir = settings.workspaces_dir
+
+    ensure_dir(repos_dir)
+    ensure_dir(workspaces_dir)
+
+    ws_name = _require_workspace_name(settings, workspace)
+    ws_dir = workspaces_dir / ws_name
+    if not ws_dir.exists():
+        console.print(
+            f"[red]Workspace '{ws_name}' does not exist at {ws_dir}. "
+            f"Create it first with `create-workspace`.[/red]"
+        )
+        raise typer.Exit(1)
+
+    # list all directories in repos_dir as repos
+    candidates = [p for p in list_dirs(repos_dir) if is_git_repo(p)]
+    if not candidates:
+        console.print(f"[yellow]No git repos found in {repos_dir}[/yellow]")
+        raise typer.Exit(0)
+
+    names = [c.name for c in candidates]
+    console.print(
+        f"Select repos to add to workspace '{ws_name}' "
+        "(use iterfzf's multi-select if configured)."
     )
-    ws = resolve_current_workspace(settings.workspaces_root, workspace)
+    selected = fuzzy_select(names)
+    if selected is None:
+        console.print("[red]No repo selected.[/red]")
+        raise typer.Exit(1)
 
-    # Discover repos available to add
-    repo_dirs = discover_repos_in_repos_dir(settings.repos_dir)
-    if not repo_dirs:
-        console.print(
-            f"[red]No repos found in repos_dir {settings.repos_dir}.[/red]"
-        )
-        raise typer.Exit(code=1)
+    # iterfzf can support multi-select and return joined with newline; but in our
+    # simple wrapper we read entire stdout as a single string which may contain multiple lines
+    selected_names = [line.strip() for line in selected.splitlines() if line.strip()]
+    selected_set = set(selected_names)
 
-    candidates = [d.name for d in repo_dirs]
-    selected = run_iterfzf(candidates)
-    if not selected:
-        console.print("[yellow]No repo selected.[/yellow]")
-        raise typer.Exit(code=1)
+    name_to_path: Dict[str, Path] = {c.name: c for c in candidates}
 
-    # Map selected name back to full path
-    selected_path = next((d for d in repo_dirs if d.name == selected), None)
-    if not selected_path:
-        console.print(
-            f"[red]Selected repo '{selected}' not found in repos_dir {settings.repos_dir}.[/red]"
-        )
-        raise typer.Exit(code=1)
+    for repo_name in sorted(selected_set):
+        if repo_name not in name_to_path:
+            console.print(f"[yellow]Skipping unknown repo '{repo_name}'[/yellow]")
+            continue
 
-    console.print(f"Selected repo: [cyan]{selected_path}[/cyan]")
+        repo_path = name_to_path[repo_name]
+        target = ws_dir / repo_name
 
-    # Ensure selected path is a git repo
-    git_root = get_git_root(selected_path)
-    if git_root is None:
-        console.print(
-            f"[red]{selected_path} is not a git repository (no .git found).[/red]"
-        )
-        raise typer.Exit(code=1)
-
-    target_dir = ws.path / selected_path.name
-    branch_name = ws.name
-
-    # Create branch if needed
-    code, out, err = run_git(["rev-parse", "--verify", branch_name], cwd=git_root)
-    if code != 0:
-        console.print(
-            f"[yellow]Branch '{branch_name}' does not exist in repo. Creating it from HEAD.[/yellow]"
-        )
-        code, _, err = run_git(["branch", branch_name], cwd=git_root)
-        if code != 0:
+        if target.exists():
             console.print(
-                f"[red]Failed to create branch '{branch_name}' in repo {git_root}:[/red]\n{err}"
+                f"[yellow]Target {target} already exists; skipping worktree creation.[/yellow]"
             )
-            raise typer.Exit(code=1)
+            continue
 
-    # Create worktree
-    if target_dir.exists():
-        console.print(
-            f"[red]Target worktree directory already exists: {target_dir}[/red]"
+        # ensure branch exists or create it based on default branch
+        console.print(f"[blue]Preparing repo {repo_name} for workspace {ws_name}[/blue]")
+
+        # Fetch or ensure branch
+        rc_b, _, _ = run_git(["rev-parse", "--verify", ws_name], cwd=repo_path)
+        if rc_b != 0:
+            # branch doesn't exist; create from default HEAD
+            console.print(
+                f"[yellow]Branch '{ws_name}' does not exist in {repo_name}; creating it.[/yellow]"
+            )
+            rc_cb, _, err_cb = run_git(["checkout", "-b", ws_name], cwd=repo_path)
+            if rc_cb != 0:
+                console.print(
+                    f"[red]Failed to create branch '{ws_name}' in {repo_name}:[/red] {err_cb}"
+                )
+                continue
+            # go back to previous branch after creation (optional)
+            run_git(["checkout", "-"], cwd=repo_path)
+
+        # git worktree add <target> <branch>
+        rc_wt, _, err_wt = run_git(
+            ["worktree", "add", str(target), ws_name], cwd=repo_path
         )
-        raise typer.Exit(code=1)
+        if rc_wt != 0:
+            console.print(
+                f"[red]Failed to create worktree for {repo_name} in workspace {ws_name}:[/red] {err_wt}"
+            )
+            continue
 
-    target_dir.parent.mkdir(parents=True, exist_ok=True)
-
-    console.print(
-        f"Adding worktree for repo [cyan]{git_root}[/cyan] into "
-        f"[cyan]{target_dir}[/cyan] on branch [green]{branch_name}[/green]..."
-    )
-
-    code, _, err = run_git(
-        ["worktree", "add", str(target_dir), branch_name],
-        cwd=git_root,
-    )
-    if code != 0:
-        console.print(f"[red]git worktree add failed:[/red]\n{err}")
-        raise typer.Exit(code=1)
-
-    console.print(
-        f"[green]Worktree created[/green] for repo [cyan]{selected_path.name}[/cyan] "
-        f"in workspace [cyan]{ws.name}[/cyan]."
-    )
+        console.print(
+            f"[green]Added worktree for repo {repo_name} at {target} on branch {ws_name}[/green]"
+        )
 
 
-# =========================
-# Entrypoint
-# =========================
-
-
-def main() -> None:
-    app()
-
+# -------------------------
+# Entry
+# -------------------------
 
 if __name__ == "__main__":
-    main()
+    app()
