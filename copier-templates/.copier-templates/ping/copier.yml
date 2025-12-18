@@ -1,0 +1,4 @@
+num: "{{ 'pages/ping/*.md' | fileglob() | length + 1 }}"
+_answers_file: .ping-copier-answers.yml
+# _jinja_extensions:
+#   - jinja2_copier_extension.CopierExtension
