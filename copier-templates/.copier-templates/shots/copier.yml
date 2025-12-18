@@ -1,0 +1,9 @@
+_jinja_extensions:
+  - copier_templates_extensions.TemplateExtensionLoader
+  # - uuid4_ext:UUID4Extension
+title:
+  type: str
+image:
+  type: str
+description:
+  type: str

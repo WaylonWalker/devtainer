@@ -1,0 +1,17 @@
+---
+date: {{ '%Y-%m-%d %H:%M:%S' | strftime }}
+templateKey: shots
+title: {{ title | title }}
+tags:
+  - shots
+published: True
+slug: shots/{{ title | lower | replace(' ', '-') | replace('_', '-') }}
+image: {{ image }}
+description: {{ description or title }}
+
+---
+
+![{{ title }}]({{ image }})
+
+> {{ description or title }}
+
