@@ -1,6 +1,14 @@
 local is_docker = os.getenv("DOCKER_BUILD") == "true"
 -- Bootstrap lazy.nvim
 require("lazy").setup({
+	{
+		"zeioth/garbage-day.nvim",
+		dependencies = "neovim/nvim-lspconfig",
+		event = "VeryLazy",
+		opts = {
+			-- your options here
+		}
+	},
 	{ 'dylanaraps/wal.vim' },
 	{
 		"dgagn/diagflow.nvim",
