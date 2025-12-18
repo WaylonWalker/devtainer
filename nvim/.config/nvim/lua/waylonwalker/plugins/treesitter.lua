@@ -10,6 +10,8 @@ require("nvim-treesitter.configs").setup({
     "html",
     "json",
     "yaml",
+    "helm",
+    "dockerfile",
   }, -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   highlight = {
     enable = true,
