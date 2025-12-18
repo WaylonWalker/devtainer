@@ -110,6 +110,8 @@ set("n", "get", "<cmd>e ~/.tmux.conf<CR>")
 set("n", "gef", "<cmd>e ~/.pyflyby<CR>")
 -- edit ipython config
 set("n", "gel", "<cmd>Telescope find_files cwd=~/.config/nvim<CR>")
+-- edit copier templates
+set("n", "gec", "<cmd>Telescope find_files cwd=~/.copier-templates<CR>")
 
 -- go edit my website
 -- edit blog posts
