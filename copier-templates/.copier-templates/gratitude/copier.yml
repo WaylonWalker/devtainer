@@ -1,4 +1,4 @@
-num: 237
+num: "{{ 'pages/gratitude/gratitude-*.md' | fileglob() | length + 1 }}"
 _answers_file: .gratitude-copier-answers.yml
-_tasks:
-  - "update-gratitude"
+# _jinja_extensions:
+#   - jinja2_copier_extension.CopierExtension
