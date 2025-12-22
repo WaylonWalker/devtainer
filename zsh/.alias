@@ -34,6 +34,9 @@ alias awsrules="aws events list-rules | visidata -f json"
 alias apx="pipx run --spec ansible ansible-playbook ~/devtainer/ansible/local.yml --ask-become-pass"
 alias h='hatch run'
 
+alias space='~/git/workspaces/workspaces.py -W git'
+alias gs='~/git/workspaces/workspaces.py -W git'
+alias ws='~/git/workspaces/workspaces.py -W work'
 # git
 alias diffstaged="git diff --staged | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmain="git diff main.. | nvim - +Diffurcate '+Telescope find_files'"
