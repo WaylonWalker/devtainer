@@ -1,0 +1,4 @@
+k9s:
+  logs:
+    tail: 10000 # how many lines
+    # sinceSeconds: 6000   # how far back
