@@ -11,8 +11,12 @@ get_os () {
 
 get_os
 # os=`lsb_release -d | awk '{printf "%s %s", $2, $3}'`
-if [[ `command -v lsblk` ]]; then
-	rootFree=`lsblk | awk '{if (length($7)==1) print  $4}'`
+if [[ `command -v btrfs` ]]; then
+        # get rootFree from btrfs
+	# rootFree=`lsblk | awk '{if (length($7)==1) print  $4}'`
+        # remove newlines
+        rootFree=`df -h / | awk '{print $4}' | tr -d '\n' | sed 's/Avail//'`
+
 else
 	rootFree=''
 fi
@@ -22,7 +26,7 @@ if command -v free &> /dev/null; then
 else
     memAvailable='-'
 fi
-cpuTemp=`echo ?`  #`sensors | grep CPU | awk '{print $2}' | sed 's/+//' | tr -d '\n'`
+cpuTemp=`echo "$(( $(cat /sys/class/thermal/thermal_zone0/temp) / 1000 ))"`  #`sensors | grep CPU | awk '{print $2}' | sed 's/+//' | tr -d '\n'`
 if [[ -f /proc/loadavg ]]; then
 	loadAvg=`cat /proc/loadavg | awk '{printf "%s %s %s", $1, $2, $3}'`
 else
@@ -36,10 +40,29 @@ else
         proxy=ﭝ
 fi
 
+cpuUsage=`top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{printf "%.0f", 100 - $1}'`
+memUsage=`free | grep "Mem" | awk '{printf "%.1f", $3/$2*100}'`
 
+
+if [[ `command -v tte` ]]; then
+printf "  ╭───╮ ╭─────╮ ╭───╮
+  │   │ │     │ │   │  $proxy $os
+  │   ╰─╯     ╰─╯   │  $cpuTemp°C $cpuUsage $memUsage/$memAvailable $rootFree
+  │ @_waylonwalker  │   `date`
+  ╰─────────────────╯
+" | tte wipe --final-gradient-frames 1 --wipe-ease-stepsize .1
+elif [[ `command -v lolcat` ]]; then
 printf "  ╭───╮ ╭─────╮ ╭───╮
   │   │ │     │ │   │  $proxy $os
   │   ╰─╯     ╰─╯   │
   │ @_waylonwalker  │   `date`
   ╰─────────────────╯
 "| lolcat --seed=18 --spread=6
+else
+printf "  ╭───╮ ╭─────╮ ╭───╮
+  │   │ │     │ │   │  $proxy $os
+  │   ╰─╯     ╰─╯   │
+  │ @_waylonwalker  │   `date`
+  ╰─────────────────╯
+"| lolcat --seed=18 --spread=6
+fi
