@@ -37,6 +37,10 @@ alias h='hatch run'
 alias space='~/git/workspaces/workspaces.py -W git'
 alias gs='~/git/workspaces/workspaces.py -W git'
 alias ws='~/git/workspaces/workspaces.py -W work'
+
+alias parurm='paru -Rns $(paru -Qqe | fzf -m)'
+alias prm='paru -Rns $(paru -Qqe | fzf -m)'
+
 # git
 alias diffstaged="git diff --staged | nvim - +Diffurcate '+Telescope find_files'"
 alias diffmain="git diff main.. | nvim - +Diffurcate '+Telescope find_files'"
@@ -47,6 +51,19 @@ alias trackme='git branch --set-upstream-to=origin/$(git symbolic-ref --short HE
 alias rebasemain='git pull origin main --rebase'
 alias rebasedev='git pull origin develop --rebase'
 alias commit="git diff --staged | lockhart prompt run commit | git commit -evF -"
+
+if [[ $(command -v wl-copy) ]]; then
+    alias pbcopy='wl-copy'
+    alias pbpaste='wl-paste'
+    alias scb='wl-copy'
+fi
+
+if [[ $(command -v xclip) ]]; then
+    alias pbcopy='xclip -selection clipboard'
+    alias pbpaste='xclip -selection clipboard -o'
+    alias scb='xclip -selection clipboard'
+fi
+
 
 # exa
 if [[ $(command -v exa) ]]; then
@@ -134,6 +151,7 @@ alias get="$EDITOR ~/.tmux.conf"
 alias gst="source ~/.tmux.conf"
 alias gep="$EDITOR ~/.config/nvim/plugins.vim"
 alias ges="$EDITOR ~/.config/nvim/settings.vim"
+alias gec="$EDITOR ~/.copier-templates"
 
 
 
