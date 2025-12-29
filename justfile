@@ -21,6 +21,16 @@ latest: build-latest deploy-latest
 alpine: build-alpine deploy-alpine
 slim: build-slim deploy-slim
 
+build-arch:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    {{ docker }} build -f docker/Dockerfile.arch-base -t {{ registry }}/{{ repository }}/devtainer:arch-base .
+    GITHUB_TOKEN="$(gh auth token)" \
+    {{ docker }} build \
+        -f docker/Dockerfile.arch-mise \
+        --secret id=gh_token,env=GITHUB_TOKEN \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-mise .
+
 
 build-latest:
     #!/usr/bin/env bash

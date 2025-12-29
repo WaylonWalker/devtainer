@@ -1,0 +1,25 @@
+FROM archlinux
+
+RUN echo '[multilib]' >> /etc/pacman.conf && \
+    echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf && \
+    pacman --noconfirm -Syyu && \
+    pacman --noconfirm -S base-devel git && \
+    groupadd --gid 1000 devtainer && \
+    useradd --uid 1000 --gid 1000 -m -r -s /bin/bash devtainer && \
+    passwd -d devtainer && \
+    echo 'devtainer ALL=(ALL) ALL' > /etc/sudoers.d/devtainer && \
+    mkdir -p /home/devtainer/.gnupg && \
+    echo 'standard-resolver' > /home/devtainer/.gnupg/dirmngr.conf && \
+    chown -R devtainer:devtainer /home/devtainer && \
+    mkdir /build && \
+    chown -R devtainer:devtainer /build && \
+    cd /build && \
+    sudo -u devtainer git clone --depth 1 https://aur.archlinux.org/paru.git && \
+    cd paru && \
+    sudo -u devtainer makepkg --noconfirm -si && \
+    sed -i 's/#RemoveMake/RemoveMake/g' /etc/paru.conf && \
+    pacman -Qtdq | xargs -r pacman --noconfirm -Rcns && \
+    rm -rf /home/devtainer/.cache && \
+    rm -rf /build
+
+USER devtainer

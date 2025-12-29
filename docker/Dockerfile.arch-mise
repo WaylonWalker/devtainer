@@ -1,0 +1,46 @@
+FROM devtainer:arch-base
+
+RUN sudo -u devtainer paru --noconfirm --skipreview --useask -S \
+    mise \
+    bat \
+    htop \
+    linux-headers \
+    lolcat \
+    man-db \
+    man-pages \
+    pacman-contrib \
+    stow \
+    the_silver_searcher \
+    tldr \
+    zsh \
+    zsh-autosuggestions \
+    zsh-history-substring-search \
+    zsh-syntax-highlighting \
+    zsh-vi-mode-git && \
+    pacman -Qtdq | xargs -r pacman --noconfirm -Rcns && \
+    paccache -rk0 && \
+    rm -rf /home/devtainer/.cache
+
+RUN mkdir -p /home/devtainer/git/devtainer/
+COPY --chown=devtainer:devtainer . /home/devtainer/git/devtainer/
+RUN stow -d /home/devtainer/git/devtainer -t /home/devtainer --stow zsh tmux bin nvim mise
+
+USER root
+RUN --mount=type=secret,id=gh_token \
+    export MISE_GITHUB_TOKEN="$(cat /run/secrets/gh_token)" && \
+    sudo -E -H -u devtainer \
+      env HOME=/home/devtainer \
+          USER=devtainer \
+          XDG_CONFIG_HOME=/home/devtainer/.config \
+          XDG_DATA_HOME=/home/devtainer/.local/share \
+          XDG_CACHE_HOME=/home/devtainer/.cache \
+      mise install
+USER devtainer
+
+ENV DOCKER_BUILD=true
+RUN mise x -- nvim --headless "+Lazy! restore" +qa
+RUN mise x -- nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
+ENV DOCKER_BUILD=
+
+WORKDIR /home/
+CMD ["zsh"]
