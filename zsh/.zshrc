@@ -2,11 +2,14 @@
 # zmodload zsh/zprof
 set -o physical
 
+[ -f /usr/bin/mise ] && eval "$(/usr/bin/mise activate zsh)"
+[ -f ~/.local/bin/mise ] && eval "$(~/.local/bin/mise activate zsh)"
 [ -f ~/.profile ] && source ~/.profile
 [ -f ~/.alias ] && source ~/.alias
 [ -f ~/.alias.local ] && source ~/.alias.local
 [ -f ~/.cargo.env ] && source ~/.cargo.env
 
+[ -d ~/devtainer/scripts ] && export PATH=$PATH:~/devtainer/scripts
 [ -d ~/.erg/bin ] && export PATH=$PATH:/home/waylon/.erg/bin
 [ -d ~/.erg ] && export ERG_PATH=/home/waylon/.erg
 [ -d ~/minio-binaries ] && export PATH=$PATH:~/minio-binaries
@@ -27,18 +30,20 @@ export NVIM_MANAGER_REPO=https://github.com/WaylonWalker/devtainer
 export NVIM_CONFIG_PATH=nvim/.config/nvim
 export NVIM_MANAGER_INSTALL_DIR=$HOME/.config
 export NVIM_MANAGER_PREFIX="nvim-waylonwalker"
-export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.1.3
+# export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.1.3
+unset NVIM_APPNAME
 
 # unsetopt BEEP
 
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
+export PATH=${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH
 export PATH="$HOME/.npm/node_modules/bin/:$PATH"
 export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="$HOME/.local/.npm-global/bin/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$(dirname $(uv python find 3.10)):$PATH"
+# export PATH="$(dirname $(uv python find 3.10)):$PATH"
 # eval "$(dircolors -b ~/.dircolors.256dark)"
 
 export FLYCTL_INSTALL="/home/waylon/.fly"
@@ -76,12 +81,6 @@ if [[ ! "$PATH" == */home/waylon/.local/share/bob/nvim-bin* ]]; then
     export PATH="/home/waylon/.local/share/bob/nvim-bin:${PATH}}"
 fi
 
-
-
-# autoload -Uz compinit && compinit
-# autoload -U +X compinit && compinit
-# autoload -U +X bashcompinit && bashcompinit
-
 zstyle ':completion:*' menu select
 zmodload zsh/complist
 bindkey -M menuselect 'h' vi-backward-char
@@ -100,19 +99,6 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 [[ -n "${key[Up]}" ]] && bindkey "${key[Up]}" history-beginning-search-backward
 [[ -n "${key[Down]}" ]] && bindkey "${key[Down]}" history-beginning-search-forward
 
-
-if [[ -f `command -v zellij` ]] then;
-    if [[ -z "$ZELLIJ" ]]; then
-    fi
-else
-    ~/.local/bin/ta
-fi
-
-
-[ -d ~/projects ] && rm -rf ~/projects/ && mkdir ~/projects/ || mkdir ~/projects
-[ -d ~/work ] && [ `ls ~/work | wc -l` -gt 0 ] && ln -sf ~/work/* ~/projects/
-[ -d ~/git ] && [ `ls ~/git | wc -l` -gt 0 ] && ln -sf ~/git/* ~/projects/
-
 if [[ `command -v starship` ]] then;
     eval "$(starship init zsh)"
 fi
@@ -130,11 +116,6 @@ bindkey '^xe' edit-command-line
 bindkey '^x^e' edit-command-line
 bindkey '^e' edit-command-line
 
-if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
-if [[ `command -v mcfly` ]] then;
-    eval "$(mcfly init zsh)"
-fi
-
 function expand-alias() {
     zle _expand_alias
     zle self-insert
@@ -143,6 +124,7 @@ function cwfetch() {
     clear
     wfetch
 }
+
 zle -N expand-alias
 bindkey -M main '^n' expand-alias
 bindkey -s '^k' 'cwfetch\n'
@@ -165,9 +147,6 @@ bindkey  "^[[3~"  delete-char
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
 
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 fpath+=~/.zfunc
 # autoload -Uz compinit && compinit
@@ -215,12 +194,17 @@ zstyle ':completion:*:descriptions' format %F{default}%B%{$__WINCENT[ITALIC_ON]%
 # (not just tab/shift-tab but cursor keys as well):
 zstyle ':completion:*' menu select
 wfetch
+
+if [[ -f ~/git/scripts/kube-check ]]; then
+    ~/git/scripts/kube-check --quiet
+fi
 # zprof
 #
 
-. "$HOME/.atuin/bin/env"
+# . "$HOME/.atuin/bin/env"
 
 eval "$(atuin init zsh)"
+export ATUIN_NO_CLEAR=true
 
 if [[ -z "$BROWSER" ]]; then
 	DEFAULT_BROWSER_DESKTOP=$(xdg-settings get default-web-browser 2>/dev/null)
@@ -300,4 +284,7 @@ web2app-remove() {
 }
 
 # start_tmux
-[ -f ~/.local/bin/ta ] && ~/.local/bin/ta
+# [ -f ~/.local/bin/ta ] && ~/.local/bin/ta
+
+# opencode
+export PATH=/home/waylon/.opencode/bin:$PATH
