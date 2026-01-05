@@ -1,0 +1,68 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "keybinds": {
+    "leader": "ctrl+x",
+    "session_child_cycle": "<leader>+j",
+    "session_child_cycle_reverse": "<leader>+k",
+  },
+  "mcp": {
+    "git": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "mcp-server-git",
+        "--repository",
+        "."
+      ],
+      "enabled": true,
+      "timeout": 10000
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    }
+  },
+  "permission": {
+    "edit": "ask",
+    "webfetch": "allow",
+    "doom_loop": "ask",
+    "bash": {
+      "ls*": "allow",
+      "tree*": "allow",
+      "pwd": "allow",
+      "stat*": "allow",
+      "du*": "allow",
+      "df*": "allow",
+      "just": "allow",
+      "ruff": "allow",
+      "ty": "allow",
+      "uv run ruff": "allow",
+      "uv run ty": "allow",
+      // file content inspection
+      "cat*": "allow",
+      "less*": "allow",
+      "head*": "allow",
+      "tail*": "allow",
+      "sed -n*": "allow",
+      "awk*": "allow",
+      "grep*": "allow",
+      "rg*": "allow",
+      // git read-only
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git blame*": "allow",
+      "git branch*": "allow",
+      "git fetch*": "allow",
+      // kubernetes read-only
+      "kubectl get*": "allow",
+      "kubectl describe*": "allow",
+      "kubectl logs*": "allow",
+      "kubectl config get-contexts*": "allow",
+      "kubectl config current-context": "allow",
+      // default safety net
+      "*": "ask"
+    },
+  },
+}
