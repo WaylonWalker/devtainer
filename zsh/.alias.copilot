@@ -3,24 +3,30 @@
 # =============================================================================
 #
 # COMMANDS:
-#   coissue     - Capture/triage issues (read + issue dirs, Opus + subagents)
-#   coplanissue - Plan from an issue (fzf picker, read + plan dirs, Opus + subagents)
-#   coplan      - Planning assistant (read + plan dirs, Opus + subagents)
-#   coexec      - Plan executor (full write, Opus orchestrator + subagents)
-#   coreview    - Code review for PRs (read-only, GPT-5.1-codex-max)
+#   co             - Fuzzy picker for all copilot commands below
+#   coissue        - Capture/triage issues (read + issue dirs, Opus + subagents)
+#   coplanissue    - Plan from an issue (fzf picker, read + plan dirs, Opus + subagents)
+#   coplan         - Planning assistant (read + plan dirs, Opus + subagents)
+#   coplansummarize- Summarize a plan (fzf picker, read-only, Opus + subagents)
+#   coplanindex    - Index all plans/issues with hashes and summaries
+#   coreviewplan   - Review a plan for project fit (fzf picker, Opus + subagents + web)
+#   coexec         - Plan executor (full write, Opus orchestrator + subagents)
+#   coreview       - Code review for PRs (read-only, GPT-5.1-codex-max)
+#   coreviewstaged - Code review for staged changes (read-only, GPT-5.1-codex-max)
 #
 # WORKFLOW:
-#   1. coissue     - Capture and define the problem in issues/ directory
-#   2. coplanissue - Pick issue via fzf, create plan in plans/ directory
-#   3. coexec      - Pick plan via fzf, execute with subagent delegation
-#   4. coreview    - Review changes before merging
+#   1. coissue      - Capture and define the problem in issues/ directory
+#   2. coplanissue  - Pick issue via fzf, create plan in plans/ directory
+#   3. coreviewplan - Pick plan via fzf, review for project-wide fit
+#   4. coexec       - Pick plan via fzf, execute with subagent delegation
+#   5. coreview     - Review changes before merging
 #
 # =============================================================================
 # Tool Permission Groups
 # =============================================================================
 
 # Read-only filesystem tools
-COPILOT_TOOLS_FS_READ='--allow-tool "shell(ls)" --allow-tool "shell(cat)" --allow-tool "shell(grep)" --allow-tool "shell(rg)" --allow-tool "shell(find)" --allow-tool "shell(pwd)"'
+COPILOT_TOOLS_FS_READ='--allow-tool "shell(ls)" --allow-tool "shell(cat)" --allow-tool "shell(grep)" --allow-tool "shell(rg)" --allow-tool "shell(find)" --allow-tool "shell(pwd)" --allow-tool "shell(md5sum*)"'
 
 # Write filesystem tools
 COPILOT_TOOLS_FS_WRITE='--allow-tool "shell(cp*)" --allow-tool "shell(mv*)" --allow-tool "shell(sed*)" --allow-tool write'
@@ -52,7 +58,25 @@ COPILOT_DENY_PLAN_WRITE='--deny-tool "write(**/plan/**)" --deny-tool "write(**/i
 # =============================================================================
 
 # Unset any existing aliases to avoid conflicts
-unalias coissue coreview coplan coexec 2>/dev/null
+unalias coissue coreview coreviewstaged coreviewplan coplan coplanissue coexec 2>/dev/null
+
+co() {
+  local cmd
+  cmd=$(cat <<'EOF' | fzf --prompt="Select copilot command: "
+coissue         - Capture/triage issues
+coplanissue     - Plan from an issue (fzf picker)
+coplan          - Planning assistant (free-form)
+coplansummarize - Summarize a plan (fzf picker)
+coplanindex     - Index all plans/issues with hashes
+coreviewplan    - Review a plan for project fit (fzf picker)
+coexec          - Execute a plan (fzf picker)
+coreview        - Code review for PRs
+coreviewstaged  - Code review for staged changes
+EOF
+) || return 1
+  cmd=${cmd%% *}
+  $cmd
+}
 
 coissue() {
   eval copilot \
@@ -104,6 +128,71 @@ Keep your response concise. Only highlight critical issues that must be
 addressed before merging. Skip detailed style or minor suggestions unless they
 impact performance, security, or correctness.
 '\'
+}
+
+coreviewstaged() {
+  eval copilot \
+    --model gpt-5.1-codex-max \
+    $COPILOT_TOOLS_FS_READ \
+    $COPILOT_TOOLS_GIT_READ \
+    --deny-tool write \
+    $COPILOT_DENY_DANGEROUS \
+    -i \''Please analyze the staged changes (git diff --staged) and focus on
+identifying critical issues related to:
+
+- Potential bugs or issues
+- Performance
+- Security
+- Correctness
+
+If critical issues are found, list them in a few short bullet points. If no
+critical issues are found, provide a simple approval. Sign off with a checkbox
+emoji: (approved) or (issues found).
+
+Keep your response concise. Only highlight critical issues that must be
+addressed before committing. Skip detailed style or minor suggestions unless they
+impact performance, security, or correctness.
+'\'
+}
+
+coreviewplan() {
+  local PLAN_FILE
+  PLAN_FILE=$(find . -path '*/plan*/*' -type f 2>/dev/null | fzf --prompt="Select plan file: " --preview="cat {}") || return 1
+  eval copilot \
+    --model claude-opus-4.5 \
+    $COPILOT_TOOLS_FS_READ \
+    $COPILOT_TOOLS_GIT_READ \
+    $COPILOT_TOOLS_K8S_READ \
+    $COPILOT_TOOLS_NET \
+    --allow-tool agent \
+    --deny-tool write \
+    $COPILOT_DENY_DANGEROUS \
+    -i "'You are a senior architect reviewing the plan from $PLAN_FILE.
+
+REVIEW FOCUS:
+- Project-wide impact and alignment with architecture
+- Long-term maintainability and technical debt
+- Dependencies and integration risks
+- Security and performance implications
+- Alternative approaches that might be better
+
+RESEARCH STRATEGY:
+- Use explore subagents (Haiku) to deeply research affected areas of codebase
+- Use explore subagents to understand existing patterns and conventions
+- Use web_fetch to research best practices, library docs, or prior art
+- Parallelize research across multiple areas
+
+REVIEW WORKFLOW:
+1. Read and understand the plan
+2. Delegate deep research to explore subagents in parallel
+3. Research external resources if needed (docs, best practices)
+4. Evaluate plan against project architecture and goals
+5. Provide constructive feedback with specific recommendations
+
+Give honest, critical feedback. If the plan is solid, approve it. If changes
+are needed, be specific about what and why. Sign off with: ✅ (approved),
+⚠️ (approved with suggestions), or ❌ (needs revision).
+'"
 }
 
 coplanissue() {
@@ -197,4 +286,77 @@ WORKFLOW:
 
 Focus on efficient orchestration. Minimize your own token usage by delegating.
 '"
+}
+
+coplansummarize() {
+  local PLAN_FILE
+  PLAN_FILE=$(find . -path '*/plan*/*' -type f 2>/dev/null | fzf --prompt="Select plan file: " --preview="cat {}") || return 1
+  eval copilot \
+    --model claude-opus-4.5 \
+    $COPILOT_TOOLS_FS_READ \
+    $COPILOT_TOOLS_GIT_READ \
+    --allow-tool agent \
+    --deny-tool write \
+    $COPILOT_DENY_DANGEROUS \
+    -i "'Summarize the plan from $PLAN_FILE.
+
+Use explore subagents to read the plan and any referenced files.
+
+Provide a concise summary (3-5 sentences) covering:
+- Goal/objective
+- Key changes proposed
+- Files/areas affected
+- Any risks or dependencies
+
+Output ONLY the summary, no preamble.
+'"
+}
+
+coplanindex() {
+  eval copilot \
+    --model claude-opus-4.5 \
+    $COPILOT_TOOLS_FS_READ \
+    $COPILOT_TOOLS_GIT_READ \
+    $COPILOT_TOOLS_PLAN_WRITE \
+    $COPILOT_TOOLS_ISSUE_WRITE \
+    --allow-tool agent \
+    $COPILOT_DENY_DANGEROUS \
+    -i \''You are an indexing assistant for plans and issues.
+
+TASK:
+Find all plan/ plans/ issue/ issues/ directories in this project and maintain
+an index.md in each directory.
+
+INDEX FORMAT:
+```markdown
+# Plans Index
+
+## [plan-name.md](./plan-name.md)
+<!-- hash: abc123def456 -->
+Brief 2-3 sentence summary of what this plan covers, its goals,
+and key changes proposed.
+
+---
+
+## [another-plan.md](./another-plan.md)
+<!-- hash: 789xyz -->
+Summary of this plan...
+
+---
+```
+
+WORKFLOW:
+1. Use explore subagents to find all plan/plans/issue/issues directories
+2. For each directory, check if index.md exists
+3. For each file (excluding index.md):
+   - Compute hash with md5sum
+   - Check if hash exists in index.md HTML comment
+   - If missing or hash changed, use explore subagent to summarize the file
+4. Update index.md with current hashes and summaries
+5. Report what was indexed/updated
+
+Keep summaries concise but informative. Parallelize reading and summarizing
+across multiple subagents. After writing index.md, format it with:
+  uvx mdformat --wrap 80 index.md
+'\'
 }
