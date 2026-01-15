@@ -13,6 +13,7 @@
 #   coexec         - Plan executor (full write, Opus orchestrator + subagents)
 #   coreview       - Code review for PRs (read-only, GPT-5.1-codex-max)
 #   coreviewstaged - Code review for staged changes (read-only, GPT-5.1-codex-max)
+#   cocommit       - Suggest commit message for staged changes (Haiku)
 #
 # WORKFLOW:
 #   1. coissue      - Capture and define the problem in issues/ directory
@@ -58,7 +59,7 @@ COPILOT_DENY_PLAN_WRITE='--deny-tool "write(**/plan/**)" --deny-tool "write(**/i
 # =============================================================================
 
 # Unset any existing aliases to avoid conflicts
-unalias coissue coreview coreviewstaged coreviewplan coplan coplanissue coexec 2>/dev/null
+unalias coissue coreview coreviewstaged cocommit coreviewplan coplan coplanissue coexec 2>/dev/null
 
 co() {
   local cmd
@@ -72,6 +73,7 @@ coreviewplan    - Review a plan for project fit (fzf picker)
 coexec          - Execute a plan (fzf picker)
 coreview        - Code review for PRs
 coreviewstaged  - Code review for staged changes
+cocommit        - Suggest commit message for staged
 EOF
 ) || return 1
   cmd=${cmd%% *}
@@ -152,6 +154,31 @@ emoji: (approved) or (issues found).
 Keep your response concise. Only highlight critical issues that must be
 addressed before committing. Skip detailed style or minor suggestions unless they
 impact performance, security, or correctness.
+'\'
+}
+
+cocommit() {
+  local diff
+  diff=$(git diff --staged)
+  if [[ -z "$diff" ]]; then
+    echo "No staged changes"
+    return 1
+  fi
+  echo "$diff" | eval copilot \
+    --model claude-haiku-4.5 \
+    '--allow-tool "shell(git commit*)"' \
+    --deny-tool write \
+    $COPILOT_DENY_DANGEROUS \
+    -i \''Analyze the staged diff provided via stdin and suggest a commit message.
+
+FORMAT:
+- Use conventional commits format: type(scope): description
+- Types: feat, fix, docs, style, refactor, test, chore
+- Keep the subject line under 50 characters
+- Add a brief body if the change is complex
+
+Present the suggested commit message and ask the user to approve. If approved,
+run git commit with the message. If the user wants changes, revise and ask again.
 '\'
 }
 
