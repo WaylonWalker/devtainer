@@ -235,7 +235,8 @@ coplanissue() {
     $COPILOT_TOOLS_ISSUE_WRITE \
     --allow-tool agent \
     $COPILOT_DENY_DANGEROUS \
-    -i "'You are an efficient planning assistant. Create a plan to fix the issue from $ISSUE_FILE.
+    -i "$(cat <<EOF
+You are an efficient planning assistant. Create a plan to fix the issue from $ISSUE_FILE.
 
 RESEARCH STRATEGY:
 - Use explore subagents (Haiku) to search codebase, find files, understand structure
@@ -250,7 +251,8 @@ PLANNING WORKFLOW:
 
 Plan thoroughly without asking unnecessary questions. Focus on creating clear,
 actionable plans with specific file paths and implementation details.
-'"
+EOF
+)"
 }
 
 coplan() {
@@ -286,33 +288,37 @@ coexec() {
   local PLAN_FILE
   PLAN_FILE=$(find . -path '*/plan*/*' -type f 2>/dev/null | fzf --prompt="Select plan file: " --preview="cat {}") || return 1
   eval copilot \
-    --model claude-opus-4.5 \
+    --model gpt-5.1-codex-max \
     $COPILOT_TOOLS_FS_READ \
     $COPILOT_TOOLS_FS_WRITE \
     $COPILOT_TOOLS_GIT_READ \
     $COPILOT_TOOLS_K8S_READ \
     $COPILOT_TOOLS_NET \
     $COPILOT_TOOLS_BUILD \
+    $COPILOT_TOOLS_PLAN_WRITE \
     --allow-tool agent \
+    --allow-tool edit \
+    --allow-tool create \
+    --allow-tool view \
+    --allow-tool grep \
+    --allow-tool glob \
     $COPILOT_DENY_DANGEROUS \
-    $COPILOT_DENY_PLAN_WRITE \
-    -i "'You are a plan execution orchestrator. Execute the plan from $PLAN_FILE.
+    -i "$(cat <<EOF
+Execute the plan from $PLAN_FILE.
 
-DELEGATION STRATEGY:
-- Use explore subagents (Haiku) to search codebase, read files, answer questions
-- Use task subagents (Haiku) to run tests, builds, and commands (just/python/uv)
-- Parallelize independent tasks by spawning multiple subagents simultaneously
-- You orchestrate and make decisions; subagents do the heavy lifting
+Read the plan, then implement the changes directly. Lean heavily on delegation:
+use subagents for research, experiments, edits, and test runs, keeping the
+orchestration tight and supervised.
 
-WORKFLOW:
-1. Read and understand the plan
-2. Break down into parallelizable tasks
-3. Delegate execution to subagents
-4. Review results and make direct edits only when needed
-5. Verify completion with task subagents running tests
+After each change, verify it works before moving to the next step.
 
-Focus on efficient orchestration. Minimize your own token usage by delegating.
-'"
+As you complete plan tasks, update the plan to mark each task done so progress is
+tracked. Locate project check instructions in Agents.md and run the appropriate
+checks for this project before completion.
+
+Continuously re-read the plan between iterations and surface blockers/risks before proceeding. You may add a section '## Proposed additions' to capture new work and update that section only; do not alter existing plan tasks without explicit review/approval.
+EOF
+)"
 }
 
 coplansummarize() {
@@ -325,7 +331,8 @@ coplansummarize() {
     --allow-tool agent \
     --deny-tool write \
     $COPILOT_DENY_DANGEROUS \
-    -i "'Summarize the plan from $PLAN_FILE.
+    -i "$(cat <<EOF
+Summarize the plan from $PLAN_FILE.
 
 Use explore subagents to read the plan and any referenced files.
 
@@ -336,7 +343,8 @@ Provide a concise summary (3-5 sentences) covering:
 - Any risks or dependencies
 
 Output ONLY the summary, no preamble.
-'"
+EOF
+)"
 }
 
 coplanindex() {
