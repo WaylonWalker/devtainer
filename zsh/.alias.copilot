@@ -164,12 +164,13 @@ cocommit() {
     echo "No staged changes"
     return 1
   fi
-  echo "$diff" | eval copilot \
+  copilot \
     --model claude-haiku-4.5 \
     '--allow-tool "shell(git commit*)"' \
     --deny-tool write \
     $COPILOT_DENY_DANGEROUS \
-    -i \''Analyze the staged diff provided via stdin and suggest a commit message.
+    -i "$(cat <<'EOF'
+Analyze the staged diff provided via stdin and suggest a commit message.
 
 FORMAT:
 - Use conventional commits format: type(scope): description
@@ -179,7 +180,8 @@ FORMAT:
 
 Present the suggested commit message and ask the user to approve. If approved,
 run git commit with the message. If the user wants changes, revise and ask again.
-'\'
+EOF
+)" <<<"$diff"
 }
 
 coreviewplan() {
