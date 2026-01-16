@@ -63,8 +63,7 @@ unalias coissue coreview coreviewstaged cocommit coreviewplan coplan coplanissue
 
 co() {
   local cmd
-  cmd=$(cat <<'EOF' | fzf --prompt="Select copilot command: "
-coissue         - Capture/triage issues
+  cmd=$(echo "coissue         - Capture/triage issues
 coplanissue     - Plan from an issue (fzf picker)
 coplan          - Planning assistant (free-form)
 coplansummarize - Summarize a plan (fzf picker)
@@ -73,9 +72,7 @@ coreviewplan    - Review a plan for project fit (fzf picker)
 coexec          - Execute a plan (fzf picker)
 coreview        - Code review for PRs
 coreviewstaged  - Code review for staged changes
-cocommit        - Suggest commit message for staged
-EOF
-) || return 1
+cocommit        - Suggest commit message for staged" | fzf --prompt="Select copilot command: ") || return 1
   cmd=${cmd%% *}
   $cmd
 }
@@ -158,19 +155,17 @@ impact performance, security, or correctness.
 }
 
 cocommit() {
-  local diff
+  local diff prompt
   diff=$(git diff --staged)
   if [[ -z "$diff" ]]; then
     echo "No staged changes"
     return 1
   fi
-  copilot \
-    --model claude-haiku-4.5 \
-    '--allow-tool "shell(git commit*)"' \
-    --deny-tool write \
-    $COPILOT_DENY_DANGEROUS \
-    -i "$(cat <<'EOF'
-Analyze the staged diff provided via stdin and suggest a commit message.
+  prompt="Analyze this staged diff and suggest a commit message:
+
+\`\`\`diff
+$diff
+\`\`\`
 
 FORMAT:
 - Use conventional commits format: type(scope): description
@@ -179,9 +174,13 @@ FORMAT:
 - Add a brief body if the change is complex
 
 Present the suggested commit message and ask the user to approve. If approved,
-run git commit with the message. If the user wants changes, revise and ask again.
-EOF
-)" <<<"$diff"
+run git commit with the message. If the user wants changes, revise and ask again."
+  eval copilot \
+    --model claude-haiku-4.5 \
+    --allow-tool \"shell\(git commit\*\)\" \
+    --deny-tool write \
+    $COPILOT_DENY_DANGEROUS \
+    -i \"\$prompt\"
 }
 
 coreviewplan() {
@@ -237,8 +236,7 @@ coplanissue() {
     $COPILOT_TOOLS_ISSUE_WRITE \
     --allow-tool agent \
     $COPILOT_DENY_DANGEROUS \
-    -i "$(cat <<EOF
-You are an efficient planning assistant. Create a plan to fix the issue from $ISSUE_FILE.
+    -i "'You are an efficient planning assistant. Create a plan to fix the issue from $ISSUE_FILE.
 
 RESEARCH STRATEGY:
 - Use explore subagents (Haiku) to search codebase, find files, understand structure
@@ -253,8 +251,7 @@ PLANNING WORKFLOW:
 
 Plan thoroughly without asking unnecessary questions. Focus on creating clear,
 actionable plans with specific file paths and implementation details.
-EOF
-)"
+'"
 }
 
 coplan() {
@@ -305,8 +302,7 @@ coexec() {
     --allow-tool grep \
     --allow-tool glob \
     $COPILOT_DENY_DANGEROUS \
-    -i "$(cat <<EOF
-Execute the plan from $PLAN_FILE.
+    -i "'Execute the plan from $PLAN_FILE.
 
 Read the plan, then implement the changes directly. Lean heavily on delegation:
 use subagents for research, experiments, edits, and test runs, keeping the
@@ -318,9 +314,8 @@ As you complete plan tasks, update the plan to mark each task done so progress i
 tracked. Locate project check instructions in Agents.md and run the appropriate
 checks for this project before completion.
 
-Continuously re-read the plan between iterations and surface blockers/risks before proceeding. You may add a section '## Proposed additions' to capture new work and update that section only; do not alter existing plan tasks without explicit review/approval.
-EOF
-)"
+Continuously re-read the plan between iterations and surface blockers/risks before proceeding. You may add a section '\"'\"'## Proposed additions'\"'\"' to capture new work and update that section only; do not alter existing plan tasks without explicit review/approval.
+'"
 }
 
 coplansummarize() {
@@ -333,8 +328,7 @@ coplansummarize() {
     --allow-tool agent \
     --deny-tool write \
     $COPILOT_DENY_DANGEROUS \
-    -i "$(cat <<EOF
-Summarize the plan from $PLAN_FILE.
+    -i "'Summarize the plan from $PLAN_FILE.
 
 Use explore subagents to read the plan and any referenced files.
 
@@ -345,8 +339,7 @@ Provide a concise summary (3-5 sentences) covering:
 - Any risks or dependencies
 
 Output ONLY the summary, no preamble.
-EOF
-)"
+'"
 }
 
 coplanindex() {
