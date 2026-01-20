@@ -174,12 +174,12 @@ set(
 
 set("n", "Q", "@@")
 
--- bad habits
-set("i", "jj", "<esc>")
-set("i", "jk", "<esc>")
-set("i", "JJ", "<esc>")
-set("i", "jJ", "<esc>")
-set("i", "Jj", "<esc>")
+-- -- bad habits
+-- set("i", "jj", "<esc>")
+-- set("i", "jk", "<esc>")
+-- set("i", "JJ", "<esc>")
+-- set("i", "jJ", "<esc>")
+-- set("i", "Jj", "<esc>")
 
 set("n", "<leader>w", "<cmd>w<cr>")
 set("n", "<leader>q", "<cmd>q<cr>")
@@ -382,5 +382,8 @@ set("n", "<F6>", function()
 		vim.lsp.buf.code_action({ apply = true })
 	end
 end, { desc = "Auto-fix or spell suggest" })
+
+-- yank slug
+set("n", "<leader>ys", "<cmd>lua require'waylonwalker.util.slug'.yank_slug()<cr>", { desc = "Yank slug" })
 
 return M
