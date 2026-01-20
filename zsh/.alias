@@ -54,13 +54,13 @@ alias commit="git diff --staged | lockhart prompt run commit | git commit -evF -
 
 if [[ $(command -v wl-copy) ]]; then
     alias pbcopy='wl-copy'
-    alias pbpaste='wl-paste'
+    pbpaste() { wl-paste; }
     alias scb='wl-copy'
 fi
 
 if [[ $(command -v xclip) ]]; then
     alias pbcopy='xclip -selection clipboard'
-    alias pbpaste='xclip -selection clipboard -o'
+    pbpaste() { xclip -selection clipboard -o; }
     alias scb='xclip -selection clipboard'
 fi
 
