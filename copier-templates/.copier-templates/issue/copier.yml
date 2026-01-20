@@ -1,0 +1,6 @@
+num: "{{ 'pages/issue/*.md' | fileglob() | length + 1 }}"
+title:
+  type: str
+slug:
+  type: str
+  default: "issue-{{ num }}"
