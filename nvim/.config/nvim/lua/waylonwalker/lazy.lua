@@ -1,6 +1,8 @@
 local is_docker = os.getenv("DOCKER_BUILD") == "true"
 -- Bootstrap lazy.nvim
 require("lazy").setup({
+
+	{ 'tpope/vim-speeddating' },
 	{
 		"zeioth/garbage-day.nvim",
 		dependencies = "neovim/nvim-lspconfig",
@@ -37,8 +39,8 @@ require("lazy").setup({
 			require("waylonwalker.plugins.treesitter")
 		end,
 	},
-	{ "nvzone/volt", lazy = true },
-	{ "nvzone/menu", lazy = true },
+	{ "nvzone/volt",           lazy = true },
+	{ "nvzone/menu",           lazy = true },
 	{
 		"nvim-tree/nvim-tree.lua",
 		dependencies = {
