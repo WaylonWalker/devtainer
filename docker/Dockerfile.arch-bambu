@@ -1,0 +1,6 @@
+FROM devtainer:arch-base
+USER devtainer
+RUN paru --noconfirm --skipreview --useask -S \
+    bambustudio-bin && \
+    sudo pacman -Qtdq | xargs -r sudo pacman --noconfirm -Rcns && \
+    rm -rf /home/devtainer/.cache
