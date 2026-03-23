@@ -18,6 +18,27 @@ globalkeys = gears.table.join(
 	--  group = "awesome",
 	-- }),
 	--
+	awful.key({ modkey }, "s",
+		function() awful.spawn("rec_region_toggle") end,
+		{description = "toggle region recording", group = "media"}
+	),
+
+	awful.key({ modkey, "Shift" }, "s",
+		function()
+			local previous_focus = client.focus
+			awful.spawn("/home/u_walkews/git/scripts/open_webcam.sh --toggle --square")
+			if previous_focus and previous_focus.valid then
+				gears.timer.start_new(0.2, function()
+					if previous_focus.valid then
+						client.focus = previous_focus
+						previous_focus:raise()
+					end
+					return false
+				end)
+			end
+		end,
+		{description = "toggle webcam pip", group = "media"}
+	),
 
 	awful.key({ modkey }, "Left", awful.tag.viewprev, {
 		description = "view previous",
@@ -228,6 +249,15 @@ clientkeys = gears.table.join(
 		group = "client",
 	}),
 
+	awful.key({ modkey, "Shift" }, "t", function(c)
+		local pinned = not (c.ontop and c.sticky)
+		c.ontop = pinned
+		c.sticky = pinned
+	end, {
+		description = "toggle pinned (ontop + sticky)",
+		group = "client",
+	}),
+
 	-- awful.key({ modkey }, "n", function(c)
 	--  -- The client currently has the input focus, so it cannot be
 	--  -- minimized, since minimized clients can't have the focus.
@@ -356,29 +386,29 @@ function useless_gaps_set_size(thatmuch, s, t)
 	awful.layout.arrange(scr)
 end
 
-globalkeys = gears.table.join(
-	globalkeys,
-	awful.key({ modkey, "Shift" }, "i", function()
-		useless_gaps_set_size(0)
-	end, {
-		description = "resize gaps larger",
-		group = "launcher",
-	}),
-
-	awful.key({ modkey }, "i", function()
-		useless_gaps_resize(2)
-	end, {
-		description = "resize gaps larger",
-		group = "launcher",
-	}),
-
-	awful.key({ modkey, "Control" }, "i", function()
-		useless_gaps_resize(-2)
-	end, {
-		description = "resize gaps smaller",
-		group = "launcher",
-	})
-)
+-- globalkeys = gears.table.join(
+-- 	globalkeys,
+-- 	awful.key({ modkey, "Shift" }, "i", function()
+-- 		useless_gaps_set_size(0)
+-- 	end, {
+-- 		description = "resize gaps larger",
+-- 		group = "launcher",
+-- 	}),
+--
+-- 	awful.key({ modkey }, "i", function()
+-- 		useless_gaps_resize(2)
+-- 	end, {
+-- 		description = "resize gaps larger",
+-- 		group = "launcher",
+-- 	}),
+--
+-- 	awful.key({ modkey, "Control" }, "i", function()
+-- 		useless_gaps_resize(-2)
+-- 	end, {
+-- 		description = "resize gaps smaller",
+-- 		group = "launcher",
+-- 	})
+-- )
 
 -- app launcher
 

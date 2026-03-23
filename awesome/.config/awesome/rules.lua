@@ -2,6 +2,18 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
 
+local function webcam_pip_shape(cr, width, height)
+    if gears.shape.squircle then
+        gears.shape.squircle(cr, width, height)
+        return
+    end
+    if gears.shape.superellipse then
+        gears.shape.superellipse(cr, width, height, 2.2)
+        return
+    end
+    gears.shape.rounded_rect(cr, width, height, math.floor(math.min(width, height) * 0.40))
+end
+
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
 clientbuttons = gears.table.join(
@@ -34,6 +46,10 @@ awful.rules.rules = {
         rule = { name = "Microsoft Teams" },
         properties = { tag = "6", floating = false, switchtotag = true, type = "normal" },
     },
+    {
+        rule = { name = "Argocd" },
+        properties = { tag = "6", floating = false, switchtotag = true, type = "normal" },
+    },
     { rule = { name = "Steam" },    properties = { tag = "1", floating = false, switchtotag = true, type = "normal" } },
     {
         rule = { name = "Multiversus" },
@@ -43,6 +59,29 @@ awful.rules.rules = {
     { rule = { name = "PolyMc" },   properties = { tag = "8", floating = false, switchtotag = true, type = "normal" } },
     { rule = { class = "Gimp" },    properties = { tag = "3", floating = false, switchtotag = true, type = "normal" } },
     { rule = { class = "Polybar" }, properties = { border_width = 0 } },
+    {
+        rule_any = {
+            class = {
+                "webcam-pip",
+            },
+            instance = {
+                "webcam-pip",
+            },
+            name = {
+                "webcam-pip",
+                "Webcam PiP",
+            },
+        },
+        properties = {
+            floating = true,
+            ontop = true,
+            sticky = true,
+            border_width = 2,
+            border_color = "#1e1e1e",
+            placement = awful.placement.no_offscreen,
+            shape = webcam_pip_shape,
+        },
+    },
 
     -- Floating clients.
     {
