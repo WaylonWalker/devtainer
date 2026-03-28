@@ -13,10 +13,10 @@
 #
 
 # Get current window address
-current_addr=$(hyprctl activewindow -j | jq -r '.address')
+current_addr=$(~/.config/hypr/scripts/hyprctl.sh activewindow -j | jq -r '.address')
 
 # Get all Brave window addresses
-brave_windows=($(hyprctl clients -j | jq -r '.[] | select(.class == "brave-browser") | .address'))
+brave_windows=($(~/.config/hypr/scripts/hyprctl.sh clients -j | jq -r '.[] | select(.class == "brave-browser") | .address'))
 
 num_windows=${#brave_windows[@]}
 
@@ -38,8 +38,8 @@ done
 # If we're already in a Brave window, switch to the next one (wrap around)
 if ((current_index != -1)); then
 	next_index=$(((current_index + 1) % num_windows))
-	hyprctl dispatch focuswindow address:${brave_windows[$next_index]}
+	~/.config/hypr/scripts/hyprctl.sh dispatch focuswindow address:${brave_windows[$next_index]}
 else
 	# Not currently in a Brave window — focus the first one
-	hyprctl dispatch focuswindow address:${brave_windows[0]}
+	~/.config/hypr/scripts/hyprctl.sh dispatch focuswindow address:${brave_windows[0]}
 fi

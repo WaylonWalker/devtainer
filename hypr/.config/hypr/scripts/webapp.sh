@@ -10,13 +10,13 @@ domain=$(echo "$url" | awk -F/ '{print $3}')
 class="brave-${domain//./.}__-Default"
 
 # Find an open window with this class
-addr=$(hyprctl clients -j | jq -r \
+addr=$(~/.config/hypr/scripts/hyprctl.sh clients -j | jq -r \
 	--arg class "$class" \
 	'.[] | select(.class == $class) | .address' | head -n1)
 
 if [ -n "$addr" ]; then
 	# Focus the window if found
-	hyprctl dispatch focuswindow address:$addr
+	~/.config/hypr/scripts/hyprctl.sh dispatch focuswindow address:$addr
 	# echo "focuswindow address:$addr"
 else
 	# Otherwise, launch the webapp

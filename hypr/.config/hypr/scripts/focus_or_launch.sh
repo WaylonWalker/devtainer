@@ -13,10 +13,10 @@ if [[ -z "$class" || -z "$start_command" ]]; then
 fi
 
 # Current active window
-current_addr=$(hyprctl activewindow -j | jq -r '.address')
+current_addr=$(~/.config/hypr/scripts/hyprctl.sh activewindow -j | jq -r '.address')
 
 # All windows with matching class
-matching_windows=($(hyprctl clients -j | jq -r --arg class "$class" '.[] | select(.class == $class) | .address'))
+matching_windows=($(~/.config/hypr/scripts/hyprctl.sh clients -j | jq -r --arg class "$class" '.[] | select(.class == $class) | .address'))
 
 num_windows=${#matching_windows[@]}
 
@@ -38,8 +38,8 @@ done
 # Cycle to next window if already in one
 if ((current_index != -1)); then
 	next_index=$(((current_index + 1) % num_windows))
-	hyprctl dispatch focuswindow address:${matching_windows[$next_index]}
+	~/.config/hypr/scripts/hyprctl.sh dispatch focuswindow address:${matching_windows[$next_index]}
 else
 	# Not in one — focus first
-	hyprctl dispatch focuswindow address:${matching_windows[0]}
+	~/.config/hypr/scripts/hyprctl.sh dispatch focuswindow address:${matching_windows[0]}
 fi
