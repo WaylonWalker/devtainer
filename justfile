@@ -9,6 +9,12 @@ export version := `cat version`
 default:
   @just --choose
 
+setup-cursors:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    ./scripts/setup-user-cursor.sh
+    sudo ./scripts/setup-system-cursor.sh
+
 build-deploy: build deploy
 
 build: build-latest build-alpine build-slim
@@ -24,13 +30,34 @@ slim: build-slim deploy-slim
 build-arch:
     #!/usr/bin/env bash
     set -euxo pipefail
-    {{ docker }} build -f docker/Dockerfile.arch-base -t {{ registry }}/{{ repository }}/devtainer:arch-base .
+    {{ docker }} build -f docker/Dockerfile.arch-base -t {{ registry }}/{{ repository }}/devtainer:arch-base
+    DATE_TAG=`date +%Y%m%d%H%M%S`
+    VERSION_TAG=`cat version`
     GITHUB_TOKEN="$(gh auth token)" \
     {{ docker }} build \
         -f docker/Dockerfile.arch-mise \
         --secret id=gh_token,env=GITHUB_TOKEN \
-        -t {{ registry }}/{{ repository }}/devtainer:arch-mise .
+        -t {{ registry }}/{{ repository }}/devtainer:arch \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-${DATE_TAG} \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-${VERSION_TAG} \
+        .
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch
 
+build-bambu:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    {{ docker }} build -f docker/Dockerfile.arch-base -t {{ registry }}/{{ repository }}/devtainer:arch-base .
+    DATE_TAG=`date +%Y%m%d%H%M%S`
+    VERSION_TAG=`cat version`
+    {{ docker }} build \
+        -f docker/Dockerfile.arch-bambu \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-bambu \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-bambu-${DATE_TAG} \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-bambu-${VERSION_TAG} \
+        .
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch-bambu
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch-bambu-${DATE_TAG}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch-bambu-${VERSION_TAG}
 
 build-latest:
     #!/usr/bin/env bash
@@ -393,3 +420,65 @@ testnvim:
     # NVIM_APPNAME=wwtest nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue just" +qa
     # NVIM_APPNAME=wwtest nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
     NVIM_APPNAME=wwtest nvim
+
+extract-keymaps:
+    # Extract keybindings from all environments
+    ./scripts/extract_keymaps.py
+
+gen-keybinding-pages:
+    # Generate markdown pages from extracted keybindings
+    ./scripts/gen_keybinding_pages.sh
+
+update-keybindings:
+    # Full refresh: extract and generate pages
+    ./scripts/extract_nvimmappings.sh
+    ./scripts/gen_keybinding_pages.sh
+    rm ~/.cache/wwtest -rf
+    rm ~/.local/share/wwtest -rf
+    rm ~/.config/wwtest -rf
+    cp -r nvim/.config/nvim/ ~/.config/wwtest
+    # NVIM_APPNAME=wwtest nvim --headless "+Lazy sync" +qa
+    # NVIM_APPNAME=wwtest nvim --headless "+TSUpdateSync" "+sleep 5000m" +qa
+    # NVIM_APPNAME=wwtest nvim --headless "+MasonUpdate" +qa
+    # NVIM_APPNAME=wwtest nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue just" +qa
+    # NVIM_APPNAME=wwtest nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
+    NVIM_APPNAME=wwtest nvim
+
+# VHS recording commands
+record-tapes:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    echo "Recording all VHS tapes..."
+    for tape in static/tapes/*.tape; do
+        if [ -f "$tape" ]; then
+            echo "Recording: $tape"
+            vhs < "$tape"
+        fi
+    done
+    echo "All tapes recorded!"
+
+record-tape TAPE:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    if [ -f "static/tapes/{{ TAPE }}.tape" ]; then
+        echo "Recording: static/tapes/{{ TAPE }}.tape"
+        vhs < "static/tapes/{{ TAPE }}.tape"
+    else
+        echo "Tape not found: static/tapes/{{ TAPE }}.tape"
+        exit 1
+    fi
+
+list-tapes:
+    #!/usr/bin/env bash
+    echo "Available VHS tapes:"
+    for tape in static/tapes/*.tape; do
+        if [ -f "$tape" ]; then
+            basename "$tape" .tape
+        fi
+    done
+
+build-site:
+    markata-go build
+
+sync:
+    rsync -av --delete ./output/ falcon3:/mnt/main/walkershare/waylon/sites/dots.waylonwalker.com
