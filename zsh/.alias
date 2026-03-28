@@ -16,6 +16,7 @@ fi
 [ ! -f /usr/bin/docker-compose ] && [ -f /usr/bin/podman-compose ] && alias docker-compose=podman-compose
 
 
+alias mg='markata-go'
 alias hx=~/Downloads/squashfs-root/AppRun
 alias new-post=~/git/ww3/new-post
 alias np=~/git/ww3/new-post
@@ -33,6 +34,10 @@ alias venv=". ./.venv/bin/activate > /dev/null 2>&1 || uv venv && . ./.venv/bin/
 alias awsrules="aws events list-rules | visidata -f json"
 alias apx="pipx run --spec ansible ansible-playbook ~/devtainer/ansible/local.yml --ask-become-pass"
 alias h='hatch run'
+
+alias curlmd='curl -s -H "Accept: text/markdown"'
+alias curltxt='curl -s -H "Accept: text/plain"'
+alias curljson='curl -s -H "Accept: text/json"'
 
 alias space='~/git/workspaces/workspaces.py -W git'
 alias gs='~/git/workspaces/workspaces.py -W git'
@@ -270,3 +275,17 @@ fs() {
 }
 
 gi() { curl -sL https://www.toptal.com/developers/gitignore/api/$@ ;};
+
+alias ytdlac='uvx yt-dlp --print "%(channel,uploader|Unknown Artist)s/%(album,playlist_title|Unknown Album)s/%(playlist_index)02d - %(title)s.%(ext)s"'
+alias ytda='uvx --with mutagen yt-dlp \\n  -x --audio-format flac \\n  --audio-quality 0 \\n  --embed-metadata \\n  --embed-thumbnail \\n  --add-metadata \\n  --replace-in-metadata "playlist_title" "^Album - " "" \\n  --parse-metadata "playlist_title:%(album)s" \\n  --output "%(channel,uploader|Unknown Artist)s/%(album,playlist_title|Unknown Album)s/%(playlist_index)02d - %(title)s.%(ext)s"'
+
+alias ytda='uvx --with mutagen yt-dlp \
+  -x --audio-format flac \
+  --audio-quality 0 \
+  --embed-metadata \
+  --embed-thumbnail \
+  --add-metadata \
+  --replace-in-metadata "playlist_title" "^Album - " "" \
+  --parse-metadata "playlist_title:%(album)s" \
+  --parse-metadata "album_artist:%(channel,uploader|Unknown Artist)s" \
+  --output "%(channel,uploader|Unknown Artist)s/%(album,playlist_title|Unknown Album)s/%(playlist_index)02d - %(title)s.%(ext)s"'

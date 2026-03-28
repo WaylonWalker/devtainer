@@ -2,8 +2,13 @@
 # zmodload zsh/zprof
 set -o physical
 
-[ -f /usr/bin/mise ] && eval "$(/usr/bin/mise activate zsh)"
-[ -f ~/.local/bin/mise ] && eval "$(~/.local/bin/mise activate zsh)"
+# [ -f /usr/bin/mise ] && eval "$(/usr/bin/mise activate zsh)"
+# [ -f ~/.local/bin/mise ] && eval "$(~/.local/bin/mise activate zsh)"
+if command -v mise > /dev/null; then
+    mise_hook() { eval "$(mise hook-env)"; }
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd mise_hook
+fi
 [ -f ~/.profile ] && source ~/.profile
 [ -f ~/.alias ] && source ~/.alias
 [ -f ~/.alias.local ] && source ~/.alias.local
@@ -41,6 +46,7 @@ export PATH="$HOME/.npm/node_modules/bin/:$PATH"
 export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="$HOME/.local/.npm-global/bin/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/git/scripts:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 # export PATH="$(dirname $(uv python find 3.10)):$PATH"
@@ -193,7 +199,6 @@ zstyle ':completion:*:descriptions' format %F{default}%B%{$__WINCENT[ITALIC_ON]%
 # Enable keyboard navigation of completions in menu
 # (not just tab/shift-tab but cursor keys as well):
 zstyle ':completion:*' menu select
-wfetch
 
 if [[ -f ~/git/scripts/kube-check ]]; then
     ~/git/scripts/kube-check --quiet
@@ -288,3 +293,42 @@ web2app-remove() {
 
 # opencode
 export PATH=/home/waylon/.opencode/bin:$PATH
+
+
+alias ytdla='uvx yt-dlp \
+  -x --audio-format flac \
+  --embed-metadata \
+  --embed-thumbnail \
+  --add-metadata \
+  --parse-metadata "playlist_title:%(album)s" \
+  --output "%(album_artist)s/%(album)s/%(playlist_index)02d - %(title)s.%(ext)s"'
+
+
+alias ytdlac='uvx yt-dlp --print "%(channel,uploader|Unknown Artist)s/%(album,playlist_title|Unknown Album)s/%(playlist_index)02d - %(title)s.%(ext)s"'
+
+alias ytdla='uvx --with mutagen yt-dlp \
+  -x --audio-format flac \
+  --audio-quality 0 \
+  --embed-metadata \
+  --embed-thumbnail \
+  --add-metadata \
+  --replace-in-metadata "playlist_title" "^Album - " "" \
+  --parse-metadata "playlist_title:%(album)s" \
+  --output "%(channel,uploader|Unknown Artist)s/%(album,playlist_title|Unknown Album)s/%(playlist_index)02d - %(title)s.%(ext)s"'
+
+wfetch
+
+# pnpm
+export PNPM_HOME="/home/waylon/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# bun completions
+[ -s "/home/waylon/.bun/_bun" ] && source "/home/waylon/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
