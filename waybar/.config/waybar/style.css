@@ -1,19 +1,90 @@
+@define-color foreground #cdd6f4;
+@define-color background #1a1b26;
+@define-color accent #8ec07c;
+@define-color danger #a55555;
+
 * {
-  font-family: JetBrainsMono Nerd Font, monospace;
-  font-size: 14px;
-  color: #ffffff;
-  background: #1e1e2e;
+  background-color: @background;
+  color: @foreground;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: CaskaydiaMono Nerd Font;
+  font-size: 18px;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
 }
 
 #workspaces button {
-  padding: 0.4em 0.8em;
-  margin: 0 2px;
-  background: transparent;
-  border: none;
-  border-radius: 4px;
+  all: initial;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+  color: @foreground;
 }
 
-#workspaces button.active {
-  background-color: #89b4fa;
-  color: #1e1e2e;
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+#tray,
+#custom-perf,
+#battery,
+#network,
+#bluetooth,
+#pulseaudio,
+#custom-waylon,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#custom-waylon {
+  color: @foreground;
+  font-family: "Noto Sans Mono";
+  font-weight: 900;
+  font-stretch: extra-condensed;
+  font-size: 20px;
+  letter-spacing: -2px;
+}
+
+#custom-expand-icon {
+  margin-right: 7px;
+}
+
+#custom-perf.critical {
+  color: @danger;
+}
+
+tooltip {
+  padding: 2px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+#clock {
+  margin-left: 8.75px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: @danger;
 }

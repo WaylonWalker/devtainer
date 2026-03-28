@@ -1,0 +1,132 @@
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 27,
+  "modules-left": [
+    "custom/waylon",
+    "hyprland/workspaces"
+  ],
+  "modules-center": [
+    "clock",
+    "custom/screenrecording-indicator"
+  ],
+  "modules-right": [
+    "bluetooth",
+    "pulseaudio",
+    "custom/perf",
+    "group/tray-expander"
+  ],
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "active": "󱓻"
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    }
+  },
+  "custom/waylon": {
+    "format": "",
+    "on-click": "rofi -show drun",
+    "tooltip-format": "Launch applications"
+  },
+  "custom/perf": {
+    "exec": "~/.config/waybar/scripts/perf_status.sh",
+    "interval": 5,
+    "return-type": "json",
+    "escape": false,
+    "signal": 9,
+    "on-click": "~/.config/waybar/scripts/perf_toggle.sh",
+    "on-click-right": "missioncenter",
+    "on-click-middle": "kitty --class Nvtop --title Nvtop -e nvtop"
+  },
+  "clock": {
+    "format": "{:%a %b %d %I:%M %p}",
+    "format-alt": "{:%I:%M}",
+    "tooltip": false
+  },
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "blueman-manager"
+  },
+  "network": {
+    "format-icons": [
+      "󰤯",
+      "󰤟",
+      "󰤢",
+      "󰤥",
+      "󰤨"
+    ],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "kitty -e nmtui"
+  },
+  "pulseaudio": {
+    "format": "{icon}",
+    "on-click": "kitty --class=Wiremix -e wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": [
+        "",
+        "",
+        ""
+      ]
+    }
+  },
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": [
+      "custom/expand-icon",
+      "network",
+      "tray"
+    ]
+  },
+  "custom/expand-icon": {
+    "format": " ",
+    "tooltip": false
+  },
+  "custom/screenrecording-indicator": {
+    "on-click": "~/.config/hypr/scripts/screenrecord.sh toggle",
+    "exec": "~/.config/hypr/scripts/screenrecord_status.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+  "tray": {
+    "icon-size": 12,
+    "spacing": 8
+  }
+}
