@@ -38,7 +38,8 @@ for _, server in ipairs(servers) do
 			yaml = {
 				schemas = {
 					-- Target only your homelab-argo manifests with proper Kubernetes schema
-					["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.29.4-standalone-strict/all.json"] = "/home/waylon/git/homelab-argo/**/*.yaml",
+					["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.29.4-standalone-strict/all.json"] =
+					"/home/waylon/git/homelab-argo/**/*.yaml",
 					-- Other common schemas
 					["https://json.schemastore.org/github-workflow"] = ".github/workflows/*.yml",
 					["https://json.schemastore.org/docker-compose"] = "docker-compose*.yml",
@@ -49,7 +50,7 @@ for _, server in ipairs(servers) do
 			}
 		}
 		-- Add filetypes for yamlls
-		config.filetypes = {"yaml", "yml"}
+		config.filetypes = { "yaml", "yml" }
 	end
 
 	-- Setup the server using the new Neovim LSP API
@@ -57,5 +58,6 @@ for _, server in ipairs(servers) do
 	vim.lsp.enable(server)
 end
 
+require('waylonwalker.plugins.markata-lsp').setup()
 -- vim.fn.sign_define("LspCodeActionSign", { text = "", texthl = "" })
 -- (rest of your diagnostic config / keymaps can stay the same)
