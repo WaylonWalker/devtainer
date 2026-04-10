@@ -1,3 +1,17 @@
+## 0.2.1
+
+* feat(release): add container variants and runnable container instructions to GitHub releases
+* feat(container): add `alpine-slim` and `arch-slim` variants
+* feat(distrobox): add slim distrobox entries for the new container variants
+
+## 0.2.0
+
+* feat(cli): add the new `devtainer` CLI for Bitwarden-backed profile setup
+* feat(cli): add `setup`, `doctor`, `checkhealth`, `update`, and `bootstrap bitwarden`
+* feat(cli): add whole-file management for `ssh`, `git`, `kube`, and `argocd`
+* feat(cli): add named profiles, `--fix`, `--json`, and interactive progress output
+* feat(release): add standalone CLI release artifacts, installer script, and GitHub Release workflow
+
 ## 0.1.4
 
 * chore: update installers

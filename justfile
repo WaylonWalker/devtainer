@@ -1,4 +1,4 @@
-export registry := "docker.io"
+export registry := "ghcr.io"
 export repository := "waylonwalker"
 export ntfy_url := "https://ntfy.wayl.one"
 export ntfy_channel := "deployments"
@@ -17,36 +17,78 @@ setup-cursors:
 
 build-deploy: build deploy
 
-build: build-latest build-alpine build-slim
-deploy: deploy-latest deploy-alpine deploy-slim
+build: build-latest build-alpine build-alpine-slim build-slim build-arch-base build-arch build-arch-slim
+deploy: deploy-latest deploy-alpine deploy-alpine-slim deploy-slim deploy-arch deploy-arch-slim
 
 login:
-    podman login {{ registry }}/{{ repository }}/devtainer
+    podman login {{ registry }}
+
+login-ghcr:
+    gh auth token | podman login ghcr.io -u waylonwalker --password-stdin
 
 latest: build-latest deploy-latest
 alpine: build-alpine deploy-alpine
+alpine-slim: build-alpine-slim deploy-alpine-slim
 slim: build-slim deploy-slim
+arch: build-arch deploy-arch
+arch-slim: build-arch-slim deploy-arch-slim
 
-build-arch:
+build-arch-base:
     #!/usr/bin/env bash
     set -euxo pipefail
-    {{ docker }} build -f docker/Dockerfile.arch-base -t {{ registry }}/{{ repository }}/devtainer:arch-base
-    DATE_TAG=`date +%Y%m%d%H%M%S`
-    VERSION_TAG=`cat version`
+    {{ docker }} build -f docker/Dockerfile.arch-base -t {{ registry }}/{{ repository }}/devtainer:arch-base .
+
+build-arch: build-arch-base
+    #!/usr/bin/env bash
+    set -euxo pipefail
     GITHUB_TOKEN="$(gh auth token)" \
     {{ docker }} build \
         -f docker/Dockerfile.arch-mise \
         --secret id=gh_token,env=GITHUB_TOKEN \
         -t {{ registry }}/{{ repository }}/devtainer:arch \
-        -t {{ registry }}/{{ repository }}/devtainer:arch-${DATE_TAG} \
-        -t {{ registry }}/{{ repository }}/devtainer:arch-${VERSION_TAG} \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-{{ DATE_TAG }} \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-{{ version }} \
         .
-    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch
 
-build-bambu:
+build-arch-slim: build-arch-base
     #!/usr/bin/env bash
     set -euxo pipefail
-    {{ docker }} build -f docker/Dockerfile.arch-base -t {{ registry }}/{{ repository }}/devtainer:arch-base .
+    GITHUB_TOKEN="$(gh auth token)" \
+    {{ docker }} build \
+        -f docker/Dockerfile.arch-slim \
+        --secret id=gh_token,env=GITHUB_TOKEN \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-slim \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-slim-{{ DATE_TAG }} \
+        -t {{ registry }}/{{ repository }}/devtainer:arch-slim-{{ version }} \
+        .
+
+deploy-arch: build-arch
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    echo pushing {{ registry }}/{{ repository }}/devtainer:arch-{{ DATE_TAG }}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch-{{ DATE_TAG }}
+    echo pushing {{ registry }}/{{ repository }}/devtainer:arch-{{ version }}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch-{{ version }}
+    echo pushing {{ registry }}/{{ repository }}/devtainer:arch
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch
+    curl -d "released devtainer:arch ({{ DATE_TAG }})" {{ ntfy_url }}/{{ ntfy_channel }}
+
+deploy-arch-slim: build-arch-slim
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    echo pushing {{ registry }}/{{ repository }}/devtainer:arch-slim-{{ DATE_TAG }}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch-slim-{{ DATE_TAG }}
+    echo pushing {{ registry }}/{{ repository }}/devtainer:arch-slim-{{ version }}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch-slim-{{ version }}
+    echo pushing {{ registry }}/{{ repository }}/devtainer:arch-slim
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:arch-slim
+    curl -d "released devtainer:arch-slim ({{ DATE_TAG }})" {{ ntfy_url }}/{{ ntfy_channel }}
+
+build-bambu: build-arch-base
+    #!/usr/bin/env bash
+    set -euxo pipefail
     DATE_TAG=`date +%Y%m%d%H%M%S`
     VERSION_TAG=`cat version`
     {{ docker }} build \
@@ -67,7 +109,14 @@ build-latest:
     echo building ${version}
 
 
-    {{ docker }} build -f docker/Dockerfile -t {{ registry }}/{{ repository }}/devtainer:latest -t {{ registry }}/{{ repository }}/devtainer:${DATE_TAG} -t {{ registry }}/{{ repository }}/devtainer:${version} .
+    GITHUB_TOKEN="$(gh auth token)" \
+    {{ docker }} build \
+        -f docker/Dockerfile \
+        --secret id=gh_token,env=GITHUB_TOKEN \
+        -t {{ registry }}/{{ repository }}/devtainer:latest \
+        -t {{ registry }}/{{ repository }}/devtainer:${DATE_TAG} \
+        -t {{ registry }}/{{ repository }}/devtainer:${version} \
+        .
 
 deploy-latest: build-latest
     #!/usr/bin/env bash
@@ -85,14 +134,43 @@ build-alpine:
     #!/usr/bin/env bash
     set -euxo pipefail
 
-    {{ docker }} build -f docker/Dockerfile.alpine -t {{ registry }}/{{ repository }}/devtainer:alpine .
+    GITHUB_TOKEN="$(gh auth token)" \
+    {{ docker }} build \
+        -f docker/Dockerfile.alpine \
+        --secret id=gh_token,env=GITHUB_TOKEN \
+        -t {{ registry }}/{{ repository }}/devtainer:alpine \
+        -t {{ registry }}/{{ repository }}/devtainer:alpine-{{ version }} \
+        .
 
-deploy-alpine:
+build-alpine-slim:
     #!/usr/bin/env bash
     set -euxo pipefail
 
+    GITHUB_TOKEN="$(gh auth token)" \
+    {{ docker }} build \
+        -f docker/Dockerfile.alpine-slim \
+        --secret id=gh_token,env=GITHUB_TOKEN \
+        -t {{ registry }}/{{ repository }}/devtainer:alpine-slim \
+        -t {{ registry }}/{{ repository }}/devtainer:alpine-slim-{{ version }} \
+        .
+
+deploy-alpine: build-alpine
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    echo pushing {{ registry }}/{{ repository }}/devtainer:alpine-{{ version }}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:alpine-{{ version }}
     {{ docker }} push {{ registry }}/{{ repository }}/devtainer:alpine
     curl -d "released devtainer:alpine" {{ ntfy_url }}/{{ ntfy_channel }}
+
+deploy-alpine-slim: build-alpine-slim
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    echo pushing {{ registry }}/{{ repository }}/devtainer:alpine-slim-{{ version }}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:alpine-slim-{{ version }}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:alpine-slim
+    curl -d "released devtainer:alpine-slim" {{ ntfy_url }}/{{ ntfy_channel }}
 
 build-kdenlive:
     #!/usr/bin/env bash
@@ -129,19 +207,29 @@ deploy-fokais:
     set -euxo pipefail
 
     {{ docker }} tag {{ registry }}/{{ repository }}/devtainer:alpine registry.fokais.com/devtainer:alpine
+    {{ docker }} tag {{ registry }}/{{ repository }}/devtainer:alpine-slim registry.fokais.com/devtainer:alpine-slim
     {{ docker }} tag {{ registry }}/{{ repository }}/devtainer:slim registry.fokais.com/devtainer:slim
     {{ docker }} push registry.fokais.com/devtainer:alpine
+    {{ docker }} push registry.fokais.com/devtainer:alpine-slim
     {{ docker }} push registry.fokais.com/devtainer:slim
 
 build-slim:
     #!/usr/bin/env bash
     set -euxo pipefail
 
-    {{ docker }} build -f docker/Dockerfile.slim -t {{ registry }}/{{ repository }}/devtainer:slim .
-deploy-slim:
+    GITHUB_TOKEN="$(gh auth token)" \
+    {{ docker }} build \
+        -f docker/Dockerfile.slim \
+        --secret id=gh_token,env=GITHUB_TOKEN \
+        -t {{ registry }}/{{ repository }}/devtainer:slim \
+        -t {{ registry }}/{{ repository }}/devtainer:slim-{{ version }} \
+        .
+deploy-slim: build-slim
     #!/usr/bin/env bash
     set -euxo pipefail
 
+    echo pushing {{ registry }}/{{ repository }}/devtainer:slim-{{ version }}
+    {{ docker }} push {{ registry }}/{{ repository }}/devtainer:slim-{{ version }}
     {{ docker }} push {{ registry }}/{{ repository }}/devtainer:slim
     curl -d "released devtainer:slim to https://registry-ui.wayl.one/#!/taglist/devtainer" {{ ntfy_url }}/{{ ntfy_channel }}
 
@@ -152,7 +240,6 @@ update-installers:
 
     slim_progs="
     BurntSushi/ripgrep
-    MordechaiHadad/bob
     Slackadays/Clipboard
     atuinsh/atuin
     bitnami-labs/sealed-secrets 
@@ -180,7 +267,6 @@ update-installers:
 
     i_progs="
     BurntSushi/ripgrep
-    MordechaiHadad/bob
     Slackadays/Clipboard
     atuinsh/atuin
     avencera/rustywind
@@ -287,11 +373,6 @@ update-installers:
     echo "/installer/install_helm.sh" >> installer/install.sh
     echo "/installer/install_helm.sh" >> installer/install_slim.sh
 
-    curl -fsSL -o installer/install_ollama.sh https://ollama.com/install.sh
-    chmod 700 installer/install_ollama.sh
-    echo "/installer/install_ollama.sh" >> installer/install.sh
-
-
     echo '
     # https://min.io/docs/minio/linux/reference/minio-mc.html
     curl https://dl.min.io/client/mc/release/linux-amd64/mc \
@@ -314,16 +395,6 @@ update-installers:
 
     mc --help
     " >> installer/install_slim.sh
-
-
-    # install windsurf
-    curl -fsSL -o installer/windsurf.gpg "https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/windsurf.gpg"
-    echo '
-    sudo gpg --dearmor -o /usr/share/keyrings/windsurf-stable-archive-keyring.gpg /installer/windsurf.gpg
-    echo "deb [signed-by=/usr/share/keyrings/windsurf-stable-archive-keyring.gpg arch=amd64] https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/apt stable main" | sudo tee /etc/apt/sources.list.d/windsurf.list > /dev/null
-    ' >> installer/install_windsurf.sh
-    chmod 700 installer/install_windsurf.sh
-    echo "/installer/install_windsurf.sh" >> installer/install.sh
 
     echo "mv cli gh" >> installer/install.sh
     echo "mv cli gh" >> installer/install_slim.sh
@@ -357,6 +428,16 @@ update-installers:
     chmod +x installer/n.sh
 
 distrobox-assemble:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    distrobox-assemble create --file distrobox/distrobox.ini --name devtainer && \
+    distrobox-assemble create --file distrobox/distrobox.ini --name devtainer-arch && \
+    distrobox-assemble create --file distrobox/distrobox.ini --name devtainer-slim && \
+    distrobox-assemble create --file distrobox/distrobox.ini --name devtainer-alpine && \
+    distrobox-assemble create --file distrobox/distrobox.ini --name devtainer-arch-slim && \
+    distrobox-assemble create --file distrobox/distrobox.ini --name devtainer-alpine-slim
+
+distrobox-assemble-all:
     #!/usr/bin/env bash
     set -euxo pipefail
     distrobox-assemble create --file distrobox/distrobox.ini
@@ -479,6 +560,119 @@ list-tapes:
 
 build-site:
     markata-go build
+
+build-devtainer-cli:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    mkdir -p bin
+    go build -ldflags "-X main.version={{ version }}" -o bin/devtainer ./cmd/devtainer
+
+install-devtainer-cli:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    mkdir -p "$HOME/.local/bin"
+    go build -ldflags "-X main.version={{ version }}" -o "$HOME/.local/bin/devtainer" ./cmd/devtainer
+
+build-devtainer-release:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    out_dir="dist/devtainer/{{ version }}"
+    rm -rf "$out_dir"
+    mkdir -p "$out_dir"
+    for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64; do \
+        GOOS="${target%/*}"; \
+        GOARCH="${target#*/}"; \
+        work_dir="$(mktemp -d)"; \
+        GOOS="$GOOS" GOARCH="$GOARCH" CGO_ENABLED=0 go build -ldflags "-X main.version={{ version }}" -o "$work_dir/devtainer" ./cmd/devtainer; \
+        tar -C "$work_dir" -czf "$out_dir/devtainer_${GOOS}_${GOARCH}.tar.gz" devtainer; \
+        rm -rf "$work_dir"; \
+    done
+    cp scripts/install-devtainer-cli.sh "$out_dir/devtainer-install.sh"
+    chmod +x "$out_dir/devtainer-install.sh"
+    (cd "$out_dir" && sha256sum ./* > checksums.txt)
+
+upload-devtainer-release-assets TAG="{{ version }}": build-devtainer-release
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    gh release upload "{{ TAG }}" dist/devtainer/{{ version }}/* --clobber
+
+devtainer-config-init PROFILE="personal": install-devtainer-cli
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    "$HOME/.local/bin/devtainer" config init --profile "{{ PROFILE }}"
+
+devtainer-profile-add PROFILE CLONE="": install-devtainer-cli
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    if [ -n "{{ CLONE }}" ]; then
+        "$HOME/.local/bin/devtainer" profile add "{{ PROFILE }}" --clone "{{ CLONE }}"
+    else
+        "$HOME/.local/bin/devtainer" profile add "{{ PROFILE }}"
+    fi
+
+devtainer-profile-use PROFILE: install-devtainer-cli
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    "$HOME/.local/bin/devtainer" profile use "{{ PROFILE }}"
+
+devtainer-profile-set-item PROFILE SLOT ITEM: install-devtainer-cli
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    "$HOME/.local/bin/devtainer" profile set-item "{{ PROFILE }}" "{{ SLOT }}" "{{ ITEM }}"
+
+devtainer-argocd-login SERVER PROFILE="": install-devtainer-cli
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    if [ -n "{{ PROFILE }}" ]; then
+        "$HOME/.local/bin/devtainer" setup --profile "{{ PROFILE }}" argocd
+    else
+        "$HOME/.local/bin/devtainer" setup argocd
+    fi
+    argocd login "{{ SERVER }}"
+
+devtainer-bootstrap TOOL="all" PROFILE="": install-devtainer-cli
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    if [ -n "{{ PROFILE }}" ]; then
+        "$HOME/.local/bin/devtainer" bootstrap bitwarden --profile "{{ PROFILE }}" "{{ TOOL }}"
+    else
+        "$HOME/.local/bin/devtainer" bootstrap bitwarden "{{ TOOL }}"
+    fi
+
+devtainer-setup TOOL PROFILE="": install-devtainer-cli
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    if [ -n "{{ PROFILE }}" ]; then
+        "$HOME/.local/bin/devtainer" setup --profile "{{ PROFILE }}" "{{ TOOL }}"
+    else
+        "$HOME/.local/bin/devtainer" setup "{{ TOOL }}"
+    fi
+
+devtainer-doctor TOOL="all" PROFILE="" FIX="": install-devtainer-cli
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    extra_args=()
+    if [ -n "{{ FIX }}" ]; then
+        extra_args+=(--fix)
+    fi
+    if [ -n "{{ PROFILE }}" ]; then
+        "$HOME/.local/bin/devtainer" doctor --profile "{{ PROFILE }}" "${extra_args[@]}" "{{ TOOL }}"
+    else
+        "$HOME/.local/bin/devtainer" doctor "${extra_args[@]}" "{{ TOOL }}"
+    fi
+
+devtainer-update TOOL ARTIFACT="" PROFILE="": install-devtainer-cli
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    cmd=("$HOME/.local/bin/devtainer" update)
+    if [ -n "{{ PROFILE }}" ]; then
+        cmd+=(--profile "{{ PROFILE }}")
+    fi
+    if [ -n "{{ ARTIFACT }}" ]; then
+        cmd+=(--artifact "{{ ARTIFACT }}")
+    fi
+    cmd+=("{{ TOOL }}")
+    "${cmd[@]}"
 
 sync:
     rsync -av --delete ./output/ falcon3:/mnt/main/walkershare/waylon/sites/dots.waylonwalker.com

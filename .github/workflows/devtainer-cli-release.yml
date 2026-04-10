@@ -38,6 +38,7 @@ jobs:
           done
           cp scripts/install-devtainer-cli.sh "$out_dir/devtainer-install.sh"
           chmod +x "$out_dir/devtainer-install.sh"
+          ./scripts/get_release_notes.py "${VERSION#v}" > "$out_dir/release-notes.md"
           (cd "$out_dir" && sha256sum ./* > checksums.txt)
 
       - name: Upload release assets

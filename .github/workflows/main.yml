@@ -1,4 +1,5 @@
-name: Build Docker
+name: Build Container Images
+
 on:
   push:
     branches:
@@ -6,34 +7,259 @@ on:
   pull_request:
     branches:
       - main
-  schedule:
-    - cron: '0 0 1 * *'
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+  packages: write
+
 jobs:
-  build:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      date_tag: ${{ steps.determine.outputs.date_tag }}
+      version: ${{ steps.determine.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: determine
+        name: Determine release tags
+        run: |
+          set -euxo pipefail
+          echo "date_tag=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+          echo "version=$(cat version)" >> "$GITHUB_OUTPUT"
+
+  ubuntu:
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      # - name: Build and push
-      #   id: docker_build
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     push: true
-      #     tags: waylonwalker/devtainer:latest
-      # - name: Image digest
-      #   run: echo ${{ steps.docker_build.outputs.digest }}
-      - name: Build and push slim
-        id: docker_build_slim
-        uses: docker/build-push-action@v2
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Ubuntu image
+        env:
+          PUSH_TO_REGISTRY: ${{ github.event_name != 'pull_request' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATE_TAG: ${{ needs.prepare.outputs.date_tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euxo pipefail
+          if [ "$PUSH_TO_REGISTRY" = "true" ]; then
+            PUSH_FLAGS="--push"
+          else
+            PUSH_FLAGS="--load"
+          fi
+          docker buildx build \
+            --platform linux/amd64 \
+            --file docker/Dockerfile \
+            --secret id=gh_token,env=GH_TOKEN \
+            --tag ghcr.io/waylonwalker/devtainer:latest \
+            --tag ghcr.io/waylonwalker/devtainer:${DATE_TAG} \
+            --tag ghcr.io/waylonwalker/devtainer:${VERSION} \
+            $PUSH_FLAGS \
+            .
+
+  slim:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
         with:
-          file: ./docker/Dockerfile.slim
-          push: true
-          tags: waylonwalker/devtainer:slim
-      - name: Image digest
-        run: echo ${{ steps.docker_build_slim.outputs.digest }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Ubuntu slim image
+        env:
+          PUSH_TO_REGISTRY: ${{ github.event_name != 'pull_request' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euxo pipefail
+          if [ "$PUSH_TO_REGISTRY" = "true" ]; then
+            PUSH_FLAGS="--push"
+          else
+            PUSH_FLAGS="--load"
+          fi
+          docker buildx build \
+            --platform linux/amd64 \
+            --file docker/Dockerfile.slim \
+            --secret id=gh_token,env=GH_TOKEN \
+            --tag ghcr.io/waylonwalker/devtainer:slim \
+            --tag ghcr.io/waylonwalker/devtainer:slim-${VERSION} \
+            $PUSH_FLAGS \
+            .
+
+  arch:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Arch image
+        env:
+          PUSH_TO_REGISTRY: ${{ github.event_name != 'pull_request' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATE_TAG: ${{ needs.prepare.outputs.date_tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euxo pipefail
+          docker buildx build \
+            --platform linux/amd64 \
+            --file docker/Dockerfile.arch-base \
+            --tag devtainer:arch-base \
+            --load \
+            .
+          if [ "$PUSH_TO_REGISTRY" = "true" ]; then
+            PUSH_FLAGS="--push"
+          else
+            PUSH_FLAGS="--load"
+          fi
+          docker buildx build \
+            --platform linux/amd64 \
+            --file docker/Dockerfile.arch-mise \
+            --secret id=gh_token,env=GH_TOKEN \
+            --tag ghcr.io/waylonwalker/devtainer:arch \
+            --tag ghcr.io/waylonwalker/devtainer:arch-${DATE_TAG} \
+            --tag ghcr.io/waylonwalker/devtainer:arch-${VERSION} \
+            $PUSH_FLAGS \
+            .
+
+  arch-slim:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Arch slim image
+        env:
+          PUSH_TO_REGISTRY: ${{ github.event_name != 'pull_request' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATE_TAG: ${{ needs.prepare.outputs.date_tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euxo pipefail
+          docker buildx build \
+            --platform linux/amd64 \
+            --file docker/Dockerfile.arch-base \
+            --tag devtainer:arch-base \
+            --load \
+            .
+          if [ "$PUSH_TO_REGISTRY" = "true" ]; then
+            PUSH_FLAGS="--push"
+          else
+            PUSH_FLAGS="--load"
+          fi
+          docker buildx build \
+            --platform linux/amd64 \
+            --file docker/Dockerfile.arch-slim \
+            --secret id=gh_token,env=GH_TOKEN \
+            --tag ghcr.io/waylonwalker/devtainer:arch-slim \
+            --tag ghcr.io/waylonwalker/devtainer:arch-slim-${DATE_TAG} \
+            --tag ghcr.io/waylonwalker/devtainer:arch-slim-${VERSION} \
+            $PUSH_FLAGS \
+            .
+
+  alpine:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Alpine image
+        env:
+          PUSH_TO_REGISTRY: ${{ github.event_name != 'pull_request' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euxo pipefail
+          if [ "$PUSH_TO_REGISTRY" = "true" ]; then
+            PUSH_FLAGS="--push"
+          else
+            PUSH_FLAGS="--load"
+          fi
+          docker buildx build \
+            --platform linux/amd64 \
+            --file docker/Dockerfile.alpine \
+            --secret id=gh_token,env=GH_TOKEN \
+            --tag ghcr.io/waylonwalker/devtainer:alpine \
+            --tag ghcr.io/waylonwalker/devtainer:alpine-${VERSION} \
+            $PUSH_FLAGS \
+            .
+
+  alpine-slim:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Alpine slim image
+        env:
+          PUSH_TO_REGISTRY: ${{ github.event_name != 'pull_request' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euxo pipefail
+          if [ "$PUSH_TO_REGISTRY" = "true" ]; then
+            PUSH_FLAGS="--push"
+          else
+            PUSH_FLAGS="--load"
+          fi
+          docker buildx build \
+            --platform linux/amd64 \
+            --file docker/Dockerfile.alpine-slim \
+            --secret id=gh_token,env=GH_TOKEN \
+            --tag ghcr.io/waylonwalker/devtainer:alpine-slim \
+            --tag ghcr.io/waylonwalker/devtainer:alpine-slim-${VERSION} \
+            $PUSH_FLAGS \
+            .
