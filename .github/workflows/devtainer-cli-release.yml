@@ -1,0 +1,49 @@
+name: Release Devtainer CLI
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build release assets
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          set -euxo pipefail
+          out_dir="dist/devtainer/${VERSION}"
+          rm -rf "$out_dir"
+          mkdir -p "$out_dir"
+          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64; do
+            GOOS="${target%/*}"
+            GOARCH="${target#*/}"
+            work_dir="$(mktemp -d)"
+            GOOS="$GOOS" GOARCH="$GOARCH" CGO_ENABLED=0 \
+              go build -ldflags "-X main.version=${VERSION}" -o "$work_dir/devtainer" ./cmd/devtainer
+            tar -C "$work_dir" -czf "$out_dir/devtainer_${GOOS}_${GOARCH}.tar.gz" devtainer
+            rm -rf "$work_dir"
+          done
+          cp scripts/install-devtainer-cli.sh "$out_dir/devtainer-install.sh"
+          chmod +x "$out_dir/devtainer-install.sh"
+          (cd "$out_dir" && sha256sum ./* > checksums.txt)
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          set -euxo pipefail
+          gh release upload "$VERSION" dist/devtainer/$VERSION/* --clobber
