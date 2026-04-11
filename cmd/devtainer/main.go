@@ -142,6 +142,11 @@ type doctorTargetResult struct {
 	Fixable          bool   `json:"fixable"`
 }
 
+type runtimeInfo struct {
+	Kind        string
+	Description string
+}
+
 var uuidPattern = regexp.MustCompile(`^[0-9a-fA-F-]{32,36}$`)
 
 func main() {
@@ -153,8 +158,7 @@ func main() {
 
 func run(args []string) error {
 	if len(args) == 0 {
-		printRootHelp(os.Stdout)
-		return nil
+		return runDashboard()
 	}
 
 	switch args[0] {
@@ -179,6 +183,89 @@ func run(args []string) error {
 	default:
 		return fmt.Errorf("unknown command %q\nRun `devtainer --help` for usage", args[0])
 	}
+}
+
+func runDashboard() error {
+	runtime := detectRuntime()
+	configExists := true
+	cfg, _, cfgErr := loadConfig()
+	if cfgErr != nil {
+		configExists = false
+	}
+	activeProfile := "not configured"
+	profileCount := 0
+	profile := Profile{}
+	if cfg != nil {
+		activeProfile = cfg.ActiveProfile
+		profileCount = len(cfg.Profiles)
+		profile = cfg.Profiles[cfg.ActiveProfile]
+	}
+	bwStatus, bwErr := getBWStatus()
+	if bwErr != nil {
+		bwStatus = "unavailable"
+	}
+
+	fmt.Fprintln(os.Stdout, colorize(colorAyuBlue, "    ____             __        _                 "))
+	fmt.Fprintln(os.Stdout, colorize(colorAyuBlue, "   / __ \\___ _   __/ /_____ _(_)___  ___  _____ "))
+	fmt.Fprintln(os.Stdout, colorize(colorAyuBlue, "  / / / / _ \\ | / / __/ __ `/ / __ \\/ _ \\/ ___/ "))
+	fmt.Fprintln(os.Stdout, colorize(colorAyuBlue, " / /_/ /  __/ |/ / /_/ /_/ / / / / /  __/ /     "))
+	fmt.Fprintln(os.Stdout, colorize(colorAyuBlue, "/_____/\\___/|___/\\__/\\__,_/_/_/ /_/\\___/_/      "))
+	fmt.Fprintln(os.Stdout)
+
+	renderDashboardPanel("Overview", []string{
+		fmt.Sprintf("version        %s", version),
+		fmt.Sprintf("runtime        %s", runtime.Description),
+		fmt.Sprintf("profile        %s", activeProfile),
+		fmt.Sprintf("bitwarden      %s", dashboardStatusValue(bwStatus)),
+	})
+
+	configValue := "missing"
+	if configExists {
+		configValue = fmt.Sprintf("present (%d profile%s)", profileCount, pluralize(profileCount))
+	}
+	renderDashboardPanel("Config", []string{
+		fmt.Sprintf("config path     %s", configPath()),
+		fmt.Sprintf("config state    %s", configValue),
+	})
+
+	if configExists {
+		renderDashboardPanel("Tool Slots", []string{
+			fmt.Sprintf("ssh config      %s", dashboardRef(profile.SSHConfig)),
+			fmt.Sprintf("ssh key         %s", dashboardRef(profile.SSHKey)),
+			fmt.Sprintf("git creds       %s", dashboardRef(profile.GitCredentials)),
+			fmt.Sprintf("kube config     %s", dashboardRef(profile.KubeConfig)),
+			fmt.Sprintf("argocd config   %s", dashboardRef(profile.ArgoCDConfig)),
+		})
+
+		if report, err := buildDoctorReport(activeProfile, profile, "all", false); err == nil {
+			okCount, issueCount, fixableCount := summarizeDoctorReport(report)
+			renderDashboardPanel("Health", []string{
+				fmt.Sprintf("healthy targets %d", okCount),
+				fmt.Sprintf("issues          %d", issueCount),
+				fmt.Sprintf("fixable         %d", fixableCount),
+			})
+		}
+	}
+
+	actions := []string{}
+	if !configExists {
+		actions = append(actions, "devtainer config init --profile personal")
+	} else {
+		if bwStatus == "locked" {
+			actions = append(actions, "bw unlock")
+		}
+		if bwStatus == "unauthenticated" {
+			actions = append(actions, "bw login")
+		}
+		actions = append(actions, "devtainer doctor")
+		actions = append(actions, "devtainer setup all")
+		actions = append(actions, "devtainer bootstrap bitwarden")
+	}
+	renderDashboardPanel("Next", actions)
+
+	fmt.Fprintln(os.Stdout)
+	fmt.Fprintf(os.Stdout, "%s Run %s for the full health report.\n", statusLabel("hint", "hint"), colorize(colorAyuBlue, "devtainer doctor"))
+	return nil
 }
 
 func runConfig(args []string) error {
@@ -389,34 +476,48 @@ func runDoctor(args []string) error {
 	if err != nil {
 		return err
 	}
-	targets, err := targetsForTool(tool, profile)
+	report, err := buildDoctorReport(profileName, profile, tool, *fix)
 	if err != nil {
 		return err
 	}
+	if *jsonOutput {
+		payload, err := json.MarshalIndent(report, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Fprintln(os.Stdout, string(payload))
+	} else {
+		renderDoctorReport(os.Stdout, report, *verbose)
+	}
+	if doctorReportHasIssues(report) {
+		return errors.New("doctor found issues")
+	}
+	return nil
+}
 
+func buildDoctorReport(profileName string, profile Profile, tool string, fix bool) (doctorReport, error) {
+	targets, err := targetsForTool(tool, profile)
+	if err != nil {
+		return doctorReport{}, err
+	}
 	spin := startSpinner("Checking Bitwarden session")
 	status, statusErr := getBWStatus()
 	spin.Stop(statusErr)
-
-	failures := 0
-	fixableFailures := 0
-	missingItemFailures := 0
-	compareFailures := 0
-	missingFileFailures := 0
+	report := doctorReport{Profile: profileName, BitwardenStatus: status, Targets: make([]doctorTargetResult, 0, len(targets))}
 	state, _ := loadState()
 	prefetch := doctorPrefetch{resolutions: map[string]*bwResolution{}, errors: map[string]error{}}
-	report := doctorReport{Profile: profileName, BitwardenStatus: status, Targets: make([]doctorTargetResult, 0, len(targets))}
 	if status == "unlocked" {
 		spin = startSpinner("Loading Bitwarden items")
 		prefetch = prefetchDoctorItems(profile, targets)
 		spin.Stop(nil)
 	}
+	fixableFailures := 0
+	missingItemFailures := 0
+	compareFailures := 0
+	missingFileFailures := 0
 	for _, target := range targets {
-		result := doctorTarget(state, profileName, profile, target, status == "unlocked", *fix, prefetch)
+		result := doctorTarget(state, profileName, profile, target, status == "unlocked", fix, prefetch)
 		report.Targets = append(report.Targets, result)
-		if result.Error != "" {
-			failures++
-		}
 		if result.Fixable {
 			fixableFailures++
 		}
@@ -429,7 +530,7 @@ func runDoctor(args []string) error {
 			missingFileFailures++
 		}
 	}
-	if fixableFailures > 0 && !*fix {
+	if fixableFailures > 0 && !fix {
 		report.Hints = append(report.Hints, "Run `devtainer doctor --fix` to repair safe local issues like permissions. It will not unlock Bitwarden or overwrite file contents.")
 	}
 	if status == "unlocked" && missingItemFailures > 0 {
@@ -450,19 +551,7 @@ func runDoctor(args []string) error {
 	if status == "unauthenticated" {
 		report.Hints = append(report.Hints, "Run bw login, then bw unlock.")
 	}
-	if *jsonOutput {
-		payload, err := json.MarshalIndent(report, "", "  ")
-		if err != nil {
-			return err
-		}
-		fmt.Fprintln(os.Stdout, string(payload))
-	} else {
-		renderDoctorReport(os.Stdout, report, *verbose)
-	}
-	if failures > 0 || statusErr != nil || status != "unlocked" {
-		return errors.New("doctor found issues")
-	}
-	return nil
+	return report, nil
 }
 
 func runUpdate(args []string) error {
@@ -1434,6 +1523,91 @@ func loadProfileForState(name string) Profile {
 
 func normalizeError(err error) string {
 	return strings.TrimSpace(err.Error())
+}
+
+func detectRuntime() runtimeInfo {
+	if os.Getenv("KUBERNETES_SERVICE_HOST") != "" {
+		return runtimeInfo{Kind: "kubernetes", Description: "kubernetes pod"}
+	}
+	if os.Getenv("DISTROBOX_ENTER_PATH") != "" || os.Getenv("DISTROBOX_HOST_HOME") != "" || fileExists("/run/host") {
+		return runtimeInfo{Kind: "distrobox", Description: "distrobox container"}
+	}
+	if fileExists("/.dockerenv") || fileExists("/run/.containerenv") || os.Getenv("container") != "" {
+		return runtimeInfo{Kind: "container", Description: "container"}
+	}
+	return runtimeInfo{Kind: "host", Description: "host machine"}
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+func renderDashboardPanel(title string, lines []string) {
+	if len(lines) == 0 {
+		return
+	}
+	fmt.Fprintf(os.Stdout, "%s\n", colorize(colorAyuCyan, "+-- "+title))
+	for _, line := range lines {
+		fmt.Fprintf(os.Stdout, "%s %s\n", colorize(colorAyuGray, "|"), line)
+	}
+	fmt.Fprintf(os.Stdout, "%s\n\n", colorize(colorAyuGray, "`--"))
+}
+
+func dashboardStatusValue(status string) string {
+	switch status {
+	case "unlocked":
+		return colorize(colorAyuGreen, status)
+	case "locked", "unauthenticated":
+		return colorize(colorAyuYellow, status)
+	case "unavailable":
+		return colorize(colorAyuRed, status)
+	default:
+		return status
+	}
+}
+
+func dashboardRef(ref string) string {
+	if ref == "" {
+		return colorize(colorAyuYellow, "not configured")
+	}
+	return ref
+}
+
+func pluralize(count int) string {
+	if count == 1 {
+		return ""
+	}
+	return "s"
+}
+
+func summarizeDoctorReport(report doctorReport) (int, int, int) {
+	okCount := 0
+	issueCount := 0
+	fixableCount := 0
+	for _, target := range report.Targets {
+		if target.Error == "" {
+			okCount++
+		} else {
+			issueCount++
+		}
+		if target.Fixable {
+			fixableCount++
+		}
+	}
+	return okCount, issueCount, fixableCount
+}
+
+func doctorReportHasIssues(report doctorReport) bool {
+	if report.BitwardenStatus != "unlocked" {
+		return true
+	}
+	for _, target := range report.Targets {
+		if target.Error != "" {
+			return true
+		}
+	}
+	return false
 }
 
 func renderDoctorReport(w io.Writer, report doctorReport, verbose bool) {
