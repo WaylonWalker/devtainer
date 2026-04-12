@@ -67,6 +67,8 @@ jobs:
             --tag ghcr.io/waylonwalker/devtainer:${VERSION} \
             $PUSH_FLAGS \
             .
+      - name: Smoke test Ubuntu image dotfiles
+        run: CONTAINER_RUNTIME=docker ./scripts/test_dotfiles_smoke.sh ghcr.io/waylonwalker/devtainer:latest
 
   slim:
     needs: prepare
@@ -103,6 +105,8 @@ jobs:
             --tag ghcr.io/waylonwalker/devtainer:slim-${VERSION} \
             $PUSH_FLAGS \
             .
+      - name: Smoke test Ubuntu slim image dotfiles
+        run: CONTAINER_RUNTIME=docker ./scripts/test_dotfiles_smoke.sh ghcr.io/waylonwalker/devtainer:slim
 
   arch:
     needs: prepare
@@ -139,6 +143,8 @@ jobs:
             docker push ghcr.io/waylonwalker/devtainer:arch-${DATE_TAG}
             docker push ghcr.io/waylonwalker/devtainer:arch-${VERSION}
           fi
+      - name: Smoke test Arch image dotfiles
+        run: CONTAINER_RUNTIME=docker ./scripts/test_dotfiles_smoke.sh ghcr.io/waylonwalker/devtainer:arch
 
   arch-slim:
     needs: prepare
@@ -175,6 +181,8 @@ jobs:
             docker push ghcr.io/waylonwalker/devtainer:arch-slim-${DATE_TAG}
             docker push ghcr.io/waylonwalker/devtainer:arch-slim-${VERSION}
           fi
+      - name: Smoke test Arch slim image dotfiles
+        run: CONTAINER_RUNTIME=docker ./scripts/test_dotfiles_smoke.sh ghcr.io/waylonwalker/devtainer:arch-slim
 
   alpine:
     needs: prepare
@@ -211,6 +219,8 @@ jobs:
             --tag ghcr.io/waylonwalker/devtainer:alpine-${VERSION} \
             $PUSH_FLAGS \
             .
+      - name: Smoke test Alpine image dotfiles
+        run: CONTAINER_RUNTIME=docker ./scripts/test_dotfiles_smoke.sh ghcr.io/waylonwalker/devtainer:alpine
 
   alpine-slim:
     needs: prepare
@@ -247,3 +257,5 @@ jobs:
             --tag ghcr.io/waylonwalker/devtainer:alpine-slim-${VERSION} \
             $PUSH_FLAGS \
             .
+      - name: Smoke test Alpine slim image dotfiles
+        run: CONTAINER_RUNTIME=docker ./scripts/test_dotfiles_smoke.sh ghcr.io/waylonwalker/devtainer:alpine-slim

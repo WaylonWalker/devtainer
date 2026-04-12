@@ -6,37 +6,24 @@ ENV PATH="/root/.local/bin:/root/.local/share/mise/shims:/root/.local/share/mise
 RUN apk add --no-cache \
     bash \
     build-base \
-    bzip2-dev \
     ca-certificates \
     curl \
-    ffmpeg \
     fzf \
     git \
-    gnupg \
-    gcompat \
     go \
-    helix \
-    libffi-dev \
-    lua-language-server \
     ncurses \
     neovim \
     nodejs \
     npm \
-    openssl-dev \
-    py3-pip \
-    python3-dev \
     python3 \
-    readline-dev \
-    sqlite \
-    sqlite-dev \
+    python3-dev \
     stow \
     tar \
-    ttyd \
+    tmux \
     unzip \
     wget \
     xclip \
     xz \
-    zlib-dev \
     zsh && \
     adduser -D -s /bin/zsh devtainer && \
     mkdir -p /root/.local/bin /root/devtainer /home/devtainer/.local/bin /home/devtainer/.local/share && \
@@ -49,7 +36,6 @@ COPY tmux /root/devtainer/tmux
 COPY bin /root/devtainer/bin
 COPY one-shot-apps /root/devtainer/one-shot-apps
 COPY nvim /root/devtainer/nvim
-COPY helix /root/devtainer/helix
 COPY mise /root/devtainer/mise
 COPY cmd /root/devtainer/cmd
 COPY go.mod /root/devtainer/go.mod
@@ -57,91 +43,43 @@ COPY go.sum /root/devtainer/go.sum
 
 WORKDIR /root/devtainer
 
+RUN go build -ldflags "-X main.version=$(git describe --tags --always --dirty 2>/dev/null || echo dev)" -o /usr/local/bin/devtainer ./cmd/devtainer
+
 RUN mkdir -p /opt/devtainer-home && \
-    cp -a zsh tmux bin one-shot-apps nvim helix mise /opt/devtainer-home/ && \
+    cp -a zsh tmux bin one-shot-apps nvim mise /opt/devtainer-home/ && \
     chmod -R a+rX /opt/devtainer-home && \
     stow -d /opt/devtainer-home -t /home/devtainer zsh && \
     stow -d /opt/devtainer-home -t /home/devtainer tmux && \
     stow -d /opt/devtainer-home -t /home/devtainer nvim && \
-    stow -d /opt/devtainer-home -t /home/devtainer helix && \
     stow -d /opt/devtainer-home -t /home/devtainer mise && \
     install -m 755 /opt/devtainer-home/bin/.local/bin/devtainer-bootstrap-home /usr/local/bin/devtainer-bootstrap-home && \
     chown -R devtainer:devtainer /home/devtainer
 
-RUN go build -ldflags "-X main.version=$(git describe --tags --always --dirty 2>/dev/null || echo dev)" -o /usr/local/bin/devtainer ./cmd/devtainer
-
 RUN --mount=type=secret,id=gh_token \
     export MISE_GITHUB_TOKEN="$(cat /run/secrets/gh_token)" && \
     mise install \
-        age \
-        argocd \
-        atuin \
-        bitwarden \
-        chezmoi \
-        delta \
-        difftastic \
         direnv \
-        dua \
-        dust \
-        eza \
-        fastfetch \
         fd \
-        fnox \
         fzf \
         github-cli \
-        gitui \
-        goreleaser \
-        grex \
-        helm \
-        htmlq \
         jq \
         just \
-        k9s \
-        kubectl \
-        lazydocker \
-        lazygit \
-        lazyjournal \
-        lazyssh \
-        pitchfork \
         ripgrep \
-        ripsecrets \
         starship \
-        television \
         tmux \
-        uv \
-        vfox \
-        vhs \
-        yazi \
-        zellij \
-        github:pagefind/pagefind \
-        github:waylonwalker/nvim-manager && \
-    mise use uv && \
-    UV_BIN="$(mise which uv)" && \
-    npm install -g tailwindcss && \
-    "$UV_BIN" tool install harlequin && \
-    "$UV_BIN" tool install ipython && \
-    "$UV_BIN" tool install lolcat && \
-    "$UV_BIN" tool install visidata && \
-    "$UV_BIN" tool install waylonwalker
+        uv && \
+    /root/.local/share/mise/installs/uv/latest/*/uv tool install harlequin && \
+    /root/.local/share/mise/installs/uv/latest/*/uv tool install ipython && \
+    /root/.local/share/mise/installs/uv/latest/*/uv tool install lolcat && \
+    /root/.local/share/mise/installs/uv/latest/*/uv tool install visidata && \
+    /root/.local/share/mise/installs/uv/latest/*/uv tool install waylonwalker
 
-RUN nvim --headless "+Lazy! restore" +qa
-RUN nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
-RUN nvim --headless "+MasonInstall rustywind ruff html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
+RUN nvim --headless "+Lazy! restore" +qa || true
+RUN nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml" +qa || true
 RUN rm -rf /home/devtainer/.local/share/mise && \
     cp -a /root/.local/share/mise /home/devtainer/.local/share/mise && \
     chown -R devtainer:devtainer /home/devtainer/.local/share/mise
 
-RUN addgroup -g 1976 vhs && \
-    adduser -D -u 1976 -G vhs -s /sbin/nologin vhs
-
-EXPOSE 1976
-ENV VHS_PORT="1976"
-ENV VHS_HOST="0.0.0.0"
-ENV VHS_GID="1976"
-ENV VHS_UID="1976"
-ENV VHS_KEY_PATH="/vhs/vhs"
-ENV VHS_AUTHORIZED_KEYS_PATH=""
-ENV VHS_NO_SANDBOX="true"
 ENV DOCKER_BUILD=
 ENV HOME="/home/devtainer"
 ENV USER="devtainer"

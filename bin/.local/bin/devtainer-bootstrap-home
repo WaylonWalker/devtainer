@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mkdir -p "${HOME}/.cache" "${HOME}/.config" "${HOME}/.local/bin" "${HOME}/.local/share" "${HOME}/.local/state/devtainer"
+
+HOME_OWNER="$(stat -c '%u:%g' "${HOME}")"
+HOME_UID="${HOME_OWNER%:*}"
+HOME_GID="${HOME_OWNER#*:}"
+HOME_USER="$(stat -c '%U' "${HOME}")"
+MISE_BIN=""
+CURRENT_UID="$(id -u)"
+
+for candidate in \
+    "${HOME}/.local/share/mise/bin/mise" \
+    /home/devtainer/.local/share/mise/bin/mise \
+    /root/.local/bin/mise \
+    /usr/bin/mise
+do
+    if [[ -x "${candidate}" ]]; then
+        MISE_BIN="${candidate}"
+        break
+    fi
+done
+
+SOURCE=""
+for candidate in \
+    "${DEVTAINER_HOME_SOURCE:-}" \
+    /opt/devtainer-home \
+    /home/devtainer/git/devtainer \
+    /root/devtainer
+do
+    if [[ -n "${candidate}" && -d "${candidate}" ]]; then
+        SOURCE="${candidate}"
+        break
+    fi
+done
+
+if [[ -z "${SOURCE}" ]]; then
+    printf 'devtainer-bootstrap-home: no dotfile source found\n' >&2
+    exit 1
+fi
+
+run_as_home_user() {
+    local command="$1"
+
+    if [[ "${CURRENT_UID}" = "${HOME_UID}" ]]; then
+        HOME="${HOME}" \
+        XDG_CONFIG_HOME="${HOME}/.config" \
+        XDG_CACHE_HOME="${HOME}/.cache" \
+        XDG_STATE_HOME="${HOME}/.local/state" \
+        sh -c "${command}" >/dev/null 2>&1 || true
+        return
+    fi
+
+    if command -v su >/dev/null 2>&1; then
+        su -s /bin/sh "${HOME_USER}" -c "HOME='${HOME}' XDG_CONFIG_HOME='${HOME}/.config' XDG_CACHE_HOME='${HOME}/.cache' XDG_STATE_HOME='${HOME}/.local/state' ${command}" >/dev/null 2>&1 || true
+    fi
+}
+
+stow_if_manageable() {
+    local package="$1"
+    local target_check="$2"
+
+    if [[ ! -d "${SOURCE}/${package}" ]]; then
+        return
+    fi
+
+    if [[ -e "${target_check}" && ! -L "${target_check}" ]]; then
+        return
+    fi
+
+    stow -d "${SOURCE}" -t "${HOME}" --restow "${package}"
+}
+
+stow_if_manageable zsh "${HOME}/.zshrc"
+stow_if_manageable tmux "${HOME}/.tmux.conf"
+stow_if_manageable nvim "${HOME}/.config/nvim"
+stow_if_manageable helix "${HOME}/.config/helix"
+stow_if_manageable mise "${HOME}/.config/mise"
+
+if [[ -d /home/devtainer/.local/share/mise && ! -e "${HOME}/.local/share/mise" ]]; then
+    ln -s /home/devtainer/.local/share/mise "${HOME}/.local/share/mise"
+fi
+
+chown -R "${HOME_UID}:${HOME_GID}" "${HOME}/.cache" "${HOME}/.config" "${HOME}/.local"
+
+if [[ -n "${MISE_BIN}" && "${HOME_UID}" != "0" ]]; then
+    run_as_home_user "'${MISE_BIN}' trust '${HOME}/.config/mise/config.toml'"
+fi
+
+HOST_HOME_DIR="/run/host/home/${HOME_USER}"
+if [[ -n "${MISE_BIN}" && -d "${HOST_HOME_DIR}" && "${HOME_UID}" != "0" ]]; then
+    run_as_home_user "'${MISE_BIN}' trust '${HOST_HOME_DIR}'"
+fi

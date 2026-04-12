@@ -19,6 +19,7 @@ build-deploy: build deploy
 
 build: build-latest build-alpine build-alpine-slim build-slim build-arch-base build-arch build-arch-slim
 deploy: deploy-latest deploy-alpine deploy-alpine-slim deploy-slim deploy-arch deploy-arch-slim
+test-dotfiles: test-dotfiles-latest test-dotfiles-slim test-dotfiles-alpine test-dotfiles-alpine-slim test-dotfiles-arch test-dotfiles-arch-slim
 
 login:
     podman login {{ registry }}
@@ -501,6 +502,36 @@ testnvim:
     # NVIM_APPNAME=wwtest nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue just" +qa
     # NVIM_APPNAME=wwtest nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
     NVIM_APPNAME=wwtest nvim
+
+test-dotfiles-latest: build-latest
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:latest
+
+test-dotfiles-slim: build-slim
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:slim
+
+test-dotfiles-alpine: build-alpine
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine
+
+test-dotfiles-alpine-slim: build-alpine-slim
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine-slim
+
+test-dotfiles-arch: build-arch
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch
+
+test-dotfiles-arch-slim: build-arch-slim
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch-slim
 
 extract-keymaps:
     # Extract keybindings from all environments

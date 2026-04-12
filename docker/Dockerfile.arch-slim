@@ -6,29 +6,21 @@ RUN pacman --noconfirm -Syyu && \
     sudo -u devtainer paru --noconfirm --skipreview --useask --needed -S \
     go \
     mise \
-    bat \
-    htop \
     kitty-terminfo \
-    lolcat \
-    man-db \
-    man-pages \
-    ncurses \
-    pacman-contrib \
+    neovim \
     stow \
-    the_silver_searcher \
-    tldr \
+    tmux \
     zsh \
     zsh-autosuggestions \
     zsh-history-substring-search \
-    zsh-syntax-highlighting \
-    zsh-vi-mode-git
+    zsh-syntax-highlighting
 
 USER devtainer
 
 RUN mkdir -p /home/devtainer/git/devtainer/
 COPY --chown=devtainer:devtainer . /home/devtainer/git/devtainer/
 WORKDIR /home/devtainer/git/devtainer
-RUN stow -d /home/devtainer/git/devtainer -t /home/devtainer --stow zsh tmux nvim helix mise
+RUN stow -d /home/devtainer/git/devtainer -t /home/devtainer --stow zsh tmux nvim mise
 
 RUN go build -ldflags "-X main.version=$(git describe --tags --always --dirty 2>/dev/null || echo dev)" -o /tmp/devtainer ./cmd/devtainer
 
@@ -39,7 +31,6 @@ RUN mkdir -p /opt/devtainer-home && \
         /home/devtainer/git/devtainer/bin \
         /home/devtainer/git/devtainer/one-shot-apps \
         /home/devtainer/git/devtainer/nvim \
-        /home/devtainer/git/devtainer/helix \
         /home/devtainer/git/devtainer/mise \
         /opt/devtainer-home/ && \
     install -m 755 /tmp/devtainer /usr/local/bin/devtainer && \
@@ -53,7 +44,17 @@ RUN --mount=type=secret,id=gh_token \
           XDG_CONFIG_HOME=/home/devtainer/.config \
           XDG_DATA_HOME=/home/devtainer/.local/share \
           XDG_CACHE_HOME=/home/devtainer/.cache \
-      mise install && \
+      mise install \
+        direnv \
+        fd \
+        fzf \
+        github-cli \
+        jq \
+        just \
+        ripgrep \
+        starship \
+        tmux \
+        uv && \
     sudo -E -H -u devtainer \
       env HOME=/home/devtainer \
           USER=devtainer \
@@ -92,8 +93,8 @@ RUN --mount=type=secret,id=gh_token \
 USER devtainer
 
 ENV DOCKER_BUILD=true
-RUN mise x -- nvim --headless "+Lazy! restore" +qa
-RUN mise x -- nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
+RUN nvim --headless "+Lazy! restore" +qa || true
+RUN nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml" +qa || true
 ENV DOCKER_BUILD=
 ENV PATH="/home/devtainer/.local/bin:/home/devtainer/.local/share/mise/shims:/home/devtainer/.local/share/mise/bin:/home/devtainer/.local/share/nvim/mason/bin:/opt/devtainer-home/one-shot-apps:${PATH}"
 
