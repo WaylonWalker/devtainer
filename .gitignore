@@ -906,3 +906,7 @@ obs/.config/obs-studio/basic
 obs/.config/obs-studio/profiler_data
 obs/.config/obs-studio/plugin_config
 awesome/.config/awesome/poppin/
+.markata
+hypr/.config/hypr/archive
+output
+.test-results

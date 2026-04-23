@@ -21,6 +21,19 @@ build: build-latest build-alpine build-alpine-slim build-slim build-arch-base bu
 deploy: deploy-latest deploy-alpine deploy-alpine-slim deploy-slim deploy-arch deploy-arch-slim
 test-dotfiles: test-dotfiles-latest test-dotfiles-slim test-dotfiles-alpine test-dotfiles-alpine-slim test-dotfiles-arch test-dotfiles-arch-slim
 
+test-dotfiles-report:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    RUN_ID="${RUN_ID:-$(date +%Y%m%d%H%M%S)}"
+    OUT_DIR="${TEST_OUTPUT_DIR:-.test-results}"
+    mkdir -p "${OUT_DIR}/${RUN_ID}"
+    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:latest
+    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:slim
+    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine
+    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine-slim
+    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch
+    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch-slim
+
 login:
     podman login {{ registry }}
 

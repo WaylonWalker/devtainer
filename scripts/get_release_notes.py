@@ -18,69 +18,39 @@ def get_release_notes(version):
 
     for section in sections:
         if section.startswith(f"## {version}"):
-            install_instructions = f"""## Containers
+            install_instructions = f"""## Install CLI
 
-Container images are published to GitHub Container Registry (GHCR). `latest`
-and `slim` use Ubuntu 24.04, `alpine` and `alpine-slim` use Alpine Edge, and
-`arch` and `arch-slim` use Arch Linux.
-
-### Pull And Run
-
-Use `podman` or `docker` with the tag that fits your base distro and size.
+Install the latest `devtainer` CLI release:
 
 ```bash
-podman run --rm -it ghcr.io/waylonwalker/devtainer:latest
+curl -fsSL https://github.com/waylonwalker/devtainer/releases/latest/download/devtainer-install.sh | sh
 ```
+
+Install this specific release:
 
 ```bash
-podman run --rm -it ghcr.io/waylonwalker/devtainer:{version}
+curl -fsSL https://github.com/waylonwalker/devtainer/releases/latest/download/devtainer-install.sh | VERSION=v{version} sh
 ```
+
+## Bootstrap
 
 ```bash
-podman run --rm -it ghcr.io/waylonwalker/devtainer:slim
+bw-unlock
+devtainer config init --profile personal
+devtainer bootstrap bitwarden
+devtainer doctor
 ```
 
-```bash
-podman run --rm -it ghcr.io/waylonwalker/devtainer:alpine
-```
+## Container Images
 
-```bash
-podman run --rm -it ghcr.io/waylonwalker/devtainer:alpine-slim
-```
+Container images are published to GitHub Container Registry (GHCR).
 
-```bash
-podman run --rm -it ghcr.io/waylonwalker/devtainer:arch
-```
-
-```bash
-podman run --rm -it ghcr.io/waylonwalker/devtainer:arch-slim
-```
-
-### Distrobox
-
-Use the repo's distrobox manifest to create a persistent dev environment.
-
-```bash
-distrobox assemble create --file ~/devtainer/distrobox/distrobox.ini --name devtainer
-distrobox enter devtainer
-```
-
-```bash
-distrobox assemble create --file ~/devtainer/distrobox/distrobox.ini --name devtainer-arch
-distrobox enter devtainer-arch
-```
-
-```bash
-distrobox assemble create --file ~/devtainer/distrobox/distrobox.ini --name devtainer-slim
-distrobox enter devtainer-slim
-```
-
-```bash
-distrobox assemble create --file ~/devtainer/distrobox/distrobox.ini --name devtainer-alpine
-distrobox enter devtainer-alpine
-```
-
-### Tags
+- `latest`: Ubuntu 24.04 daily-driver image
+- `slim`: lighter Ubuntu 24.04 image
+- `alpine`: Alpine Edge image for smaller environments and compatibility checks
+- `alpine-slim`: smaller Alpine core shell/editor image
+- `arch`: full-featured Arch Linux image
+- `arch-slim`: leaner Arch Linux image with the same base distro
 
 Release tags include:
 
@@ -91,21 +61,19 @@ Release tags include:
 - `ghcr.io/waylonwalker/devtainer:arch-{version}`
 - `ghcr.io/waylonwalker/devtainer:arch-slim-{version}`
 
-Docker Hub mirrors the same tags (`docker.io/waylonwalker/devtainer:*`) for
-compatibility, but GHCR is the canonical registry for releases and docs.
+Use GHCR as the canonical registry.
 
-## Neovim Config
-
-Install the repo's Neovim config as a separate app with `nvim-manager`.
+## Run One Container
 
 ```bash
-export NVIM_MANAGER_GITHUB_REPO=https://github.com/WaylonWalker/devtainer
-export NVIM_CONFIG_PATH=nvim/.config/nvim
-export NVIM_MANAGER_INSTALL_DIR=$HOME/.config
-export NVIM_MANAGER_PREFIX="nvim-waylonwalker-"
-export NVIM_APPNAME="nvim-waylonwalker-{version}"
+podman run --rm -it ghcr.io/waylonwalker/devtainer:{version}
+```
 
-nvim-manager install v{version}
+## Use One Distrobox
+
+```bash
+distrobox assemble create --file ~/devtainer/distrobox/distrobox.ini --name devtainer
+distrobox enter devtainer
 ```
 """
 

@@ -63,12 +63,12 @@ start_command() {
 start_region_recording() {
     local geometry timestamp output
     geometry="$(slurp)"
-    timestamp="$(date +%Y-%m-%d_%H-%M-%S)"
+    timestamp="$(date +%Y-%m-%d_%H-%M-%S-%N)"
     output="${HOME}/Videos/screenrecord-${timestamp}.mp4"
     mkdir -p "${HOME}/Videos"
 
     if has_nvidia; then
-        if start_command wf-recorder --audio --no-dmabuf --geometry "${geometry}" --file "${output}"; then
+        if start_command wf-recorder --audio --audio-backend=pipewire --no-dmabuf --geometry "${geometry}" --file "${output}" --overwrite; then
             notify 'Screen recording started' "${output}"
             return 0
         fi
@@ -79,7 +79,7 @@ start_region_recording() {
         return 0
     fi
 
-    if start_command wf-recorder --audio --no-dmabuf --geometry "${geometry}" --file "${output}"; then
+    if start_command wf-recorder --audio --audio-backend=pipewire --no-dmabuf --geometry "${geometry}" --file "${output}" --overwrite; then
         notify 'Screen recording started (fallback)' "${output}"
         return 0
     fi

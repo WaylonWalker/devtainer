@@ -13,11 +13,17 @@ RUN echo '[multilib]' >> /etc/pacman.conf && \
     chown -R devtainer:devtainer /home/devtainer && \
     mkdir /build && \
     chown -R devtainer:devtainer /build && \
-    cd /build && \
-    sudo -u devtainer git clone --depth 1 https://aur.archlinux.org/paru.git && \
-    cd paru && \
-    sudo -u devtainer makepkg --noconfirm -si && \
-    sed -i 's/#RemoveMake/RemoveMake/g' /etc/paru.conf && \
+# Skipping paru installation due to container sudo limitations
+    # cd /build && \
+    # git clone --depth 1 https://aur.archlinux.org/paru.git && \
+    # chown -R devtainer:devtainer paru && \
+    # cd paru && \
+    # pacman --noconfirm -S rust && \
+    # chmod 4755 /usr/bin/sudo && \
+    # sudo -u devtainer makepkg --noconfirm -si && \
+    # sed -i 's/#RemoveMake/RemoveMake/g' /etc/paru.conf && \
+    pacman -Qtdq | xargs -r pacman --noconfirm -Rcns && \
+    rm -rf /home/devtainer/.cache && \
     rm -rf /build
 
 USER devtainer

@@ -18,7 +18,6 @@ safe_mv() {
 	fi
 }
 /installer/BurntSushi_ripgrep.sh
-/installer/MordechaiHadad_bob.sh
 /installer/Slackadays_Clipboard.sh
 /installer/atuinsh_atuin.sh
 /installer/avencera_rustywind.sh
@@ -65,8 +64,6 @@ safe_mv() {
 /installer/waylonwalker_nvim-manager.sh
 /installer/install_kubectl.sh
 /installer/install_helm.sh
-/installer/install_ollama.sh
-
 # https://min.io/docs/minio/linux/reference/minio-mc.html
 curl https://dl.min.io/client/mc/release/linux-amd64/mc \
 --create-dirs \
@@ -77,7 +74,6 @@ export PATH=$PATH:$HOME/minio-binaries/
 
 mc --help
 
-/installer/install_windsurf.sh
 mv cli gh
 mv tealdeer tldr
 mv natscli nats
@@ -93,4 +89,3 @@ fi
 if [[ -f /usr/bin/fdfind ]]; then
     ln -s /usr/bin/fdfind ~/.local/bin/fd
 fi
-

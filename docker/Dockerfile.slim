@@ -75,6 +75,7 @@ RUN go build -ldflags "-X main.version=$(git describe --tags --always --dirty 2>
 RUN mkdir -p /opt/devtainer-home && \
     cp -a zsh tmux bin one-shot-apps nvim helix mise /opt/devtainer-home/ && \
     chmod -R a+rX /opt/devtainer-home && \
+    stow -d /opt/devtainer-home -t /home/devtainer bin && \
     stow -d /opt/devtainer-home -t /home/devtainer zsh && \
     stow -d /opt/devtainer-home -t /home/devtainer tmux && \
     stow -d /opt/devtainer-home -t /home/devtainer nvim && \
@@ -94,12 +95,12 @@ RUN --mount=type=secret,id=gh_token \
     mise x -- uv tool install visidata && \
     mise x -- uv tool install waylonwalker
 
-RUN mise x -- nvim --headless "+Lazy! restore" +qa
-RUN mise x -- nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
-RUN mise x -- nvim --headless "+MasonInstall lua-language-server rustywind ruff html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
+RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state nvim --headless "+Lazy! restore" +qa
+RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
+RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state nvim --headless "+MasonInstall lua-language-server rustywind ruff html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
 RUN rm -rf /home/devtainer/.local/share/mise && \
     cp -a /root/.local/share/mise /home/devtainer/.local/share/mise && \
-    chown -R devtainer:devtainer /home/devtainer/.local/share/mise
+    chown -R devtainer:devtainer /home/devtainer/.local /home/devtainer/.cache
 
 RUN useradd -u 1976 -U -s /bin/false vhs
 EXPOSE 1976

@@ -44,6 +44,7 @@ RUN sudo -u devtainer paru --noconfirm --skipreview --useask -S \
     nvm-git \
     pacman-contrib \
     pyenv \
+    python \
     ripgrep \
     starship \
     stow \

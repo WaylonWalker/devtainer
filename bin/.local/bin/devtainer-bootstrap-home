@@ -74,6 +74,7 @@ stow_if_manageable() {
 
 stow_if_manageable zsh "${HOME}/.zshrc"
 stow_if_manageable tmux "${HOME}/.tmux.conf"
+stow_if_manageable bin "${HOME}/.local/bin"
 stow_if_manageable nvim "${HOME}/.config/nvim"
 stow_if_manageable helix "${HOME}/.config/helix"
 stow_if_manageable mise "${HOME}/.config/mise"

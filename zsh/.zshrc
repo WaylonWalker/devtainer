@@ -4,7 +4,7 @@ set -o physical
 
 # [ -f /usr/bin/mise ] && eval "$(/usr/bin/mise activate zsh)"
 # [ -f ~/.local/bin/mise ] && eval "$(~/.local/bin/mise activate zsh)"
-if command -v mise > /dev/null; then
+if command -v mise > /dev/null && ! command -v distrobox-host-exec >/dev/null 2>&1; then
     mise_hook() { eval "$(mise hook-env)"; }
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd mise_hook
@@ -15,8 +15,8 @@ fi
 [ -f ~/.cargo.env ] && source ~/.cargo.env
 
 [ -d ~/devtainer/scripts ] && export PATH=$PATH:~/devtainer/scripts
-[ -d ~/.erg/bin ] && export PATH=$PATH:/home/waylon/.erg/bin
-[ -d ~/.erg ] && export ERG_PATH=/home/waylon/.erg
+[ -d "$HOME/.erg/bin" ] && export PATH="$PATH:$HOME/.erg/bin"
+[ -d "$HOME/.erg" ] && export ERG_PATH="$HOME/.erg"
 [ -d ~/minio-binaries ] && export PATH=$PATH:~/minio-binaries
 
 # set history
@@ -38,6 +38,8 @@ export NVIM_MANAGER_PREFIX="nvim-waylonwalker"
 # export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.1.3
 unset NVIM_APPNAME
 
+export SKILLS_DIR=$HOME/git/skills/skills
+
 # unsetopt BEEP
 
 [ -f ~/.forgit/forgit.plugin.zsh ] && source ~/.forgit/forgit.plugin.zsh
@@ -52,7 +54,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # export PATH="$(dirname $(uv python find 3.10)):$PATH"
 # eval "$(dircolors -b ~/.dircolors.256dark)"
 
-export FLYCTL_INSTALL="/home/waylon/.fly"
+export FLYCTL_INSTALL="$HOME/.fly"
 [ -d "$FLYCTL_INSTALL" ] && export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
 if [ -d "$HOME/.pyenv" ]; then
@@ -80,11 +82,27 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 ###
 
-# Setup bob
-#
-# /home/waylon/.local/share/bob/nvim-bin
-if [[ ! "$PATH" == */home/waylon/.local/share/bob/nvim-bin* ]]; then
-    export PATH="/home/waylon/.local/share/bob/nvim-bin:${PATH}}"
+# Setup mise shims
+if [[ "$HOME" != "/home/waylon" ]]; then
+    path=(${path:#/home/waylon/.local/share/mise/shims})
+    path=(${path:#/home/waylon/.local/share/mise/bin})
+    path=(${path:#/run/host/home/waylon/.local/share/mise/shims})
+    path=(${path:#/run/host/home/waylon/.local/share/mise/bin})
+fi
+
+for mise_root in "$HOME/.local/share/mise" /home/devtainer/.local/share/mise /root/.local/share/mise; do
+    if [[ -d "$mise_root/shims" ]]; then
+        [[ ! "$PATH" == *"$mise_root/shims"* ]] && export PATH="$mise_root/shims:$PATH"
+        [[ -d "$mise_root/bin" && ! "$PATH" == *"$mise_root/bin"* ]] && export PATH="$mise_root/bin:$PATH"
+        break
+    fi
+done
+
+if [[ -n "${TERM:-}" ]] && command -v infocmp >/dev/null 2>&1 && command -v tic >/dev/null 2>&1; then
+    if ! infocmp -x "$TERM" >/dev/null 2>&1 && command -v distrobox-host-exec >/dev/null 2>&1; then
+        mkdir -p "$HOME/.terminfo"
+        distrobox-host-exec infocmp -x "$TERM" 2>/dev/null | tic -x -o "$HOME/.terminfo" /dev/stdin >/dev/null 2>&1 || true
+    fi
 fi
 
 zstyle ':completion:*' menu select
@@ -128,7 +146,7 @@ function expand-alias() {
 }
 function cwfetch() {
     clear
-    wfetch
+# wfetch
 }
 
 zle -N expand-alias
@@ -206,10 +224,14 @@ fi
 # zprof
 #
 
-# . "$HOME/.atuin/bin/env"
+if [[ -f "$HOME/.atuin/bin/env" ]]; then
+  . "$HOME/.atuin/bin/env"
+fi
 
-eval "$(atuin init zsh)"
-export ATUIN_NO_CLEAR=true
+if command -v atuin > /dev/null 2>&1; then
+  eval "$(atuin init zsh)"
+  export ATUIN_NO_CLEAR=true
+fi
 
 if [[ -z "$BROWSER" ]]; then
 	DEFAULT_BROWSER_DESKTOP=$(xdg-settings get default-web-browser 2>/dev/null)
@@ -316,7 +338,9 @@ alias ytdla='uvx --with mutagen yt-dlp \
   --parse-metadata "playlist_title:%(album)s" \
   --output "%(channel,uploader|Unknown Artist)s/%(album,playlist_title|Unknown Album)s/%(playlist_index)02d - %(title)s.%(ext)s"'
 
-wfetch
+if command -v wfetch >/dev/null 2>&1; then
+  wfetch
+fi
 
 # pnpm
 export PNPM_HOME="/home/waylon/.local/share/pnpm"
@@ -332,3 +356,6 @@ esac
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+bw-unlock() {
+  export BW_SESSION="$(bw unlock --raw)" || return 1
+}
