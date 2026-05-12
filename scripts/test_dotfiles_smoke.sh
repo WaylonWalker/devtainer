@@ -26,9 +26,16 @@ run_container_check() {
     local description="$2"
     local log_file="${CHECKS_DIR}/${name}.log"
     local json_file="${CHECKS_DIR}/${name}.json"
+    local shell_path
 
     printf '==> %s (%s)\n' "${name}" "${IMAGE}"
-    if "${RUNTIME}" run --rm -i --entrypoint /bin/sh "${IMAGE}" -s >"${log_file}" 2>&1; then
+    shell_path="$(resolve_container_shell "${log_file}")"
+    if [[ -z "${shell_path}" ]]; then
+        printf '{"name":"%s","description":"%s","status":"fail","log":"%s","error":"no shell found"}\n' "${name}" "${description}" "${log_file}" >"${json_file}"
+        return 1
+    fi
+
+    if "${RUNTIME}" run --rm -i --entrypoint "${shell_path}" "${IMAGE}" -s >"${log_file}" 2>&1; then
         {
             printf '{'
             printf '"name":"%s","description":"%s","status":"pass","log":"%s"' "${name}" "${description}" "${log_file}"
@@ -45,21 +52,58 @@ run_container_check() {
     return 1
 }
 
-run_nvim_check() {
+resolve_container_shell() {
+    local log_file="$1"
+    local candidate
+
+    : >"${log_file}"
+
+    for candidate in /bin/sh /usr/bin/sh /bin/bash /usr/bin/bash; do
+        if "${RUNTIME}" run --rm --entrypoint "${candidate}" "${IMAGE}" -c 'exit 0' >>"${log_file}" 2>&1; then
+            printf '%s\n' "${candidate}"
+            return 0
+        fi
+    done
+
+    printf 'Unable to find a working shell in %s\n' "${IMAGE}" >>"${log_file}"
+    return 1
+}
+
+run_nvim_container_check() {
     local name="$1"
     local description="$2"
     local lua_expr="$3"
     local log_file="${CHECKS_DIR}/${name}.log"
     local json_file="${CHECKS_DIR}/${name}.json"
-    local nvim_bin
+    local shell_path
 
-    nvim_bin="$(PATH="/usr/local/bin:/usr/bin:/bin" command -v nvim || true)"
-    if [[ -z "${nvim_bin}" ]]; then
-        printf '{"name":"%s","description":"%s","status":"fail","log":"%s","error":"nvim not found"}\n' "${name}" "${description}" "${log_file}" >"${json_file}"
+    printf '==> %s (%s)\n' "${name}" "${IMAGE}"
+    shell_path="$(resolve_container_shell "${log_file}")"
+    if [[ -z "${shell_path}" ]]; then
+        printf '{"name":"%s","description":"%s","status":"fail","log":"%s","error":"no shell found"}\n' "${name}" "${description}" "${log_file}" >"${json_file}"
         return 1
     fi
 
-    if HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state "${nvim_bin}" --headless "+set runtimepath^=/home/devtainer/.config/nvim" "+lua dofile('/home/devtainer/.config/nvim/init.lua')" "+lua assert(${lua_expr})" +qa >"${log_file}" 2>&1; then
+    if "${RUNTIME}" run --rm -i --entrypoint "${shell_path}" "${IMAGE}" -s >"${log_file}" 2>&1 <<EOF
+set -eu
+nvim_bin="\$(command -v nvim || true)"
+if [ -z "\${nvim_bin}" ]; then
+    printf 'nvim not found\n' >&2
+    exit 1
+fi
+HOME=/home/devtainer \
+USER=devtainer \
+XDG_CONFIG_HOME=/home/devtainer/.config \
+XDG_DATA_HOME=/home/devtainer/.local/share \
+XDG_CACHE_HOME=/home/devtainer/.cache \
+XDG_STATE_HOME=/home/devtainer/.local/state \
+"\${nvim_bin}" --headless \
+    "+set runtimepath^=/home/devtainer/.config/nvim" \
+    "+lua dofile('/home/devtainer/.config/nvim/init.lua')" \
+    "+lua assert(${lua_expr})" \
+    +qa
+EOF
+    then
         printf '{"name":"%s","description":"%s","status":"pass","log":"%s"}\n' "${name}" "${description}" "${log_file}" >"${json_file}"
         return 0
     fi
@@ -182,13 +226,13 @@ EOF
         status=1
     fi
 
-    if ! run_nvim_check "verify-nvim-install" "verify neovim is installed" 'vim.fn.has("nvim-0.9") == 1 or vim.fn.has("nvim-0.10") == 1 or vim.fn.has("nvim-0.11") == 1'; then
+    if ! run_nvim_container_check "verify-nvim-install" "verify neovim is installed" 'vim.fn.has("nvim-0.9") == 1 or vim.fn.has("nvim-0.10") == 1 or vim.fn.has("nvim-0.11") == 1'; then
         status=1
     fi
-    if ! run_nvim_check "verify-nvim-config" "verify neovim config is present" 'vim.fn.filereadable(vim.fn.stdpath("config") .. "/init.lua") == 1'; then
+    if ! run_nvim_container_check "verify-nvim-config" "verify neovim config is present" 'vim.fn.filereadable(vim.fn.stdpath("config") .. "/init.lua") == 1'; then
         status=1
     fi
-    if ! run_nvim_check "verify-nvim-plugins" "verify lazy plugins are downloaded" 'vim.fn.isdirectory(vim.fn.stdpath("data") .. "/lazy") == 1'; then
+    if ! run_nvim_container_check "verify-nvim-plugins" "verify lazy plugins are downloaded" 'vim.fn.isdirectory(vim.fn.stdpath("data") .. "/lazy") == 1'; then
         status=1
     fi
 
