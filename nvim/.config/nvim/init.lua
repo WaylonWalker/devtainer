@@ -25,3 +25,5 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
         vim.bo.filetype = "dockerfile"
     end,
 })
+
+require("cmp-patch")
