@@ -61,35 +61,35 @@ RUN --mount=type=secret,id=gh_token \
           XDG_CONFIG_HOME=/home/devtainer/.config \
           XDG_DATA_HOME=/home/devtainer/.local/share \
           XDG_CACHE_HOME=/home/devtainer/.cache \
-      /home/devtainer/.local/share/mise/installs/uv/latest/*/uv tool install harlequin && \
+      mise x -- uv tool install harlequin && \
     sudo -E -H -u devtainer \
       env HOME=/home/devtainer \
           USER=devtainer \
           XDG_CONFIG_HOME=/home/devtainer/.config \
           XDG_DATA_HOME=/home/devtainer/.local/share \
           XDG_CACHE_HOME=/home/devtainer/.cache \
-      /home/devtainer/.local/share/mise/installs/uv/latest/*/uv tool install ipython && \
+      mise x -- uv tool install ipython && \
     sudo -E -H -u devtainer \
       env HOME=/home/devtainer \
           USER=devtainer \
           XDG_CONFIG_HOME=/home/devtainer/.config \
           XDG_DATA_HOME=/home/devtainer/.local/share \
           XDG_CACHE_HOME=/home/devtainer/.cache \
-      /home/devtainer/.local/share/mise/installs/uv/latest/*/uv tool install lolcat && \
+      mise x -- uv tool install lolcat && \
     sudo -E -H -u devtainer \
       env HOME=/home/devtainer \
           USER=devtainer \
           XDG_CONFIG_HOME=/home/devtainer/.config \
           XDG_DATA_HOME=/home/devtainer/.local/share \
           XDG_CACHE_HOME=/home/devtainer/.cache \
-      /home/devtainer/.local/share/mise/installs/uv/latest/*/uv tool install visidata && \
+      mise x -- uv tool install visidata && \
     sudo -E -H -u devtainer \
       env HOME=/home/devtainer \
           USER=devtainer \
           XDG_CONFIG_HOME=/home/devtainer/.config \
           XDG_DATA_HOME=/home/devtainer/.local/share \
           XDG_CACHE_HOME=/home/devtainer/.cache \
-      /home/devtainer/.local/share/mise/installs/uv/latest/*/uv tool install waylonwalker
+      mise x -- uv tool install waylonwalker
 USER devtainer
 
 ENV DOCKER_BUILD=true
