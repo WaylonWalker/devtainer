@@ -1,0 +1,19 @@
+/**
+ * Gruvbox theme for Rofi
+ * Generated using PyWal colors from ~/.cache/wal/colors.sh
+ */
+
+configuration {
+    modi: "window,drun,run";
+    font: "JetBrains Mono Nerd Font 12";
+    location: 0;
+    yoffset: 0;
+    xoffset: 0;
+    fixed-num-lines: true;
+    show-icons: true;
+    terminal: "kitty";
+    drun-display-format: "{name}";
+    window-format: "{w} . {c} . {t}";
+}
+
+@theme "gruvbox-medium.rasi"

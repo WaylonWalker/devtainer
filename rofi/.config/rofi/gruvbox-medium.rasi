@@ -1,0 +1,155 @@
+/**
+ * Gruvbox Medium Theme for Rofi
+ * Based on PyWal colors
+ */
+
+* {
+    red:                         #fb4934;
+    lightred:                    #fb4934;
+    orange:                      #fabd2f;
+    yellow:                      #fabd2f;
+    green:                       #b8bb26;
+    lightgreen:                  #b8bb26;
+    cyan:                        #8ec07c;
+    lightcyan:                   #8ec07c;
+    blue:                        #83a598;
+    lightblue:                   #83a598;
+    magenta:                     #d3869b;
+    lightmagenta:                #d3869b;
+    background:                  #282828;
+    background-alt:              #3c3836;
+    foreground:                  #d5c4a1;
+    foreground-alt:              #665c54;
+    selected:                    #504945;
+    selected-active:             #665c54;
+    selected-urgent:             #d65d0e;
+    urgent:                      #cc241d;
+    transparent:                 #00000000;
+    border-color:                #665c54;
+    separatorcolor:              #665c54;
+}
+
+window {
+    background-color: @background;
+    border: 2px;
+    border-color: @border-color;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+mainbox {
+    background-color: @background;
+    border: 0px;
+    border-radius: 8px;
+    padding: 0px;
+}
+
+inputbar {
+    background-color: @background-alt;
+    border: 1px;
+    border-color: @border-color;
+    border-radius: 6px;
+    padding: 8px 12px;
+    children: [prompt, entry];
+}
+
+prompt {
+    background-color: transparent;
+    text-color: @cyan;
+    font: "JetBrains Mono Nerd Font bold 12";
+}
+
+entry {
+    background-color: transparent;
+    text-color: @foreground;
+    font: "JetBrains Mono Nerd Font 12";
+    placeholder: "Search...";
+    placeholder-color: @foreground-alt;
+}
+
+listview {
+    background-color: transparent;
+    border: 0px;
+    border-radius: 6px;
+    padding: 8px 0px;
+    columns: 1;
+    lines: 10;
+    cycle: false;
+    dynamic: true;
+    scrollbar: false;
+}
+
+element {
+    background-color: transparent;
+    border: 0px;
+    border-radius: 4px;
+    padding: 6px 12px;
+    spacing: 8px;
+    children: [element-icon, element-text];
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+element normal.urgent {
+    background-color: @urgent;
+    text-color: @foreground;
+}
+
+element normal.active {
+    background-color: @selected-active;
+    text-color: @foreground;
+}
+
+element selected.normal {
+    background-color: @selected;
+    text-color: @foreground;
+}
+
+element selected.urgent {
+    background-color: @selected-urgent;
+    text-color: @foreground;
+}
+
+element selected.active {
+    background-color: @selected-active;
+    text-color: @foreground;
+}
+
+element-icon {
+    background-color: transparent;
+    size: 24px;
+    text-color: @foreground;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    font: "JetBrains Mono Nerd Font 12";
+}
+
+message {
+    background-color: @background;
+    border: 1px;
+    border-color: @border-color;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+textbox {
+    background-color: transparent;
+    text-color: @foreground;
+    font: "JetBrains Mono Nerd Font 12";
+}
+
+error-message {
+    background-color: @background;
+    border: 1px;
+    border-color: @red;
+    border-radius: 6px;
+    padding: 12px;
+    text-color: @red;
+    font: "JetBrains Mono Nerd Font bold 12";
+}
