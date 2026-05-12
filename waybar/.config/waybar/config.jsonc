@@ -14,6 +14,7 @@
   ],
   "modules-right": [
     "bluetooth",
+    "custom/keyboard",
     "pulseaudio",
     "custom/perf",
     "group/tray-expander"
@@ -68,6 +69,13 @@
     "format-connected": "",
     "tooltip-format": "Devices connected: {num_connections}",
     "on-click": "blueman-manager"
+  },
+  "custom/keyboard": {
+    "exec": "~/.config/waybar/scripts/keyboard_status.sh",
+    "interval": 5,
+    "return-type": "json",
+    "signal": 11,
+    "on-click": "~/.config/waybar/scripts/keyboard_connect.sh"
   },
   "network": {
     "format-icons": [

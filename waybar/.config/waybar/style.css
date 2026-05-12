@@ -2,6 +2,7 @@
 @define-color background #1a1b26;
 @define-color accent #8ec07c;
 @define-color danger #a55555;
+@define-color muted #6f7791;
 
 * {
   background-color: @background;
@@ -38,6 +39,7 @@
 #battery,
 #network,
 #bluetooth,
+#custom-keyboard,
 #pulseaudio,
 #custom-waylon,
 #custom-screenrecording-indicator,
@@ -61,6 +63,14 @@
 
 #custom-perf.critical {
   color: @danger;
+}
+
+#custom-keyboard.connected {
+  color: @accent;
+}
+
+#custom-keyboard.disconnected {
+  color: @muted;
 }
 
 tooltip {
