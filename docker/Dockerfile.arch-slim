@@ -1,30 +1,76 @@
-FROM devtainer:arch-base
+FROM docker.io/golang:1.22 AS devtainer-cli
+
+ARG DEVTAINER_VERSION=dev
+WORKDIR /src
+COPY go.mod go.sum ./
+COPY vendor ./vendor
+COPY cmd ./cmd
+RUN CGO_ENABLED=0 GOTOOLCHAIN=local go build -mod=vendor -ldflags "-X main.version=${DEVTAINER_VERSION}" -o /devtainer ./cmd/devtainer
+
+FROM archlinux
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ARG ALL_PROXY
+ARG UV_INDEX_URL
+ARG UV_EXTRA_INDEX_URL
+ARG UV_DEFAULT_INDEX
+ARG PIP_INDEX_URL
+ARG PIP_EXTRA_INDEX_URL
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
+ARG all_proxy
+
+ENV HTTP_PROXY=${HTTP_PROXY} \
+    HTTPS_PROXY=${HTTPS_PROXY} \
+    NO_PROXY=${NO_PROXY} \
+    ALL_PROXY=${ALL_PROXY} \
+    UV_INDEX_URL=${UV_INDEX_URL} \
+    UV_EXTRA_INDEX_URL=${UV_EXTRA_INDEX_URL} \
+    UV_DEFAULT_INDEX=${UV_DEFAULT_INDEX} \
+    PIP_INDEX_URL=${PIP_INDEX_URL} \
+    PIP_EXTRA_INDEX_URL=${PIP_EXTRA_INDEX_URL} \
+    http_proxy=${http_proxy} \
+    https_proxy=${https_proxy} \
+    no_proxy=${no_proxy} \
+    all_proxy=${all_proxy}
 
 USER root
 
 RUN pacman --noconfirm -Syyu && \
-    sudo -u devtainer paru --noconfirm --skipreview --useask --needed -S \
-    go \
+    pacman --noconfirm -S --needed \
+    base-devel \
+    git \
     mise \
     kitty-terminfo \
     neovim \
     stow \
+    sudo \
     tmux \
     zsh \
     zsh-autosuggestions \
     zsh-history-substring-search \
-    zsh-syntax-highlighting
+    zsh-syntax-highlighting && \
+    groupadd --gid 1000 devtainer && \
+    useradd --uid 1000 --gid 1000 -m -r -s /bin/bash devtainer && \
+    passwd -d devtainer && \
+    echo 'devtainer ALL=(ALL) ALL' > /etc/sudoers.d/devtainer && \
+    mkdir -p /home/devtainer/.gnupg && \
+    echo 'standard-resolver' > /home/devtainer/.gnupg/dirmngr.conf && \
+    chown -R devtainer:devtainer /home/devtainer
 
 USER devtainer
 
 RUN mkdir -p /home/devtainer/git/devtainer/
 COPY --chown=devtainer:devtainer . /home/devtainer/git/devtainer/
+COPY --chown=devtainer:devtainer docker/mise-tools.slim /home/devtainer/git/devtainer/docker/mise-tools.slim
 WORKDIR /home/devtainer/git/devtainer
 RUN stow -d /home/devtainer/git/devtainer -t /home/devtainer --stow zsh tmux nvim mise
 
-RUN go build -ldflags "-X main.version=$(git describe --tags --always --dirty 2>/dev/null || echo dev)" -o /tmp/devtainer ./cmd/devtainer
-
 USER root
+COPY --from=devtainer-cli /devtainer /usr/local/bin/devtainer
 RUN mkdir -p /opt/devtainer-home && \
     cp -a /home/devtainer/git/devtainer/zsh \
         /home/devtainer/git/devtainer/tmux \
@@ -33,63 +79,19 @@ RUN mkdir -p /opt/devtainer-home && \
         /home/devtainer/git/devtainer/nvim \
         /home/devtainer/git/devtainer/mise \
         /opt/devtainer-home/ && \
-    install -m 755 /tmp/devtainer /usr/local/bin/devtainer && \
     install -m 755 /home/devtainer/git/devtainer/bin/.local/bin/devtainer-bootstrap-home /usr/local/bin/devtainer-bootstrap-home && \
     chmod -R a+rX /opt/devtainer-home
 RUN --mount=type=secret,id=gh_token \
-    export MISE_GITHUB_TOKEN="$(cat /run/secrets/gh_token)" && \
+    export MISE_GITHUB_TOKEN="$(cat /run/secrets/gh_token 2>/dev/null || true)" && \
+    export MISE_JOBS=1 && \
+    export MISE_LOCKED=1 && \
     sudo -E -H -u devtainer \
       env HOME=/home/devtainer \
           USER=devtainer \
           XDG_CONFIG_HOME=/home/devtainer/.config \
           XDG_DATA_HOME=/home/devtainer/.local/share \
           XDG_CACHE_HOME=/home/devtainer/.cache \
-      mise install \
-        direnv \
-        fd \
-        fzf \
-        github-cli \
-        jq \
-        just \
-        ripgrep \
-        starship \
-        tmux \
-        uv && \
-    sudo -E -H -u devtainer \
-      env HOME=/home/devtainer \
-          USER=devtainer \
-          XDG_CONFIG_HOME=/home/devtainer/.config \
-          XDG_DATA_HOME=/home/devtainer/.local/share \
-          XDG_CACHE_HOME=/home/devtainer/.cache \
-      mise x -- uv tool install harlequin && \
-    sudo -E -H -u devtainer \
-      env HOME=/home/devtainer \
-          USER=devtainer \
-          XDG_CONFIG_HOME=/home/devtainer/.config \
-          XDG_DATA_HOME=/home/devtainer/.local/share \
-          XDG_CACHE_HOME=/home/devtainer/.cache \
-      mise x -- uv tool install ipython && \
-    sudo -E -H -u devtainer \
-      env HOME=/home/devtainer \
-          USER=devtainer \
-          XDG_CONFIG_HOME=/home/devtainer/.config \
-          XDG_DATA_HOME=/home/devtainer/.local/share \
-          XDG_CACHE_HOME=/home/devtainer/.cache \
-      mise x -- uv tool install lolcat && \
-    sudo -E -H -u devtainer \
-      env HOME=/home/devtainer \
-          USER=devtainer \
-          XDG_CONFIG_HOME=/home/devtainer/.config \
-          XDG_DATA_HOME=/home/devtainer/.local/share \
-          XDG_CACHE_HOME=/home/devtainer/.cache \
-      mise x -- uv tool install visidata && \
-    sudo -E -H -u devtainer \
-      env HOME=/home/devtainer \
-          USER=devtainer \
-          XDG_CONFIG_HOME=/home/devtainer/.config \
-          XDG_DATA_HOME=/home/devtainer/.local/share \
-          XDG_CACHE_HOME=/home/devtainer/.cache \
-      mise x -- uv tool install waylonwalker
+      sh -lc 'awk '\''NF && $1 !~ /^#/'\'' /home/devtainer/git/devtainer/docker/mise-tools.slim | xargs -r mise install --locked'
 USER devtainer
 
 ENV DOCKER_BUILD=true

@@ -1,0 +1,37 @@
+# Core shell/navigation tools. Good slim candidates.
+direnv
+eza
+fd
+fzf
+jq
+just
+ripgrep
+starship
+tmux
+
+# Editors/editor-adjacent tools. Consider keeping helix; neovim is already a base package in slim images.
+helix
+aqua:neovim/neovim
+github:waylonwalker/nvim-manager
+
+# Git/diff/TUI workflow tools. Useful, but optional for a smaller slim image.
+gitui
+
+# Cloud/kubernetes/container tools. Strong candidates to remove from slim.
+github-cli
+helm
+k9s
+kubectl
+
+# Language runtimes/package managers/build tools. Strong candidates to remove from slim.
+uv
+vfox
+
+
+# Misc personal/dev utilities. Review case by case.
+age
+atuin
+bitwarden
+dust
+fastfetch
+fnox

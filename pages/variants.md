@@ -120,6 +120,18 @@ Build every main variant with:
 just build
 ```
 
+The build recipes automatically forward the standard proxy environment
+variables when they are present on the host: `HTTP_PROXY`, `HTTPS_PROXY`,
+`NO_PROXY`, `ALL_PROXY`, and their lowercase variants.
+
+Cold builds still need network access because the images download distro
+packages, editor tooling, and plugin assets during the build.
+
+`alpine-slim` intentionally skips the mise-managed tool install step. The
+Alpine/mise combination has been unreliable there, so that variant focuses on
+the baked dotfiles and base editor/shell contract rather than the full CLI tool
+set.
+
 ## Dotfile Smoke Tests
 
 The images share one dotfile contract: shell and editor config must work both in
@@ -137,10 +149,11 @@ Run the smoke suite with:
 just test-dotfiles
 ```
 
-The smoke tests check three things for each image:
+The smoke tests check four things for each image:
 
 - dotfiles are baked into `/opt/devtainer-home`
 - the default `/home/devtainer` sees readable dotfiles and app config
+- headless Neovim can load the baked config and run `:checkhealth`
 - `devtainer-bootstrap-home` can restow that config into a fresh runtime home
 
 Deploy every main variant with:

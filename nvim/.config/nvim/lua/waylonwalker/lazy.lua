@@ -1,4 +1,6 @@
-local is_docker = os.getenv("DOCKER_BUILD") == "true"
+local docker_build = os.getenv("DOCKER_BUILD")
+local is_docker = docker_build ~= nil and docker_build ~= "" and docker_build ~= "0" and docker_build ~= "false"
+local is_headless = #vim.api.nvim_list_uis() == 0
 -- Bootstrap lazy.nvim
 require("lazy").setup({
 
@@ -86,7 +88,7 @@ require("lazy").setup({
 	{ "kyazdani42/nvim-web-devicons" },
 	{
 		"Exafunction/codeium.vim",
-		enabled = not is_docker,
+		enabled = not is_docker and not is_headless,
 	},
 	{
 		"neovim/nvim-lspconfig",

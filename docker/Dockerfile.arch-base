@@ -14,7 +14,13 @@ RUN echo '[multilib]' >> /etc/pacman.conf && \
     mkdir /build && \
     chown -R devtainer:devtainer /build && \
     cd /build && \
-    sudo -u devtainer git clone --depth 1 https://aur.archlinux.org/paru.git && \
+    i=0 && \
+    until sudo -u devtainer git clone --depth 1 https://aur.archlinux.org/paru.git; do \
+        i=$((i + 1)); \
+        if [ "$i" -ge 5 ]; then exit 1; fi; \
+        rm -rf /build/paru; \
+        sleep 5; \
+    done && \
     cd paru && \
     sudo -u devtainer makepkg --noconfirm -si && \
     sed -i 's/#RemoveMake/RemoveMake/g' /etc/paru.conf && \

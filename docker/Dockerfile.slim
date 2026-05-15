@@ -1,4 +1,41 @@
+FROM docker.io/golang:1.22 AS devtainer-cli
+
+ARG DEVTAINER_VERSION=dev
+WORKDIR /src
+COPY go.mod go.sum ./
+COPY vendor ./vendor
+COPY cmd ./cmd
+RUN CGO_ENABLED=0 GOTOOLCHAIN=local go build -mod=vendor -ldflags "-X main.version=${DEVTAINER_VERSION}" -o /devtainer ./cmd/devtainer
+
 FROM docker.io/ubuntu:24.04
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ARG ALL_PROXY
+ARG UV_INDEX_URL
+ARG UV_EXTRA_INDEX_URL
+ARG UV_DEFAULT_INDEX
+ARG PIP_INDEX_URL
+ARG PIP_EXTRA_INDEX_URL
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
+ARG all_proxy
+
+ENV HTTP_PROXY=${HTTP_PROXY} \
+    HTTPS_PROXY=${HTTPS_PROXY} \
+    NO_PROXY=${NO_PROXY} \
+    ALL_PROXY=${ALL_PROXY} \
+    UV_INDEX_URL=${UV_INDEX_URL} \
+    UV_EXTRA_INDEX_URL=${UV_EXTRA_INDEX_URL} \
+    UV_DEFAULT_INDEX=${UV_DEFAULT_INDEX} \
+    PIP_INDEX_URL=${PIP_INDEX_URL} \
+    PIP_EXTRA_INDEX_URL=${PIP_EXTRA_INDEX_URL} \
+    http_proxy=${http_proxy} \
+    https_proxy=${https_proxy} \
+    no_proxy=${no_proxy} \
+    all_proxy=${all_proxy}
 
 ENV DOCKER_BUILD=1
 ENV PATH="/root/.local/bin:/root/.local/share/mise/shims:/root/.local/share/mise/bin:/root/.local/share/nvim/mason/bin:/root/devtainer/one-shot-apps:${PATH}"
@@ -15,7 +52,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     g++ \
     gcc \
     git \
-    golang \
     gpg \
     gpg-agent \
     kitty-terminfo \
@@ -40,22 +76,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
 
-RUN curl -fsSL https://mise.run | sh
-
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-
-RUN curl --fail -# -L https://github.com/tsl0922/ttyd/releases/download/1.7.4/ttyd.x86_64 > /bin/ttyd && \
-    chmod +x /bin/ttyd
-
-RUN mkdir /root/downloads && \
-    cd /root/downloads && \
-    curl -fsSLO https://github.com/helix-editor/helix/releases/download/24.07/helix-24.07-x86_64-linux.tar.xz && \
-    tar -xf helix-24.07-x86_64-linux.tar.xz && \
-    mv helix-24.07-x86_64-linux/hx /usr/local/bin/hx && \
-    mkdir -p /usr/local/share/helix/runtime && \
-    mv helix-24.07-x86_64-linux/runtime/* /usr/local/share/helix/runtime/ && \
-    cd /root && \
-    rm -rf /root/downloads
+RUN export MISE_INSTALL_FROM_GITHUB=1 MISE_INSTALL_PATH=/usr/local/bin/mise && \
+    curl --fail --silent --show-error --location \
+    --retry 5 --retry-all-errors --retry-delay 2 \
+    https://mise.run | sh
 
 COPY zsh /root/devtainer/zsh
 COPY tmux /root/devtainer/tmux
@@ -64,13 +88,10 @@ COPY one-shot-apps /root/devtainer/one-shot-apps
 COPY nvim /root/devtainer/nvim
 COPY helix /root/devtainer/helix
 COPY mise /root/devtainer/mise
-COPY cmd /root/devtainer/cmd
-COPY go.mod /root/devtainer/go.mod
-COPY go.sum /root/devtainer/go.sum
+COPY docker/mise-tools.slim /root/devtainer/mise-tools.slim
+COPY --from=devtainer-cli /devtainer /usr/local/bin/devtainer
 
 WORKDIR /root/devtainer
-
-RUN go build -ldflags "-X main.version=$(git describe --tags --always --dirty 2>/dev/null || echo dev)" -o /usr/local/bin/devtainer ./cmd/devtainer
 
 RUN mkdir -p /opt/devtainer-home && \
     cp -a zsh tmux bin one-shot-apps nvim helix mise /opt/devtainer-home/ && \
@@ -85,22 +106,21 @@ RUN mkdir -p /opt/devtainer-home && \
     chown -R devtainer:devtainer /home/devtainer
 
 RUN --mount=type=secret,id=gh_token \
-    export MISE_GITHUB_TOKEN="$(cat /run/secrets/gh_token)" && \
-    mise install && \
-    mise x -- npm install -g tailwindcss && \
-    mise x -- uv tool install podman-compose && \
-    mise x -- uv tool install harlequin && \
-    mise x -- uv tool install ipython && \
-    mise x -- uv tool install lolcat && \
-    mise x -- uv tool install visidata && \
-    mise x -- uv tool install waylonwalker
+    export GITHUB_TOKEN="$(cat /run/secrets/gh_token 2>/dev/null || true)" && \
+    export MISE_GITHUB_TOKEN="${GITHUB_TOKEN}" && \
+    export MISE_JOBS=1 && \
+    export MISE_LOCKED=1 && \
+    export HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state && \
+    awk 'NF && $1 !~ /^#/' /root/devtainer/mise-tools.slim | xargs -r mise install --locked && \
+    mise reshim
 
-RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state nvim --headless "+Lazy! restore" +qa
-RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
-RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state nvim --headless "+MasonInstall lua-language-server rustywind ruff html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
-RUN rm -rf /home/devtainer/.local/share/mise && \
-    cp -a /root/.local/share/mise /home/devtainer/.local/share/mise && \
-    chown -R devtainer:devtainer /home/devtainer/.local /home/devtainer/.cache
+RUN NVIM_BIN="$(find /home/devtainer/.local/share/mise/installs/aqua-neovim-neovim/0.12.2 -type f -path '*/bin/nvim' -print -quit)" && \
+    HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state "${NVIM_BIN}" --headless "+Lazy! restore" +qa
+RUN NVIM_BIN="$(find /home/devtainer/.local/share/mise/installs/aqua-neovim-neovim/0.12.2 -type f -path '*/bin/nvim' -print -quit)" && \
+    HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state "${NVIM_BIN}" --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
+RUN NVIM_BIN="$(find /home/devtainer/.local/share/mise/installs/aqua-neovim-neovim/0.12.2 -type f -path '*/bin/nvim' -print -quit)" && \
+    HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state "${NVIM_BIN}" --headless "+MasonInstall lua-language-server ruff html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
+RUN chown -R devtainer:devtainer /home/devtainer/.local /home/devtainer/.cache
 
 RUN useradd -u 1976 -U -s /bin/false vhs
 EXPOSE 1976
@@ -114,7 +134,7 @@ ENV VHS_NO_SANDBOX="true"
 ENV DOCKER_BUILD=
 ENV HOME="/home/devtainer"
 ENV USER="devtainer"
-ENV PATH="/home/devtainer/.local/bin:/home/devtainer/.local/share/mise/shims:/home/devtainer/.local/share/mise/bin:/home/devtainer/.local/share/nvim/mason/bin:/opt/devtainer-home/one-shot-apps:${PATH}"
+ENV PATH="/home/devtainer/.local/bin:/home/devtainer/.local/share/mise/shims:/home/devtainer/.local/share/mise/bin:/home/devtainer/.local/share/nvim/mason/bin:/opt/devtainer-home/one-shot-apps:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 USER devtainer
 WORKDIR /home/devtainer

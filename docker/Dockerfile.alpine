@@ -1,4 +1,41 @@
+FROM docker.io/golang:1.22-alpine AS devtainer-cli
+
+ARG DEVTAINER_VERSION=dev
+WORKDIR /src
+COPY go.mod go.sum ./
+COPY vendor ./vendor
+COPY cmd ./cmd
+RUN CGO_ENABLED=0 GOTOOLCHAIN=local go build -mod=vendor -ldflags "-X main.version=${DEVTAINER_VERSION}" -o /devtainer ./cmd/devtainer
+
 FROM alpine:edge
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ARG ALL_PROXY
+ARG UV_INDEX_URL
+ARG UV_EXTRA_INDEX_URL
+ARG UV_DEFAULT_INDEX
+ARG PIP_INDEX_URL
+ARG PIP_EXTRA_INDEX_URL
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
+ARG all_proxy
+
+ENV HTTP_PROXY=${HTTP_PROXY} \
+    HTTPS_PROXY=${HTTPS_PROXY} \
+    NO_PROXY=${NO_PROXY} \
+    ALL_PROXY=${ALL_PROXY} \
+    UV_INDEX_URL=${UV_INDEX_URL} \
+    UV_EXTRA_INDEX_URL=${UV_EXTRA_INDEX_URL} \
+    UV_DEFAULT_INDEX=${UV_DEFAULT_INDEX} \
+    PIP_INDEX_URL=${PIP_INDEX_URL} \
+    PIP_EXTRA_INDEX_URL=${PIP_EXTRA_INDEX_URL} \
+    http_proxy=${http_proxy} \
+    https_proxy=${https_proxy} \
+    no_proxy=${no_proxy} \
+    all_proxy=${all_proxy}
 
 ENV DOCKER_BUILD=1
 ENV PATH="/root/.local/bin:/root/.local/share/mise/shims:/root/.local/share/mise/bin:/root/.local/share/nvim/mason/bin:/root/devtainer/one-shot-apps:${PATH}"
@@ -14,8 +51,6 @@ RUN apk add --no-cache \
     git \
     gnupg \
     gcompat \
-    go \
-    helix \
     libffi-dev \
     lua-language-server \
     ncurses \
@@ -31,7 +66,6 @@ RUN apk add --no-cache \
     sqlite-dev \
     stow \
     tar \
-    ttyd \
     unzip \
     wget \
     xclip \
@@ -42,7 +76,10 @@ RUN apk add --no-cache \
     mkdir -p /root/.local/bin /root/devtainer /home/devtainer/.local/bin /home/devtainer/.local/share && \
     chown -R devtainer:devtainer /home/devtainer
 
-RUN curl -fsSL https://mise.run | sh
+RUN export MISE_INSTALL_FROM_GITHUB=1 MISE_INSTALL_PATH=/usr/local/bin/mise && \
+    curl --fail --silent --show-error --location \
+    --retry 5 --retry-all-errors --retry-delay 2 \
+    https://mise.run | sh
 
 COPY zsh /root/devtainer/zsh
 COPY tmux /root/devtainer/tmux
@@ -51,9 +88,8 @@ COPY one-shot-apps /root/devtainer/one-shot-apps
 COPY nvim /root/devtainer/nvim
 COPY helix /root/devtainer/helix
 COPY mise /root/devtainer/mise
-COPY cmd /root/devtainer/cmd
-COPY go.mod /root/devtainer/go.mod
-COPY go.sum /root/devtainer/go.sum
+COPY --chmod=755 scripts/mise_install_container_tools.sh /usr/local/bin/mise-install-container-tools
+COPY --from=devtainer-cli /devtainer /usr/local/bin/devtainer
 
 WORKDIR /root/devtainer
 
@@ -69,11 +105,13 @@ RUN mkdir -p /opt/devtainer-home && \
     install -m 755 /opt/devtainer-home/bin/.local/bin/devtainer-bootstrap-home /usr/local/bin/devtainer-bootstrap-home && \
     chown -R devtainer:devtainer /home/devtainer
 
-RUN go build -ldflags "-X main.version=$(git describe --tags --always --dirty 2>/dev/null || echo dev)" -o /usr/local/bin/devtainer ./cmd/devtainer
-
 RUN --mount=type=secret,id=gh_token \
-    export MISE_GITHUB_TOKEN="$(cat /run/secrets/gh_token)" && \
-    mise install \
+    export GITHUB_TOKEN="$(cat /run/secrets/gh_token 2>/dev/null || true)" && \
+    export MISE_GITHUB_TOKEN="${GITHUB_TOKEN}" && \
+    export MISE_JOBS=1 && \
+    export MISE_LOCKED=1 && \
+    export HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state && \
+    mise-install-container-tools \
         age \
         argocd \
         atuin \
@@ -94,6 +132,7 @@ RUN --mount=type=secret,id=gh_token \
         goreleaser \
         grex \
         helm \
+        helix \
         htmlq \
         jq \
         just \
@@ -109,28 +148,25 @@ RUN --mount=type=secret,id=gh_token \
         starship \
         television \
         tmux \
+        ttyd \
         uv \
         vfox \
         vhs \
         yazi \
         zellij \
         github:pagefind/pagefind \
-        github:waylonwalker/nvim-manager && \
-    mise use uv && \
-    UV_BIN="$(mise which uv)" && \
-    npm install -g tailwindcss && \
-    "$UV_BIN" tool install harlequin && \
-    "$UV_BIN" tool install ipython && \
-    "$UV_BIN" tool install lolcat && \
-    "$UV_BIN" tool install visidata && \
-    "$UV_BIN" tool install waylonwalker
+        github:waylonwalker/nvim-manager \
+        npm:tailwindcss \
+        pipx:harlequin \
+        pipx:ipython \
+        pipx:lolcat \
+        pipx:visidata \
+        pipx:waylonwalker
 
-RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state nvim --headless "+Lazy! restore" +qa
-RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
-RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state nvim --headless "+MasonInstall rustywind ruff html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
-RUN rm -rf /home/devtainer/.local/share/mise && \
-    cp -a /root/.local/share/mise /home/devtainer/.local/share/mise && \
-    chown -R devtainer:devtainer /home/devtainer/.local /home/devtainer/.cache
+RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state /usr/bin/nvim --headless "+Lazy! restore" +qa
+RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state /usr/bin/nvim --headless "+TSInstallSync! c cpp go lua python rust tsx javascript typescript vimdoc vim bash yaml toml vue" +qa
+RUN HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state /usr/bin/nvim --headless "+MasonInstall ruff html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
+RUN chown -R devtainer:devtainer /home/devtainer/.local /home/devtainer/.cache
 
 RUN addgroup -g 1976 vhs && \
     adduser -D -u 1976 -G vhs -s /sbin/nologin vhs
@@ -146,7 +182,7 @@ ENV VHS_NO_SANDBOX="true"
 ENV DOCKER_BUILD=
 ENV HOME="/home/devtainer"
 ENV USER="devtainer"
-ENV PATH="/home/devtainer/.local/bin:/home/devtainer/.local/share/mise/shims:/home/devtainer/.local/share/mise/bin:/home/devtainer/.local/share/nvim/mason/bin:/opt/devtainer-home/one-shot-apps:${PATH}"
+ENV PATH="/home/devtainer/.local/bin:/home/devtainer/.local/share/mise/shims:/home/devtainer/.local/share/mise/bin:/home/devtainer/.local/share/nvim/mason/bin:/opt/devtainer-home/one-shot-apps:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 USER devtainer
 WORKDIR /home/devtainer

@@ -3,6 +3,7 @@ export repository := "waylonwalker"
 export ntfy_url := "https://ntfy.wayl.one"
 export ntfy_channel := "deployments"
 export docker := "podman"
+export runtime := `if podman --version >/dev/null 2>&1; then printf podman; elif command -v distrobox-host-exec >/dev/null 2>&1 && distrobox-host-exec podman --version >/dev/null 2>&1; then printf 'distrobox-host-exec podman'; elif command -v distrobox-host-exec >/dev/null 2>&1 && distrobox-host-exec docker --version >/dev/null 2>&1; then printf 'distrobox-host-exec docker'; else printf podman; fi`
 export DATE_TAG := `date +%Y%m%d%H%M%S`
 export version := `cat version`
 
@@ -19,20 +20,84 @@ build-deploy: build deploy
 
 build: build-latest build-alpine build-alpine-slim build-slim build-arch-base build-arch build-arch-slim
 deploy: deploy-latest deploy-alpine deploy-alpine-slim deploy-slim deploy-arch deploy-arch-slim
-test-dotfiles: test-dotfiles-latest test-dotfiles-slim test-dotfiles-alpine test-dotfiles-alpine-slim test-dotfiles-arch test-dotfiles-arch-slim
+test-dotfiles: test-dotfiles-build
+
+test-dotfiles-local: test-dotfiles-local-latest test-dotfiles-local-slim test-dotfiles-local-alpine test-dotfiles-local-alpine-slim test-dotfiles-local-arch test-dotfiles-local-arch-slim
+
+test-dotfiles-build: test-dotfiles-build-latest test-dotfiles-build-slim test-dotfiles-build-alpine test-dotfiles-build-alpine-slim test-dotfiles-build-arch test-dotfiles-build-arch-slim
+
+test-dotfiles-pull: test-dotfiles-pull-latest test-dotfiles-pull-slim test-dotfiles-pull-alpine test-dotfiles-pull-alpine-slim test-dotfiles-pull-arch test-dotfiles-pull-arch-slim
 
 test-dotfiles-report:
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -uo pipefail
     RUN_ID="${RUN_ID:-$(date +%Y%m%d%H%M%S)}"
     OUT_DIR="${TEST_OUTPUT_DIR:-.test-results}"
     mkdir -p "${OUT_DIR}/${RUN_ID}"
-    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:latest
-    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:slim
-    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine
-    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine-slim
-    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch
-    TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch-slim
+    status=0
+    for image in \
+        {{ registry }}/{{ repository }}/devtainer:latest \
+        {{ registry }}/{{ repository }}/devtainer:slim \
+        {{ registry }}/{{ repository }}/devtainer:alpine \
+        {{ registry }}/{{ repository }}/devtainer:alpine-slim \
+        {{ registry }}/{{ repository }}/devtainer:arch \
+        {{ registry }}/{{ repository }}/devtainer:arch-slim
+    do
+        if ! TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh "${image}"; then
+            status=1
+        fi
+    done
+    printf 'Smoke report: %s/%s/index.html\n' "${OUT_DIR}" "${RUN_ID}"
+    exit "${status}"
+
+test-dotfiles-report-build: build
+    #!/usr/bin/env bash
+    set -uo pipefail
+    RUN_ID="${RUN_ID:-$(date +%Y%m%d%H%M%S)}"
+    OUT_DIR="${TEST_OUTPUT_DIR:-.test-results}"
+    mkdir -p "${OUT_DIR}/${RUN_ID}"
+    status=0
+    for image in \
+        {{ registry }}/{{ repository }}/devtainer:latest \
+        {{ registry }}/{{ repository }}/devtainer:slim \
+        {{ registry }}/{{ repository }}/devtainer:alpine \
+        {{ registry }}/{{ repository }}/devtainer:alpine-slim \
+        {{ registry }}/{{ repository }}/devtainer:arch \
+        {{ registry }}/{{ repository }}/devtainer:arch-slim
+    do
+        if ! TEST_OUTPUT_DIR="${OUT_DIR}" RUN_ID="${RUN_ID}" CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh "${image}"; then
+            status=1
+        fi
+    done
+    printf 'Smoke report: %s/%s/index.html\n' "${OUT_DIR}" "${RUN_ID}"
+    exit "${status}"
+
+test-dotfiles-report-pull:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for image in \
+        {{ registry }}/{{ repository }}/devtainer:latest \
+        {{ registry }}/{{ repository }}/devtainer:slim \
+        {{ registry }}/{{ repository }}/devtainer:alpine \
+        {{ registry }}/{{ repository }}/devtainer:alpine-slim \
+        {{ registry }}/{{ repository }}/devtainer:arch \
+        {{ registry }}/{{ repository }}/devtainer:arch-slim
+    do
+        bash ./scripts/container_build.sh "{{ runtime }}" pull "${image}"
+    done
+    just test-dotfiles-report
+
+serve-latest-test-report:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    base_dir="${TEST_OUTPUT_DIR:-.test-results}"
+    latest_run="$(ls -1 "${base_dir}" | sort | tail -n1)"
+    if [ -z "${latest_run}" ]; then
+        printf 'No test reports found in %s\n' "${base_dir}" >&2
+        exit 1
+    fi
+    printf 'Serving %s/%s/index.html at http://127.0.0.1:8000/%s/index.html\n' "${base_dir}" "${latest_run}" "${latest_run}"
+    python3 -m http.server 8000 --directory "${base_dir}"
 
 login:
     podman login {{ registry }}
@@ -50,27 +115,43 @@ arch-slim: build-arch-slim deploy-arch-slim
 build-arch-base:
     #!/usr/bin/env bash
     set -euxo pipefail
-    {{ docker }} build -f docker/Dockerfile.arch-base -t {{ registry }}/{{ repository }}/devtainer:arch-base .
+    bash ./scripts/container_build.sh "{{ runtime }}" -f docker/Dockerfile.arch-base -t {{ registry }}/{{ repository }}/devtainer:arch-base .
 
 build-arch: build-arch-base
     #!/usr/bin/env bash
-    set -euxo pipefail
-    GITHUB_TOKEN="$(gh auth token)" \
-    {{ docker }} build \
+    set -euo pipefail
+    secret_file="$(mktemp)"
+    trap 'rm -f "${secret_file}"' EXIT
+    if command -v gh >/dev/null 2>&1; then
+        gh auth token >"${secret_file}" 2>/dev/null || : >"${secret_file}"
+    else
+        : >"${secret_file}"
+    fi
+    set -x
+    bash ./scripts/container_build.sh "{{ runtime }}" \
         -f docker/Dockerfile.arch-mise \
-        --secret id=gh_token,env=GITHUB_TOKEN \
+        --build-arg DEVTAINER_VERSION={{ version }} \
+        --secret id=gh_token,src="${secret_file}" \
         -t {{ registry }}/{{ repository }}/devtainer:arch \
         -t {{ registry }}/{{ repository }}/devtainer:arch-{{ DATE_TAG }} \
         -t {{ registry }}/{{ repository }}/devtainer:arch-{{ version }} \
         .
 
-build-arch-slim: build-arch-base
+build-arch-slim:
     #!/usr/bin/env bash
-    set -euxo pipefail
-    GITHUB_TOKEN="$(gh auth token)" \
-    {{ docker }} build \
+    set -euo pipefail
+    secret_file="$(mktemp)"
+    trap 'rm -f "${secret_file}"' EXIT
+    if command -v gh >/dev/null 2>&1; then
+        gh auth token >"${secret_file}" 2>/dev/null || : >"${secret_file}"
+    else
+        : >"${secret_file}"
+    fi
+    set -x
+    bash ./scripts/container_build.sh "{{ runtime }}" \
         -f docker/Dockerfile.arch-slim \
-        --secret id=gh_token,env=GITHUB_TOKEN \
+        --build-arg DEVTAINER_VERSION={{ version }} \
+        --secret id=gh_token,src="${secret_file}" \
         -t {{ registry }}/{{ repository }}/devtainer:arch-slim \
         -t {{ registry }}/{{ repository }}/devtainer:arch-slim-{{ DATE_TAG }} \
         -t {{ registry }}/{{ repository }}/devtainer:arch-slim-{{ version }} \
@@ -105,7 +186,7 @@ build-bambu: build-arch-base
     set -euxo pipefail
     DATE_TAG=`date +%Y%m%d%H%M%S`
     VERSION_TAG=`cat version`
-    {{ docker }} build \
+    bash ./scripts/container_build.sh "{{ runtime }}" \
         -f docker/Dockerfile.arch-bambu \
         -t {{ registry }}/{{ repository }}/devtainer:arch-bambu \
         -t {{ registry }}/{{ repository }}/devtainer:arch-bambu-${DATE_TAG} \
@@ -117,16 +198,24 @@ build-bambu: build-arch-base
 
 build-latest:
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -euo pipefail
     echo building latest
     echo building ${DATE_TAG}
     echo building ${version}
 
 
-    GITHUB_TOKEN="$(gh auth token)" \
-    {{ docker }} build \
+    secret_file="$(mktemp)"
+    trap 'rm -f "${secret_file}"' EXIT
+    if command -v gh >/dev/null 2>&1; then
+        gh auth token >"${secret_file}" 2>/dev/null || : >"${secret_file}"
+    else
+        : >"${secret_file}"
+    fi
+    set -x
+    bash ./scripts/container_build.sh "{{ runtime }}" \
         -f docker/Dockerfile \
-        --secret id=gh_token,env=GITHUB_TOKEN \
+        --build-arg DEVTAINER_VERSION=${version} \
+        --secret id=gh_token,src="${secret_file}" \
         -t {{ registry }}/{{ repository }}/devtainer:latest \
         -t {{ registry }}/{{ repository }}/devtainer:${DATE_TAG} \
         -t {{ registry }}/{{ repository }}/devtainer:${version} \
@@ -146,24 +235,40 @@ deploy-latest: build-latest
     
 build-alpine:
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -euo pipefail
 
-    GITHUB_TOKEN="$(gh auth token)" \
-    {{ docker }} build \
+    secret_file="$(mktemp)"
+    trap 'rm -f "${secret_file}"' EXIT
+    if command -v gh >/dev/null 2>&1; then
+        gh auth token >"${secret_file}" 2>/dev/null || : >"${secret_file}"
+    else
+        : >"${secret_file}"
+    fi
+    set -x
+    bash ./scripts/container_build.sh "{{ runtime }}" \
         -f docker/Dockerfile.alpine \
-        --secret id=gh_token,env=GITHUB_TOKEN \
+        --build-arg DEVTAINER_VERSION={{ version }} \
+        --secret id=gh_token,src="${secret_file}" \
         -t {{ registry }}/{{ repository }}/devtainer:alpine \
         -t {{ registry }}/{{ repository }}/devtainer:alpine-{{ version }} \
         .
 
 build-alpine-slim:
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -euo pipefail
 
-    GITHUB_TOKEN="$(gh auth token)" \
-    {{ docker }} build \
+    secret_file="$(mktemp)"
+    trap 'rm -f "${secret_file}"' EXIT
+    if command -v gh >/dev/null 2>&1; then
+        gh auth token >"${secret_file}" 2>/dev/null || : >"${secret_file}"
+    else
+        : >"${secret_file}"
+    fi
+    set -x
+    bash ./scripts/container_build.sh "{{ runtime }}" \
         -f docker/Dockerfile.alpine-slim \
-        --secret id=gh_token,env=GITHUB_TOKEN \
+        --build-arg DEVTAINER_VERSION={{ version }} \
+        --secret id=gh_token,src="${secret_file}" \
         -t {{ registry }}/{{ repository }}/devtainer:alpine-slim \
         -t {{ registry }}/{{ repository }}/devtainer:alpine-slim-{{ version }} \
         .
@@ -190,7 +295,7 @@ build-kdenlive:
     #!/usr/bin/env bash
     set -euxo pipefail
 
-    {{ docker }} build -f docker/Dockerfile.kdenlive -t {{ registry }}/{{ repository }}/kdenlive .
+    bash ./scripts/container_build.sh "{{ runtime }}" -f docker/Dockerfile.kdenlive -t {{ registry }}/{{ repository }}/kdenlive .
 
 deploy-kdenlive:
     #!/usr/bin/env bash
@@ -203,7 +308,7 @@ build-nautilus:
     #!/usr/bin/env bash
     set -euxo pipefail
 
-    {{ docker }} build -f docker/Dockerfile.nautilus -t {{ registry }}/{{ repository }}/nautilus .
+    bash ./scripts/container_build.sh "{{ runtime }}" -f docker/Dockerfile.nautilus -t {{ registry }}/{{ repository }}/nautilus .
     {{ docker }} push {{ registry }}/{{ repository }}/nautilus
     curl -d "released devtainer:nautilus" {{ ntfy_url }}/{{ ntfy_channel }}
 
@@ -211,7 +316,7 @@ build-thunar:
     #!/usr/bin/env bash
     set -euxo pipefail
 
-    {{ docker }} build -f docker/Dockerfile.thunar -t {{ registry }}/{{ repository }}/thunar .
+    bash ./scripts/container_build.sh "{{ runtime }}" -f docker/Dockerfile.thunar -t {{ registry }}/{{ repository }}/thunar .
     {{ docker }} push {{ registry }}/{{ repository }}/thunar
     curl -d "released devtainer:thunar" {{ ntfy_url }}/{{ ntfy_channel }}
 
@@ -229,12 +334,20 @@ deploy-fokais:
 
 build-slim:
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -euo pipefail
 
-    GITHUB_TOKEN="$(gh auth token)" \
-    {{ docker }} build \
+    secret_file="$(mktemp)"
+    trap 'rm -f "${secret_file}"' EXIT
+    if command -v gh >/dev/null 2>&1; then
+        gh auth token >"${secret_file}" 2>/dev/null || : >"${secret_file}"
+    else
+        : >"${secret_file}"
+    fi
+    set -x
+    bash ./scripts/container_build.sh "{{ runtime }}" \
         -f docker/Dockerfile.slim \
-        --secret id=gh_token,env=GITHUB_TOKEN \
+        --build-arg DEVTAINER_VERSION={{ version }} \
+        --secret id=gh_token,src="${secret_file}" \
         -t {{ registry }}/{{ repository }}/devtainer:slim \
         -t {{ registry }}/{{ repository }}/devtainer:slim-{{ version }} \
         .
@@ -516,35 +629,113 @@ testnvim:
     # NVIM_APPNAME=wwtest nvim --headless "+MasonInstall lua-language-server rustywind ruff ruff-lsp html-lsp typescript-language-server beautysh fixjson isort markdownlint stylua yamlfmt python-lsp-server" +qa
     NVIM_APPNAME=wwtest nvim
 
-test-dotfiles-latest: build-latest
-    #!/usr/bin/env bash
-    set -euxo pipefail
-    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:latest
+test-dotfiles-latest: test-dotfiles-build-latest
 
-test-dotfiles-slim: build-slim
+test-dotfiles-build-latest: build-latest
     #!/usr/bin/env bash
     set -euxo pipefail
-    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:slim
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:latest
 
-test-dotfiles-alpine: build-alpine
+test-dotfiles-local-latest:
     #!/usr/bin/env bash
     set -euxo pipefail
-    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:latest
 
-test-dotfiles-alpine-slim: build-alpine-slim
+test-dotfiles-pull-latest:
     #!/usr/bin/env bash
     set -euxo pipefail
-    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine-slim
+    bash ./scripts/container_build.sh "{{ runtime }}" pull {{ registry }}/{{ repository }}/devtainer:latest
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:latest
 
-test-dotfiles-arch: build-arch
-    #!/usr/bin/env bash
-    set -euxo pipefail
-    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch
+test-dotfiles-slim: test-dotfiles-build-slim
 
-test-dotfiles-arch-slim: build-arch-slim
+test-dotfiles-build-slim: build-slim
     #!/usr/bin/env bash
     set -euxo pipefail
-    CONTAINER_RUNTIME={{ docker }} ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch-slim
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:slim
+
+test-dotfiles-local-slim:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:slim
+
+test-dotfiles-pull-slim:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    bash ./scripts/container_build.sh "{{ runtime }}" pull {{ registry }}/{{ repository }}/devtainer:slim
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:slim
+
+test-dotfiles-alpine: test-dotfiles-build-alpine
+
+test-dotfiles-build-alpine: build-alpine
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine
+
+test-dotfiles-local-alpine:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine
+
+test-dotfiles-pull-alpine:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    bash ./scripts/container_build.sh "{{ runtime }}" pull {{ registry }}/{{ repository }}/devtainer:alpine
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine
+
+test-dotfiles-alpine-slim: test-dotfiles-build-alpine-slim
+
+test-dotfiles-build-alpine-slim: build-alpine-slim
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine-slim
+
+test-dotfiles-local-alpine-slim:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine-slim
+
+test-dotfiles-pull-alpine-slim:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    bash ./scripts/container_build.sh "{{ runtime }}" pull {{ registry }}/{{ repository }}/devtainer:alpine-slim
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:alpine-slim
+
+test-dotfiles-arch: test-dotfiles-build-arch
+
+test-dotfiles-build-arch: build-arch
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch
+
+test-dotfiles-local-arch:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch
+
+test-dotfiles-pull-arch:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    bash ./scripts/container_build.sh "{{ runtime }}" pull {{ registry }}/{{ repository }}/devtainer:arch
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch
+
+test-dotfiles-arch-slim: test-dotfiles-build-arch-slim
+
+test-dotfiles-build-arch-slim: build-arch-slim
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch-slim
+
+test-dotfiles-local-arch-slim:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch-slim
+
+test-dotfiles-pull-arch-slim:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    bash ./scripts/container_build.sh "{{ runtime }}" pull {{ registry }}/{{ repository }}/devtainer:arch-slim
+    CONTAINER_RUNTIME="{{ runtime }}" ./scripts/test_dotfiles_smoke.sh {{ registry }}/{{ repository }}/devtainer:arch-slim
 
 extract-keymaps:
     # Extract keybindings from all environments
