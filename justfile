@@ -569,6 +569,52 @@ distrobox-assemble-all:
     set -euxo pipefail
     distrobox-assemble create --file distrobox/distrobox.ini
 
+create-pinned-distrobox:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    VERSION=$(cat version)
+    VERSION_TAG="v${VERSION}"
+    VERSION_SLUG=${VERSION//./-}
+    OUTPUT="distrobox/distrobox-${VERSION_TAG}.ini"
+
+    write_box() {
+        local box_name="$1"
+        local image_tag="$2"
+
+        printf '%s\n' \
+            "[${box_name}-${VERSION_SLUG}]" \
+            "image={{ registry }}/{{ repository }}/devtainer:${image_tag}" \
+            "nvidia=false" \
+            "pull=false" \
+            "root=false" \
+            "home=~/distrobox-home/${box_name}-${VERSION_SLUG}" \
+            "init_hooks=/usr/local/bin/devtainer-bootstrap-home;" \
+            "init_hooks=ln -sf /usr/bin/distrobox-host-exec /usr/bin/distrobox;" \
+            "init_hooks=ln -sf /usr/bin/distrobox-host-exec /usr/local/bin/kind;" \
+            "init_hooks=ln -sf /usr/bin/distrobox-host-exec /usr/local/bin/flatpak;" \
+            "init_hooks=ln -sf /usr/bin/distrobox-host-exec /usr/local/bin/podman;" \
+            "init_hooks=ln -sf /usr/bin/distrobox-host-exec /usr/local/bin/xdg-open;" \
+            "init_hooks=ln -sf /usr/bin/distrobox-host-exec /usr/bin/tailscale;" \
+            "init_hooks=ln -sf /usr/bin/distrobox-host-exec /usr/sbin/fuser;" \
+            'extra_mounts=/run/user/$(id -u)/podman/podman.sock:/run/user/$(id -u)/podman/podman.sock'
+    }
+
+    {
+        write_box "devtainer" "${VERSION}"
+        printf '\n'
+        write_box "devtainer-arch" "arch-${VERSION}"
+        printf '\n'
+        write_box "devtainer-slim" "slim-${VERSION}"
+        printf '\n'
+        write_box "devtainer-alpine" "alpine-${VERSION}"
+        printf '\n'
+        write_box "devtainer-arch-slim" "arch-slim-${VERSION}"
+        printf '\n'
+        write_box "devtainer-alpine-slim" "alpine-slim-${VERSION}"
+    } > "${OUTPUT}"
+
+    printf 'Wrote %s\n' "${OUTPUT}"
+
 delete-tag:
     #!/usr/bin/env bash
     set -euo pipefail
