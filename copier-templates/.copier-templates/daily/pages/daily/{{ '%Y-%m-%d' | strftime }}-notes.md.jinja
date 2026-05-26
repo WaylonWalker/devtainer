@@ -1,7 +1,10 @@
 ---
-date: {{ '%Y-%m-%d %H:%M:%S' | strftime }}
+date: {{ '%Y-%m-%d' | strftime }}
 templateKey: daily
 title: {{ '%Y-%m-%d' | strftime }} Notes
+description: 'notes for {{ '%Y-%m-%d' | strftime }}'
+tags:
+  - daily-note
 published: True
 
 ---
