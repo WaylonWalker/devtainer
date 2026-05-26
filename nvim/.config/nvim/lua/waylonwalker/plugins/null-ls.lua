@@ -29,26 +29,26 @@ null_ls.builtins.formatting.tidy_import = h.make_builtin({
 	factory = h.formatter_factory,
 })
 
-null_ls.builtins.formatting.ruff_check = h.make_builtin({
-	name = "ruff_check",
-	meta = {
-		url = "https://github.com/astral-sh/ruff",
-		description = "ruff --check for python",
-	},
-	method = FORMATTING,
-	filetypes = { "python" },
-	generator_opts = {
-		command = "ruff",
-		args = {
-			"check",
-			"--fix",
-			"$FILENAME",
-		},
-		to_stdin = false,
-		to_temp_file = true,
-	},
-	factory = h.formatter_factory,
-})
+-- null_ls.builtins.formatting.ruff_check = h.make_builtin({
+-- 	name = "ruff_check",
+-- 	meta = {
+-- 		url = "https://github.com/astral-sh/ruff",
+-- 		description = "ruff --check for python",
+-- 	},
+-- 	method = FORMATTING,
+-- 	filetypes = { "python" },
+-- 	generator_opts = {
+-- 		command = "ruff",
+-- 		args = {
+-- 			"check",
+-- 			"--fix",
+-- 			"$FILENAME",
+-- 		},
+-- 		to_stdin = false,
+-- 		to_temp_file = true,
+-- 	},
+-- 	factory = h.formatter_factory,
+-- })
 
 null_ls.builtins.formatting.djhtml = h.make_builtin({
 	name = "djhtml",
@@ -106,7 +106,8 @@ null_ls.setup({
 		null_ls.builtins.formatting.sqlformat,
 		null_ls.builtins.formatting.stylua,
 		null_ls.builtins.formatting.tidy_import,
-		null_ls.builtins.formatting.ruff_check,
+		-- null_ls.builtins.formatting.ruff_check,
+		-- null_ls.builtins.formatting.tidy_import,
 		-- null_ls.builtins.formatting.trim_newlines,
 		-- null_ls.builtins.formatting.trim_whitespace,
 		null_ls.builtins.formatting.yamlfmt,

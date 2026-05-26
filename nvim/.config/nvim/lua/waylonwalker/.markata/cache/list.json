@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "config_hash": "",
+  "generated_at": "2026-02-18T15:21:22.573238108-06:00",
+  "content_dir": ".",
+  "glob_patterns": [
+    "pages/**/*.md",
+    "posts/**/*.md"
+  ],
+  "files": {},
+  "posts": {},
+  "feeds": [
+    {
+      "name": "archive",
+      "title": "Archive",
+      "path": "archive",
+      "post_paths": []
+    }
+  ]
+}

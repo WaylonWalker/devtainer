@@ -22,6 +22,7 @@ M.autocmds = require("waylonwalker.autocmds")
 M.util = require("waylonwalker.util")
 M.plugins = require("waylonwalker.plugins")
 M.snippets = require("waylonwalker.snippets")
-M.daily_note = require("waylonwalker.daily_note")
+M.daily = require("waylonwalker.daily")
+M.daily_note = M.daily
 
 return M

@@ -104,6 +104,7 @@ set("n", "gee", ":e %:h<C-Z>")
 set("n", "ges", "<cmd>e ~/.config/nvim/lua/waylonwalker/options.lua<CR>")
 -- edit tmuux config
 set("n", "get", "<cmd>e ~/.tmux.conf<CR>")
+set("n", "ger", "<cmd>e ~/.config/inlog.csv<CR>")
 -- edit zshrc
 --
 -- edit pyflyby
@@ -120,8 +121,138 @@ set("n", "geit", "<cmd>Telescope find_files find_command=markata,list,--map,path
 set(
 	"n",
 	"geid",
-	"<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,status=='draft',--sort,date,--reverse,--fast<cr>"
+	"<cmd>Telescope find_files find_command=markata-go,list,posts,--feed,draft,--format,path<cr>"
 )
+
+-- edit posts by feed (two-stage picker)
+vim.keymap.set("n", "geif", function()
+	local pickers = require("telescope.pickers")
+	local finders = require("telescope.finders")
+	local conf = require("telescope.config").values
+	local actions = require("telescope.actions")
+	local action_state = require("telescope.actions.state")
+	local previewers = require("telescope.previewers")
+
+	-- Custom previewer that displays images using kitty graphics protocol
+	local function make_image_previewer()
+		return previewers.new_buffer_previewer({
+			title = "File Preview",
+			dyn_title = function(self, entry)
+				return "Preview: " .. entry.value
+			end,
+			define_preview = function(self, entry, status)
+				local filepath = entry.value
+				local file = io.open(filepath, "r")
+				if not file then return end
+
+				local content = file:read("*a")
+				file:close()
+
+				local lines = {}
+				local found_image = false
+				local image_path = nil
+
+				-- Extract frontmatter and look for image
+				for line in content:gmatch("[^\r\n]+") do
+					if line:match("^image:") then
+						image_path = line:match("^image:%s*(.+)$")
+						if image_path then
+							-- Try to resolve relative paths
+							local dir = vim.fn.fnamemodify(filepath, ":h")
+							local full_image_path = image_path
+							if not vim.fn.filereadable(full_image_path) then
+								full_image_path = dir .. "/" .. image_path
+							end
+							if vim.fn.filereadable(full_image_path) then
+								table.insert(lines, "📷 Image: " .. image_path)
+								table.insert(lines, "")
+								-- Try to display image with kitty graphics protocol
+								local bufnr = self.state.bufnr
+								vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {"Loading image...", ""})
+								
+								-- Use kitty's graphics protocol to display image
+								local cmd = string.format("kitty +kitten icat --print-window-id %s", vim.fn.shellescape(full_image_path))
+								local handle = io.popen(cmd .. " 2>/dev/null")
+								if handle then
+									local output = handle:read("*a")
+									handle:close()
+									if output and output ~= "" then
+										table.insert(lines, output)
+									end
+								end
+								found_image = true
+							end
+						end
+					elseif line == "---" and found_image then
+						break -- End of frontmatter
+					end
+				end
+
+				-- Add file content
+				local file_lines = vim.split(content, "\n")
+				for _, l in ipairs(file_lines) do
+					table.insert(lines, l)
+				end
+
+				vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+			end,
+		})
+	end
+
+	-- Get list of feeds
+	local handle = io.popen("markata-go list feeds --format path 2>/dev/null")
+	local feeds = {}
+	if handle then
+		for feed in handle:lines() do
+			table.insert(feeds, feed)
+		end
+		handle:close()
+	end
+
+	pickers.new({}, {
+		prompt_title = "Pick a Feed",
+		finder = finders.new_table({ results = feeds }),
+		sorter = conf.generic_sorter({}),
+		previewer = previewers.cat.new({}),
+		attach_mappings = function(prompt_bufnr, map)
+			actions.select_default:replace(function()
+				actions.close(prompt_bufnr)
+				local selection = action_state.get_selected_entry()
+				if selection then
+					local feed = selection[1]
+					-- Now pick a post from the selected feed
+					local post_handle = io.popen("markata-go list posts --feed " .. feed .. " --format path 2>/dev/null")
+					local posts = {}
+					if post_handle then
+						for post in post_handle:lines() do
+							table.insert(posts, post)
+						end
+						post_handle:close()
+					end
+
+					pickers.new({}, {
+						prompt_title = "Pick a Post from " .. feed,
+						finder = finders.new_table({ results = posts }),
+						sorter = conf.generic_sorter({}),
+						previewer = make_image_previewer(),
+						attach_mappings = function(post_prompt_bufnr, post_map)
+							actions.select_default:replace(function()
+								actions.close(post_prompt_bufnr)
+								local post_selection = action_state.get_selected_entry()
+								if post_selection then
+									vim.cmd("edit " .. post_selection[1])
+								end
+							end)
+							return true
+						end,
+					}):find()
+				end
+			end)
+			return true
+		end,
+	}):find()
+end, { desc = "Edit post by feed" })
+
 -- edit tils
 set(
 	"n",
@@ -133,13 +264,6 @@ set(
 	"n",
 	"geig",
 	"<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,templateKey=='gratitude',--sort,date,--fast<cr>"
-)
---  set('n', 'geik', '<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,'kedro' in tags,--sort,date,--reverse<cr>')
---  edit draft posts
-set(
-	"n",
-	"geid",
-	"<cmd>lua require('telescope.builtin').find_files({find_command={'markata', 'list', '--map', 'path', '--filter', 'status=='draft' and templateKey!='gratitude'', '--sort', 'date', '--fast'}})<cr>"
 )
 -- edit kedro posts
 set(
@@ -186,7 +310,8 @@ set("n", "<leader>x", "<cmd>x<cr>")
 set("n", "<leader>p", "<cmd>Telescope find_files<cr>")
 set("n", "<leader>F", "<cmd>Telescope<cr>")
 -- set("n", "<leader>o", "<cmd>Telescope old_files<cr>")
-set("n", "<leader>d", "<cmd>Telescope lsp_document_diagnostics<cr>")
+set("n", "<leader>di", "<cmd>Telescope diagnostics<cr>")
+set("n", "<leader>da", function() require("waylonwalker.plugins.markata-lint").telescope_picker() end, { desc = "All markata lint issues" })
 set("n", "<leader>ff", "<cmd>Telescope find_files<cr>")
 set("n", "<leader>fb", "<cmd>Telescope buffers<cr>")
 set("n", "<leader>fd", "<cmd>Telescope lsp_document_symbols<cr>")
@@ -369,5 +494,100 @@ end, { desc = "Insert current date" })
 vim.keymap.set("n", "<leader>dw", function()
   insert_at_cursor(os.date("%A %Y-%m-%d %H:%M:%S"))
 end, { desc = "Insert current weekday, date and time" })
+
+set("n", "<leader>k", "<cmd>Telescope keymaps<CR>")
+
+vim.api.nvim_create_user_command(
+  'DeleteFile',
+  function()
+    -- Delete the current file from disk
+    vim.cmd('!rm %')
+    -- Close the buffer without saving
+    vim.cmd('bdelete!')
+  end,
+  {}
+)
+
+local Path = require("plenary.path")
+local actions = require("telescope.actions")
+local action_state = require("telescope.actions.state")
+local pickers = require("telescope.pickers")
+local finders = require("telescope.finders")
+local conf = require("telescope.config").values
+
+-- Helper: get contact files from the directory
+local function get_contacts()
+  local contacts = {}
+  local contact_dir = "pages/contact/"
+  for _, file in ipairs(vim.fn.glob(contact_dir .. "*.md", 0, 1)) do
+    local contact = Path:new(file):make_relative(contact_dir):gsub("%.md$", "")
+    table.insert(contacts, contact)
+  end
+  return contacts
+end
+
+-- Telescope picker for contacts
+local function pick_contact(callback)
+  local contacts = get_contacts()
+  pickers.new({}, {
+    prompt_title = "Pick a Contact",
+    finder = finders.new_table { results = contacts },
+    sorter = conf.generic_sorter({}),
+    attach_mappings = function(prompt_bufnr, map)
+      actions.select_default:replace(function()
+        actions.close(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
+        if selection and callback then
+          callback(selection[1])
+        end
+      end)
+      return true
+    end,
+  }):find()
+end
+
+local function chat_admonition(admonition, wikilink)
+  -- Wrap the paragraph (like 'gwap')
+  vim.cmd('normal! gwap')
+  -- Indent the paragraph by 4 spaces
+  vim.cmd('normal! >ap')
+  vim.cmd('normal! >ap') -- twice for 4 spaces (each > is 2 spaces by default)
+  -- Move to the start of the paragraph
+  vim.cmd('normal! [ap')
+  -- Insert a new line above
+  vim.cmd('normal! O')
+  -- Insert the admonition
+  if admonition == "chat" then
+    vim.api.nvim_put({string.format("!!! chat [[ %s ]]", wikilink or "")}, 'l', false, true)
+    -- Move cursor inside the wikilink
+    if wikilink and #wikilink > 0 then
+      -- If we inserted a contact, put cursor at end of name
+      vim.cmd('normal! 0f[l')
+      for _ = 1, #wikilink do
+        vim.cmd('normal! l')
+      end
+      vim.cmd('startinsert')
+    else
+      -- If blank, put cursor in the middle
+      vim.cmd('normal! 0f[la')
+    end
+  elseif admonition == "chat-reply" then
+    vim.api.nvim_put({string.format("!!! chat-reply")}, 'l', false, true)
+    -- Move cursor to end of the line (if user wants to type after)
+    vim.cmd('normal! $a')
+  end
+end
+
+vim.keymap.set('n', '<leader>ch', function()
+  pick_contact(function(contact)
+    vim.schedule(function()
+      chat_admonition("chat", contact)
+    end)
+  end)
+end, { desc = "Chat Contact Admonition" })
+
+vim.keymap.set('n', '<leader>cr', function()
+  chat_admonition('chat-reply')
+end, { desc = "Chat Reply Admonition" })
 
 return M

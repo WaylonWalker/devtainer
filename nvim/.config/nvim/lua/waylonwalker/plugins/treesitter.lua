@@ -10,6 +10,8 @@ require("nvim-treesitter.configs").setup({
     "html",
     "json",
     "yaml",
+    "gotmpl",
+    "helm",
   }, -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   highlight = {
     enable = true,
@@ -67,5 +69,17 @@ require("nvim-treesitter.configs").setup({
         ["gH"] = "@class.outer",
       },
     },
+  },
+}
+)
+
+vim.filetype.add({
+  extension = {
+    gotmpl = 'gotmpl',
+  },
+  pattern = {
+    [".*/templates/.*%.tpl"] = "helm",
+    [".*/templates/.*%.ya?ml"] = "helm",
+    ["helmfile.*%.ya?ml"] = "helm",
   },
 })

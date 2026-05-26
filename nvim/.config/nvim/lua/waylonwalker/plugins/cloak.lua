@@ -2,10 +2,10 @@ require('cloak').setup({
   enabled = true,
   patterns = {
     {
-      -- Match any file starting with '.yml'.
-      file_pattern = 'credentials.yml',
-      -- Match a con: sign and any character after it.
-      cloak_pattern = ':.+'
+      -- Match any file starting with '.env'.
+      file_pattern = '.env*',
+      -- Match an equals sign and any character after it.
+      cloak_pattern = '=.+'
     },
   },
 })

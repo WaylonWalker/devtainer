@@ -79,4 +79,5 @@ vim.opt.wrapscan = true                -- searches wrap around the file
 vim.cmd("filetype plugin on")
 
 -- add templates/** to path
+-- vim.api.nvim_command("set path+=templates/**")
 vim.opt.path:append("templates/**")
