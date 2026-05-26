@@ -92,8 +92,8 @@ if [ "$DIR" == "--start" ]; then
 else
     (TMUX='' 
     tmux new-session -Ad -s "$session_name" -c $path_name;
-    tmux split-window -vb -t "$session_name" -c $path_name -p 70;
-    tmux send-keys -t "$session_name" "uv run nvim '+Telescope find_files'" Enter;
+    # tmux split-window -vb -t "$session_name" -c $path_name -p 70;
+    # tmux send-keys -t "$session_name" "uv run nvim '+Telescope find_files'" Enter;
     )
 fi
  }
