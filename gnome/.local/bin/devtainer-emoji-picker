@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Open the emoji picker through uvx rofimoji with the repo-owned Rofi theme.
+#
+# This script deliberately searches a few common uvx locations so it works
+# whether uv was installed directly or through mise.
+
 set -euo pipefail
 
 find_uvx() {

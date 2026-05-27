@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Launch GNOME's interactive screenshot flow through xdg-desktop-portal.
+#
+# The desktop portal path works better than calling GNOME Shell's private
+# screenshot DBus methods directly, because it is allowed in both normal X11
+# and Wayland user sessions.
+
 set -euo pipefail
 
 require_command() {

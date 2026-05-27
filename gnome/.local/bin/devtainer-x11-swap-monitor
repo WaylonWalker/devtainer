@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""Move the focused X11 window to the next monitor.
+
+This helper is only used on X11 sessions. It reads monitor geometry from
+`xrandr --listmonitors`, resolves the active window via EWMH, and then
+synthesizes GNOME's built-in move-to-monitor shortcuts with a short delay so a
+launcher hotkey has time to release first.
+"""
 
 import re
 import subprocess

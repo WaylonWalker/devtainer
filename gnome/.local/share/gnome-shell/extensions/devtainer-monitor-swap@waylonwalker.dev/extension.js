@@ -3,6 +3,13 @@ import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+/*
+ * GNOME Shell extension that owns the monitor-swap keybinding.
+ *
+ * We handle Super+o inside the Shell instead of through a normal custom
+ * shortcut so the focused window can be moved to the next monitor reliably on
+ * both X11 and Wayland.
+ */
 export default class DevtainerMonitorSwapExtension extends Extension {
     enable() {
         this._settings = this.getSettings();

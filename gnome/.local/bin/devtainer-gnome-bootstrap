@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# Apply the repo's GNOME defaults into the current login session.
+#
+# This is the public entrypoint for the GNOME package: it reads
+# ~/.config/devtainer/gnome-awesome.conf, wires up the keybindings,
+# installs/enables the monitor-swap extension, and enforces the desktop
+# defaults that are safe to reapply repeatedly.
+
 set -euo pipefail
 
 BOOTSTRAP_SOURCE="$(readlink -f "${BASH_SOURCE[0]}")"
