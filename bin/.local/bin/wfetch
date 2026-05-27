@@ -28,18 +28,11 @@ if [[ -f /proc/loadavg ]]; then
 else
 	loadAvg=''
 fi
-if ! command -v /opt/cisco/anyconnect/bin/vpn &> /dev/null; then
-        proxy=
-elif [[ "$(/opt/cisco/anyconnect/bin/vpn status)"  == *"state: Disconnected"* ]]; then
-        proxy=
-else
-        proxy=ﭝ
-fi
 
 
 printf "  ╭───╮ ╭─────╮ ╭───╮
-  │   │ │     │ │   │  $proxy $os
-  │   ╰─╯     ╰─╯   │
+  │   │ │     │ │   │  $os
+  │   ╰─╯     ╰─╯   │  $HTTP_PROXY
   │ @_waylonwalker  │   `date`
   ╰─────────────────╯
 "| lolcat --seed=18 --spread=6
