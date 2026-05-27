@@ -7,14 +7,16 @@ synthesizes GNOME's built-in move-to-monitor shortcuts with a short delay so a
 launcher hotkey has time to release first.
 """
 
+import argparse
 import re
+import shutil
 import subprocess
 import sys
 import time
 
 
 def require(command: str) -> None:
-    if subprocess.run(["bash", "-lc", f"command -v {command} >/dev/null 2>&1"]).returncode != 0:
+    if shutil.which(command) is None:
         raise SystemExit(f"Missing required command: {command}")
 
 
@@ -97,6 +99,13 @@ def find_monitor_index(monitors: list[dict[str, int]], center_x: int, center_y: 
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Move the focused X11 window to the next monitor.",
+    )
+    parser.parse_args()
+
+    require("xprop")
+    require("xwininfo")
     require("xdotool")
     require("xrandr")
 

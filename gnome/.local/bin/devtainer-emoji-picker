@@ -7,6 +7,13 @@
 
 set -euo pipefail
 
+require_command() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo "Missing required command: $1" >&2
+        exit 1
+    fi
+}
+
 find_uvx() {
     local candidate
 
@@ -28,6 +35,10 @@ find_uvx() {
 
 UVX_BIN="$(find_uvx)"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/devtainer-emoji.rasi"
+
+require_command rofi
+require_command xdotool
+require_command xsel
 
 exec "$UVX_BIN" rofimoji \
     --selector rofi \

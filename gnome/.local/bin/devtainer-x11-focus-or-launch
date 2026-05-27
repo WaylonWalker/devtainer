@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Focus the first X11 window matching a WM_CLASS or launch a fallback command."""
 
 import argparse
 import ctypes
@@ -162,8 +163,15 @@ def activate_window(window_id: int) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--class", dest="wm_class", required=True)
+    parser = argparse.ArgumentParser(
+        description="Focus the first X11 window matching a WM_CLASS, or launch a fallback command.",
+    )
+    parser.add_argument(
+        "--class",
+        dest="wm_class",
+        required=True,
+        help="Exact WM_CLASS value to match, case-insensitively.",
+    )
     parser.add_argument("launch", nargs=argparse.REMAINDER)
     args = parser.parse_args()
 

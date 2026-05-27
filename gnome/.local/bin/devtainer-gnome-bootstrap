@@ -9,27 +9,111 @@
 
 set -euo pipefail
 
+DRY_RUN=false
+VERBOSE=false
+LOCAL_BIN="${HOME}/.local/bin"
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/devtainer/gnome-awesome.conf"
+CONFIG_FILE_EXPLICIT=false
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [options]
+
+Apply the repo's GNOME defaults, keybindings, and monitor-swap extension.
+
+Options:
+  -c, --config PATH  Read settings from PATH instead of the default config file.
+  -n, --dry-run      Print the changes that would be applied without mutating GNOME.
+  -v, --verbose      Print each mutating command before it runs.
+  -h, --help         Show this help text.
+
+Default config:
+  ${CONFIG_FILE}
+
+Exit codes:
+  0  success
+  1  runtime or environment error
+  2  invalid command-line usage
+EOF
+}
+
+die() {
+    echo "$1" >&2
+    exit "${2:-1}"
+}
+
+print_command() {
+    printf '+'
+    printf ' %q' "$@"
+    printf '\n'
+}
+
+run() {
+    if [[ "$VERBOSE" == "true" || "$DRY_RUN" == "true" ]]; then
+        print_command "$@"
+    fi
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        return 0
+    fi
+
+    "$@"
+}
+
+while (($#)); do
+    case "$1" in
+        -c|--config)
+            shift
+            [[ $# -gt 0 ]] || die "Missing value for --config" 2
+            CONFIG_FILE="$1"
+            CONFIG_FILE_EXPLICIT=true
+            ;;
+        --config=*)
+            CONFIG_FILE="${1#*=}"
+            CONFIG_FILE_EXPLICIT=true
+            ;;
+        -n|--dry-run)
+            DRY_RUN=true
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            [[ $# -eq 0 ]] || die "Unexpected positional arguments: $*" 2
+            break
+            ;;
+        *)
+            die "Unknown option: $1" 2
+            ;;
+    esac
+    shift
+done
+
 BOOTSTRAP_SOURCE="$(readlink -f "${BASH_SOURCE[0]}")"
 BOOTSTRAP_DIR="$(dirname "$BOOTSTRAP_SOURCE")"
 MONITOR_SWAP_EXTENSION_REPO_DIR="$(cd "${BOOTSTRAP_DIR}/../share/gnome-shell/extensions/devtainer-monitor-swap@waylonwalker.dev" && pwd -P)"
 USER_EXTENSIONS_DIR="${HOME}/.local/share/gnome-shell/extensions"
 MONITOR_SWAP_EXTENSION_USER_DIR="${USER_EXTENSIONS_DIR}/devtainer-monitor-swap@waylonwalker.dev"
 
-CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/devtainer/gnome-awesome.conf"
-
 if [[ -f "$CONFIG_FILE" ]]; then
     # shellcheck disable=SC1090
     source "$CONFIG_FILE"
+elif [[ "$CONFIG_FILE_EXPLICIT" == "true" ]]; then
+    die "Config file not found: $CONFIG_FILE"
 fi
 
 WORKSPACE_COUNT="${WORKSPACE_COUNT:-9}"
 CLOCK_FORMAT="${CLOCK_FORMAT:-12h}"
 DISABLE_UBUNTU_DOCK="${DISABLE_UBUNTU_DOCK:-true}"
 SCREENSHOT_BINDING="${SCREENSHOT_BINDING:-<Super><Alt>p}"
-SCREENSHOT_COMMAND="${SCREENSHOT_COMMAND:-gnome-screenshot -a}"
+SCREENSHOT_COMMAND="${SCREENSHOT_COMMAND:-${LOCAL_BIN}/devtainer-gnome-screenshot-area}"
 CUSTOM_KEYBINDING_PATH="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-rectangle-screenshot/"
 CUSTOM_KEYBINDING_SCHEMA="org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:${CUSTOM_KEYBINDING_PATH}"
-LOCAL_BIN="${HOME}/.local/bin"
 
 require_command() {
     if ! command -v "$1" >/dev/null 2>&1; then
@@ -42,7 +126,7 @@ clear_gsettings_string_array() {
     local schema="$1"
     local key="$2"
 
-    gsettings set "$schema" "$key" "[]"
+    run gsettings set "$schema" "$key" "[]"
 }
 
 quote_gvariant_string() {
@@ -54,7 +138,7 @@ set_gsettings_string() {
     local key="$2"
     local value="$3"
 
-    gsettings set "$schema" "$key" "$(quote_gvariant_string "$value")"
+    run gsettings set "$schema" "$key" "$(quote_gvariant_string "$value")"
 }
 
 merge_gsettings_string_array() {
@@ -65,7 +149,7 @@ merge_gsettings_string_array() {
     local existing
     existing="$(gsettings get "$schema" "$key")"
 
-    gsettings set "$schema" "$key" "$(
+    run gsettings set "$schema" "$key" "$(
         python3 - "$existing" "$@" <<'PY'
 import ast
 import sys
@@ -93,7 +177,7 @@ sync_gsettings_string_array() {
     local existing
     existing="$(gsettings get "$schema" "$key")"
 
-    gsettings set "$schema" "$key" "$(
+    run gsettings set "$schema" "$key" "$(
         python3 - "$existing" "$desired" "$@" <<'PY'
 import ast
 import sys
@@ -129,7 +213,7 @@ set_gsettings_string_array() {
 
     local joined
     joined=$(IFS=,; printf "%s" "${values[*]}")
-    gsettings set "$schema" "$key" "[$joined]"
+    run gsettings set "$schema" "$key" "[$joined]"
 }
 
 upsert_custom_keybinding() {
@@ -155,7 +239,7 @@ remove_custom_keybinding() {
 
     existing="$(gsettings get org.gnome.settings-daemon.plugins.media-keys custom-keybindings)"
 
-    gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "$(
+    run gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "$(
         python3 - "$existing" "$path" <<'PY'
 import ast
 import sys
@@ -184,8 +268,8 @@ if (( WORKSPACE_COUNT < 1 )); then
     exit 1
 fi
 
-gsettings set org.gnome.mutter dynamic-workspaces false
-gsettings set org.gnome.desktop.wm.preferences num-workspaces "$WORKSPACE_COUNT"
+run gsettings set org.gnome.mutter dynamic-workspaces false
+run gsettings set org.gnome.desktop.wm.preferences num-workspaces "$WORKSPACE_COUNT"
 
 for workspace in $(seq 1 9); do
     if (( workspace <= WORKSPACE_COUNT )); then
@@ -278,12 +362,12 @@ else
 fi
 
 if gsettings list-schemas | grep -Fxq "org.gnome.shell.extensions.dash-to-dock"; then
-    gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
-    gsettings set org.gnome.shell.extensions.dash-to-dock hotkeys-overlay false
+    run gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+    run gsettings set org.gnome.shell.extensions.dash-to-dock hotkeys-overlay false
 
     if [[ "$DISABLE_UBUNTU_DOCK" == "true" ]]; then
         if command -v gnome-extensions >/dev/null 2>&1 && gnome-extensions list | grep -Fxq "ubuntu-dock@ubuntu.com"; then
-            gnome-extensions disable ubuntu-dock@ubuntu.com
+            run gnome-extensions disable ubuntu-dock@ubuntu.com
         else
             echo "Unable to disable ubuntu-dock@ubuntu.com automatically because gnome-extensions is unavailable." >&2
             exit 1
@@ -293,31 +377,31 @@ fi
 
 if [[ "${DISABLE_DESKTOP_ICONS:-true}" == "true" ]]; then
     if command -v gnome-extensions >/dev/null 2>&1 && gnome-extensions list | grep -Fxq "ding@rastersoft.com"; then
-        gnome-extensions disable ding@rastersoft.com
+        run gnome-extensions disable ding@rastersoft.com
     fi
 
     if gsettings list-schemas | grep -Fxq "org.gnome.shell.extensions.ding"; then
-        gsettings set org.gnome.shell.extensions.ding show-home false
-        gsettings set org.gnome.shell.extensions.ding show-trash false
-        gsettings set org.gnome.shell.extensions.ding show-volumes false
-        gsettings set org.gnome.shell.extensions.ding show-network-volumes false
+        run gsettings set org.gnome.shell.extensions.ding show-home false
+        run gsettings set org.gnome.shell.extensions.ding show-trash false
+        run gsettings set org.gnome.shell.extensions.ding show-volumes false
+        run gsettings set org.gnome.shell.extensions.ding show-network-volumes false
     fi
 fi
 
 if [[ -L "${USER_EXTENSIONS_DIR}" ]]; then
-    rm "${USER_EXTENSIONS_DIR}"
+    run rm "${USER_EXTENSIONS_DIR}"
 fi
 
-mkdir -p "${USER_EXTENSIONS_DIR}"
-rm -rf "${MONITOR_SWAP_EXTENSION_USER_DIR}"
-cp -a "${MONITOR_SWAP_EXTENSION_REPO_DIR}" "${MONITOR_SWAP_EXTENSION_USER_DIR}"
+run mkdir -p "${USER_EXTENSIONS_DIR}"
+run rm -rf "${MONITOR_SWAP_EXTENSION_USER_DIR}"
+run cp -a "${MONITOR_SWAP_EXTENSION_REPO_DIR}" "${MONITOR_SWAP_EXTENSION_USER_DIR}"
 
 if command -v glib-compile-schemas >/dev/null 2>&1; then
-    glib-compile-schemas "${MONITOR_SWAP_EXTENSION_USER_DIR}/schemas"
+    run glib-compile-schemas "${MONITOR_SWAP_EXTENSION_USER_DIR}/schemas"
 fi
 
 if command -v gnome-extensions >/dev/null 2>&1 && gnome-extensions list | grep -Fxq "devtainer-monitor-swap@waylonwalker.dev"; then
-    gnome-extensions enable devtainer-monitor-swap@waylonwalker.dev
+    run gnome-extensions enable devtainer-monitor-swap@waylonwalker.dev
 fi
 
 set_gsettings_string org.gnome.desktop.interface clock-format "$CLOCK_FORMAT"
