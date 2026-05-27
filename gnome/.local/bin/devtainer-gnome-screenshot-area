@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+require_command() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo "Missing required command: $1" >&2
+        exit 1
+    fi
+}
+
+require_command gdbus
+
+gdbus call \
+    --session \
+    --dest org.freedesktop.portal.Desktop \
+    --object-path /org/freedesktop/portal/desktop \
+    --method org.freedesktop.portal.Screenshot.Screenshot \
+    '' \
+    "{'interactive': <true>, 'modal': <false>}" >/dev/null

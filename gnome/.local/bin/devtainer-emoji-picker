@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+find_uvx() {
+    local candidate
+
+    for candidate in \
+        "$(command -v uvx 2>/dev/null || true)" \
+        "$HOME/.local/bin/uvx" \
+        "$HOME/.local/share/mise/shims/uvx" \
+        "$HOME/.local/share/mise/installs/uv/latest/uv-x86_64-unknown-linux-musl/uvx"
+    do
+        if [[ -n "$candidate" && -x "$candidate" ]]; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    done
+
+    echo "uvx not found. Install uv/mise first." >&2
+    exit 1
+}
+
+UVX_BIN="$(find_uvx)"
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/devtainer-emoji.rasi"
+
+exec "$UVX_BIN" rofimoji \
+    --selector rofi \
+    --clipboarder xsel \
+    --typer xdotool \
+    --prompt "emoji" \
+    --selector-args "-theme ${ROFI_THEME} -i -matching fuzzy -sorting-method fzf -sort -show-icons -icon-theme Qogir"

@@ -1,0 +1,8 @@
+{
+  "uuid": "devtainer-monitor-swap@waylonwalker.dev",
+  "name": "Devtainer Monitor Swap",
+  "description": "Swap the focused window to the next monitor with Super+o.",
+  "shell-version": ["46"],
+  "settings-schema": "org.gnome.shell.extensions.devtainer-monitor-swap",
+  "version": 1
+}

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+theme="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/devtainer-rofi.rasi"
+
+exec rofi \
+    -show run \
+    -show-icons \
+    -icon-theme Qogir \
+    -theme "$theme" \
+    -i \
+    -matching fuzzy \
+    -sorting-method fzf \
+    -sort \
+    -display-run "run"

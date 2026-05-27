@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if command -v nautilus >/dev/null 2>&1; then
+    exec "$HOME/.local/bin/devtainer-x11-focus-or-launch" --class org.gnome.Nautilus -- nautilus
+fi
+
+exec xdg-open "$HOME"

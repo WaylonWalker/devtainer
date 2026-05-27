@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+
+import argparse
+import ctypes
+import re
+import subprocess
+import sys
+
+
+CLIENT_MESSAGE = 33
+SUBSTRUCTURE_NOTIFY_MASK = 1 << 19
+SUBSTRUCTURE_REDIRECT_MASK = 1 << 20
+
+
+class XClientMessageEvent(ctypes.Structure):
+    _fields_ = [
+        ("type", ctypes.c_int),
+        ("serial", ctypes.c_ulong),
+        ("send_event", ctypes.c_int),
+        ("display", ctypes.c_void_p),
+        ("window", ctypes.c_ulong),
+        ("message_type", ctypes.c_ulong),
+        ("format", ctypes.c_int),
+        ("data", ctypes.c_long * 5),
+    ]
+
+
+class XEvent(ctypes.Union):
+    _fields_ = [
+        ("xclient", XClientMessageEvent),
+        ("pad", ctypes.c_long * 24),
+    ]
+
+
+def parse_window_ids() -> list[int]:
+    output = subprocess.check_output(
+        ["xprop", "-root", "_NET_CLIENT_LIST"],
+        text=True,
+        stderr=subprocess.DEVNULL,
+    )
+    return [int(value, 16) for value in re.findall(r"0x[0-9a-fA-F]+", output)]
+
+
+def get_window_classes(window_id: int) -> tuple[str, ...]:
+    try:
+        output = subprocess.check_output(
+            ["xprop", "-id", hex(window_id), "WM_CLASS"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        )
+    except subprocess.CalledProcessError:
+        return ()
+
+    return tuple(re.findall(r'"([^"]+)"', output))
+
+
+def get_window_desktop(window_id: int) -> int | None:
+    try:
+        output = subprocess.check_output(
+            ["xprop", "-id", hex(window_id), "_NET_WM_DESKTOP"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        )
+    except subprocess.CalledProcessError:
+        return None
+
+    match = re.search(r"=\s+(\d+)", output)
+    if match is None:
+        return None
+    return int(match.group(1))
+
+
+def find_first_window(wm_class: str) -> int | None:
+    target = wm_class.lower()
+    for window_id in parse_window_ids():
+        classes = get_window_classes(window_id)
+        if any(value.lower() == target for value in classes):
+            return window_id
+    return None
+
+
+def send_client_message(libx11, display_ptr, root, window_id: int, atom_name: bytes, data: tuple[int, int, int, int, int]) -> None:
+    event = XEvent()
+    event.xclient.type = CLIENT_MESSAGE
+    event.xclient.serial = 0
+    event.xclient.send_event = 1
+    event.xclient.display = display_ptr
+    event.xclient.window = window_id
+    event.xclient.message_type = libx11.XInternAtom(display_ptr, atom_name, 0)
+    event.xclient.format = 32
+    event.xclient.data = (ctypes.c_long * 5)(*data)
+
+    libx11.XSendEvent(
+        display_ptr,
+        root,
+        0,
+        SUBSTRUCTURE_REDIRECT_MASK | SUBSTRUCTURE_NOTIFY_MASK,
+        ctypes.byref(event),
+    )
+
+
+def activate_window(window_id: int) -> None:
+    libx11 = ctypes.cdll.LoadLibrary("libX11.so.6")
+    libx11.XOpenDisplay.argtypes = [ctypes.c_char_p]
+    libx11.XOpenDisplay.restype = ctypes.c_void_p
+    libx11.XDefaultScreen.argtypes = [ctypes.c_void_p]
+    libx11.XDefaultScreen.restype = ctypes.c_int
+    libx11.XRootWindow.argtypes = [ctypes.c_void_p, ctypes.c_int]
+    libx11.XRootWindow.restype = ctypes.c_ulong
+    libx11.XInternAtom.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+    libx11.XInternAtom.restype = ctypes.c_ulong
+    libx11.XMapRaised.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
+    libx11.XMapRaised.restype = ctypes.c_int
+    libx11.XRaiseWindow.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
+    libx11.XRaiseWindow.restype = ctypes.c_int
+    libx11.XSetInputFocus.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
+    libx11.XSetInputFocus.restype = ctypes.c_int
+    libx11.XSendEvent.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_ulong,
+        ctypes.c_int,
+        ctypes.c_long,
+        ctypes.POINTER(XEvent),
+    ]
+    libx11.XSendEvent.restype = ctypes.c_int
+    libx11.XFlush.argtypes = [ctypes.c_void_p]
+    libx11.XFlush.restype = ctypes.c_int
+    libx11.XCloseDisplay.argtypes = [ctypes.c_void_p]
+    libx11.XCloseDisplay.restype = ctypes.c_int
+
+    display_ptr = libx11.XOpenDisplay(None)
+    if not display_ptr:
+        raise SystemExit("Could not open X display.")
+
+    screen = libx11.XDefaultScreen(display_ptr)
+    root = libx11.XRootWindow(display_ptr, screen)
+    desktop = get_window_desktop(window_id)
+
+    if desktop is not None and desktop >= 0:
+        send_client_message(
+            libx11,
+            display_ptr,
+            root,
+            root,
+            b"_NET_CURRENT_DESKTOP",
+            (desktop, 0, 0, 0, 0),
+        )
+
+    libx11.XMapRaised(display_ptr, window_id)
+    libx11.XRaiseWindow(display_ptr, window_id)
+    send_client_message(
+        libx11,
+        display_ptr,
+        root,
+        window_id,
+        b"_NET_ACTIVE_WINDOW",
+        (2, 0, 0, 0, 0),
+    )
+    libx11.XSetInputFocus(display_ptr, window_id, 1, 0)
+    libx11.XFlush(display_ptr)
+    libx11.XCloseDisplay(display_ptr)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--class", dest="wm_class", required=True)
+    parser.add_argument("launch", nargs=argparse.REMAINDER)
+    args = parser.parse_args()
+
+    launch = args.launch
+    if launch and launch[0] == "--":
+        launch = launch[1:]
+
+    window_id = find_first_window(args.wm_class)
+
+    if window_id is not None:
+        activate_window(window_id)
+        return 0
+
+    if not launch:
+        print(f"No window found for class {args.wm_class} and no launch command provided.", file=sys.stderr)
+        return 1
+
+    subprocess.Popen(launch)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

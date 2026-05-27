@@ -258,6 +258,12 @@
         - desktop
         - stow
         - gtk
+    - name: apply gnome awesome-style defaults
+      shell: ~/.local/bin/devtainer-gnome-bootstrap
+      when: "'GNOME' in (ansible_env.XDG_CURRENT_DESKTOP | default('')) or (ansible_env.DESKTOP_SESSION | default('')) == 'ubuntu'"
+      tags:
+        - desktop
+        - gnome
     - name: install pick colour-picker
       become_user: root
       community.general.snap:

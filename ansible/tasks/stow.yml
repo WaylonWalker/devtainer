@@ -56,6 +56,12 @@
   shell: cd ~/devtainer && stow kitty
   tags:
     - kitty
+- name: stow gnome config
+  shell: cd ~/devtainer && stow gnome
+  tags:
+    - desktop
+    - gnome
+    - stow
 - name: stow copier-templates config
   shell: cd ~/devtainer && stow copier-templates
   tags:

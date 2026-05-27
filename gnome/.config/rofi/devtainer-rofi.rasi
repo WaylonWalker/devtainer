@@ -1,0 +1,109 @@
+* {
+  background:     #282A36;
+  background-alt: #44475A;
+  foreground:     #F8F8F2;
+  foreground-alt: #BFBFBF;
+  selected:       #6272A4;
+  accent:         #8BE9FD;
+  urgent:         #FF5555;
+  border-color:   #44475A;
+  font: "Sans 14";
+}
+
+window {
+  anchor: center;
+  location: center;
+  width: 46em;
+  border: 2px;
+  border-color: @accent;
+  border-radius: 12px;
+  background-color: @background;
+}
+
+mainbox {
+  spacing: 12px;
+  padding: 14px;
+  background-color: transparent;
+}
+
+inputbar {
+  children: [ prompt, entry ];
+  spacing: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background-color: @background-alt;
+  text-color: @foreground;
+}
+
+prompt {
+  text-color: @accent;
+  background-color: transparent;
+}
+
+entry {
+  placeholder: "Type to filter";
+  placeholder-color: @foreground-alt;
+  background-color: transparent;
+  text-color: @foreground;
+}
+
+message {
+  border: 0;
+  background-color: transparent;
+}
+
+listview {
+  lines: 10;
+  columns: 1;
+  fixed-height: false;
+  dynamic: true;
+  cycle: false;
+  scrollbar: true;
+  spacing: 8px;
+  background-color: transparent;
+}
+
+element {
+  padding: 10px 12px;
+  spacing: 12px;
+  border-radius: 10px;
+  background-color: transparent;
+  text-color: @foreground;
+}
+
+element normal.normal {
+  background-color: transparent;
+  text-color: @foreground;
+}
+
+element selected.normal {
+  background-color: @selected;
+  text-color: @foreground;
+}
+
+element selected.urgent {
+  background-color: @urgent;
+  text-color: @foreground;
+}
+
+element-icon {
+  size: 1.2em;
+  background-color: transparent;
+}
+
+element-text {
+  background-color: transparent;
+  text-color: inherit;
+  vertical-align: 0.5;
+}
+
+scrollbar {
+  width: 6px;
+  border: 0;
+  handle-width: 8px;
+  padding: 0;
+  background-color: @background-alt;
+  handle-color: @selected;
+  border-radius: 99px;
+}

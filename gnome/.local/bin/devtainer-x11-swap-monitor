@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+
+import re
+import subprocess
+import sys
+import time
+
+
+def require(command: str) -> None:
+    if subprocess.run(["bash", "-lc", f"command -v {command} >/dev/null 2>&1"]).returncode != 0:
+        raise SystemExit(f"Missing required command: {command}")
+
+
+def get_monitors() -> list[dict[str, int]]:
+    output = subprocess.check_output(["xrandr", "--listmonitors"], text=True)
+    monitors: list[dict[str, int]] = []
+
+    for line in output.splitlines():
+        match = re.search(r"\s+\d+:\s+\+\*?([^\s]+)\s+\d+/\d+x\d+/\d+\+(\d+)\+(\d+)", line)
+        if not match:
+            continue
+
+        geometry = re.search(r"(\d+)/\d+x(\d+)/\d+\+(\d+)\+(\d+)", line)
+        if not geometry:
+            continue
+
+        width, height, x, y = map(int, geometry.groups())
+        monitors.append(
+            {
+                "width": width,
+                "height": height,
+                "x": x,
+                "y": y,
+            }
+        )
+
+    if len(monitors) < 2:
+        raise SystemExit("Need at least two monitors to swap windows between them.")
+
+    return monitors
+
+
+def get_active_window_id() -> str:
+    for _ in range(10):
+        output = subprocess.check_output(["xprop", "-root", "_NET_ACTIVE_WINDOW"], text=True)
+        match = re.search(r"(0x[0-9a-fA-F]+)", output)
+        if match and match.group(1) != "0x0":
+            return match.group(1)
+        time.sleep(0.05)
+    raise SystemExit("Could not determine active window.")
+
+
+def get_active_window_geometry() -> dict[str, int]:
+    window_id = get_active_window_id()
+    output = subprocess.check_output(["xwininfo", "-id", window_id], text=True, stderr=subprocess.DEVNULL)
+
+    geometry: dict[str, int] = {}
+    for line in output.splitlines():
+        line = line.strip()
+        if line.startswith("Absolute upper-left X:"):
+            geometry["x"] = int(line.split(":", 1)[1])
+        elif line.startswith("Absolute upper-left Y:"):
+            geometry["y"] = int(line.split(":", 1)[1])
+        elif line.startswith("Width:"):
+            geometry["width"] = int(line.split(":", 1)[1])
+        elif line.startswith("Height:"):
+            geometry["height"] = int(line.split(":", 1)[1])
+
+    if len(geometry) != 4:
+        raise SystemExit("Could not read active window geometry.")
+
+    return geometry
+
+
+def find_monitor_index(monitors: list[dict[str, int]], center_x: int, center_y: int) -> int:
+    for index, monitor in enumerate(monitors):
+        if (
+            monitor["x"] <= center_x < monitor["x"] + monitor["width"]
+            and monitor["y"] <= center_y < monitor["y"] + monitor["height"]
+        ):
+            return index
+
+    distances = []
+    for index, monitor in enumerate(monitors):
+        mid_x = monitor["x"] + monitor["width"] // 2
+        mid_y = monitor["y"] + monitor["height"] // 2
+        distances.append((abs(mid_x - center_x) + abs(mid_y - center_y), index))
+
+    return min(distances)[1]
+
+
+def main() -> int:
+    require("xdotool")
+    require("xrandr")
+
+    monitors = sorted(get_monitors(), key=lambda m: (m["x"], m["y"]))
+    window = get_active_window_geometry()
+    center_x = window["x"] + window["width"] // 2
+    center_y = window["y"] + window["height"] // 2
+
+    current_index = find_monitor_index(monitors, center_x, center_y)
+    next_index = (current_index + 1) % len(monitors)
+
+    current = monitors[current_index]
+    target = monitors[next_index]
+
+    if target["x"] > current["x"]:
+        key = "super+shift+Right"
+    elif target["x"] < current["x"]:
+        key = "super+shift+Left"
+    elif target["y"] > current["y"]:
+        key = "super+shift+Down"
+    else:
+        key = "super+shift+Up"
+
+    # When launched from a GNOME shortcut, give the original keypress time to
+    # release before we synthesize the monitor-move shortcut.
+    time.sleep(0.15)
+    subprocess.run(["xdotool", "key", "--clearmodifiers", key], check=True)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
