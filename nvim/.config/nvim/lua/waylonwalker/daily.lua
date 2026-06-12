@@ -21,6 +21,10 @@ local function daily_note_pattern(date)
   return string.format("%s/%s*-notes.md", daily_dir, date)
 end
 
+local function daily_note_path(date)
+  return string.format("%s/%s-notes.md", daily_dir, date)
+end
+
 local function daily_note_files()
   local files = vim.fn.globpath(daily_dir, "*.md", false, true)
   table.sort(files, function(a, b)
@@ -59,17 +63,33 @@ function M.open_today()
   M.open_date(today, { create_missing = true })
 end
 
+local function create_daily_note(date)
+  local path = daily_note_path(date)
+
+  vim.fn.mkdir(daily_dir, "p")
+  vim.fn.writefile({
+    "---",
+    "date: " .. date,
+    "templateKey: daily",
+    "title: " .. date .. " Notes",
+    "description: 'notes for " .. date .. "'",
+    "tags:",
+    "  - daily-note",
+    "published: True",
+    "",
+    "---",
+    "",
+  }, path)
+
+  return path
+end
+
 function M.open_date(date, opts)
   opts = opts or {}
   local files = vim.fn.glob(daily_note_pattern(date), false, true)
 
   if vim.tbl_isempty(files) and opts.create_missing then
-    os.execute("copier copy ~/.copier-templates/daily .")
-    vim.wait(500, function()
-      return not vim.tbl_isempty(vim.fn.glob(daily_note_pattern(date), false, true))
-    end, 10)
-    files = vim.fn.glob(daily_note_pattern(date), false, true)
-    vim.cmd("mode")
+    files = { create_daily_note(date) }
   end
 
   if vim.tbl_isempty(files) then
@@ -202,7 +222,7 @@ local function render_calendar(buf, state)
   end
 
   table.insert(lines, "")
-  table.insert(lines, " <CR> open  h/j/k/l move  H/L month  t today  q close")
+  table.insert(lines, " <CR> open/create  h/j/k/l move  H/L month  t today  q close")
 
   vim.bo[buf].modifiable = true
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
@@ -306,7 +326,7 @@ function M.pick_calendar()
 
   local function open_selected()
     close_calendar()
-    M.open_date(state.selected_date)
+    M.open_date(state.selected_date, { create_missing = true })
   end
 
   local opts = { buffer = buf, nowait = true, silent = true }
