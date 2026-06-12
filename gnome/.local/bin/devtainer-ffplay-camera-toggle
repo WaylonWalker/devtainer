@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/devtainer/gnome-awesome.conf"
+
+if [[ -f "$CONFIG_FILE" ]]; then
+    # shellcheck disable=SC1090
+    source "$CONFIG_FILE"
+fi
+
+FFPLAY_BIN="${FFPLAY_BIN:-ffplay}"
+FFPLAY_CAMERA_DEVICE="${FFPLAY_CAMERA_DEVICE:-/dev/video4}"
+FFPLAY_CAMERA_FRAMERATE="${FFPLAY_CAMERA_FRAMERATE:-30}"
+FFPLAY_CAMERA_VIDEO_SIZE="${FFPLAY_CAMERA_VIDEO_SIZE:-512x512}"
+FFPLAY_CAMERA_INPUT_FORMAT="${FFPLAY_CAMERA_INPUT_FORMAT:-mjpeg}"
+FFPLAY_CAMERA_WINDOW_TITLE="${FFPLAY_CAMERA_WINDOW_TITLE:-devtainer-ffplay-camera}"
+RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}"
+PID_FILE="${RUNTIME_DIR}/devtainer-ffplay-camera.pid"
+LOG_FILE="${RUNTIME_DIR}/devtainer-ffplay-camera.log"
+
+is_camera_process() {
+    local pid="$1"
+
+    [[ -r "/proc/${pid}/cmdline" ]] || return 1
+
+    local -a argv=()
+    mapfile -d '' -t argv < "/proc/${pid}/cmdline"
+    [[ "${#argv[@]}" -gt 0 ]] || return 1
+    [[ -n "${argv[0]:-}" ]] || return 1
+    [[ "${argv[0]##*/}" == "ffplay" ]] || return 1
+
+    local saw_device=false
+    local value
+    for value in "${argv[@]}"; do
+        if [[ "$value" == "$FFPLAY_CAMERA_DEVICE" ]]; then
+            saw_device=true
+        fi
+    done
+
+    [[ "$saw_device" == "true" ]]
+}
+
+find_camera_pids() {
+    local proc_dir
+
+    for proc_dir in /proc/[0-9]*; do
+        [[ -r "${proc_dir}/cmdline" ]] || continue
+
+        local pid="${proc_dir##*/}"
+        if is_camera_process "$pid"; then
+            printf '%s\n' "$pid"
+        fi
+    done
+}
+
+stop_running_camera() {
+    local pid="$1"
+
+    kill "$pid"
+
+    for _ in $(seq 1 20); do
+        if ! kill -0 "$pid" 2>/dev/null; then
+            rm -f "$PID_FILE"
+            return 0
+        fi
+        sleep 0.1
+    done
+
+    echo "Timed out waiting for ffplay camera process ${pid} to exit." >&2
+    return 1
+}
+
+if [[ -f "$PID_FILE" ]]; then
+    existing_pid="$(<"$PID_FILE")"
+    if [[ "$existing_pid" =~ ^[0-9]+$ ]] && is_camera_process "$existing_pid"; then
+        stop_running_camera "$existing_pid"
+        exit 0
+    fi
+
+    rm -f "$PID_FILE"
+fi
+
+mapfile -t running_camera_pids < <(find_camera_pids)
+if [[ "${#running_camera_pids[@]}" -gt 0 ]]; then
+    for existing_pid in "${running_camera_pids[@]}"; do
+        stop_running_camera "$existing_pid"
+    done
+    exit 0
+fi
+
+nohup \
+    "$FFPLAY_BIN" \
+    -f video4linux2 \
+    -framerate "$FFPLAY_CAMERA_FRAMERATE" \
+    -video_size "$FFPLAY_CAMERA_VIDEO_SIZE" \
+    -input_format "$FFPLAY_CAMERA_INPUT_FORMAT" \
+    -window_title "$FFPLAY_CAMERA_WINDOW_TITLE" \
+    -noborder \
+    "$FFPLAY_CAMERA_DEVICE" \
+    >"$LOG_FILE" 2>&1 < /dev/null &
+
+camera_pid=$!
+printf '%s\n' "$camera_pid" > "$PID_FILE"
+
+sleep 0.2
+if ! kill -0 "$camera_pid" 2>/dev/null; then
+    rm -f "$PID_FILE"
+    echo "ffplay camera failed to start. Check ${LOG_FILE}." >&2
+    exit 1
+fi

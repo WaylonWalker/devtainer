@@ -1,0 +1,306 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/devtainer/gnome-awesome.conf"
+ENV_RECORD_AREA_OUTPUT_DIR="${RECORD_AREA_OUTPUT_DIR-}"
+ENV_RECORD_AREA_FRAMERATE="${RECORD_AREA_FRAMERATE-}"
+ENV_RECORD_AREA_METADATA_TITLE="${RECORD_AREA_METADATA_TITLE-}"
+ENV_RECORD_AREA_GEOMETRY="${RECORD_AREA_GEOMETRY-}"
+
+if [[ -f "$CONFIG_FILE" ]]; then
+    # shellcheck disable=SC1090
+    source "$CONFIG_FILE"
+fi
+
+RECORD_AREA_OUTPUT_DIR="${ENV_RECORD_AREA_OUTPUT_DIR:-${RECORD_AREA_OUTPUT_DIR:-$HOME/Video/recording}}"
+RECORD_AREA_FRAMERATE="${ENV_RECORD_AREA_FRAMERATE:-${RECORD_AREA_FRAMERATE:-30}}"
+RECORD_AREA_METADATA_TITLE="${ENV_RECORD_AREA_METADATA_TITLE:-${RECORD_AREA_METADATA_TITLE:-devtainer-gnome-record-area}}"
+RECORD_AREA_GEOMETRY="${ENV_RECORD_AREA_GEOMETRY:-${RECORD_AREA_GEOMETRY:-}}"
+RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}"
+PID_FILE="${RUNTIME_DIR}/devtainer-gnome-record-area.pid"
+LOG_FILE="${RUNTIME_DIR}/devtainer-gnome-record-area.log"
+LAUNCH_LOG_FILE="${RUNTIME_DIR}/devtainer-gnome-record-area-launch.log"
+
+require_command() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo "Missing required command: $1" >&2
+        exit 1
+    fi
+}
+
+log_launch() {
+    printf '%s pid=%s display=%s session=%s geometry=%s\n' \
+        "$(date --iso-8601=seconds)" \
+        "$$" \
+        "${DISPLAY:-}" \
+        "${XDG_SESSION_TYPE:-}" \
+        "${RECORD_AREA_GEOMETRY:-interactive}" >> "$LAUNCH_LOG_FILE"
+}
+
+notify() {
+    local summary="$1"
+    local body="${2:-}"
+
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send "$summary" "$body" >/dev/null 2>&1 || true
+    fi
+}
+
+select_area() {
+    python3 - <<'PY'
+import sys
+import tkinter as tk
+
+root = tk.Tk()
+root.withdraw()
+root.overrideredirect(True)
+root.attributes("-fullscreen", True)
+root.attributes("-topmost", True)
+root.attributes("-alpha", 0.18)
+root.configure(bg="black")
+
+canvas = tk.Canvas(root, bg="black", highlightthickness=0, cursor="crosshair")
+canvas.pack(fill="both", expand=True)
+
+start_x = 0
+start_y = 0
+rect_id = None
+
+
+def cancel(_event=None):
+    try:
+        root.grab_release()
+    except tk.TclError:
+        pass
+    root.destroy()
+    raise SystemExit(1)
+
+
+def on_press(event):
+    global start_x, start_y, rect_id
+    start_x = event.x_root
+    start_y = event.y_root
+    if rect_id is not None:
+        canvas.delete(rect_id)
+    rect_id = canvas.create_rectangle(
+        event.x,
+        event.y,
+        event.x,
+        event.y,
+        outline="#ff3b30",
+        width=2,
+    )
+
+
+def on_drag(event):
+    if rect_id is None:
+        return
+    canvas.coords(rect_id, start_x, start_y, event.x_root, event.y_root)
+
+
+def on_release(event):
+    end_x = event.x_root
+    end_y = event.y_root
+    x = min(start_x, end_x)
+    y = min(start_y, end_y)
+    width = abs(end_x - start_x)
+    height = abs(end_y - start_y)
+    print(f"{x} {y} {width} {height}", flush=True)
+    try:
+        root.grab_release()
+    except tk.TclError:
+        pass
+    root.destroy()
+
+canvas.create_text(
+    root.winfo_screenwidth() // 2,
+    48,
+    text="Drag to choose a recording area — Esc cancels",
+    fill="white",
+    font=("Sans", 20, "bold"),
+)
+
+canvas.bind_all("<ButtonPress-1>", on_press)
+canvas.bind_all("<B1-Motion>", on_drag)
+canvas.bind_all("<ButtonRelease-1>", on_release)
+root.bind_all("<Escape>", cancel)
+
+root.deiconify()
+root.update_idletasks()
+root.grab_set_global()
+root.focus_force()
+root.mainloop()
+PY
+}
+
+is_recording_process() {
+    local pid="$1"
+
+    [[ -r "/proc/${pid}/cmdline" ]] || return 1
+
+    local -a argv=()
+    mapfile -d '' -t argv < "/proc/${pid}/cmdline"
+    [[ "${#argv[@]}" -gt 0 ]] || return 1
+    [[ -n "${argv[0]:-}" ]] || return 1
+    [[ "${argv[0]##*/}" == "ffmpeg" ]] || return 1
+
+    local saw_metadata=false
+    local value
+    for value in "${argv[@]}"; do
+        if [[ "$value" == "title=${RECORD_AREA_METADATA_TITLE}" ]]; then
+            saw_metadata=true
+        fi
+    done
+
+    [[ "$saw_metadata" == "true" ]]
+}
+
+find_recording_pids() {
+    local proc_dir
+
+    for proc_dir in /proc/[0-9]*; do
+        [[ -r "${proc_dir}/cmdline" ]] || continue
+
+        local pid="${proc_dir##*/}"
+        if is_recording_process "$pid"; then
+            printf '%s\n' "$pid"
+        fi
+    done
+}
+
+stop_recording() {
+    local pid="$1"
+
+    kill -INT "$pid"
+
+    for _ in $(seq 1 50); do
+        if ! kill -0 "$pid" 2>/dev/null; then
+            rm -f "$PID_FILE"
+            return 0
+        fi
+        sleep 0.1
+    done
+
+    kill -TERM "$pid"
+    for _ in $(seq 1 30); do
+        if ! kill -0 "$pid" 2>/dev/null; then
+            rm -f "$PID_FILE"
+            return 0
+        fi
+        sleep 0.1
+    done
+
+    kill -KILL "$pid"
+    for _ in $(seq 1 20); do
+        if ! kill -0 "$pid" 2>/dev/null; then
+            rm -f "$PID_FILE"
+            return 0
+        fi
+        sleep 0.1
+    done
+
+    echo "Timed out waiting for recording process ${pid} to stop." >&2
+    return 1
+}
+
+require_command ffmpeg
+require_command python3
+log_launch
+
+if [[ "${XDG_SESSION_TYPE:-}" != "x11" ]]; then
+    echo "Rectangular recording toggle currently supports GNOME X11 only." >&2
+    notify "Screen recording unavailable" "This shortcut currently supports GNOME X11 only."
+    exit 1
+fi
+
+if [[ -z "${DISPLAY:-}" ]]; then
+    echo "DISPLAY is not set, so ffmpeg cannot record the X11 desktop." >&2
+    notify "Screen recording unavailable" "DISPLAY is not set for the recorder shortcut."
+    exit 1
+fi
+
+if [[ -f "$PID_FILE" ]]; then
+    existing_pid="$(<"$PID_FILE")"
+    if [[ "$existing_pid" =~ ^[0-9]+$ ]] && is_recording_process "$existing_pid"; then
+        stop_recording "$existing_pid"
+        notify "Screen recording stopped" "Saved under ${RECORD_AREA_OUTPUT_DIR}."
+        exit 0
+    fi
+
+    rm -f "$PID_FILE"
+fi
+
+mapfile -t running_recording_pids < <(find_recording_pids)
+if [[ "${#running_recording_pids[@]}" -gt 0 ]]; then
+    for existing_pid in "${running_recording_pids[@]}"; do
+        stop_recording "$existing_pid"
+    done
+    notify "Screen recording stopped" "Saved under ${RECORD_AREA_OUTPUT_DIR}."
+    exit 0
+fi
+
+mkdir -p "$RECORD_AREA_OUTPUT_DIR"
+notify "Select recording area" "Drag a rectangle to start recording. Press Escape to cancel."
+
+display_target="${DISPLAY}"
+if [[ "$display_target" != *.* ]]; then
+    display_target="${display_target}.0"
+fi
+
+output_file="${RECORD_AREA_OUTPUT_DIR}/recording-$(date +%Y%m%d-%H%M%S).mp4"
+
+ffmpeg_input_args=(
+    -f x11grab
+    -draw_mouse 1
+    -framerate "$RECORD_AREA_FRAMERATE"
+)
+
+if [[ -n "$RECORD_AREA_GEOMETRY" ]]; then
+    read -r x y width height <<<"$RECORD_AREA_GEOMETRY"
+else
+    read -r x y width height <<<"$(select_area)" || exit 0
+fi
+
+for value in "$x" "$y" "$width" "$height"; do
+    if ! [[ "$value" =~ ^-?[0-9]+$ ]]; then
+        echo "Invalid recording geometry: ${RECORD_AREA_GEOMETRY:-${x:-} ${y:-} ${width:-} ${height:-}}" >&2
+        exit 1
+    fi
+done
+
+if (( width <= 0 || height <= 0 )); then
+    exit 0
+fi
+
+ffmpeg_input_args+=(
+    -video_size "${width}x${height}"
+    -i "${display_target}+${x},${y}"
+)
+
+nohup \
+    ffmpeg \
+    -hide_banner \
+    -loglevel error \
+    "${ffmpeg_input_args[@]}" \
+    -c:v libx264 \
+    -preset veryfast \
+    -crf 23 \
+    -pix_fmt yuv420p \
+    -movflags +faststart \
+    -metadata "title=${RECORD_AREA_METADATA_TITLE}" \
+    "$output_file" \
+    >"$LOG_FILE" 2>&1 < /dev/null &
+
+recording_pid=$!
+printf '%s\n' "$recording_pid" > "$PID_FILE"
+
+sleep 0.5
+if ! kill -0 "$recording_pid" 2>/dev/null; then
+    rm -f "$PID_FILE"
+    echo "Screen recording failed to start. Check ${LOG_FILE}." >&2
+    notify "Screen recording failed" "Check ${LOG_FILE} for details."
+    exit 1
+fi
+
+notify "Screen recording started" "$(basename "$output_file")"

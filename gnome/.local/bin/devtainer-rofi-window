@@ -4,7 +4,27 @@ set -euo pipefail
 
 theme="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/devtainer-rofi.rasi"
 
-exec rofi \
+rofi_command() {
+    if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]] && command -v rofi-wayland >/dev/null 2>&1; then
+        printf '%s\n' rofi-wayland
+        return
+    fi
+
+    printf '%s\n' rofi
+}
+
+if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
+    exec gdbus call \
+        --session \
+        --dest org.gnome.Shell \
+        --object-path /org/gnome/Shell \
+        --method org.freedesktop.DBus.Properties.Set \
+        org.gnome.Shell \
+        OverviewActive \
+        '<true>'
+fi
+
+exec "$(rofi_command)" \
     -show window \
     -show-icons \
     -icon-theme Qogir \

@@ -112,6 +112,8 @@ CLOCK_FORMAT="${CLOCK_FORMAT:-12h}"
 DISABLE_UBUNTU_DOCK="${DISABLE_UBUNTU_DOCK:-true}"
 SCREENSHOT_BINDING="${SCREENSHOT_BINDING:-<Super><Alt>p}"
 SCREENSHOT_COMMAND="${SCREENSHOT_COMMAND:-${LOCAL_BIN}/devtainer-gnome-screenshot-area}"
+FFPLAY_CAMERA_BINDING="${FFPLAY_CAMERA_BINDING:-<Super>s}"
+RECORD_AREA_BINDING="${RECORD_AREA_BINDING:-<Super><Shift>s}"
 CUSTOM_KEYBINDING_PATH="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-rectangle-screenshot/"
 CUSTOM_KEYBINDING_SCHEMA="org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:${CUSTOM_KEYBINDING_PATH}"
 
@@ -299,6 +301,12 @@ for workspace in $(seq 1 9); do
         "switch-to-application-${workspace}"
 done
 
+if [[ "$FFPLAY_CAMERA_BINDING" == "<Super>s" ]]; then
+    clear_gsettings_string_array \
+        org.gnome.shell.keybindings \
+        toggle-quick-settings
+fi
+
 sync_gsettings_string_array \
     org.gnome.desktop.wm.keybindings \
     switch-windows \
@@ -441,6 +449,18 @@ upsert_custom_keybinding \
     "Files Focus Or Launch" \
     "${LOCAL_BIN}/devtainer-files-focus-or-launch" \
     "${FILES_FOCUS_BINDING:-<Super>e}"
+
+upsert_custom_keybinding \
+    "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-ffplay-camera-toggle/" \
+    "FFplay Camera Toggle" \
+    "${LOCAL_BIN}/devtainer-ffplay-camera-toggle" \
+    "$FFPLAY_CAMERA_BINDING"
+
+upsert_custom_keybinding \
+    "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-record-area-toggle/" \
+    "Rectangular Screen Recording Toggle" \
+    "${LOCAL_BIN}/devtainer-gnome-record-area-toggle" \
+    "$RECORD_AREA_BINDING"
 
 if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
     remove_custom_keybinding \
