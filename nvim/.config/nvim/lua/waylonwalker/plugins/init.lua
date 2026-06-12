@@ -1,12 +1,24 @@
-local M = {}
-M.cmp = require("waylonwalker.plugins.cmp")
-M.fugitive = require("waylonwalker.plugins.fugitive")
--- M.lsp_config = require("waylonwalker.plugins.lsp-config")
-M.null_ls = require("waylonwalker.plugins.null-ls")
-M.autoformat = require("waylonwalker.plugins.autoformat")
-M.lualine = require("waylonwalker.plugins.lualine")
-M.treesitter = require("waylonwalker.plugins.treesitter")
-M.alpha_nvim = require("waylonwalker.plugins.alpha-nvim")
--- M.coverage = require("waylonwalker.plugins.coverage")
-M.navbuddy = require("waylonwalker.plugins.navbuddy")
-return M
+local modules = {
+	cmp = "waylonwalker.plugins.cmp",
+	fugitive = "waylonwalker.plugins.fugitive",
+	null_ls = "waylonwalker.plugins.null-ls",
+	autoformat = "waylonwalker.plugins.autoformat",
+	lualine = "waylonwalker.plugins.lualine",
+	image = "waylonwalker.plugins.image",
+	treesitter = "waylonwalker.plugins.treesitter",
+	alpha_nvim = "waylonwalker.plugins.alpha-nvim",
+	navbuddy = "waylonwalker.plugins.navbuddy",
+}
+
+return setmetatable({}, {
+	__index = function(t, key)
+		local module = modules[key]
+		if not module then
+			return nil
+		end
+
+		local value = require(module)
+		rawset(t, key, value)
+		return value
+	end,
+})

@@ -10,11 +10,15 @@ require("nvim-treesitter.configs").setup({
     "html",
     "json",
     "yaml",
+    "markdown",
+    "markdown_inline",
     "gotmpl",
     "helm",
   }, -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   highlight = {
     enable = true,
+    disable = { "markdown", "markdown_inline" },
+    additional_vim_regex_highlighting = { "markdown" },
   },
   playground = {
     enable = true,
@@ -37,7 +41,7 @@ require("nvim-treesitter.configs").setup({
       init_selection = "<leader>o",
       scope_incremental = "<leader>O",
       node_incremental = "<leader>o",
-      node_decremental = "<leader>i",
+      node_decremental = "<leader>I",
     },
   },
   textobjects = {

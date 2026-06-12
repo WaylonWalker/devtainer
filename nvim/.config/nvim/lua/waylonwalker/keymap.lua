@@ -115,6 +115,34 @@ set("n", "gel", "<cmd>Telescope find_files cwd=~/.config/nvim/lua/waylonwalker/<
 -- go edit my website
 -- edit blog posts
 set("n", "gei", "<cmd>Telescope find_files cwd=~/git/waylonwalker.com<CR>")
+set("n", "<leader>i", function()
+	require("waylonwalker.plugins.putshot").pick_image()
+end, { desc = "Insert Putshot image" })
+set("n", "<leader>ti", function()
+	require("waylonwalker.plugins.image").toggle()
+end, { desc = "Toggle inline markdown images" })
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "markdown",
+	callback = function(args)
+		vim.keymap.set("n", "K", function()
+			require("waylonwalker.plugins.putshot").hover_image()
+		end, { buffer = args.buf, desc = "Preview markdown image under cursor" })
+	end,
+})
+
+vim.api.nvim_create_autocmd("LspAttach", {
+	callback = function(args)
+		if vim.bo[args.buf].filetype ~= "markdown" then
+			return
+		end
+
+		vim.keymap.set("n", "K", function()
+			require("waylonwalker.plugins.putshot").hover_image()
+		end, { buffer = args.buf, desc = "Preview markdown image under cursor" })
+	end,
+})
+
 -- edit today's post
 set("n", "geit", "<cmd>Telescope find_files find_command=markata,list,--map,path,--filter,date==today,--fast<cr>")
 -- edit drafts

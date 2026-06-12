@@ -47,10 +47,14 @@ require("lazy").setup({
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "master",
 		build = ":TSUpdate",
 		event = { "BufReadPost", "BufNewFile" },
 		dependencies = {
-			"nvim-treesitter/nvim-treesitter-textobjects",
+			{
+				"nvim-treesitter/nvim-treesitter-textobjects",
+				branch = "master",
+			},
 		},
 		config = function()
 			require("waylonwalker.plugins.treesitter")
@@ -72,6 +76,10 @@ require("lazy").setup({
 		opts = {},
 		config = function()
 			require("aerial").setup({
+				backends = {
+					["_"] = { "treesitter", "lsp" },
+					markdown = { "markdown" },
+				},
 				on_attach = function(bufnr)
 					vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
 					vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
@@ -99,6 +107,14 @@ require("lazy").setup({
 	{
 		"stevearc/conform.nvim",
 		opts = {},
+	},
+	{
+		"3rd/image.nvim",
+		build = false,
+		ft = { "markdown", "vimwiki" },
+		config = function()
+			require("waylonwalker.plugins.image").setup()
+		end,
 	},
 	{ "kyazdani42/nvim-web-devicons" },
 	{
@@ -339,16 +355,6 @@ require("lazy").setup({
 			},
 		},
 	},
-
-	{
-		-- Highlight, edit, and navigate code
-		"nvim-treesitter/nvim-treesitter",
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter-textobjects",
-		},
-		build = ":TSUpdate",
-	},
-
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
