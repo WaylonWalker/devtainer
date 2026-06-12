@@ -1,0 +1,6 @@
+window-decoration = none
+
+keybind = ctrl+equal=increase_font_size:1
+keybind = ctrl+shift+equal=increase_font_size:1
+keybind = ctrl+minus=decrease_font_size:1
+keybind = ctrl+0=reset_font_size
