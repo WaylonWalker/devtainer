@@ -81,6 +81,98 @@ local function install_markdown_integration()
 	})
 end
 
+local function install_focus_redraw()
+	vim.api.nvim_create_autocmd({ "FocusGained", "WinEnter" }, {
+		group = vim.api.nvim_create_augroup("waylonwalker.image_redraw", { clear = true }),
+		callback = function()
+			local ok, image = pcall(require, "image")
+			if not ok or not image.is_enabled() then
+				return
+			end
+
+			vim.schedule(function()
+				for _, img in ipairs(image.get_images()) do
+					img:render()
+				end
+			end)
+		end,
+	})
+end
+
+local function tmux_pane_is_visible()
+	local tmux_pane = vim.env.TMUX_PANE
+	if not tmux_pane then
+		return true
+	end
+
+	local output = vim.fn.systemlist({
+		"tmux",
+		"display-message",
+		"-p",
+		"-t",
+		tmux_pane,
+		"#{session_attached}:#{window_active}:#{pane_active}",
+	})
+
+	if vim.v.shell_error ~= 0 or #output == 0 then
+		return true
+	end
+
+	local session_attached, window_active, pane_active = output[1]:match("^(%d+):(%d+):(%d+)$")
+	return session_attached ~= "0" and window_active == "1" and pane_active == "1"
+end
+
+local function install_tmux_visibility_watcher()
+	if not vim.env.TMUX_PANE then
+		return
+	end
+
+	local timer = vim.uv.new_timer()
+	if not timer then
+		return
+	end
+
+	local images_hidden = false
+	timer:start(
+		750,
+		750,
+		vim.schedule_wrap(function()
+			local ok, image = pcall(require, "image")
+			if not ok or not image.is_enabled() then
+				return
+			end
+
+			local images = image.get_images()
+			if #images == 0 then
+				return
+			end
+
+			if not tmux_pane_is_visible() then
+				for _, img in ipairs(images) do
+					img:clear(true)
+				end
+				images_hidden = true
+				return
+			end
+
+			if images_hidden then
+				for _, img in ipairs(images) do
+					img:render()
+				end
+				images_hidden = false
+			end
+		end)
+	)
+
+	vim.api.nvim_create_autocmd("VimLeavePre", {
+		group = vim.api.nvim_create_augroup("waylonwalker.image_tmux_visibility", { clear = true }),
+		callback = function()
+			timer:stop()
+			timer:close()
+		end,
+	})
+end
+
 function M.setup()
 	install_markdown_integration()
 
@@ -88,7 +180,11 @@ function M.setup()
 		backend = "kitty",
 		processor = "magick_cli",
 		tmux_show_only_in_active_window = true,
+		editor_only_render_when_focused = false,
 	})
+
+	install_focus_redraw()
+	install_tmux_visibility_watcher()
 end
 
 function M.toggle()
