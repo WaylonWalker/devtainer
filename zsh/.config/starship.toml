@@ -10,25 +10,25 @@ symbol=' '
 symbol  = '[ ](fg:#4b8bbe)'
 # style  = 'fg:#4b8bbe'
 style  = 'fg:#ffd43b'
-format = '[${symbol}${pyenv_prefix}(${version} )]($style)[(\($virtualenv\) )](fg:#646464)'
+# format = '[${symbol}${pyenv_prefix}(${version} )]($style)[(\($virtualenv\) )](fg:#646464)'
 
 [ directory ]
 style  = 'fg:#FF10F0'
 
-[custom.zsh]
-when = '[[ ! -n "${VIRTUAL_ENV}" ]]'
-style = "bold red"
-format = '[ NO PYTHON VENV SET ]($style)'
+# [custom.zsh]
+# when = '[[ ! -n "${VIRTUAL_ENV}" ]]'
+# style = "bold red"
+# format = '[ NO PYTHON VENV SET ]($style)'
 
-[custom.nvim-manager-system]
-when = '[[ ! -n "${NVIM_APPNAME}" ]]'
-style = "bold yellow"
-symbol = '[ ](fg:#15AABF)'
-format = '$symbol[USING SYSTEM NVIM]($style)'
-
-[env_var.NVIM_APPNAME]
-style = "green"
-symbol = '[ ](fg:#15AABF)'
-format = '[$symbol${env_value}]($style)'
-variable = "NVIM_APPNAME"
+# [custom.nvim-manager-system]
+# when = '[[ ! -n "${NVIM_APPNAME}" ]]'
+# style = "bold yellow"
+# symbol = '[ ](fg:#15AABF)'
+# format = '$symbol[USING SYSTEM NVIM]($style)'
+#
+# [env_var.NVIM_APPNAME]
+# style = "green"
+# symbol = '[ ](fg:#15AABF)'
+# format = '[$symbol${env_value}]($style)'
+# variable = "NVIM_APPNAME"
 
