@@ -45,6 +45,12 @@ alias rebasemain='git pull origin main --rebase'
 alias rebasedev='git pull origin develop --rebase'
 alias commit="git diff --staged | lockhart prompt run commit | git commit -evF -"
 
+# alias ws='uv run https://git.waylonwalker.com/waylon/workspaces/raw/branch/main/workspaces.py -W work'
+# alias gs='uv run https://git.waylonwalker.com/waylon/workspaces/raw/branch/main/workspaces.py -W git'
+
+alias ws='uv run ~/git/workspaces/workspaces.py -W work'
+alias gs='uv run ~/git/workspaces/workspaces.py -W git'
+
 # exa
 if [[ $(command -v exa) ]]; then
     alias ls="exa -lh --git-ignore --icons --git"
