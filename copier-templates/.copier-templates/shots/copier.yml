@@ -3,7 +3,13 @@ _jinja_extensions:
   # - uuid4_ext:UUID4Extension
 title:
   type: str
+date:
+  type: str
+  default: "{{ '%Y-%m-%d %H:%M:%S' | strftime }}"
 image:
   type: str
 description:
   type: str
+tags:
+  type: str
+  default: ""
