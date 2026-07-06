@@ -97,6 +97,7 @@ COPY nvim /root/devtainer/nvim
 COPY helix /root/devtainer/helix
 COPY mise /root/devtainer/mise
 COPY --chmod=755 scripts/mise_install_container_tools.sh /usr/local/bin/mise-install-container-tools
+COPY --chmod=755 scripts/pin_mise_config.sh /usr/local/bin/pin-mise-config
 COPY --from=devtainer-cli /devtainer /usr/local/bin/devtainer
 
 WORKDIR /root/devtainer
@@ -119,7 +120,8 @@ RUN --mount=type=secret,id=gh_token \
     export MISE_JOBS=1 && \
     export MISE_LOCKED=1 && \
     export HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state && \
-    mise-install-container-tools
+    mise-install-container-tools && \
+    pin-mise-config /home/devtainer/.config/mise/config.toml
 
 RUN NVIM_BIN="$(find /home/devtainer/.local/share/mise/installs/aqua-neovim-neovim/0.12.2 -type f -path '*/bin/nvim' -print -quit)" && \
     HOME=/home/devtainer USER=devtainer XDG_CONFIG_HOME=/home/devtainer/.config XDG_DATA_HOME=/home/devtainer/.local/share XDG_CACHE_HOME=/home/devtainer/.cache XDG_STATE_HOME=/home/devtainer/.local/state "${NVIM_BIN}" --headless "+Lazy! restore" +qa
