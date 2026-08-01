@@ -32,9 +32,22 @@ guide](https://wiki.hyprland.org/Getting-Started/Installation/).
 
 ### Configuration
 
+Hyprland 0.55+ uses Lua as its native configuration language. This repository
+keeps the old hyprlang files alongside the new entrypoint during migration:
+
+- `hyprland.lua` - active Lua entrypoint
+- `hyprland/` - Lua modules for monitors, appearance, rules, bindings, and startup
+- `*.conf` - deprecated legacy fallback configuration; keep these until the
+  Lua setup has been used successfully for a while
+- `legacy-conf-backup-20260801.tar.gz` - snapshot of the pre-migration config
+
+To roll back, temporarily move `hyprland.lua` out of `~/.config/hypr/` and
+restart Hyprland; the existing `hyprland.conf` and sourced modules remain
+available.
+
 Config files live in `~/.config/hypr/`:
 
-- `hyprland.conf` - Main configuration
+- `hyprland.conf` - Legacy main configuration and rollback source
 - `monitors.conf` - Monitor layouts and resolutions
 - `bindings.conf` - Key bindings
 - `autostart.conf` - Applications to start on launch
