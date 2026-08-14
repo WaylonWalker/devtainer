@@ -6,15 +6,13 @@ subtask: true
 
 Read PLAN.md and execute next unchecked action item:
 
-1. **Checkpoint**: Create restore point (!`git stash` or temporary branch)
-2. **Pre-check**: Fast validation (!`ruff check --quiet`, !`ty --quiet`)
-3. **Execute**: Complete single action item with focused scope
-4. **Quick Test**: Targeted test for changes only
-5. **Rollback**: If failed, restore checkpoint and report specific issues
-6. **Validate**: Run full validation suite only on success
-7. **Update**: Mark item complete in PLAN.md with timestamp
-8. **Commit**: Atomic commit with descriptive message
+1. **Inspect**: Check repository instructions, current status, diff, and relevant code.
+2. **Pre-check**: Run the project's focused baseline validation when practical.
+3. **Execute**: Complete one coherent action item without overwriting unrelated changes.
+4. **Quick Test**: Run targeted validation for the change.
+5. **Failure Handling**: Stop and report failures; do not reset, stash, restore, or discard changes automatically.
+6. **Validate**: Run the strongest practical validation on success.
+7. **Update**: Mark the item complete in PLAN.md only after successful verification.
+8. **Report**: Summarize edits, commands and outcomes, remaining risks, and the next item.
 
-If validation fails, rollback automatically and suggest fixes. Stop after each item for review.
-
-**Auto-merge detection**: If 3+ related subtasks are completed, automatically merge into single deliverable and update PLAN.md.
+Do not commit, push, create branches, or rewrite history unless explicitly requested. Stop after the item is complete.

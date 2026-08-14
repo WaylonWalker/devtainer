@@ -1,3 +1,33 @@
+# Global OpenCode Instructions
+
+Repository-local `AGENTS.md` files and project configuration take precedence over these general rules.
+
+## Working Method
+
+1. Read applicable instructions and inspect the repository before deciding what to change.
+2. Preserve existing architecture and conventions unless the request requires changing them.
+3. Prefer small, coherent changes that completely solve the requested task.
+4. Make reasonable evidence-based assumptions. Ask only when proceeding would create substantial risk.
+5. Finish implementation rather than stopping at a plan unless the user requested planning only.
+6. Add or update tests when behavior changes, then run the strongest practical focused validation.
+7. Inspect the complete diff before finishing. Do not overwrite or revert unrelated user changes.
+8. Never claim a command passed unless it was actually run successfully. Distinguish code failures from environmental failures.
+9. Never expose credentials, tokens, cookies, authentication files, or secret values.
+10. Avoid destructive git operations. Never commit, push, deploy, publish, rewrite history, or make system-wide changes unless explicitly requested.
+11. Report changed files, validation performed, remaining risks, limitations, and intentionally omitted work.
+
+## Delegation
+
+- Solve small and ordinary tasks directly with the primary agent.
+- Delegate only independent, bounded work when it provides clear value.
+- Keep coordination in the primary agent; specialists must not delegate further.
+- Give each specialist exact scope, inputs, expected output, and restrictions.
+- Run specialists in parallel only when file ownership and outputs cannot conflict.
+- Verify specialist output against the repository. The primary agent owns the final diff, tests, and answer.
+- Use `research` for substantial bounded discovery, `architect` for difficult or high-risk reasoning, and `implement` for an independent implementation unit.
+- Use `test` for substantial independent verification, `review` after non-trivial changes, `docs` for meaningful documentation work, and `release` only for user-facing git or release material.
+- Do not give Luna broad architectural decisions. Escalate to Terra or Sol only when complexity requires it.
+
 # Python Development Environment Instructions for AI Agents
 
 ## Project Detection

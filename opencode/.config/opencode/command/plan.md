@@ -1,6 +1,6 @@
 ---
 description: Convert conversation to actionable plan
-agent: general
+agent: plan
 subtask: true
 ---
 

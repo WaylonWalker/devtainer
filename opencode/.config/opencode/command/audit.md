@@ -1,6 +1,6 @@
 ---
 description: Audit current changes against plan
-agent: general
+agent: review
 subtask: true
 ---
 

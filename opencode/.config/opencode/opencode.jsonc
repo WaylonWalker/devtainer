@@ -1,9 +1,96 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "keybinds": {
-    "leader": "ctrl+x",
-    "session_child_cycle": "<leader>+j",
-    "session_child_cycle_reverse": "<leader>+k",
+  "model": "openai/gpt-5.6-luna",
+  "small_model": "openai/gpt-5.6-luna",
+  "default_agent": "build",
+  "subagent_depth": 1,
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 8000
+  },
+  "provider": {
+    "openai": {
+      "models": {
+        "gpt-5.4-mini-fast": {
+          "options": {
+            "textVerbosity": "low"
+          },
+          "variants": {
+            "cheap": {
+              "reasoningEffort": "none",
+              "textVerbosity": "low"
+            }
+          }
+        },
+        "gpt-5.4-mini": {
+          "options": {
+            "textVerbosity": "low"
+          },
+          "variants": {
+            "cheap": {
+              "reasoningEffort": "low",
+              "textVerbosity": "low"
+            }
+          }
+        },
+        "gpt-5.4": {
+          "variants": {
+            "deep": {
+              "reasoningEffort": "medium",
+              "textVerbosity": "low"
+            }
+          }
+        }
+      }
+    },
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "hhao/qwen2.5-coder-tools:7b": {
+          "name": "Qwen 2.5 Coder Tools 7B"
+        },
+        "gemma4:e2b": {
+          "name": "Gemma 4 E2B"
+        }
+      }
+    }
+  },
+  "agent": {
+    "build": {
+      "model": "openai/gpt-5.6-luna"
+    },
+    "plan": {
+      "model": "openai/gpt-5.6-luna"
+    },
+    "general": {
+      "disable": true
+    },
+    "explore": {
+      "disable": true
+    },
+    "local": {
+      "disable": true
+    },
+    "local-gemma": {
+      "disable": true
+    },
+    "title": {
+      "model": "openai/gpt-5.6-luna"
+    },
+    "summary": {
+      "model": "openai/gpt-5.6-luna"
+    },
+    // "compaction": {
+    //   "model": "openai/gpt-5.4-mini-fast"
+    // },
+    "deep-thinker": {
+      "disable": true
+    }
   },
   "mcp": {
     "git": {
@@ -16,16 +103,16 @@
       ],
       "enabled": true,
       "timeout": 10000
-    },
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp"
     }
   },
   "permission": {
-    "edit": "ask",
+    // "edit": "ask",
     "webfetch": "allow",
     "doom_loop": "ask",
+    "external_directory": {
+      "*": "ask",
+      "/tmp/**": "allow"
+    },
     "bash": {
       "ls*": "allow",
       "tree*": "allow",
@@ -60,9 +147,9 @@
       "kubectl describe*": "allow",
       "kubectl logs*": "allow",
       "kubectl config get-contexts*": "allow",
-      "kubectl config current-context": "allow",
+      "kubectl config current-context": "allow"
       // default safety net
-      "*": "ask"
-    },
-  },
+      // "*": "ask"
+    }
+  }
 }

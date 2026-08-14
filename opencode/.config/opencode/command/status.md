@@ -1,6 +1,6 @@
 ---
 description: Quick project status overview
-agent: explore
+agent: research
 subtask: true
 ---
 
