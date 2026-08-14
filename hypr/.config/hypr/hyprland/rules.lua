@@ -15,6 +15,10 @@ for _, item in ipairs({
     rule("workspace-" .. item[1], { class = item[2] }, { workspace = item[3] })
 end
 
+for i = 1, 9 do
+    hl.workspace_rule({ workspace = tostring(i), persistent = true })
+end
+
 rule("pavucontrol-float", { class = "^(org.pulseaudio.pavucontrol)$" }, { float = true })
 rule("portal-float", { class = "^(xdg-desktop-portal-gtk)$" }, { float = true })
 rule("prism-console-float", { class = "^(org.prismlauncher.PrismLauncher)$", title = "^(Console window.*)$" }, { float = true })

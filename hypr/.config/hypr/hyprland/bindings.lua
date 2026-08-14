@@ -6,6 +6,7 @@ local webapp = function(url) return browser .. " --app=\"" .. url .. "\"" end
 local focus_or_launch = "~/.config/hypr/scripts/focus_or_launch.sh"
 local start = function(class, command) return focus_or_launch .. " " .. class .. " " .. command end
 local bind = function(keys, command, flags) hl.bind(keys, hl.dsp.exec_cmd(command), flags) end
+local bind_dispatch = function(keys, dispatcher, flags) hl.bind(keys, dispatcher, flags) end
 
 bind(main .. " + RETURN", start("kitty", "kitty"))
 bind(main .. " + SHIFT + RETURN", terminal)
@@ -22,14 +23,15 @@ bind(main .. " + SHIFT + M", start("brave-music.youtube.com__-Default", webapp("
 bind(main .. " + I", start("brave-excalidraw.wayl.one__-Default", webapp("https://excalidraw.wayl.one")))
 bind(main .. " + SHIFT + K", start("brave-argocd.wayl.one__-Default", webapp("https://argocd.wayl.one")))
 bind(main .. " + SHIFT + Y", webapp("https://youtube.com/"))
-bind(main .. " + C", "hyprctl dispatch killactive")
-bind(main .. " + M", "hyprctl dispatch exit")
+bind_dispatch(main .. " + C", hl.dsp.window.close())
+bind_dispatch(main .. " + M", hl.dsp.exit())
 bind(main .. " + E", "uwsm app -- nautilus")
-bind(main .. " + V", "hyprctl dispatch togglefloating")
+bind_dispatch(main .. " + V", hl.dsp.window.float({ action = "toggle" }))
 bind(main .. " + R", "wofi --show drun --insensitive")
 bind(main .. " + SEMICOLON", "/home/waylon/.local/bin/rofimoji --selector-args=\"-theme ~/.config/rofi/dracula.rasi\"")
-bind(main .. " + F", "hyprctl dispatch fullscreen 1")
-bind(main .. " + SHIFT + F", "hyprctl dispatch fullscreen 0")
+-- Toggle maximize (keeps the workspace gaps); use Shift+F for true fullscreen.
+bind_dispatch(main .. " + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+bind_dispatch(main .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "set" }))
 bind(main .. " + P", "/usr/bin/hyprshot -m region")
 bind(main .. " + CTRL + P", "/usr/bin/hyprshot -m region --freeze")
 bind(main .. " + SHIFT + P", "~/.config/hypr/scripts/screenrecord.sh region")
@@ -46,18 +48,23 @@ bind(main .. " + SPACE", "hyprlauncher")
 bind(main .. " + SHIFT + S", "~/git/scripts/webcam_toggle.sh")
 
 local directions = { left = "l", right = "r", up = "u", down = "d" }
-for direction, value in pairs(directions) do bind(main .. " + " .. direction, "hyprctl dispatch movefocus " .. value) end
-bind(main .. " + J", "hyprctl dispatch cyclenext prev")
-bind(main .. " + K", "hyprctl dispatch cyclenext next")
+for direction, value in pairs(directions) do
+    bind_dispatch(main .. " + " .. direction, hl.dsp.focus({ direction = value }))
+end
+for key, value in pairs({ H = "l", L = "r" }) do
+    bind_dispatch(main .. " + " .. key, hl.dsp.focus({ direction = value }))
+end
+bind_dispatch(main .. " + J", hl.dsp.window.cycle_next({ next = false }))
+bind_dispatch(main .. " + K", hl.dsp.window.cycle_next({ next = true }))
 for i = 1, 10 do
     local key = i % 10
-    bind(main .. " + code:" .. (i + 9), "hyprctl dispatch workspace " .. i, { description = "Switch to workspace " .. i })
-    bind(main .. " + SHIFT + " .. key, "hyprctl dispatch movetoworkspace " .. i)
+    bind_dispatch(main .. " + code:" .. (i + 9), hl.dsp.focus({ workspace = tostring(i) }), { description = "Switch to workspace " .. i })
+    bind_dispatch(main .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = tostring(i) }))
 end
-bind(main .. " + mouse_down", "hyprctl dispatch workspace e+1")
-bind(main .. " + mouse_up", "hyprctl dispatch workspace e-1")
-bind(main .. " + mouse:272", "hyprctl dispatch movewindow", { mouse = true })
-bind(main .. " + mouse:273", "hyprctl dispatch resizewindow", { mouse = true })
+bind_dispatch(main .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
+bind_dispatch(main .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
+bind_dispatch(main .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
+bind_dispatch(main .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 for _, item in ipairs({
     { "XF86AudioRaiseVolume", "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+" },

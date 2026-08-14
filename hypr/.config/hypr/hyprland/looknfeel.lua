@@ -18,6 +18,7 @@ hl.config({
         blur = { enabled = true, size = 4, passes = 2, vibrancy = 0.1696 },
     },
     misc = { disable_hyprland_logo = true, disable_splash_rendering = true, focus_on_activate = true },
+    input = { mouse_refocus = false },
     cursor = { hide_on_key_press = true, enable_hyprcursor = false },
     dwindle = { preserve_split = true, force_split = 2 },
     master = { new_status = "master" },
