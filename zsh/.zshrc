@@ -48,6 +48,11 @@ if [ -d "$HOME/.local/share/bob/nvim-bin" ]; then
     export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
 fi
 
+if [ -f "/home/u_walkews/.local/bin/mise" ]; then
+    eval "$(/home/u_walkews/.local/bin/mise activate zsh)" # added by https://mise.run/zsh
+fi
+
+
 if [ -d "$HOME/.pyenv" ]; then
     export PATH="$HOME/.pyenv/bin:$PATH"
     export PATH=$(pyenv root)/shims:$PATH
@@ -305,3 +310,6 @@ web2app-remove() {
 
 # start_tmux
 [ -f ~/.local/bin/ta ] && ~/.local/bin/ta
+
+. "$HOME/.local/bin/env"
+
