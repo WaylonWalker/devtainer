@@ -44,6 +44,10 @@ export PATH="$(dirname $(uv python find 3.10)):$PATH"
 export FLYCTL_INSTALL="/home/waylon/.fly"
 [ -d "$FLYCTL_INSTALL" ] && export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
+if [ -d "$HOME/.local/share/bob/nvim-bin" ]; then
+    export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
+fi
+
 if [ -d "$HOME/.pyenv" ]; then
     export PATH="$HOME/.pyenv/bin:$PATH"
     export PATH=$(pyenv root)/shims:$PATH
