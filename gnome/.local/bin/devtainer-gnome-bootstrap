@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
 # Apply the repo's GNOME defaults into the current login session.
-#
-# This is the public entrypoint for the GNOME package: it reads
-# ~/.config/devtainer/gnome-awesome.conf, wires up the keybindings,
-# installs/enables the monitor-swap extension, and enforces the desktop
-# defaults that are safe to reapply repeatedly.
 
 set -euo pipefail
 
@@ -19,7 +14,7 @@ usage() {
     cat <<EOF
 Usage: $(basename "$0") [options]
 
-Apply the repo's GNOME defaults, keybindings, and monitor-swap extension.
+Apply the repo's GNOME defaults and keybindings.
 
 Options:
   -c, --config PATH  Read settings from PATH instead of the default config file.
@@ -96,9 +91,6 @@ done
 
 BOOTSTRAP_SOURCE="$(readlink -f "${BASH_SOURCE[0]}")"
 BOOTSTRAP_DIR="$(dirname "$BOOTSTRAP_SOURCE")"
-MONITOR_SWAP_EXTENSION_REPO_DIR="$(cd "${BOOTSTRAP_DIR}/../share/gnome-shell/extensions/devtainer-monitor-swap@waylonwalker.dev" && pwd -P)"
-USER_EXTENSIONS_DIR="${HOME}/.local/share/gnome-shell/extensions"
-MONITOR_SWAP_EXTENSION_USER_DIR="${USER_EXTENSIONS_DIR}/devtainer-monitor-swap@waylonwalker.dev"
 
 if [[ -f "$CONFIG_FILE" ]]; then
     # shellcheck disable=SC1090
@@ -343,28 +335,30 @@ if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
     sync_gsettings_string_array \
         org.gnome.desktop.wm.keybindings \
         move-to-monitor-left \
-        "<Super><Shift>Left" \
+        "${MONITOR_SWAP_BACK_BINDING:-<Super><Shift>o}" \
         "<Super>o" \
+        "<Super><Shift>o" \
         "<Super><Shift>Left"
 
     sync_gsettings_string_array \
         org.gnome.desktop.wm.keybindings \
         move-to-monitor-right \
-        "<Super><Shift>Right" \
+        "${MONITOR_SWAP_BINDING:-<Super>o}" \
         "<Super>o" \
         "<Super><Shift>Right"
 else
     sync_gsettings_string_array \
         org.gnome.desktop.wm.keybindings \
         move-to-monitor-left \
-        "<Super><Shift>Left" \
+        "${MONITOR_SWAP_BACK_BINDING:-<Super><Shift>o}" \
         "<Super>o" \
+        "<Super><Shift>o" \
         "<Super><Shift>Left"
 
     sync_gsettings_string_array \
         org.gnome.desktop.wm.keybindings \
         move-to-monitor-right \
-        "<Super><Shift>Right" \
+        "${MONITOR_SWAP_BINDING:-<Super>o}" \
         "<Super>o" \
         "<Super><Shift>Right"
 fi
@@ -394,22 +388,6 @@ if [[ "${DISABLE_DESKTOP_ICONS:-true}" == "true" ]]; then
         run gsettings set org.gnome.shell.extensions.ding show-volumes false
         run gsettings set org.gnome.shell.extensions.ding show-network-volumes false
     fi
-fi
-
-if [[ -L "${USER_EXTENSIONS_DIR}" ]]; then
-    run rm "${USER_EXTENSIONS_DIR}"
-fi
-
-run mkdir -p "${USER_EXTENSIONS_DIR}"
-run rm -rf "${MONITOR_SWAP_EXTENSION_USER_DIR}"
-run cp -a "${MONITOR_SWAP_EXTENSION_REPO_DIR}" "${MONITOR_SWAP_EXTENSION_USER_DIR}"
-
-if command -v glib-compile-schemas >/dev/null 2>&1; then
-    run glib-compile-schemas "${MONITOR_SWAP_EXTENSION_USER_DIR}/schemas"
-fi
-
-if command -v gnome-extensions >/dev/null 2>&1 && gnome-extensions list | grep -Fxq "devtainer-monitor-swap@waylonwalker.dev"; then
-    run gnome-extensions enable devtainer-monitor-swap@waylonwalker.dev
 fi
 
 set_gsettings_string org.gnome.desktop.interface clock-format "$CLOCK_FORMAT"
@@ -462,16 +440,8 @@ upsert_custom_keybinding \
     "${LOCAL_BIN}/devtainer-gnome-record-area-toggle" \
     "$RECORD_AREA_BINDING"
 
-if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
-    remove_custom_keybinding \
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-monitor-swap/"
-else
-    upsert_custom_keybinding \
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-monitor-swap/" \
-        "Swap Window Between Monitors" \
-        "${LOCAL_BIN}/devtainer-x11-swap-monitor" \
-        "${MONITOR_SWAP_BINDING:-<Super>o}"
-fi
+remove_custom_keybinding \
+    "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-monitor-swap/"
 
 upsert_custom_keybinding \
     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-rofi-window/" \
