@@ -135,7 +135,6 @@ vhs/
 
 - **ricing** - Aesthetic customization beyond function
 - **one-shot-apps** - Documentation for the one-shot-apps directory
-- **ansible** - Infrastructure as code for machine setup
 - **distrobox** - Container-based development environments
 - **qutebrowser** - Keyboard-driven web browser config
 - **k9s** - Kubernetes terminal UI

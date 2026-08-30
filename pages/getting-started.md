@@ -71,9 +71,7 @@ The scripts check for `stow`, `python3`, and an installed Breeze cursor theme.
 If the theme is missing, install `breeze` on Arch or `breeze-cursor-theme` on
 Ubuntu or Debian.
 
-If you use the Ansible desktop bootstrap, the cursor setup now runs as part of
-`ansible/local.yml` on SDDM, GDM, and LightDM systems. You can also run the same
-setup with:
+Run the same setup with:
 
 ```bash
 just setup-cursors
@@ -87,6 +85,32 @@ just setup-cursors
 4. **Multiplexer** - Add tmux for session management
 5. **Window Manager** - Hyprland (Wayland) or Awesome (X11)
 6. **Cursor defaults** - Apply the user and system cursor setup scripts
+
+## Omarchy (Hyprland) Hosts
+
+Omarchy-specific and terminal configs live in dedicated stow packages. On a
+fresh Omarchy install, apply them after Omarchy has generated its stock
+configs:
+
+```bash
+cd ~/devtainer
+stow omarchy omarchy-hypr alacritty foot ghostty kitty
+```
+
+- `omarchy/` → `~/.config/omarchy/` (shell bar, hooks, extensions, branding,
+  default agent)
+- `omarchy-hypr/` → `~/.config/hypr/` (personal `.lua` overrides: bindings,
+  monitors, looknfeel, input, autostart; plus `hyprsunset.conf`, `xdph.conf`)
+- `alacritty/`, `foot/`, `ghostty/`, `kitty/` → the matching `~/.config/<app>/`
+
+`omarchy-hypr` holds only your override files (not Omarchy's generated
+`hyprland.lua` entrypoint) so `omarchy update` can keep refreshing its defaults
+without clobbering your personal bindings. Reload the shell/bar with
+`omarchy restart shell` and validate Hyprland with `hyprctl reload`.
+
+> `omarchy-hypr` and the legacy self-managed `hypr/` package both target
+> `~/.config/hypr/` and are mutually exclusive. Use `omarchy-hypr` on Omarchy
+> machines only.
 
 ## Tool-Specific Setup
 
