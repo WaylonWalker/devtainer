@@ -27,3 +27,12 @@
 -- o.bind("SUPER + SHIFT + S", nil, "omarchy-capture-screenshot")
 -- o.bind("SUPER + H", nil, "voxtype record toggle")
 -- o.bind("SUPER + PERIOD", nil, "omarchy-shell shell toggle omarchy.emojis")
+
+-- Personal overrides.
+-- SUPER + B / A / E are free in Omarchy's defaults.
+-- SUPER + SHIFT + S was bound to Google Maps by default; unbind before overriding.
+o.bind("SUPER + B", "Browser", { omarchy = "browser" })
+o.bind("SUPER + A", "ChatGPT", { webapp = "https://chatgpt.com" })
+o.bind("SUPER + E", "File manager", { omarchy = "nautilus" })
+hl.unbind("SUPER + SHIFT + S")
+o.bind("SUPER + SHIFT + S", "Screenshot region", "omarchy-capture-screenshot region")
