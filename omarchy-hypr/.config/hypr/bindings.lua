@@ -36,3 +36,14 @@ o.bind("SUPER + A", "ChatGPT", { webapp = "https://chatgpt.com" })
 o.bind("SUPER + E", "File manager", { omarchy = "nautilus" })
 hl.unbind("SUPER + SHIFT + S")
 o.bind("SUPER + SHIFT + S", "Screenshot region", "omarchy-capture-screenshot region")
+
+-- Brought over from old devtainer config. Each key was bound by an Omarchy
+-- default, so unbind before overriding.
+hl.unbind("SUPER + J")
+o.bind("SUPER + J", "Focus on previous window", hl.dsp.window.cycle_next({ next = false }))
+hl.unbind("SUPER + K")
+o.bind("SUPER + K", "Focus on next window", hl.dsp.window.cycle_next({ next = true }))
+hl.unbind("SUPER + C")
+o.bind("SUPER + C", "Close window", hl.dsp.window.close())
+hl.unbind("SUPER + P")
+o.bind("SUPER + P", "Screenshot region", "omarchy-capture-screenshot region")
