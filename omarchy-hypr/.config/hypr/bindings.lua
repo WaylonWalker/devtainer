@@ -37,6 +37,34 @@ o.bind("SUPER + E", "File manager", { omarchy = "nautilus" })
 hl.unbind("SUPER + SHIFT + S")
 o.bind("SUPER + SHIFT + S", "Screenshot region", "omarchy-capture-screenshot region")
 
+-- Move the active window to the other monitor, following it there.
+-- This replaces Omarchy's default Super+O "pop window out" action.
+hl.unbind("SUPER + O")
+o.bind("SUPER + O", "Move window to other monitor",
+  hl.dsp.window.move({ monitor = "+1" }))
+
+-- Present nine workspaces per monitor using the same Super+number keys.
+-- The workspace IDs are different under the hood, but m~N means workspace N
+-- relative to the currently focused monitor.
+for workspace = 1, 9 do
+  local key = "code:" .. tostring(workspace + 9)
+  local target = "m~" .. tostring(workspace)
+  hl.unbind("SUPER + " .. key)
+  hl.unbind("SUPER + SHIFT + " .. key)
+  hl.unbind("SUPER + SHIFT + ALT + " .. key)
+  o.bind("SUPER + " .. key, "Switch to workspace " .. workspace .. " on this monitor",
+    hl.dsp.focus({ workspace = target }))
+  o.bind("SUPER + SHIFT + " .. key, "Move window to workspace " .. workspace .. " on this monitor",
+    hl.dsp.window.move({ workspace = target }))
+  o.bind("SUPER + SHIFT + ALT + " .. key, "Move window silently to workspace " .. workspace .. " on this monitor",
+    hl.dsp.window.move({ workspace = target, follow = false }))
+end
+
+-- Disable Omarchy's tenth workspace binding; each monitor now has nine.
+hl.unbind("SUPER + code:19")
+hl.unbind("SUPER + SHIFT + code:19")
+hl.unbind("SUPER + SHIFT + ALT + code:19")
+
 -- Brought over from old devtainer config. Each key was bound by an Omarchy
 -- default, so unbind before overriding.
 hl.unbind("SUPER + J")
@@ -47,3 +75,9 @@ hl.unbind("SUPER + C")
 o.bind("SUPER + C", "Close window", hl.dsp.window.close())
 hl.unbind("SUPER + P")
 o.bind("SUPER + P", "Screenshot region", "omarchy-capture-screenshot region")
+
+-- Walker launchers.
+-- SUPER+W was Omarchy's default close-window binding.
+hl.unbind("SUPER + W")
+o.bind("SUPER + W", "Switch to open window", "omarchy-window-switcher")
+o.bind("SUPER + R", "Launch application", "walker --provider desktopapplications")
