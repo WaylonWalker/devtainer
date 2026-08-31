@@ -1,0 +1,59 @@
+onboarding = false
+
+[terminal]
+default_shell = "/usr/bin/zsh"
+new_cwd = "follow"
+
+[keys]
+prefix = "ctrl+b"
+focus_pane_left = "alt+h"
+focus_pane_down = "alt+j"
+focus_pane_up = "alt+k"
+focus_pane_right = "alt+l"
+cycle_pane_next = "alt+o"
+zoom = "alt+z"
+close_pane = ["alt+x", "alt+shift+x"]
+split_vertical = "alt+v"
+split_horizontal = ["alt+minus", "alt+s"]
+
+[[keys.command]]
+key = "alt+b"
+type = "plugin_action"
+command = "waylon.last-workspace.toggle"
+description = "toggle last workspace"
+
+[[keys.command]]
+key = "prefix+ctrl+g"
+type = "popup"
+command = "~/.config/herdr/project-picker.sh"
+description = "pick a project from ~/git"
+width = "80%"
+height = "80%"
+
+[[keys.command]]
+key = "alt+shift+h"
+type = "shell"
+command = "$HERDR_BIN_PATH pane resize --pane \"$HERDR_ACTIVE_PANE_ID\" --direction left --amount 2"
+description = "resize pane left"
+
+[[keys.command]]
+key = "alt+shift+j"
+type = "shell"
+command = "$HERDR_BIN_PATH pane resize --pane \"$HERDR_ACTIVE_PANE_ID\" --direction down --amount 2"
+description = "resize pane down"
+
+[[keys.command]]
+key = "alt+shift+k"
+type = "shell"
+command = "$HERDR_BIN_PATH pane resize --pane \"$HERDR_ACTIVE_PANE_ID\" --direction up --amount 2"
+description = "resize pane up"
+
+[[keys.command]]
+key = "alt+shift+l"
+type = "shell"
+command = "$HERDR_BIN_PATH pane resize --pane \"$HERDR_ACTIVE_PANE_ID\" --direction right --amount 2"
+description = "resize pane right"
+
+[theme]
+name = "dracula"
+auto_switch = false

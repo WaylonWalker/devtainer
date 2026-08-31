@@ -1,0 +1,19 @@
+id = "waylon.last-workspace"
+name = "Last Workspace"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "Toggle between the current and last focused workspace."
+platforms = ["linux"]
+
+[[startup]]
+command = ["bash", "initialize.sh"]
+
+[[events]]
+on = "workspace.focused"
+command = ["bash", "record-focus.sh"]
+
+[[actions]]
+id = "toggle"
+title = "Toggle last workspace"
+contexts = ["workspace"]
+command = ["bash", "toggle.sh"]
