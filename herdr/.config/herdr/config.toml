@@ -4,8 +4,16 @@ onboarding = false
 default_shell = "/usr/bin/zsh"
 new_cwd = "follow"
 
+[ui]
+sidebar_start_collapsed = true
+sidebar_collapsed_mode = "hidden"
+hide_tab_bar_when_single_tab = true
+pane_gaps = false
+pane_outer_borders = false
+
 [keys]
 prefix = "ctrl+b"
+new_tab = ""
 focus_pane_left = "alt+h"
 focus_pane_down = "alt+j"
 focus_pane_up = "alt+k"
@@ -21,6 +29,12 @@ key = "alt+b"
 type = "plugin_action"
 command = "waylon.last-workspace.toggle"
 description = "toggle last workspace"
+
+[[keys.command]]
+key = "alt+g"
+type = "plugin_action"
+command = "waylon.scratch-workspace.toggle"
+description = "toggle scratch workspace"
 
 [[keys.command]]
 key = "prefix+ctrl+g"
