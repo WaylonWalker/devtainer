@@ -42,6 +42,9 @@
           "id": "omarchy.tray"
         },
         {
+          "id": "io.github.kristoferlund.webcam"
+        },
+        {
           "id": "omarchy.agents"
         },
         {
@@ -62,5 +65,27 @@
       ]
     }
   },
-  "plugins": []
+  "plugins": [
+    {
+      "id": "io.github.sirjul1337.lock-explorer",
+      "avatar": "/home/waylon/Pictures/8bitcc.png",
+      "boot": "follow",
+      "design": "my-poster",
+      "unlock": "rise",
+      "clipWallpaper": true
+    },
+    {
+      "id": "roubilibo.workspace-navigator"
+    },
+    {
+      "id": "waylon.silksong-background"
+    }
+  ],
+  "disabledPlugins": [
+    "omarchy.lock",
+    "omarchy.background"
+  ],
+  "cloneSourceRestores": [
+    "io.github.sirjul1337.lock-explorer"
+  ]
 }

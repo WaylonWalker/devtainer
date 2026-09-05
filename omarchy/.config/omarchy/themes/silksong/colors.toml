@@ -1,0 +1,32 @@
+mode = "dark"
+
+# Ink, shell, and silk: a Pharloom-inspired palette for long sessions.
+accent = "#d35b67"
+selection = "#294552"
+muted = "#6d8790"
+
+background = "#111c22"
+dark_background = "#0b1217"
+darker_background = "#070c10"
+lighter_background = "#1c3038"
+
+foreground = "#d6e2df"
+dark_foreground = "#71858a"
+light_foreground = "#b8cbc7"
+bright_foreground = "#f0f4ed"
+
+red = "#d35b67"
+yellow = "#d6b36a"
+orange = "#c98762"
+green = "#8fb49f"
+cyan = "#7bc4c4"
+blue = "#77a9c0"
+magenta = "#c28aa8"
+brown = "#795b4d"
+
+bright_red = "#f0787e"
+bright_yellow = "#ebd28d"
+bright_green = "#b1d8ba"
+bright_cyan = "#a0e0dc"
+bright_blue = "#a3d0dd"
+bright_magenta = "#e0afd0"

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# greetd runs this as the locked-down `greeter` account. Give Qt and Mesa a
+# writable cache location instead of letting them guess a path under a home
+# directory that the greeter cannot access.
+cache_dir="/tmp/omarchy-greetd-cache"
+mkdir -p "$cache_dir/shaders"
+chmod 700 "$cache_dir" "$cache_dir/shaders"
+export XDG_CACHE_HOME="$cache_dir"
+export QSG_RHI_SHADER_CACHE_PATH="$cache_dir/shaders"
+
+exec /usr/bin/cage -- /usr/bin/quickshell -p /usr/local/share/omarchy-greetd

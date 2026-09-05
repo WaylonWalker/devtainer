@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec /home/waylon/.local/share/omarchy-greetd/sync-theme.sh

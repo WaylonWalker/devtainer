@@ -1,0 +1,8 @@
+[SddmGreeterTheme]
+Name=Waylon Omarchy
+Description=Omarchy login theme with user selection
+Author=Waylon
+Type=sddm-theme
+Version=1.0
+QtVersion=6
+MainScript=Main.qml

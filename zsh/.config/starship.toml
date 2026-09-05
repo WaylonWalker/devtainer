@@ -1,34 +1,32 @@
-[aws]
-format = 'on [$symbol($profile )(\($region\) )]($style)'
-style = "bold blue"
-symbol =" " 
+add_newline = true
+command_timeout = 200
+format = "[$directory$git_branch$git_status]($style)$character"
 
-[lua]
-symbol=' '
-[python]
-# symbol  = '[ ](fg:#ffd43b)'
-symbol  = '[ ](fg:#4b8bbe)'
-# style  = 'fg:#4b8bbe'
-style  = 'fg:#ffd43b'
-format = '[${symbol}${pyenv_prefix}(${version} )]($style)[(\($virtualenv\) )](fg:#646464)'
+[character]
+error_symbol = "[✗](bold cyan)"
+success_symbol = "[❯](bold cyan)"
 
-[ directory ]
-style  = 'fg:#FF10F0'
+[directory]
+truncation_length = 2
+truncation_symbol = "…/"
+repo_root_style = "bold cyan"
+repo_root_format = "[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
 
-[custom.zsh]
-when = '[[ ! -n "${VIRTUAL_ENV}" ]]'
-style = "bold red"
-format = '[ NO PYTHON VENV SET ]($style)'
+[git_branch]
+format = "[$branch]($style) "
+style = "italic cyan"
 
-[custom.nvim-manager-system]
-when = '[[ ! -n "${NVIM_APPNAME}" ]]'
-style = "bold yellow"
-symbol = '[ ](fg:#15AABF)'
-format = '$symbol[USING SYSTEM NVIM]($style)'
-
-[env_var.NVIM_APPNAME]
-style = "green"
-symbol = '[ ](fg:#15AABF)'
-format = '[$symbol${env_value}]($style)'
-variable = "NVIM_APPNAME"
-
+[git_status]
+format     = '[$all_status]($style)'
+style      = "cyan"
+ahead      = "⇡${count} "
+diverged   = "⇕⇡${ahead_count}⇣${behind_count} "
+behind     = "⇣${count} "
+conflicted = " "
+up_to_date = " "
+untracked  = "? "
+modified   = " "
+stashed    = ""
+staged     = ""
+renamed    = ""
+deleted    = ""

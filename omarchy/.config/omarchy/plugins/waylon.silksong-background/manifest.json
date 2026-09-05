@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "waylon.silksong-background",
+  "name": "Silksong Background",
+  "version": "1.0.0",
+  "author": "Omarchy",
+  "description": "Desktop background renderer with Silksong spores and silk motes",
+  "kinds": [
+    "service"
+  ],
+  "entryPoints": {
+    "service": "Background.qml"
+  },
+  "omarchy": {
+    "clonedFrom": "omarchy.background"
+  }
+}

@@ -10,7 +10,7 @@ hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
 -- 4K DRM mode; Hyprland programs the 1440p mode and the panel upscales it.
 -- Fractional scale 1.5 keeps text readable on the tight panel (188 logical
 -- PPI at scale 1); bump toward 1.75 to match the external monitor's size.
-hl.monitor({ output = "eDP-1", mode = "2560x1440@60", position = "2560x0", scale = 1.5 })
+hl.monitor({ output = "eDP-1", mode = "2560x1440@60", position = "2560x0", scale = 1.2 })
 
 -- External monitor, flush left of the laptop panel. Uses the preferred mode
 -- (2560x1440) so it matches the laptop's logical height.

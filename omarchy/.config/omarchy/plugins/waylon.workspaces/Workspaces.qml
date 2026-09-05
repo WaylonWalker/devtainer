@@ -45,6 +45,8 @@ BarWidget {
   }
 
   readonly property real trailingGap: root.vertical ? 0 : Style.spaceReal(1.5)
+  // Nerd Font's mask-like glyph keeps the focused slot in the Silksong visual language.
+  readonly property string silkMask: "\uDB85\uDCFB"
 
   implicitWidth: grid.implicitWidth + trailingGap
   implicitHeight: grid.implicitHeight
@@ -71,7 +73,7 @@ BarWidget {
           root.barMonitor().activeWorkspace.id === workspace.id
 
         bar: root.bar
-        text: focused ? "\uDB85\uDCFB" : String(modelData)
+        text: focused ? root.silkMask : String(modelData)
         opacity: occupied || focused ? 1 : 0.5
         horizontalMargin: 6
         verticalPadding: 6
