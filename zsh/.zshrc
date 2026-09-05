@@ -2,6 +2,12 @@
 # zmodload zsh/zprof
 set -o physical
 
+# Load Omarchy's portable environment bootstrap (OMARCHY_PATH and PATH).
+# Do not source Omarchy's Bash rc here; zsh has its own aliases and functions.
+if [[ -r /usr/share/omarchy/default/bash/env-bootstrap ]]; then
+    source /usr/share/omarchy/default/bash/env-bootstrap
+fi
+
 # [ -f /usr/bin/mise ] && eval "$(/usr/bin/mise activate zsh)"
 # [ -f ~/.local/bin/mise ] && eval "$(~/.local/bin/mise activate zsh)"
 if command -v mise > /dev/null && ! command -v distrobox-host-exec >/dev/null 2>&1; then
