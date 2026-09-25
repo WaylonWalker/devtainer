@@ -40,7 +40,7 @@ description = "toggle scratch workspace"
 key = "prefix+ctrl+g"
 type = "popup"
 command = "~/.config/herdr/project-picker.sh"
-description = "pick a project from ~/git"
+description = "pick a git project from ~/git"
 width = "80%"
 height = "80%"
 

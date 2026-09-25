@@ -4,13 +4,14 @@ set -euo pipefail
 git_root="${HOME}/git"
 herdr_bin="${HERDR_BIN_PATH:-herdr}"
 
-project=$(
-  find "$git_root" -mindepth 1 -maxdepth 1 -type d -print 2>/dev/null |
+project_name=$(
+  find "$git_root" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null |
     sort |
-    fzf --reverse --header="Select project from ~/git"
+    fzf --reverse --header="Select git project from ~/git"
 ) || exit 0
 
-[ -n "$project" ] || exit 0
+[ -n "$project_name" ] || exit 0
+project="${git_root}/${project_name}"
 
 workspace_id=$(
   "$herdr_bin" workspace list 2>/dev/null |
