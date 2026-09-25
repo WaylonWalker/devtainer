@@ -2,13 +2,7 @@
 # zmodload zsh/zprof
 set -o physical
 
-# [ -f /usr/bin/mise ] && eval "$(/usr/bin/mise activate zsh)"
 # [ -f ~/.local/bin/mise ] && eval "$(~/.local/bin/mise activate zsh)"
-if command -v mise > /dev/null && ! command -v distrobox-host-exec >/dev/null 2>&1; then
-    mise_hook() { eval "$(mise hook-env)"; }
-    autoload -Uz add-zsh-hook
-    add-zsh-hook precmd mise_hook
-fi
 [ -f ~/.profile ] && source ~/.profile
 [ -f ~/.alias ] && source ~/.alias
 [ -f ~/.alias.local ] && source ~/.alias.local
@@ -26,6 +20,7 @@ HISTFILE=~/.zsh_history
 SAVEHIST=1000000000
 setopt appendhistory
 setopt share_history
+setopt HIST_IGNORE_SPACE
 
 export PBGOPY_SERVER=http://localhost:9090
 export VIRTUAL_ENV_DISABLE_PROMPT=true
@@ -39,6 +34,7 @@ export NVIM_MANAGER_PREFIX="nvim-waylonwalker"
 unset NVIM_APPNAME
 
 export SKILLS_DIR=$HOME/git/skills/skills
+export SKILLS_TOOL="opencode"
 
 # unsetopt BEEP
 
@@ -359,3 +355,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 bw-unlock() {
   export BW_SESSION="$(bw unlock --raw)" || return 1
 }
+
+if [[ -x "$HOME/.local/bin/mise" && -z "${CONTAINER_ID:-}" ]]; then
+  eval "$("$HOME/.local/bin/mise" activate zsh)"
+fi
