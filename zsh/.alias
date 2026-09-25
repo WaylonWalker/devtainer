@@ -57,6 +57,8 @@ alias rebasemain='git pull origin main --rebase'
 alias rebasedev='git pull origin develop --rebase'
 alias commit="git diff --staged | lockhart prompt run commit | git commit -evF -"
 
+digestme() { uvx gitingest . -o "$(basename "$PWD")-$(git rev-parse --short HEAD).txt"; }
+
 if [[ $(command -v wl-copy) ]]; then
     alias pbcopy='wl-copy'
     pbpaste() { wl-paste; }
