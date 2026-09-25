@@ -1,10 +1,23 @@
-local M = {}
-M.cmp = require("waylonwalker.plugins.cmp")
-M.fugitive = require("waylonwalker.plugins.fugitive")
-M.autoformat = require("waylonwalker.plugins.autoformat")
-M.lualine = require("waylonwalker.plugins.lualine")
-M.treesitter = require("waylonwalker.plugins.treesitter")
-M.alpha_nvim = require("waylonwalker.plugins.alpha-nvim")
-M.navbuddy = require("waylonwalker.plugins.navbuddy")
-M.mini_ai = require("waylonwalker.plugins.mini-ai")
-return M
+local modules = {
+	cmp = "waylonwalker.plugins.cmp",
+	fugitive = "waylonwalker.plugins.fugitive",
+	autoformat = "waylonwalker.plugins.autoformat",
+	lualine = "waylonwalker.plugins.lualine",
+	treesitter = "waylonwalker.plugins.treesitter",
+	alpha_nvim = "waylonwalker.plugins.alpha-nvim",
+	navbuddy = "waylonwalker.plugins.navbuddy",
+	mini_ai = "waylonwalker.plugins.mini-ai",
+}
+
+return setmetatable({}, {
+	__index = function(self, key)
+		local module = modules[key]
+		if not module then
+			return nil
+		end
+
+		local value = require(module)
+		rawset(self, key, value)
+		return value
+	end,
+})

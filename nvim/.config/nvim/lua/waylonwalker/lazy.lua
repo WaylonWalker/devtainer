@@ -148,9 +148,13 @@ require("lazy").setup({
 	{
 		-- Autocompletion
 		"hrsh7th/nvim-cmp",
+		config = function()
+			require("waylonwalker.plugins.cmp")
+		end,
 		dependencies = {
 			-- Snippet Engine & its associated nvim-cmp source
 			"L3MON4D3/LuaSnip",
+			"hrsh7th/cmp-buffer",
 			"saadparwaiz1/cmp_luasnip",
 
 			-- Adds LSP completion capabilities

@@ -1,20 +1,9 @@
 require("nvim-treesitter.configs").setup({
-  ensure_installed = {
-    "python",
-    "regex",
-    "lua",
-    "javascript",
-    "bash",
-    "toml",
-    "rst",
-    "html",
-    "json",
-    "yaml",
-    "helm",
-    "dockerfile",
-  }, -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  auto_install = false,
   highlight = {
     enable = true,
+    disable = { "markdown" },
+    additional_vim_regex_highlighting = { "markdown" },
   },
   playground = {
     enable = true,

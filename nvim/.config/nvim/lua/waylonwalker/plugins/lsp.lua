@@ -13,6 +13,46 @@ require("mason-lspconfig").setup({
 	ensure_installed = servers,
 })
 
+local function notify_lines(title, lines, level)
+	vim.notify(table.concat(lines, "\n"), level or vim.log.levels.INFO, { title = title })
+end
+
+vim.api.nvim_create_user_command("LspClients", function()
+	local clients = vim.lsp.get_clients({ bufnr = 0 })
+	if vim.tbl_isempty(clients) then
+		return notify_lines("LSP Clients", { "No LSP clients attached to the current buffer." }, vim.log.levels.WARN)
+	end
+
+	local lines = { "Attached LSP clients:" }
+	for _, client in ipairs(clients) do
+		table.insert(lines, string.format("- %s (id=%d)", client.name, client.id))
+	end
+
+	notify_lines("LSP Clients", lines)
+end, { desc = "Show LSP clients attached to the current buffer" })
+
+vim.api.nvim_create_user_command("MarkataLspInfo", function()
+	local clients = vim.lsp.get_clients({ bufnr = 0, name = "markata" })
+	local lines = {
+		"filetype: " .. vim.bo.filetype,
+		"cwd: " .. vim.fn.getcwd(),
+	}
+
+	if vim.tbl_isempty(clients) then
+		table.insert(lines, "markata: not attached")
+		return notify_lines("Markata LSP", lines, vim.log.levels.WARN)
+	end
+
+	for _, client in ipairs(clients) do
+		table.insert(lines, "markata: attached")
+		table.insert(lines, string.format("id: %d", client.id))
+		table.insert(lines, "root: " .. (client.config.root_dir or "nil"))
+		table.insert(lines, "cmd: " .. table.concat(client.config.cmd or {}, " "))
+	end
+
+	notify_lines("Markata LSP", lines)
+end, { desc = "Show markata LSP status for the current buffer" })
+
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
@@ -58,6 +98,9 @@ for _, server in ipairs(servers) do
 	vim.lsp.enable(server)
 end
 
-require('waylonwalker.plugins.markata-lsp').setup()
+require('waylonwalker.plugins.markata-lsp').setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+})
 -- vim.fn.sign_define("LspCodeActionSign", { text = "", texthl = "" })
 -- (rest of your diagnostic config / keymaps can stay the same)
