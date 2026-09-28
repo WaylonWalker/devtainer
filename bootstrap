@@ -47,12 +47,17 @@ packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 curl fontconfig snapd
           gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant
           yaru-theme-gtk yaru-theme-icon)
 stow_packages=(git zsh tmux nvim bin gnome ghostty herdr mise wallpaper)
+herdr_plugins=(last-workspace scratch-workspace)
 gnome_script="$repo_dir/gnome/.local/bin/devtainer-gnome-bootstrap"
 font_script="$repo_dir/scripts/install-jetbrainsmono-nerd-font"
 [[ -f "$gnome_script" ]] || die "GNOME bootstrap missing: $gnome_script"
 [[ -f "$font_script" ]] || die "Font installer missing: $font_script"
 for package in "${stow_packages[@]}"; do
     [[ -d "$repo_dir/$package" ]] || die "Stow package missing: $repo_dir/$package"
+done
+for plugin in "${herdr_plugins[@]}"; do
+    [[ -f "$repo_dir/herdr/.config/herdr/plugins/$plugin/herdr-plugin.toml" ]] ||
+        die "Herdr plugin missing: $repo_dir/herdr/.config/herdr/plugins/$plugin"
 done
 
 stow_args=(--no-folding -R -d "$repo_dir" -t "$HOME" "${stow_packages[@]}")
@@ -93,6 +98,10 @@ if [[ "$dry_run" == true ]]; then
         [[ -x "$mise_bin" ]] || echo '+ curl -fsSL https://mise.run | sh'
     fi
     print_command "$mise_bin" -C "$HOME" install
+    for plugin in "${herdr_plugins[@]}"; do
+        print_command "$mise_bin" -C "$HOME" exec -- herdr plugin link \
+            "$repo_dir/herdr/.config/herdr/plugins/$plugin" --enabled
+    done
     print_command bash "$font_script"
     echo "Preview only: GNOME Shell compatibility and stow conflicts are not checked in dry-run."
     echo "On a real run, unsupported GNOME versions and stow conflicts stop setup."
@@ -165,6 +174,12 @@ fi
 echo "Installing global mise tools..."
 "$mise_bin" -C "$HOME" install ||
     die "Mise tool installation failed; resolve the error above and re-run ./bootstrap."
+echo "Registering bundled Herdr plugins..."
+for plugin in "${herdr_plugins[@]}"; do
+    "$mise_bin" -C "$HOME" exec -- herdr plugin link \
+        "$repo_dir/herdr/.config/herdr/plugins/$plugin" --enabled ||
+        die "Herdr plugin registration failed for $plugin; resolve the error above and re-run ./bootstrap."
+done
 echo "Installing JetBrainsMono Nerd Font..."
 bash "$font_script" ||
     die "JetBrainsMono Nerd Font installation failed; resolve the error above and re-run ./bootstrap."

@@ -43,7 +43,9 @@ into your home directory and runs the repo's GNOME settings script. It checks
 for Stow conflicts before linking and will not adopt or overwrite existing
 files: move or back up any
 reported conflicts yourself, then rerun. The `herdr` Stow package contains
-its configuration; its binary is installed through mise.
+its configuration; its binary is installed through mise. Bootstrap registers
+the bundled last-workspace and scratch-workspace plugins after installing
+Herdr; Stow alone does not make their Alt+B and Alt+G actions available.
 The `ghostty` package links both the standard and Snap-specific config paths;
 both set a larger default font size of 18 points and launch Zsh as a login shell.
 For the tracked Herdr layout shortcuts, install
