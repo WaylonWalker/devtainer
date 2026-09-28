@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+die() {
+    printf 'JetBrainsMono Nerd Font: %s\n' "$1" >&2
+    exit 1
+}
+
+for tool in curl sha256sum fc-cache; do
+    command -v "$tool" >/dev/null 2>&1 || die "Missing command: $tool"
+done
+
+font_dir="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
+font_url="https://raw.githubusercontent.com/ryanoasis/nerd-fonts/v3.5.1/patched-fonts/JetBrainsMono/Ligatures"
+styles=(Regular Bold Italic BoldItalic)
+hashes=(
+    1c680e8cde9fcf8b88a5605ce8d1fb94dd3fb15841f7ca7bf4c55664855e5611
+    e490660ad75e0b152c93b1604c2ea1a4ea675f1b8a3fe0d005b1998568f99f1f
+    71d5466cc3ab31bee38b4e2c5cc99c2b41a749c4973ed4579b814ec992b0738e
+    19a2e3af8ccf99954941ea07e0a29df27574500f12016d86d6c4c059b825ffe1
+)
+mkdir -p -- "$font_dir"
+installed=false
+temporary=""
+trap '[[ -z "$temporary" ]] || rm -f -- "$temporary"' EXIT
+
+for i in "${!styles[@]}"; do
+    name="JetBrainsMonoNerdFont-${styles[$i]}.ttf"
+    destination="$font_dir/$name"
+    expected="${hashes[$i]}"
+    if [[ -e "$destination" || -L "$destination" ]]; then
+        printf '%s  %s\n' "$expected" "$destination" | sha256sum --check --status ||
+            die "Existing font differs from the pinned version: $destination"
+        continue
+    fi
+
+    temporary="$(mktemp "$font_dir/.$name.XXXXXX")" ||
+        die "Could not create a temporary file in $font_dir"
+    if ! curl -fsSL --retry 3 -o "$temporary" "$font_url/$name"; then
+        die "Could not download $name"
+    fi
+    if ! printf '%s  %s\n' "$expected" "$temporary" | sha256sum --check --status; then
+        die "Checksum mismatch for $name"
+    fi
+    chmod 644 "$temporary"
+    mv -- "$temporary" "$destination"
+    temporary=""
+    installed=true
+done
+
+if [[ "$installed" == true ]]; then
+    fc-cache -f "$font_dir" || die "Font cache update failed"
+fi
+echo "JetBrainsMono Nerd Font is installed."

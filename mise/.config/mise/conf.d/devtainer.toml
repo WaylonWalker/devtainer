@@ -1,4 +1,5 @@
 [tools]
+agent-browser = "latest"
 argocd = "latest"
 aws-cli = "2"
 azure = "2.89.1"

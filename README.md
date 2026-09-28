@@ -41,17 +41,25 @@ linking and will not adopt or overwrite existing files: move or back up any
 reported conflicts yourself, then rerun. The `herdr` Stow package contains
 its configuration; its binary is installed through mise.
 The `bin` package includes `wfetch`, which displays without color if `lolcat`
-is unavailable. The bootstrap runs directly from this checkout.
+is unavailable. Stow keeps directories real rather than linking whole folders,
+so mise settings and downloaded fonts cannot end up inside the checkout.
+The bootstrap runs directly from this checkout.
 
-Install `mise` through an approved method and add it to your `PATH` before
-running bootstrap. It stows the global fragment
+If mise is not already installed, bootstrap uses the [official `mise.run`
+installer](https://mise.jdx.dev/installing-mise.html) to install it to
+`~/.local/bin/mise` without sudo. This requires network access to `mise.run`;
+the installer does not change your shell files. Bootstrap stows the global fragment
 `~/.config/mise/conf.d/devtainer.toml` (the global tools used on this machine,
 plus `uv` and Python 3.10), then installs all globally configured tools as your
 user without sudo. It leaves your existing `~/.config/mise/config.toml` alone;
 that file can override versions in the fragment. Edit the tracked fragment to
 add more shared tools. Open a new Zsh session afterward to activate mise.
-Without mise, bootstrap reports an error
-after completing the desktop setup, so you can install it and rerun.
+Bootstrap also installs JetBrainsMono Nerd Font (regular, bold, italic, and
+bold italic) into `~/.local/share/fonts` and refreshes the font cache; no sudo
+is needed. It verifies the font downloads against pinned checksums.
+If `agent-browser` cannot find a browser, run `agent-browser install` as your
+user to download its browser binary; system browser dependencies may still
+require administrator help on a managed machine.
 
 Bundled extensions support GNOME Shell **45-48** only; bootstrap stops on
 unsupported versions. After installing extensions for the first time, sign out
