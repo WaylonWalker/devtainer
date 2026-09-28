@@ -236,7 +236,6 @@ c.colors.webpage.preferred_color_scheme = "dark"
 c.colors.webpage.darkmode.enabled = False
 
 # Bindings for normal mode
-config.bind("xp", ":open https://reman-analytics-cat-com.visualstudio.com/_pulls")
 config.bind("gI", "hint inputs --first ;; mode-enter insert ;; later 50 edit-text")
 config.bind("gee", "edit-url")
 config.bind("get", ":edit-text")
