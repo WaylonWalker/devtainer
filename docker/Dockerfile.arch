@@ -82,7 +82,6 @@ WORKDIR /home/devtainer
 
 # RUN pacman -Syu --noconfirm
 # RUN pacman -S --needed base-devel --noconfirm
-# RUN pacman -S git ansible rustup --noconfirm
 
 # RUN useradd -ms /bin/bash -d /home/dockeruser dockeruser && passwd -d dockeruser
 # USER dockeruser
@@ -101,7 +100,6 @@ WORKDIR /home/devtainer
 
 # ENV PATH="${PATH}:/home/dockeruser/.local/bin"
 # RUN pip3 install pipx
-# RUN pipx run --spec ansible ansible-playbook /devtainer/ansible/local.yml -t core
 
 # stow options, I can never remember these
 # -d DIR, --dir=DIR     Set stow dir to DIR (default is current dir)
@@ -109,7 +107,6 @@ WORKDIR /home/devtainer
 # -S, --stow            Stow the package names that follow this option
 # RUN stow -d /devtainer -t /home/dockeruser --stow zsh tmux bin nvim
 
-# RUN pipx run --spec ansible ansible-playbook /devtainer/ansible/local.yml -t "nvim, zsh"
 
 # WORKDIR /home/dockeruser
 

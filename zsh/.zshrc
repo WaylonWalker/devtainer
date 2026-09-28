@@ -102,9 +102,11 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 [[ -n "${key[Down]}" ]] && bindkey "${key[Down]}" history-beginning-search-forward
 
 
-[ -d ~/projects ] && rm -rf ~/projects/ && mkdir ~/projects/ || mkdir ~/projects
-[ -d ~/work ] && [ `ls ~/work | wc -l` -gt 0 ] && ln -sf ~/work/* ~/projects/
-[ -d ~/git ] && [ `ls ~/git | wc -l` -gt 0 ] && ln -sf ~/git/* ~/projects/
+mkdir -p "$HOME/projects"
+for project in "$HOME"/work/*(N) "$HOME"/git/*(N); do
+    target="$HOME/projects/${project:t}"
+    [[ -e "$target" || -L "$target" ]] || ln -s "$project" "$target"
+done
 
 if [[ `command -v starship` ]] then;
     eval "$(starship init zsh)"
@@ -292,4 +294,4 @@ web2app-remove() {
 	rm "$ICON_PATH"
 }
 
-. "$HOME/.local/bin/env"
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"

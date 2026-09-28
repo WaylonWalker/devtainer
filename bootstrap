@@ -1,18 +1,98 @@
-#!/usr/bin/env/ bash
-# 
-# usage
-#
-# sudo apt install curl
-# curl https://raw.githubusercontent.com/WaylonWalker/devtainer/main/bootstrap | bash
-#
+#!/usr/bin/env bash
 
-export PATH=$PATH:~/.local/bin
-export ANSIBLE_LOCALHOST_WARNING=False
+# Set up an already-cloned Ubuntu GNOME checkout for the current user.
+set -euo pipefail
 
-sudo apt update
-sudo apt upgrade
+usage() {
+    cat <<'EOF'
+Usage: ./bootstrap [--dry-run] [--help]
 
-sudo apt install git ansible -y
-ansible-galaxy collection install community.general
-git clone https://github.com/waylonwalker/devtainer ~/devtainer
-ansible-playbook --ask-become-pass ~/devtainer/ansible/local.yml
+Run from an Ubuntu GNOME login as your normal user (not with sudo).
+Install desktop dependencies, safely stow git zsh tmux nvim gnome herdr,
+then apply the repo's GNOME settings. Re-run after signing out and back in
+if the GNOME extensions are not yet discoverable.
+
+  -n, --dry-run  Show planned commands without changing anything.
+  -h, --help     Show this help.
+
+Exit codes: 0 success, 1 setup/environment error, 2 invalid arguments.
+EOF
+}
+
+die() {
+    printf 'bootstrap: %s\n' "$1" >&2
+    exit "${2:-1}"
+}
+
+print_command() {
+    printf '+'
+    printf ' %q' "$@"
+    printf '\n'
+}
+
+dry_run=false
+while (($#)); do
+    case "$1" in
+        -n|--dry-run) dry_run=true ;;
+        -h|--help) usage; exit 0 ;;
+        *) die "Unknown argument: $1 (see --help)" 2 ;;
+    esac
+    shift
+done
+
+repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
+packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 neovim
+          gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant)
+stow_packages=(git zsh tmux nvim gnome herdr)
+gnome_script="$repo_dir/gnome/.local/bin/devtainer-gnome-bootstrap"
+[[ -f "$gnome_script" ]] || die "GNOME bootstrap missing: $gnome_script"
+for package in "${stow_packages[@]}"; do
+    [[ -d "$repo_dir/$package" ]] || die "Stow package missing: $repo_dir/$package"
+done
+
+stow_args=(-d "$repo_dir" -t "$HOME" "${stow_packages[@]}")
+
+if [[ "$dry_run" == true ]]; then
+    echo "Dry run: no apt, stow, or GNOME settings will be changed."
+    print_command sudo apt-get update
+    print_command sudo apt-get install -y "${packages[@]}"
+    print_command stow --simulate "${stow_args[@]}"
+    print_command stow "${stow_args[@]}"
+    print_command bash "$gnome_script"
+    echo "Preview only: GNOME Shell compatibility and stow conflicts are not checked in dry-run."
+    echo "On a real run, unsupported GNOME versions and stow conflicts stop setup."
+    exit 0
+fi
+
+(( EUID != 0 )) || die "Run as your GNOME user, not root; sudo is used only for apt."
+[[ "${XDG_CURRENT_DESKTOP:-}" == *GNOME* ]] ||
+    die "Run inside an active GNOME desktop login (XDG_CURRENT_DESKTOP must include GNOME)."
+[[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] ||
+    die "No session bus found; run inside your active GNOME desktop login."
+for command in sudo apt-get gnome-shell gsettings; do
+    command -v "$command" >/dev/null 2>&1 || die "Missing command: $command"
+done
+version="$(gnome-shell --version)" || die "Cannot determine GNOME Shell version."
+if [[ "$version" =~ GNOME[[:space:]]Shell[[:space:]]([0-9]+) ]]; then
+    major="${BASH_REMATCH[1]}"
+else
+    die "Cannot parse GNOME Shell version: $version (supported: 45-48)."
+fi
+(( major >= 45 && major <= 48 )) ||
+    die "GNOME Shell $major is unsupported by the bundled extensions (supported: 45-48)."
+[[ "$(gsettings writable org.gnome.desktop.interface clock-format)" == true ]] ||
+    die "GNOME settings are not writable; run inside your active GNOME login."
+
+echo "Installing Ubuntu desktop dependencies (no system upgrade)..."
+sudo apt-get update
+sudo apt-get install -y "${packages[@]}"
+
+echo "Checking stow links for conflicts..."
+if ! stow --simulate "${stow_args[@]}"; then
+    die "Stow found conflicts. Move or back up conflicting files yourself and re-run; nothing was adopted or overwritten."
+fi
+stow "${stow_args[@]}"
+
+echo "Applying GNOME settings as $(id -un)..."
+bash "$gnome_script" || die "GNOME setup failed; resolve the error above and re-run ./bootstrap."
+echo "Done. If newly installed extensions are not discovered, sign out and back in, then re-run ./bootstrap."

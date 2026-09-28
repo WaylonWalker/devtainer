@@ -9,10 +9,10 @@ My personal development docker container base image
 
 ---
 
-## Getting Started
+## Container development (legacy)
 
 ``` bash
-sudo apt update && apt upgrade
+sudo apt update
 sudo apt install python3-pip
 pip install pipx
 ~/.local/bin/pipx ensurepath
@@ -20,11 +20,28 @@ pip install pipx
 
 ## GNOME desktop migration
 
-Stow the `gnome` directory, then run `~/.local/bin/devtainer-gnome-bootstrap`
-inside a GNOME login. After installing the bundled extensions for the first
-time, sign out and back in, then rerun the bootstrap to enable them and resolve
-shortcut conflicts. The bundled extensions declare support for GNOME Shell
-45-48; check compatibility before using a newer version.
+On `iron` (or another Ubuntu GNOME machine), clone this repo first, then run
+the root bootstrap from your **active GNOME login as your normal user**:
+
+```bash
+cd /path/to/devtainer
+./bootstrap --dry-run  # preview only; does not install, change, or validate the setup
+./bootstrap
+```
+
+The bootstrap installs a small set of apt dependencies (no system upgrade),
+then stows `git`, `zsh`, `tmux`, `nvim`, `gnome`, and `herdr` into your home
+directory and runs the repo's GNOME settings script. It uses `sudo` only for
+apt, not for stow or GNOME settings. It checks for stow conflicts before
+linking and will not adopt or overwrite existing files: move or back up any
+reported conflicts yourself, then rerun. The `herdr` package contains only
+configuration; install the optional `herdr` binary separately if you use it.
+The bootstrap runs directly from this checkout.
+
+Bundled extensions support GNOME Shell **45-48** only; bootstrap stops on
+unsupported versions. After installing extensions for the first time, sign out
+and back in, then rerun `./bootstrap` to enable them and resolve shortcut
+conflicts. The setup is safe to rerun when links already point to this checkout.
 
 The bootstrap does not restore display layout (`~/.config/monitors.xml`),
 installed themes or other third-party extensions, or every desktop preference.

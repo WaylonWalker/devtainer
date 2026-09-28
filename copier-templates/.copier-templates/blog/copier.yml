@@ -246,7 +246,6 @@ tag1:
     - dunno
     - fingerboard
     - systemd
-    - ansible
     - otel
     - interviews
     - pydantic
