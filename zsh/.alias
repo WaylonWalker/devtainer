@@ -7,9 +7,10 @@ export EDITOR=nvim
 # check for docker, alias to podman if does not exist
 if [ ! -f /usr/bin/docker ] && [ -f /usr/bin/podman ]; then
     alias docker=podman
-    if [ -S /run/user/$(id -u)/podman/podman.sock ]; then
-        export DOCKER_HOST="unix:///run/user/$(id -u)/podman/podman.sock"
-    fi
+fi
+if [ -f /usr/bin/podman ] && [ -z "${DOCKER_HOST:-}" ] &&
+    [ -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/podman/podman.sock" ]; then
+    export DOCKER_HOST="unix://${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/podman/podman.sock"
 fi
 
 # check for docker-compose, alias to podman-compose if does not exist
