@@ -50,8 +50,9 @@ installer](https://mise.jdx.dev/installing-mise.html) to install it to
 `~/.local/bin/mise` without sudo. This requires network access to `mise.run`;
 the installer does not change your shell files. Bootstrap stows the global fragment
 `~/.config/mise/conf.d/devtainer.toml` (the global tools used on this machine,
-plus `uv` and Python 3.10), then installs all globally configured tools as your
-user without sudo. It leaves your existing `~/.config/mise/config.toml` alone;
+plus `uv`, Python 3.10, and Starship), then installs all globally configured
+tools as your user without sudo. It leaves your existing
+`~/.config/mise/config.toml` alone;
 that file can override versions in the fragment. Edit the tracked fragment to
 add more shared tools. Open a new Zsh session afterward to activate mise.
 Bootstrap also installs JetBrainsMono Nerd Font (regular, bold, italic, and
