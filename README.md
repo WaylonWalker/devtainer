@@ -18,6 +18,19 @@ pip install pipx
 ~/.local/bin/pipx ensurepath
 ```
 
+## GNOME desktop migration
+
+Stow the `gnome` directory, then run `~/.local/bin/devtainer-gnome-bootstrap`
+inside a GNOME login. After installing the bundled extensions for the first
+time, sign out and back in, then rerun the bootstrap to enable them and resolve
+shortcut conflicts. The bundled extensions declare support for GNOME Shell
+45-48; check compatibility before using a newer version.
+
+The bootstrap does not restore display layout (`~/.config/monitors.xml`),
+installed themes or other third-party extensions, or every desktop preference.
+Review those separately on a new machine. Do not commit a full dconf dump:
+it can include private application settings and machine-specific paths.
+
 # Motivation
 
 This container comes pre-built with all of my favorite command line tools that

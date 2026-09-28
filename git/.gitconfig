@@ -25,7 +25,7 @@
 [includeIf "gitdir:~/git/"]
         path = ~/.gitconfig-git
 [commit]
-	gpgsign = true
+	gpgsign = false
 [help]
     autocorrect = 10
 [color]
@@ -33,5 +33,13 @@
 [pager]
 	diff = bat --plain
 [alias]
+	adog = log --all --decorate --oneline --graph
+	s = status --short --branch
+	last = log -1 --stat
+	br = branch --verbose --verbose
+	recent = log --oneline --decorate -20
+	root = rev-parse --show-toplevel
+	uncommit = reset --soft HEAD~1
 	squash-all = "!f(){ git reset $(git commit-tree HEAD^{tree} -m \"${1:-A new start}\");};f"
 	restage = !git diff --name-only --cached | xargs git add
+	web = "!f() { remote=${1:-origin}; if ! git config --get remote.\"$remote\".url >/dev/null; then remote=$(git remote | sed -n '1p'); fi; if [ -z \"$remote\" ]; then printf '%s\\n' 'No Git remote configured.' >&2; return 1; fi; url=$(git remote get-url \"$remote\") || return; case \"$url\" in *://*) web_url=${url#*://}; web_url=${web_url#*@}; web_url=$(printf '%s\\n' \"$web_url\" | sed 's#^\\([^/]*\\):[0-9][0-9]*/#\\1/#'); web_url=\"https://$web_url\" ;; *:*) host=${url%%:*}; host=${host#*@}; path=${url#*:}; web_url=\"https://$host/$path\" ;; *) printf 'Cannot derive a web URL from remote: %s\\n' \"$url\" >&2; return 1 ;; esac; web_url=${web_url%.git}; if [ -n \"${BROWSER:-}\" ] && sh -c \"$BROWSER \\\"\\$1\\\"\" -- \"$web_url\"; then return; fi; if command -v xdg-open >/dev/null 2>&1 && xdg-open \"$web_url\"; then return; fi; if command -v open >/dev/null 2>&1 && open \"$web_url\"; then return; fi; if command -v cmd.exe >/dev/null 2>&1 && cmd.exe /c start \"\" \"$web_url\"; then return; fi; printf '%s\\n' \"Unable to open a browser. URL: $web_url\" >&2; return 1; }; f"

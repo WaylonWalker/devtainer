@@ -1,0 +1,12 @@
+id = "waylon.scratch-workspace"
+name = "Scratch Workspace"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "Toggle a persistent workspace named scratch."
+platforms = ["linux"]
+
+[[actions]]
+id = "toggle"
+title = "Toggle scratch workspace"
+contexts = ["workspace"]
+command = ["bash", "toggle.sh"]

@@ -531,6 +531,14 @@ x86/
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
+!gnome/.local/bin/
+!gnome/.local/bin/devtainer-gnome-move-focused-window-monitor
+!gnome/.local/share/gnome-shell/extensions/devtainer-monitor-swap@waylonwalker.com/
+!gnome/.local/share/gnome-shell/extensions/devtainer-monitor-swap@waylonwalker.com/**
+gnome/.local/share/gnome-shell/extensions/devtainer-monitor-swap@waylonwalker.com/schemas/gschemas.compiled
+!gnome/.local/share/gnome-shell/extensions/devtainer-workspace-focus@waylonwalker.com/
+!gnome/.local/share/gnome-shell/extensions/devtainer-workspace-focus@waylonwalker.com/**
+gnome/.local/share/gnome-shell/extensions/devtainer-workspace-focus@waylonwalker.com/schemas/gschemas.compiled
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.devtainer-monitor-swap" path="/org/gnome/shell/extensions/devtainer-monitor-swap/">
+    <key name="swap-focused-window-monitor" type="as">
+      <default>['&lt;Super&gt;o']</default>
+      <summary>Swap focused window monitor shortcut</summary>
+    </key>
+  </schema>
+</schemalist>

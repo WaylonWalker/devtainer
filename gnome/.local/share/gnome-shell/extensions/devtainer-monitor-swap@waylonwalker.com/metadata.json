@@ -1,0 +1,6 @@
+{
+  "uuid": "devtainer-monitor-swap@waylonwalker.com",
+  "name": "Devtainer Monitor Swap",
+  "description": "Move the focused window to the other monitor.",
+  "shell-version": ["45", "46", "47", "48"]
+}

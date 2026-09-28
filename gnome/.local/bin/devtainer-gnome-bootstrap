@@ -8,6 +8,12 @@ DRY_RUN=false
 VERBOSE=false
 LOCAL_BIN="${HOME}/.local/bin"
 CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/devtainer/gnome-awesome.conf"
+MONITOR_SWAP_EXTENSION_UUID="devtainer-monitor-swap@waylonwalker.com"
+MONITOR_SWAP_EXTENSION_DIR="${HOME}/.local/share/gnome-shell/extensions/${MONITOR_SWAP_EXTENSION_UUID}"
+MONITOR_SWAP_EXTENSION_SCHEMA="org.gnome.shell.extensions.devtainer-monitor-swap"
+WORKSPACE_FOCUS_EXTENSION_UUID="devtainer-workspace-focus@waylonwalker.com"
+WORKSPACE_FOCUS_EXTENSION_DIR="${HOME}/.local/share/gnome-shell/extensions/${WORKSPACE_FOCUS_EXTENSION_UUID}"
+WORKSPACE_FOCUS_EXTENSION_SCHEMA="org.gnome.shell.extensions.devtainer-workspace-focus"
 CONFIG_FILE_EXPLICIT=false
 
 usage() {
@@ -91,6 +97,8 @@ done
 
 BOOTSTRAP_SOURCE="$(readlink -f "${BASH_SOURCE[0]}")"
 BOOTSTRAP_DIR="$(dirname "$BOOTSTRAP_SOURCE")"
+MONITOR_SWAP_EXTENSION_SOURCE_DIR="${BOOTSTRAP_DIR}/../share/gnome-shell/extensions/${MONITOR_SWAP_EXTENSION_UUID}"
+WORKSPACE_FOCUS_EXTENSION_SOURCE_DIR="${BOOTSTRAP_DIR}/../share/gnome-shell/extensions/${WORKSPACE_FOCUS_EXTENSION_UUID}"
 
 if [[ -f "$CONFIG_FILE" ]]; then
     # shellcheck disable=SC1090
@@ -100,6 +108,9 @@ elif [[ "$CONFIG_FILE_EXPLICIT" == "true" ]]; then
 fi
 
 WORKSPACE_COUNT="${WORKSPACE_COUNT:-9}"
+WORKSPACES_ONLY_ON_PRIMARY="${WORKSPACES_ONLY_ON_PRIMARY:-true}"
+PRESERVE_WORKSPACE_MONITOR_FOCUS="${PRESERVE_WORKSPACE_MONITOR_FOCUS:-true}"
+MONITOR_SWAP_BACK_BINDING="${MONITOR_SWAP_BACK_BINDING:-<Super><Shift>o}"
 CLOCK_FORMAT="${CLOCK_FORMAT:-12h}"
 DISABLE_UBUNTU_DOCK="${DISABLE_UBUNTU_DOCK:-true}"
 SCREENSHOT_BINDING="${SCREENSHOT_BINDING:-<Super><Alt>p}"
@@ -210,6 +221,74 @@ set_gsettings_string_array() {
     run gsettings set "$schema" "$key" "[$joined]"
 }
 
+set_extension_gsettings_string_array() {
+    local schema_dir="$1"
+    local schema="$2"
+    local key="$3"
+    shift 3
+
+    local values=()
+    local value
+
+    for value in "$@"; do
+        values+=("$(quote_gvariant_string "$value")")
+    done
+
+    local joined
+    joined=$(IFS=,; printf "%s" "${values[*]}")
+    run gsettings --schemadir "$schema_dir" set "$schema" "$key" "[$joined]"
+}
+
+clear_extension_gsettings_string_array() {
+    local schema_dir="$1"
+    local schema="$2"
+    local key="$3"
+
+    run gsettings --schemadir "$schema_dir" set "$schema" "$key" "[]"
+}
+
+install_extension() {
+    local source_dir="$1"
+    local uuid="$2"
+    local source_schema
+    local schema_args=()
+    local temporary_dir
+    local extension_bundle
+
+    [[ -f "$source_dir/extension.js" && -f "$source_dir/metadata.json" ]] ||
+        die "Extension source is incomplete: $source_dir"
+
+    for source_schema in "$source_dir"/schemas/*.gschema.xml; do
+        [[ -f "$source_schema" ]] || continue
+        schema_args+=(--schema "${source_schema#"$source_dir"/}")
+    done
+
+    # GNOME Shell does not discover Stow's symbolic links. Installing a bundle
+    # copies the extension into its managed directory and refreshes discovery.
+    if [[ "$DRY_RUN" == "true" ]]; then
+        print_command gnome-extensions pack --force --out-dir "<temporary-directory>" "${schema_args[@]}" "$source_dir"
+        print_command gnome-extensions install --force "<temporary-directory>/${uuid}.shell-extension.zip"
+        return
+    fi
+
+    temporary_dir="$(mktemp -d)"
+    extension_bundle="${temporary_dir}/${uuid}.shell-extension.zip"
+    run gnome-extensions pack --force --out-dir "$temporary_dir" "${schema_args[@]}" "$source_dir"
+    run gnome-extensions install --force "$extension_bundle"
+    rm -f "$extension_bundle"
+    rmdir "$temporary_dir"
+}
+
+enable_extension_when_discovered() {
+    local uuid="$1"
+
+    if gnome-extensions info "$uuid" >/dev/null 2>&1; then
+        run gnome-extensions enable "$uuid"
+    else
+        echo "Installed $uuid. Sign out and back in, then rerun this bootstrap to enable it." >&2
+    fi
+}
+
 upsert_custom_keybinding() {
     local path="$1"
     local name="$2"
@@ -251,6 +330,8 @@ PY
 
 require_command gsettings
 require_command python3
+require_command glib-compile-schemas
+require_command gnome-extensions
 
 if [[ "$(gsettings writable org.gnome.desktop.interface clock-format)" != "true" ]]; then
     echo "GNOME settings are not writable from this session. Run this inside an active GNOME login." >&2
@@ -262,15 +343,38 @@ if (( WORKSPACE_COUNT < 1 )); then
     exit 1
 fi
 
+if [[ "$PRESERVE_WORKSPACE_MONITOR_FOCUS" != "true" && "$PRESERVE_WORKSPACE_MONITOR_FOCUS" != "false" ]]; then
+    echo "PRESERVE_WORKSPACE_MONITOR_FOCUS must be true or false, got: $PRESERVE_WORKSPACE_MONITOR_FOCUS" >&2
+    exit 1
+fi
+
+WORKSPACE_FOCUS_EXTENSION_AVAILABLE=false
+if [[ "$PRESERVE_WORKSPACE_MONITOR_FOCUS" == "true" ]] &&
+    gnome-extensions info "$WORKSPACE_FOCUS_EXTENSION_UUID" >/dev/null 2>&1; then
+    WORKSPACE_FOCUS_EXTENSION_AVAILABLE=true
+fi
+
+MONITOR_SWAP_EXTENSION_AVAILABLE=false
+if gnome-extensions info "$MONITOR_SWAP_EXTENSION_UUID" >/dev/null 2>&1; then
+    MONITOR_SWAP_EXTENSION_AVAILABLE=true
+fi
+
 run gsettings set org.gnome.mutter dynamic-workspaces false
+run gsettings set org.gnome.mutter workspaces-only-on-primary "$WORKSPACES_ONLY_ON_PRIMARY"
 run gsettings set org.gnome.desktop.wm.preferences num-workspaces "$WORKSPACE_COUNT"
 
 for workspace in $(seq 1 9); do
     if (( workspace <= WORKSPACE_COUNT )); then
-        set_gsettings_string_array \
-            org.gnome.desktop.wm.keybindings \
-            "switch-to-workspace-${workspace}" \
-            "<Super>${workspace}"
+        if [[ "$WORKSPACE_FOCUS_EXTENSION_AVAILABLE" == "true" ]]; then
+            clear_gsettings_string_array \
+                org.gnome.desktop.wm.keybindings \
+                "switch-to-workspace-${workspace}"
+        else
+            set_gsettings_string_array \
+                org.gnome.desktop.wm.keybindings \
+                "switch-to-workspace-${workspace}" \
+                "<Super>${workspace}"
+        fi
 
         set_gsettings_string_array \
             org.gnome.desktop.wm.keybindings \
@@ -331,11 +435,11 @@ sync_gsettings_string_array \
     "<Super>o" \
     "XF86RotationLockToggle"
 
-if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
+if [[ "$MONITOR_SWAP_EXTENSION_AVAILABLE" == "true" ]]; then
     sync_gsettings_string_array \
         org.gnome.desktop.wm.keybindings \
         move-to-monitor-left \
-        "${MONITOR_SWAP_BACK_BINDING:-<Super><Shift>o}" \
+        "<Super><Shift>Left" \
         "<Super>o" \
         "<Super><Shift>o" \
         "<Super><Shift>Left"
@@ -343,14 +447,14 @@ if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
     sync_gsettings_string_array \
         org.gnome.desktop.wm.keybindings \
         move-to-monitor-right \
-        "${MONITOR_SWAP_BINDING:-<Super>o}" \
+        "<Super><Shift>Right" \
         "<Super>o" \
         "<Super><Shift>Right"
 else
     sync_gsettings_string_array \
         org.gnome.desktop.wm.keybindings \
         move-to-monitor-left \
-        "${MONITOR_SWAP_BACK_BINDING:-<Super><Shift>o}" \
+        "$MONITOR_SWAP_BACK_BINDING" \
         "<Super>o" \
         "<Super><Shift>o" \
         "<Super><Shift>Left"
@@ -442,6 +546,44 @@ upsert_custom_keybinding \
 
 remove_custom_keybinding \
     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-monitor-swap/"
+
+remove_custom_keybinding \
+    "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-monitor-next/"
+remove_custom_keybinding \
+    "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-monitor-previous/"
+
+install_extension "$MONITOR_SWAP_EXTENSION_SOURCE_DIR" "$MONITOR_SWAP_EXTENSION_UUID"
+run glib-compile-schemas "$MONITOR_SWAP_EXTENSION_DIR/schemas"
+set_extension_gsettings_string_array \
+    "$MONITOR_SWAP_EXTENSION_DIR/schemas" \
+    "$MONITOR_SWAP_EXTENSION_SCHEMA" \
+    swap-focused-window-monitor \
+    "${MONITOR_SWAP_BINDING:-<Super>o}"
+enable_extension_when_discovered "$MONITOR_SWAP_EXTENSION_UUID"
+
+if [[ "$PRESERVE_WORKSPACE_MONITOR_FOCUS" == "true" ]]; then
+    install_extension "$WORKSPACE_FOCUS_EXTENSION_SOURCE_DIR" "$WORKSPACE_FOCUS_EXTENSION_UUID"
+    run glib-compile-schemas "$WORKSPACE_FOCUS_EXTENSION_DIR/schemas"
+
+    for workspace in $(seq 1 9); do
+        if (( workspace <= WORKSPACE_COUNT )); then
+            set_extension_gsettings_string_array \
+                "$WORKSPACE_FOCUS_EXTENSION_DIR/schemas" \
+                "$WORKSPACE_FOCUS_EXTENSION_SCHEMA" \
+                "switch-to-workspace-${workspace}" \
+                "<Super>${workspace}"
+        else
+            clear_extension_gsettings_string_array \
+                "$WORKSPACE_FOCUS_EXTENSION_DIR/schemas" \
+                "$WORKSPACE_FOCUS_EXTENSION_SCHEMA" \
+                "switch-to-workspace-${workspace}"
+        fi
+    done
+
+    enable_extension_when_discovered "$WORKSPACE_FOCUS_EXTENSION_UUID"
+elif gnome-extensions list | grep -Fxq "$WORKSPACE_FOCUS_EXTENSION_UUID"; then
+    run gnome-extensions disable "$WORKSPACE_FOCUS_EXTENSION_UUID"
+fi
 
 upsert_custom_keybinding \
     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-rofi-window/" \

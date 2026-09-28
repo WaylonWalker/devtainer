@@ -1,0 +1,6 @@
+{
+  "uuid": "devtainer-workspace-focus@waylonwalker.com",
+  "name": "Devtainer Workspace Focus",
+  "description": "Keep workspace-switch focus on the current monitor.",
+  "shell-version": ["45", "46", "47", "48"]
+}

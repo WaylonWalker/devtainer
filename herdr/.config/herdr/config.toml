@@ -1,0 +1,85 @@
+onboarding = false
+
+[terminal]
+default_shell = "/usr/bin/zsh"
+new_cwd = "follow"
+
+[ui]
+sidebar_start_collapsed = true
+sidebar_collapsed_mode = "hidden"
+hide_tab_bar_when_single_tab = true
+pane_gaps = false
+pane_outer_borders = false
+
+[keys]
+prefix = "ctrl+b"
+new_tab = ""
+previous_workspace = "prefix+ctrl+k"
+next_workspace = "prefix+ctrl+j"
+previous_agent = "prefix+shift+k"
+next_agent = "prefix+shift+j"
+focus_pane_left = "alt+h"
+focus_pane_down = "alt+j"
+focus_pane_up = "alt+k"
+focus_pane_right = "alt+l"
+cycle_pane_next = "alt+o"
+zoom = "alt+z"
+close_pane = ["alt+x", "alt+shift+x"]
+split_vertical = "alt+v"
+split_horizontal = ["alt+minus", "alt+s"]
+
+[[keys.command]]
+key = "alt+b"
+type = "plugin_action"
+command = "waylon.last-workspace.toggle"
+description = "toggle last workspace"
+
+[[keys.command]]
+key = "alt+g"
+type = "plugin_action"
+command = "waylon.scratch-workspace.toggle"
+description = "toggle scratch workspace"
+
+[[keys.command]]
+key = "prefix+ctrl+g"
+type = "popup"
+command = "~/.config/herdr/project-picker.sh git"
+description = "pick a git project from ~/git"
+width = "80%"
+height = "80%"
+
+[[keys.command]]
+key = "prefix+ctrl+w"
+type = "popup"
+command = "~/.config/herdr/project-picker.sh work"
+description = "pick a work project from ~/work"
+width = "80%"
+height = "80%"
+
+[[keys.command]]
+key = "alt+shift+h"
+type = "shell"
+command = "$HERDR_BIN_PATH pane resize --pane \"$HERDR_ACTIVE_PANE_ID\" --direction left --amount 2"
+description = "resize pane left"
+
+[[keys.command]]
+key = "alt+shift+j"
+type = "shell"
+command = "$HERDR_BIN_PATH pane resize --pane \"$HERDR_ACTIVE_PANE_ID\" --direction down --amount 2"
+description = "resize pane down"
+
+[[keys.command]]
+key = "alt+shift+k"
+type = "shell"
+command = "$HERDR_BIN_PATH pane resize --pane \"$HERDR_ACTIVE_PANE_ID\" --direction up --amount 2"
+description = "resize pane up"
+
+[[keys.command]]
+key = "alt+shift+l"
+type = "shell"
+command = "$HERDR_BIN_PATH pane resize --pane \"$HERDR_ACTIVE_PANE_ID\" --direction right --amount 2"
+description = "resize pane right"
+
+[theme]
+name = "dracula"
+auto_switch = false

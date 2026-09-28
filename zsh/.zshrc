@@ -23,11 +23,11 @@ export PBGOPY_SERVER=http://localhost:9090
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 
 # nvim-manager
-export NVIM_MANAGER_REPO=https://github.com/WaylonWalker/devtainer
-export NVIM_CONFIG_PATH=nvim/.config/nvim
-export NVIM_MANAGER_INSTALL_DIR=$HOME/.config
-export NVIM_MANAGER_PREFIX="nvim-waylonwalker"
-export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.1.3
+# export NVIM_MANAGER_REPO=https://github.com/WaylonWalker/devtainer
+# export NVIM_CONFIG_PATH=nvim/.config/nvim
+# export NVIM_MANAGER_INSTALL_DIR=$HOME/.config
+# export NVIM_MANAGER_PREFIX="nvim-waylonwalker"
+# export NVIM_APPNAME=${NVIM_MANAGER_PREFIX}-v0.1.3
 
 # unsetopt BEEP
 
@@ -78,14 +78,6 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 ###
 
-# Setup bob
-#
-# /home/waylon/.local/share/bob/nvim-bin
-if [[ ! "$PATH" == */home/waylon/.local/share/bob/nvim-bin* ]]; then
-    export PATH="/home/waylon/.local/share/bob/nvim-bin:${PATH}}"
-fi
-
-
 
 # autoload -Uz compinit && compinit
 # autoload -U +X compinit && compinit
@@ -108,14 +100,6 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 
 [[ -n "${key[Up]}" ]] && bindkey "${key[Up]}" history-beginning-search-backward
 [[ -n "${key[Down]}" ]] && bindkey "${key[Down]}" history-beginning-search-forward
-
-
-if [[ -f `command -v zellij` ]] then;
-    if [[ -z "$ZELLIJ" ]]; then
-    fi
-else
-    ~/.local/bin/ta
-fi
 
 
 [ -d ~/projects ] && rm -rf ~/projects/ && mkdir ~/projects/ || mkdir ~/projects
@@ -308,8 +292,4 @@ web2app-remove() {
 	rm "$ICON_PATH"
 }
 
-# start_tmux
-[ -f ~/.local/bin/ta ] && ~/.local/bin/ta
-
 . "$HOME/.local/bin/env"
-

@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+
+# Move the focused X11 window to the adjacent active monitor.
+
+set -euo pipefail
+
+DIRECTION=next
+DRY_RUN=false
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [--next|--previous] [--dry-run]
+
+Move the focused X11 window to the next or previous active monitor. Monitor
+order is left-to-right, then top-to-bottom, and wraps at either end.
+
+This helper is only for GNOME on X11. GNOME on Wayland must use Mutter's
+native move-to-monitor keybindings.
+EOF
+}
+
+die() {
+    echo "$1" >&2
+    exit 1
+}
+
+require_command() {
+    command -v "$1" >/dev/null 2>&1 || die "Missing required command: $1"
+}
+
+clamp() {
+    local value="$1"
+    local minimum="$2"
+    local maximum="$3"
+
+    if (( value < minimum )); then
+        printf '%s\n' "$minimum"
+    elif (( value > maximum )); then
+        printf '%s\n' "$maximum"
+    else
+        printf '%s\n' "$value"
+    fi
+}
+
+while (($#)); do
+    case "$1" in
+        --next)
+            DIRECTION=next
+            ;;
+        --previous)
+            DIRECTION=previous
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            die "Unknown option: $1"
+            ;;
+    esac
+    shift
+done
+
+if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
+    die "This helper supports X11 only. On GNOME Wayland, use Mutter's native move-to-monitor keybindings."
+fi
+
+require_command xdotool
+require_command xrandr
+
+window_id="$(xdotool getactivewindow 2>/dev/null)" ||
+    die "Could not determine the focused X11 window."
+
+window_x=
+window_y=
+window_width=
+window_height=
+while IFS='=' read -r key value; do
+    case "$key" in
+        X) window_x="$value" ;;
+        Y) window_y="$value" ;;
+        WIDTH) window_width="$value" ;;
+        HEIGHT) window_height="$value" ;;
+    esac
+done < <(xdotool getwindowgeometry --shell "$window_id" 2>/dev/null) ||
+    die "Could not read the focused window geometry."
+
+[[ "$window_x" =~ ^-?[0-9]+$ &&
+   "$window_y" =~ ^-?[0-9]+$ &&
+   "$window_width" =~ ^[1-9][0-9]*$ &&
+   "$window_height" =~ ^[1-9][0-9]*$ ]] ||
+    die "Focused window returned invalid geometry."
+
+declare -a monitor_names=()
+declare -a monitor_x=()
+declare -a monitor_y=()
+declare -a monitor_width=()
+declare -a monitor_height=()
+
+while read -r _ _ name geometry; do
+    if [[ "$geometry" =~ ^([0-9]+)x([0-9]+)([-+][0-9]+)([-+][0-9]+)$ ]]; then
+        monitor_names+=("$name")
+        monitor_width+=("${BASH_REMATCH[1]}")
+        monitor_height+=("${BASH_REMATCH[2]}")
+        monitor_x+=("${BASH_REMATCH[3]}")
+        monitor_y+=("${BASH_REMATCH[4]}")
+    fi
+done < <(
+    xrandr --query |
+        awk '/ connected/ {
+            for (i = 1; i <= NF; i++) {
+                if ($i ~ /^[0-9]+x[0-9]+[+-][0-9]+[+-][0-9]+/) {
+                    print $1, $i
+                    break
+                }
+            }
+        }' |
+        while read -r name geometry; do
+            if [[ "$geometry" =~ ^[0-9]+x[0-9]+([-+][0-9]+)([-+][0-9]+)$ ]]; then
+                printf '%s %s %s %s\n' \
+                    "${BASH_REMATCH[1]}" \
+                    "${BASH_REMATCH[2]}" \
+                    "$name" \
+                    "$geometry"
+            fi
+        done |
+        sort -n -k1,1 -k2,2
+)
+
+(( ${#monitor_names[@]} >= 2 )) ||
+    die "At least two active monitors are required."
+
+window_center_x=$((window_x + window_width / 2))
+window_center_y=$((window_y + window_height / 2))
+source_index=-1
+
+for index in "${!monitor_names[@]}"; do
+    if (( window_center_x >= monitor_x[index] &&
+          window_center_x < monitor_x[index] + monitor_width[index] &&
+          window_center_y >= monitor_y[index] &&
+          window_center_y < monitor_y[index] + monitor_height[index] )); then
+        source_index="$index"
+        break
+    fi
+done
+
+(( source_index >= 0 )) ||
+    die "The focused window center is not on an active monitor."
+
+if [[ "$DIRECTION" == next ]]; then
+    target_index=$(((source_index + 1) % ${#monitor_names[@]}))
+else
+    target_index=$(((source_index - 1 + ${#monitor_names[@]}) % ${#monitor_names[@]}))
+fi
+
+max_offset_x=$((monitor_width[target_index] - window_width))
+max_offset_y=$((monitor_height[target_index] - window_height))
+(( max_offset_x < 0 )) && max_offset_x=0
+(( max_offset_y < 0 )) && max_offset_y=0
+
+new_x=$((monitor_x[target_index] + $(clamp "$((window_x - monitor_x[source_index]))" 0 "$max_offset_x")))
+new_y=$((monitor_y[target_index] + $(clamp "$((window_y - monitor_y[source_index]))" 0 "$max_offset_y")))
+
+printf 'Moving focused window from %s to %s (%d,%d).\n' \
+    "${monitor_names[source_index]}" \
+    "${monitor_names[target_index]}" \
+    "$new_x" \
+    "$new_y"
+
+if [[ "$DRY_RUN" == true ]]; then
+    exit 0
+fi
+
+xdotool windowmove "$window_id" "$new_x" "$new_y"

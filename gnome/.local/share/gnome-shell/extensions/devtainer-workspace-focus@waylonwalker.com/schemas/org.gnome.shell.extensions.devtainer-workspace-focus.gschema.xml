@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.devtainer-workspace-focus" path="/org/gnome/shell/extensions/devtainer-workspace-focus/">
+    <key name="switch-to-workspace-1" type="as"><default>[]</default><summary>Switch to workspace 1</summary></key>
+    <key name="switch-to-workspace-2" type="as"><default>[]</default><summary>Switch to workspace 2</summary></key>
+    <key name="switch-to-workspace-3" type="as"><default>[]</default><summary>Switch to workspace 3</summary></key>
+    <key name="switch-to-workspace-4" type="as"><default>[]</default><summary>Switch to workspace 4</summary></key>
+    <key name="switch-to-workspace-5" type="as"><default>[]</default><summary>Switch to workspace 5</summary></key>
+    <key name="switch-to-workspace-6" type="as"><default>[]</default><summary>Switch to workspace 6</summary></key>
+    <key name="switch-to-workspace-7" type="as"><default>[]</default><summary>Switch to workspace 7</summary></key>
+    <key name="switch-to-workspace-8" type="as"><default>[]</default><summary>Switch to workspace 8</summary></key>
+    <key name="switch-to-workspace-9" type="as"><default>[]</default><summary>Switch to workspace 9</summary></key>
+  </schema>
+</schemalist>
