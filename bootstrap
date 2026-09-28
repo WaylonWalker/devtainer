@@ -8,7 +8,7 @@ usage() {
 Usage: ./bootstrap [--dry-run] [--help]
 
 Run from an Ubuntu GNOME login as your normal user (not with sudo).
-Install desktop dependencies, safely stow git zsh tmux nvim gnome herdr,
+Install missing desktop dependencies, safely stow git zsh tmux nvim gnome herdr,
 then apply the repo's GNOME settings. Re-run after signing out and back in
 if the GNOME extensions are not yet discoverable.
 
@@ -52,10 +52,26 @@ done
 
 stow_args=(-d "$repo_dir" -t "$HOME" "${stow_packages[@]}")
 
+command -v dpkg-query >/dev/null 2>&1 ||
+    die "Missing dpkg-query; this bootstrap requires an Ubuntu system."
+missing_packages=()
+for package in "${packages[@]}"; do
+    case "$package" in
+        neovim) command -v nvim >/dev/null 2>&1 && continue ;;
+        ffmpeg) command -v ffplay >/dev/null 2>&1 && continue ;;
+    esac
+    status="$(dpkg-query -W -f='${Status}' -- "$package" 2>/dev/null)" || status=""
+    [[ "$status" == "install ok installed" ]] || missing_packages+=("$package")
+done
+
 if [[ "$dry_run" == true ]]; then
     echo "Dry run: no apt, stow, or GNOME settings will be changed."
-    print_command sudo apt-get update
-    print_command sudo apt-get install -y "${packages[@]}"
+    if (( ${#missing_packages[@]} )); then
+        print_command sudo apt update
+        print_command sudo apt install -y "${missing_packages[@]}"
+    else
+        echo "Required apt packages are already installed; no sudo needed."
+    fi
     print_command stow --simulate "${stow_args[@]}"
     print_command stow "${stow_args[@]}"
     print_command bash "$gnome_script"
@@ -69,7 +85,7 @@ fi
     die "Run inside an active GNOME desktop login (XDG_CURRENT_DESKTOP must include GNOME)."
 [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] ||
     die "No session bus found; run inside your active GNOME desktop login."
-for command in sudo apt-get gnome-shell gsettings; do
+for command in gnome-shell gsettings; do
     command -v "$command" >/dev/null 2>&1 || die "Missing command: $command"
 done
 version="$(gnome-shell --version)" || die "Cannot determine GNOME Shell version."
@@ -83,9 +99,18 @@ fi
 [[ "$(gsettings writable org.gnome.desktop.interface clock-format)" == true ]] ||
     die "GNOME settings are not writable; run inside your active GNOME login."
 
-echo "Installing Ubuntu desktop dependencies (no system upgrade)..."
-sudo apt-get update
-sudo apt-get install -y "${packages[@]}"
+if (( ${#missing_packages[@]} )); then
+    for command in sudo apt; do
+        command -v "$command" >/dev/null 2>&1 || die "Missing command: $command"
+    done
+    echo "Installing missing Ubuntu desktop dependencies: ${missing_packages[*]}"
+    sudo apt update ||
+        die "Package list update failed. Check your sudo permissions and apt configuration."
+    sudo apt install -y "${missing_packages[@]}" ||
+        die "Package installation failed or is not permitted: ${missing_packages[*]}. Check sudo -l or ask your administrator."
+else
+    echo "Required apt packages are already installed; skipping sudo."
+fi
 
 echo "Checking stow links for conflicts..."
 if ! stow --simulate "${stow_args[@]}"; then

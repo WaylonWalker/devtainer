@@ -29,10 +29,13 @@ cd /path/to/devtainer
 ./bootstrap
 ```
 
-The bootstrap installs a small set of apt dependencies (no system upgrade),
-then stows `git`, `zsh`, `tmux`, `nvim`, `gnome`, and `herdr` into your home
-directory and runs the repo's GNOME settings script. It uses `sudo` only for
-apt, not for stow or GNOME settings. It checks for stow conflicts before
+The bootstrap checks its dependencies and installs only missing packages
+(no system upgrade), using `sudo apt` only if needed. Existing `nvim` and
+`ffplay` installations are accepted without their apt packages. On managed
+machines, your account must be permitted to install any missing packages;
+otherwise check `sudo -l` or ask your administrator before rerunning. It then
+stows `git`, `zsh`, `tmux`, `nvim`, `gnome`, and `herdr` into your home directory
+and runs the repo's GNOME settings script. It checks for stow conflicts before
 linking and will not adopt or overwrite existing files: move or back up any
 reported conflicts yourself, then rerun. The `herdr` package contains only
 configuration; install the optional `herdr` binary separately if you use it.
