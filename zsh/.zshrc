@@ -227,9 +227,16 @@ command -v wfetch >/dev/null 2>&1 && wfetch
 # zprof
 #
 
-[[ -f "$HOME/.atuin/bin/env" ]] && . "$HOME/.atuin/bin/env"
-
-[[ -f "$HOME/.atuin/bin/env" ]] && command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh)"
+if ! command -v atuin >/dev/null 2>&1 && [[ -f "$HOME/.atuin/bin/env" ]]; then
+    . "$HOME/.atuin/bin/env"
+fi
+if command -v atuin >/dev/null 2>&1; then
+    if atuin_init="$(atuin init zsh)"; then
+        eval "$atuin_init"
+    else
+        printf 'Atuin initialization failed\n' >&2
+    fi
+fi
 
 if [[ -z "$BROWSER" ]]; then
 	DEFAULT_BROWSER_DESKTOP=$(xdg-settings get default-web-browser 2>/dev/null)

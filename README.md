@@ -33,11 +33,12 @@ The bootstrap checks its dependencies and installs only missing packages
 (no system upgrade), using `sudo apt` only if needed. Existing `ffplay`
 installations are accepted without its apt package; Neovim is installed
 through mise rather than apt. On managed machines, your account must be
-permitted to install any missing packages;
-otherwise check `sudo -l` or ask your administrator before rerunning. It then
-stows `git`, `zsh`, `tmux`, `nvim`, `bin`, `gnome`, `herdr`, and `mise` into your home directory
-and runs the repo's GNOME settings script. It checks for stow conflicts before
-linking and will not adopt or overwrite existing files: move or back up any
+permitted to install any missing packages; otherwise check `sudo -l` or ask
+your administrator before rerunning. It then
+stows `git`, `zsh`, `tmux`, `nvim`, `bin`, `gnome`, `herdr`, `mise`, and `wallpaper`
+into your home directory and runs the repo's GNOME settings script. It checks
+for Stow conflicts before linking and will not adopt or overwrite existing
+files: move or back up any
 reported conflicts yourself, then rerun. The `herdr` Stow package contains
 its configuration; its binary is installed through mise.
 The `bin` package includes `wfetch`, which displays without color if `lolcat`
@@ -48,12 +49,12 @@ The bootstrap runs directly from this checkout.
 If mise is not already installed, bootstrap uses the [official `mise.run`
 installer](https://mise.jdx.dev/installing-mise.html) to install it to
 `~/.local/bin/mise` without sudo. This requires network access to `mise.run`;
-the installer does not change your shell files. Bootstrap stows the global fragment
-`~/.config/mise/conf.d/devtainer.toml` (the global tools used on this machine,
-plus `uv`, Python 3.10, and Starship), then installs all globally configured
-tools as your user without sudo. It leaves your existing
-`~/.config/mise/config.toml` alone;
-that file can override versions in the fragment. Edit the tracked fragment to
+the installer does not change your shell files. Bootstrap stows the global
+fragment `~/.config/mise/conf.d/devtainer.toml` (the global tools used on this
+machine, plus `uv`, Python 3.10, Starship, and Atuin), then installs all
+globally configured tools as your user without sudo. It leaves your existing
+`~/.config/mise/config.toml` alone; that file can override versions in the
+fragment. Edit the tracked fragment to
 add more shared tools. Open a new Zsh session afterward to activate mise.
 Bootstrap also installs JetBrainsMono Nerd Font (regular, bold, italic, and
 bold italic) into `~/.local/share/fonts` and refreshes the font cache; no sudo
@@ -66,6 +67,12 @@ Bundled extensions support GNOME Shell **45-48** only; bootstrap stops on
 unsupported versions. After installing extensions for the first time, sign out
 and back in, then rerun `./bootstrap` to enable them and resolve shortcut
 conflicts. The setup is safe to rerun when links already point to this checkout.
+The GNOME config applies dark mode with Yaru-magenta GTK and icons and the
+current background colors. It also uses the tracked `1440w.png` wallpaper
+(there is no `1440p.png` in the repo) for both light and dark backgrounds.
+Edit `gnome/.config/devtainer/gnome-awesome.conf` to choose other supported
+themes, colors, or wallpaper paths. Atuin runs from mise in new Zsh
+sessions; an existing `~/.atuin/bin/env` still works as a fallback.
 
 The bootstrap does not restore display layout (`~/.config/monitors.xml`),
 installed themes or other third-party extensions, or every desktop preference.

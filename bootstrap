@@ -9,9 +9,9 @@ Usage: ./bootstrap [--dry-run] [--help]
 
 Run from an Ubuntu GNOME login as your normal user (not with sudo).
 Install missing desktop dependencies, safely stow git zsh tmux nvim bin gnome
-herdr mise, apply the repo's GNOME settings, install mise if needed, and install
-configured mise tools and JetBrainsMono Nerd Font. Re-run after signing out and
-back in if the GNOME extensions are not yet discoverable.
+herdr mise wallpaper, apply the repo's GNOME settings, install mise if needed,
+and install configured mise tools and JetBrainsMono Nerd Font. Re-run after
+signing out and back in if the GNOME extensions are not yet discoverable.
 
   -n, --dry-run  Show planned commands without changing anything.
   -h, --help     Show this help.
@@ -43,8 +43,9 @@ done
 
 repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
 packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 curl fontconfig
-          gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant)
-stow_packages=(git zsh tmux nvim bin gnome herdr mise)
+          gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant
+          yaru-theme-gtk yaru-theme-icon)
+stow_packages=(git zsh tmux nvim bin gnome herdr mise wallpaper)
 gnome_script="$repo_dir/gnome/.local/bin/devtainer-gnome-bootstrap"
 font_script="$repo_dir/scripts/install-jetbrainsmono-nerd-font"
 [[ -f "$gnome_script" ]] || die "GNOME bootstrap missing: $gnome_script"

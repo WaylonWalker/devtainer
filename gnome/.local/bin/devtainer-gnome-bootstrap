@@ -112,6 +112,13 @@ WORKSPACES_ONLY_ON_PRIMARY="${WORKSPACES_ONLY_ON_PRIMARY:-true}"
 PRESERVE_WORKSPACE_MONITOR_FOCUS="${PRESERVE_WORKSPACE_MONITOR_FOCUS:-true}"
 MONITOR_SWAP_BACK_BINDING="${MONITOR_SWAP_BACK_BINDING:-<Super><Shift>o}"
 CLOCK_FORMAT="${CLOCK_FORMAT:-12h}"
+COLOR_SCHEME="${COLOR_SCHEME:-prefer-dark}"
+GTK_THEME="${GTK_THEME:-Yaru-magenta-dark}"
+ICON_THEME="${ICON_THEME:-Yaru-magenta}"
+BACKGROUND_PRIMARY_COLOR="${BACKGROUND_PRIMARY_COLOR:-#023c88}"
+BACKGROUND_SECONDARY_COLOR="${BACKGROUND_SECONDARY_COLOR:-#5789ca}"
+BACKGROUND_COLOR_SHADING_TYPE="${BACKGROUND_COLOR_SHADING_TYPE:-solid}"
+WALLPAPER_PATH="${WALLPAPER_PATH:-$HOME/.local/share/wallpapers/devtainer/1440w.png}"
 DISABLE_UBUNTU_DOCK="${DISABLE_UBUNTU_DOCK:-true}"
 SCREENSHOT_BINDING="${SCREENSHOT_BINDING:-<Super><Alt>p}"
 SCREENSHOT_COMMAND="${SCREENSHOT_COMMAND:-${LOCAL_BIN}/devtainer-gnome-screenshot-area}"
@@ -348,6 +355,18 @@ if [[ "$PRESERVE_WORKSPACE_MONITOR_FOCUS" != "true" && "$PRESERVE_WORKSPACE_MONI
     exit 1
 fi
 
+[[ "$WALLPAPER_PATH" == /* ]] || die "WALLPAPER_PATH must be absolute: $WALLPAPER_PATH"
+if [[ "$DRY_RUN" != "true" && ! -f "$WALLPAPER_PATH" ]]; then
+    die "Wallpaper file not found: $WALLPAPER_PATH. Run ./bootstrap to Stow wallpaper first."
+fi
+WALLPAPER_URI="$(python3 - "$WALLPAPER_PATH" <<'PY'
+from pathlib import Path
+import sys
+
+print(Path(sys.argv[1]).absolute().as_uri())
+PY
+)"
+
 WORKSPACE_FOCUS_EXTENSION_AVAILABLE=false
 if [[ "$PRESERVE_WORKSPACE_MONITOR_FOCUS" == "true" ]] &&
     gnome-extensions info "$WORKSPACE_FOCUS_EXTENSION_UUID" >/dev/null 2>&1; then
@@ -495,6 +514,14 @@ if [[ "${DISABLE_DESKTOP_ICONS:-true}" == "true" ]]; then
 fi
 
 set_gsettings_string org.gnome.desktop.interface clock-format "$CLOCK_FORMAT"
+set_gsettings_string org.gnome.desktop.interface color-scheme "$COLOR_SCHEME"
+set_gsettings_string org.gnome.desktop.interface gtk-theme "$GTK_THEME"
+set_gsettings_string org.gnome.desktop.interface icon-theme "$ICON_THEME"
+set_gsettings_string org.gnome.desktop.background primary-color "$BACKGROUND_PRIMARY_COLOR"
+set_gsettings_string org.gnome.desktop.background secondary-color "$BACKGROUND_SECONDARY_COLOR"
+set_gsettings_string org.gnome.desktop.background color-shading-type "$BACKGROUND_COLOR_SHADING_TYPE"
+set_gsettings_string org.gnome.desktop.background picture-uri "$WALLPAPER_URI"
+set_gsettings_string org.gnome.desktop.background picture-uri-dark "$WALLPAPER_URI"
 
 upsert_custom_keybinding \
     "$CUSTOM_KEYBINDING_PATH" \
