@@ -42,7 +42,7 @@ while (($#)); do
 done
 
 repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
-packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 neovim
+packages=(git stow zsh tmux jq fzf rofi ffmpeg python3
           gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant)
 stow_packages=(git zsh tmux nvim bin gnome herdr mise)
 gnome_script="$repo_dir/gnome/.local/bin/devtainer-gnome-bootstrap"
@@ -58,7 +58,6 @@ command -v dpkg-query >/dev/null 2>&1 ||
 missing_packages=()
 for package in "${packages[@]}"; do
     case "$package" in
-        neovim) command -v nvim >/dev/null 2>&1 && continue ;;
         ffmpeg) command -v ffplay >/dev/null 2>&1 && continue ;;
     esac
     status="$(dpkg-query -W -f='${Status}' -- "$package" 2>/dev/null)" || status=""
