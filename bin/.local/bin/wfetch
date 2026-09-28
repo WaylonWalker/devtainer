@@ -30,9 +30,14 @@ else
 fi
 
 
-printf "  ╭───╮ ╭─────╮ ╭───╮
+banner="  ╭───╮ ╭─────╮ ╭───╮
   │   │ │     │ │   │  $os
-  │   ╰─╯     ╰─╯   │  $HTTP_PROXY
-  │ @_waylonwalker  │   `date`
+  │   ╰─╯     ╰─╯   │
+  │ @_waylonwalker  │   $(date)
   ╰─────────────────╯
-"| lolcat --seed=18 --spread=6
+"
+if command -v lolcat >/dev/null 2>&1; then
+    printf '%s\n' "$banner" | lolcat --seed=18 --spread=6
+else
+    printf '%s\n' "$banner"
+fi

@@ -7,8 +7,8 @@ set -o physical
 [ -f ~/.alias.local ] && source ~/.alias.local
 [ -f ~/.cargo.env ] && source ~/.cargo.env
 
-[ -d ~/.erg/bin ] && export PATH=$PATH:/home/waylon/.erg/bin
-[ -d ~/.erg ] && export ERG_PATH=/home/waylon/.erg
+[ -d ~/.erg/bin ] && export PATH="$PATH:$HOME/.erg/bin"
+[ -d ~/.erg ] && export ERG_PATH="$HOME/.erg"
 [ -d ~/minio-binaries ] && export PATH=$PATH:~/minio-binaries
 
 # set history
@@ -38,7 +38,24 @@ export PATH="$HOME/.local/.npm-global/bin/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$(dirname $(uv python find 3.10)):$PATH"
+
+if command -v mise >/dev/null 2>&1; then
+    if mise_init="$(mise activate zsh)"; then
+        eval "$mise_init"
+    else
+        printf 'mise activation failed\n' >&2
+    fi
+fi
+
+if command -v uv >/dev/null 2>&1; then
+    if python_bin="$(uv python find 3.10)"; then
+        if [[ -x "$python_bin" ]]; then
+            export PATH="${python_bin:h}:$PATH"
+        else
+            printf 'uv returned a non-executable Python path: %s\n' "$python_bin" >&2
+        fi
+    fi
+fi
 # eval "$(dircolors -b ~/.dircolors.256dark)"
 
 export FLYCTL_INSTALL="/home/waylon/.fly"
@@ -48,15 +65,12 @@ if [ -d "$HOME/.local/share/bob/nvim-bin" ]; then
     export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
 fi
 
-if [ -f "/home/u_walkews/.local/bin/mise" ]; then
-    eval "$(/home/u_walkews/.local/bin/mise activate zsh)" # added by https://mise.run/zsh
-fi
-
-
 if [ -d "$HOME/.pyenv" ]; then
     export PATH="$HOME/.pyenv/bin:$PATH"
-    export PATH=$(pyenv root)/shims:$PATH
-    eval "$(pyenv init -)"
+    if command -v pyenv >/dev/null 2>&1; then
+        export PATH="$(pyenv root)/shims:$PATH"
+        eval "$(pyenv init -)"
+    fi
     eval "$(pyenv init --path)"
     # eval "$(pyenv virtualenv-init -)"
 fi
@@ -136,7 +150,7 @@ function expand-alias() {
 }
 function cwfetch() {
     clear
-    wfetch
+    command -v wfetch >/dev/null 2>&1 && wfetch
 }
 zle -N expand-alias
 bindkey -M main '^n' expand-alias
@@ -209,13 +223,13 @@ zstyle ':completion:*:descriptions' format %F{default}%B%{$__WINCENT[ITALIC_ON]%
 # Enable keyboard navigation of completions in menu
 # (not just tab/shift-tab but cursor keys as well):
 zstyle ':completion:*' menu select
-wfetch
+command -v wfetch >/dev/null 2>&1 && wfetch
 # zprof
 #
 
 [[ -f "$HOME/.atuin/bin/env" ]] && . "$HOME/.atuin/bin/env"
 
-[[ -f "$HOME/.atuin/bin/env" ]] && eval "$(atuin init zsh)"
+[[ -f "$HOME/.atuin/bin/env" ]] && command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh)"
 
 if [[ -z "$BROWSER" ]]; then
 	DEFAULT_BROWSER_DESKTOP=$(xdg-settings get default-web-browser 2>/dev/null)

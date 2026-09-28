@@ -8,7 +8,7 @@ usage() {
 Usage: ./bootstrap [--dry-run] [--help]
 
 Run from an Ubuntu GNOME login as your normal user (not with sudo).
-Install missing desktop dependencies, safely stow git zsh tmux nvim gnome herdr,
+Install missing desktop dependencies, safely stow git zsh tmux nvim bin gnome herdr,
 then apply the repo's GNOME settings. Re-run after signing out and back in
 if the GNOME extensions are not yet discoverable.
 
@@ -43,7 +43,7 @@ done
 repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
 packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 neovim
           gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant)
-stow_packages=(git zsh tmux nvim gnome herdr)
+stow_packages=(git zsh tmux nvim bin gnome herdr)
 gnome_script="$repo_dir/gnome/.local/bin/devtainer-gnome-bootstrap"
 [[ -f "$gnome_script" ]] || die "GNOME bootstrap missing: $gnome_script"
 for package in "${stow_packages[@]}"; do

@@ -20,8 +20,6 @@
     autoStash = true
 [pull]
     rebase = true
-[includeIf "gitdir:~/work/"]
-        path = ~/.gitconfig-work
 [includeIf "gitdir:~/git/"]
         path = ~/.gitconfig-git
 [commit]
