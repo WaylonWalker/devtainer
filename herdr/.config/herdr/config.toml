@@ -6,10 +6,10 @@ new_cwd = "follow"
 
 [ui]
 sidebar_start_collapsed = true
-sidebar_collapsed_mode = "hidden"
+sidebar_collapsed_mode = "compact"
 hide_tab_bar_when_single_tab = true
-pane_gaps = false
-pane_outer_borders = false
+pane_gaps = true
+pane_outer_borders = true
 
 [keys]
 prefix = "ctrl+b"
@@ -24,9 +24,21 @@ focus_pane_up = "alt+k"
 focus_pane_right = "alt+l"
 cycle_pane_next = "alt+o"
 zoom = "alt+z"
-close_pane = ["alt+x", "alt+shift+x"]
+close_pane = "alt+shift+x"
 split_vertical = "alt+v"
 split_horizontal = ["alt+minus", "alt+s"]
+
+[[keys.command]]
+key = "alt+a"
+type = "plugin_action"
+command = "layouts.cycle"
+description = "cycle pane layouts"
+
+[[keys.command]]
+key = "alt+shift+a"
+type = "plugin_action"
+command = "layouts.equalize"
+description = "equalize pane columns"
 
 [[keys.command]]
 key = "alt+b"

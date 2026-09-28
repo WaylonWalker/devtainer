@@ -8,10 +8,11 @@ usage() {
 Usage: ./bootstrap [--dry-run] [--help]
 
 Run from an Ubuntu GNOME login as your normal user (not with sudo).
-Install missing desktop dependencies, safely stow git zsh tmux nvim bin gnome
-herdr mise wallpaper, apply the repo's GNOME settings, install mise if needed,
-and install configured mise tools and JetBrainsMono Nerd Font. Re-run after
-signing out and back in if the GNOME extensions are not yet discoverable.
+Install missing desktop dependencies and Ghostty, safely stow git zsh tmux
+nvim bin gnome ghostty herdr mise wallpaper, apply the repo's GNOME settings,
+install mise if needed, and install configured mise tools and JetBrainsMono
+Nerd Font. Re-run after signing out and back in if the GNOME extensions are
+not yet discoverable.
 
   -n, --dry-run  Show planned commands without changing anything.
   -h, --help     Show this help.
@@ -42,10 +43,10 @@ while (($#)); do
 done
 
 repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
-packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 curl fontconfig
+packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 curl fontconfig snapd
           gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant
           yaru-theme-gtk yaru-theme-icon)
-stow_packages=(git zsh tmux nvim bin gnome herdr mise wallpaper)
+stow_packages=(git zsh tmux nvim bin gnome ghostty herdr mise wallpaper)
 gnome_script="$repo_dir/gnome/.local/bin/devtainer-gnome-bootstrap"
 font_script="$repo_dir/scripts/install-jetbrainsmono-nerd-font"
 [[ -f "$gnome_script" ]] || die "GNOME bootstrap missing: $gnome_script"
@@ -66,14 +67,21 @@ for package in "${packages[@]}"; do
     status="$(dpkg-query -W -f='${Status}' -- "$package" 2>/dev/null)" || status=""
     [[ "$status" == "install ok installed" ]] || missing_packages+=("$package")
 done
+ghostty_installed=false
+if command -v snap >/dev/null 2>&1 && snap list ghostty >/dev/null 2>&1; then
+    ghostty_installed=true
+fi
 
 if [[ "$dry_run" == true ]]; then
-    echo "Dry run: no apt, stow, or GNOME settings will be changed."
+    echo "Dry run: no apt, snap, stow, or GNOME settings will be changed."
     if (( ${#missing_packages[@]} )); then
         print_command sudo apt update
         print_command sudo apt install -y "${missing_packages[@]}"
     else
-        echo "Required apt packages are already installed; no sudo needed."
+        echo "Required apt packages are already installed; no apt install needed."
+    fi
+    if [[ "$ghostty_installed" == false ]]; then
+        print_command sudo snap install ghostty --classic
     fi
     print_command stow --simulate "${stow_args[@]}"
     print_command stow "${stow_args[@]}"
@@ -91,7 +99,7 @@ if [[ "$dry_run" == true ]]; then
     exit 0
 fi
 
-(( EUID != 0 )) || die "Run as your GNOME user, not root; sudo is used only for apt."
+(( EUID != 0 )) || die "Run as your GNOME user, not root; sudo is used only for apt and snap."
 [[ "${XDG_CURRENT_DESKTOP:-}" == *GNOME* ]] ||
     die "Run inside an active GNOME desktop login (XDG_CURRENT_DESKTOP must include GNOME)."
 [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] ||
@@ -121,6 +129,15 @@ if (( ${#missing_packages[@]} )); then
         die "Package installation failed or is not permitted: ${missing_packages[*]}. Check sudo -l or ask your administrator."
 else
     echo "Required apt packages are already installed; skipping sudo."
+fi
+
+if [[ "$ghostty_installed" == false ]]; then
+    for command in sudo snap; do
+        command -v "$command" >/dev/null 2>&1 || die "Missing command: $command"
+    done
+    echo "Installing Ghostty from Snap..."
+    sudo snap install ghostty --classic ||
+        die "Ghostty installation failed; check snapd, network access, and sudo permissions, then re-run ./bootstrap."
 fi
 
 echo "Checking stow links for conflicts..."

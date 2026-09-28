@@ -1,4 +1,6 @@
 window-decoration = none
+font-size = 18
+command = /usr/bin/zsh -l
 
 keybind = ctrl+equal=increase_font_size:1
 keybind = ctrl+shift+equal=increase_font_size:1

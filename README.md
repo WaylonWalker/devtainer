@@ -30,17 +30,28 @@ cd /path/to/devtainer
 ```
 
 The bootstrap checks its dependencies and installs only missing packages
-(no system upgrade), using `sudo apt` only if needed. Existing `ffplay`
+(no system upgrade), using `sudo apt` only if needed and `sudo snap` for Ghostty
+if it is not already installed. Existing `ffplay`
 installations are accepted without its apt package; Neovim is installed
-through mise rather than apt. On managed machines, your account must be
-permitted to install any missing packages; otherwise check `sudo -l` or ask
+through mise rather than apt. Ghostty is installed from the Snap stable
+channel with classic confinement (and bootstrap installs `snapd` if needed).
+On managed machines, your account must be
+permitted to install any missing packages and Snap applications; otherwise check `sudo -l` or ask
 your administrator before rerunning. It then
-stows `git`, `zsh`, `tmux`, `nvim`, `bin`, `gnome`, `herdr`, `mise`, and `wallpaper`
+stows `git`, `zsh`, `tmux`, `nvim`, `bin`, `gnome`, `ghostty`, `herdr`, `mise`, and `wallpaper`
 into your home directory and runs the repo's GNOME settings script. It checks
 for Stow conflicts before linking and will not adopt or overwrite existing
 files: move or back up any
 reported conflicts yourself, then rerun. The `herdr` Stow package contains
 its configuration; its binary is installed through mise.
+The `ghostty` package links both the standard and Snap-specific config paths;
+both set a larger default font size of 18 points and launch Zsh as a login shell.
+For the tracked Herdr layout shortcuts, install
+[`iurysza/herdr-pane-layouts`](https://github.com/iurysza/herdr-pane-layouts)
+with `herdr plugin install iurysza/herdr-pane-layouts --yes`.
+Alt+A cycles through even, main-left, main-top, and tiled pane layouts;
+Alt+Shift+A equalizes pane columns. These rearrange existing panes without
+restarting their processes; unzoom the tab before switching layouts.
 The `bin` package includes `wfetch`, which displays without color if `lolcat`
 is unavailable. Stow keeps directories real rather than linking whole folders,
 so mise settings and downloaded fonts cannot end up inside the checkout.
@@ -51,7 +62,8 @@ installer](https://mise.jdx.dev/installing-mise.html) to install it to
 `~/.local/bin/mise` without sudo. This requires network access to `mise.run`;
 the installer does not change your shell files. Bootstrap stows the global
 fragment `~/.config/mise/conf.d/devtainer.toml` (the global tools used on this
-machine, plus `uv`, Python 3.10, Starship, and Atuin), then installs all
+machine, plus `uv`, Python 3.10, Starship, Atuin, `lolcat`, and Terminal Text
+Effects' `tte`), then installs all
 globally configured tools as your user without sudo. It leaves your existing
 `~/.config/mise/config.toml` alone; that file can override versions in the
 fragment. Edit the tracked fragment to
