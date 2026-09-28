@@ -8,8 +8,9 @@ usage() {
 Usage: ./bootstrap [--dry-run] [--help]
 
 Run from an Ubuntu GNOME login as your normal user (not with sudo).
-Install missing desktop dependencies, safely stow git zsh tmux nvim bin gnome herdr,
-then apply the repo's GNOME settings. Re-run after signing out and back in
+Install missing desktop dependencies, safely stow git zsh tmux nvim bin gnome
+herdr mise, apply the repo's GNOME settings, and install configured mise tools.
+Re-run after signing out and back in
 if the GNOME extensions are not yet discoverable.
 
   -n, --dry-run  Show planned commands without changing anything.
@@ -43,7 +44,7 @@ done
 repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
 packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 neovim
           gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant)
-stow_packages=(git zsh tmux nvim bin gnome herdr)
+stow_packages=(git zsh tmux nvim bin gnome herdr mise)
 gnome_script="$repo_dir/gnome/.local/bin/devtainer-gnome-bootstrap"
 [[ -f "$gnome_script" ]] || die "GNOME bootstrap missing: $gnome_script"
 for package in "${stow_packages[@]}"; do
@@ -75,8 +76,9 @@ if [[ "$dry_run" == true ]]; then
     print_command stow --simulate "${stow_args[@]}"
     print_command stow "${stow_args[@]}"
     print_command bash "$gnome_script"
+    print_command mise -C "$HOME" install
     echo "Preview only: GNOME Shell compatibility and stow conflicts are not checked in dry-run."
-    echo "On a real run, unsupported GNOME versions and stow conflicts stop setup."
+    echo "On a real run, unsupported GNOME versions, stow conflicts, and a missing mise stop setup."
     exit 0
 fi
 
@@ -120,4 +122,9 @@ stow "${stow_args[@]}"
 
 echo "Applying GNOME settings as $(id -un)..."
 bash "$gnome_script" || die "GNOME setup failed; resolve the error above and re-run ./bootstrap."
+command -v mise >/dev/null 2>&1 ||
+    die "Mise is not installed. Install it through an approved method, then re-run ./bootstrap."
+echo "Installing global mise tools..."
+mise -C "$HOME" install ||
+    die "Mise tool installation failed; resolve the error above and re-run ./bootstrap."
 echo "Done. If newly installed extensions are not discovered, sign out and back in, then re-run ./bootstrap."

@@ -34,7 +34,7 @@ The bootstrap checks its dependencies and installs only missing packages
 `ffplay` installations are accepted without their apt packages. On managed
 machines, your account must be permitted to install any missing packages;
 otherwise check `sudo -l` or ask your administrator before rerunning. It then
-stows `git`, `zsh`, `tmux`, `nvim`, `bin`, `gnome`, and `herdr` into your home directory
+stows `git`, `zsh`, `tmux`, `nvim`, `bin`, `gnome`, `herdr`, and `mise` into your home directory
 and runs the repo's GNOME settings script. It checks for stow conflicts before
 linking and will not adopt or overwrite existing files: move or back up any
 reported conflicts yourself, then rerun. The `herdr` package contains only
@@ -42,17 +42,14 @@ configuration; install the optional `herdr` binary separately if you use it.
 The `bin` package includes `wfetch`, which displays without color if `lolcat`
 is unavailable. The bootstrap runs directly from this checkout.
 
-For shell tools, install `mise` through an approved method and add it to your
-`PATH`, then install `uv` into your personal global mise configuration:
-
-```bash
-mise use --global uv@latest
-mise use --global python@3.10  # only if you want the Python 3.10 shell path
-```
-
-Open a new Zsh session afterward. The shell activates mise when available and
-does not require `uv` or Python 3.10 to start. Bootstrap does not install mise
-or modify your personal global mise configuration.
+Install `mise` through an approved method and add it to your `PATH` before
+running bootstrap. It stows the global fragment
+`~/.config/mise/conf.d/devtainer.toml` (currently `uv` and Python 3.10), then
+installs all globally configured tools as your user without sudo. Your existing
+`~/.config/mise/config.toml` is left alone; it can override versions in the
+fragment. Edit the tracked fragment to add more shared tools. Open a new Zsh
+session afterward to activate mise. Without mise, bootstrap reports an error
+after completing the desktop setup, so you can install it and rerun.
 
 Bundled extensions support GNOME Shell **45-48** only; bootstrap stops on
 unsupported versions. After installing extensions for the first time, sign out
