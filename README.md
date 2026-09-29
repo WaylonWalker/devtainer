@@ -33,7 +33,21 @@ The bootstrap checks its dependencies and installs only missing packages
 (no system upgrade), using `sudo apt` only if needed and `sudo snap` for Ghostty
 if it is not already installed. Existing `ffplay`
 installations are accepted without its apt package; Neovim is installed
-through mise rather than apt. Ghostty is installed from the Snap stable
+through mise rather than apt. It also installs `podman`, `podman-docker`
+(the `docker` command backed by Podman), `uidmap`, `slirp4netns`, and
+`fuse-overlayfs` for rootless containers. If your user lacks a subordinate
+UID or GID range of at least 65,536 IDs, bootstrap allocates an unused range
+and assigns it with `sudo usermod`. It enables the **user** `podman.socket`
+for Docker-compatible API clients while you are logged in. Rootless Podman
+does not need a `docker` or `podman` group; bootstrap does not grant access
+to a root-owned container daemon or enable lingering after logout. If existing
+rootless containers use old ID mappings, run `podman system migrate` after
+changing subordinate IDs. `podman-docker` conflicts with Docker's CLI
+packages; remove a conflicting Docker installation first if apt reports one.
+The stowed Zsh aliases set `DOCKER_HOST` to the user socket when it exists
+and no other `DOCKER_HOST` is configured, including when `podman-docker`
+provides `/usr/bin/docker`.
+Ghostty is installed from the Snap stable
 channel with classic confinement (and bootstrap installs `snapd` if needed).
 On managed machines, your account must be
 permitted to install any missing packages and Snap applications; otherwise check `sudo -l` or ask

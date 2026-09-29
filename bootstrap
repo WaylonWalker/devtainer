@@ -8,7 +8,8 @@ usage() {
 Usage: ./bootstrap [--dry-run] [--help]
 
 Run from an Ubuntu GNOME login as your normal user (not with sudo).
-Install missing desktop dependencies and Ghostty, safely stow git zsh tmux
+Install missing desktop dependencies, Podman (including docker compatibility),
+and Ghostty, safely stow git zsh tmux
 nvim bin gnome ghostty herdr mise wallpaper, apply the repo's GNOME settings,
 install mise if needed, and install configured mise tools and JetBrainsMono
 Nerd Font. Re-run after signing out and back in if the GNOME extensions are
@@ -32,6 +33,35 @@ print_command() {
     printf '\n'
 }
 
+has_subid_range() {
+    local user="$1" file="$2"
+    [[ -r "$file" ]] || die "Cannot read $file; ask your administrator to configure rootless Podman."
+    awk -F: -v user="$user" '
+        $1 == user && $2 ~ /^[0-9]+$/ && $3 ~ /^[0-9]+$/ && $3 >= 65536 { found=1 }
+        END { exit !found }
+    ' "$file"
+}
+
+free_subid_range() {
+    awk -F: '
+        NF >= 3 && $2 ~ /^[0-9]+$/ && $3 ~ /^[0-9]+$/ && $3 > 0 {
+            first[++n]=$2; last[n]=$2+$3-1
+        }
+        END {
+            for (start=100000; start<=4294901759; start+=65536) {
+                end=start+65535
+                for (i=1; i<=n; i++)
+                    if (start<=last[i] && end>=first[i]) break
+                if (i>n) {
+                    printf "%.0f-%.0f\n", start, end
+                    exit
+                }
+            }
+            exit 1
+        }
+    ' "$@"
+}
+
 dry_run=false
 while (($#)); do
     case "$1" in
@@ -44,6 +74,7 @@ done
 
 repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
 packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 curl fontconfig snapd
+          podman podman-docker uidmap slirp4netns fuse-overlayfs
           gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant
           yaru-theme-gtk yaru-theme-icon)
 stow_packages=(git zsh tmux nvim bin gnome ghostty herdr mise wallpaper)
@@ -76,9 +107,18 @@ ghostty_installed=false
 if command -v snap >/dev/null 2>&1 && snap list ghostty >/dev/null 2>&1; then
     ghostty_installed=true
 fi
+user="$(id -un)"
+subuids_missing=false
+subgids_missing=false
+has_subid_range "$user" /etc/subuid || subuids_missing=true
+has_subid_range "$user" /etc/subgid || subgids_missing=true
+if [[ "$subuids_missing" == true || "$subgids_missing" == true ]]; then
+    subid_range="$(free_subid_range /etc/subuid /etc/subgid)" ||
+        die "No free subordinate ID range found; ask your administrator to configure /etc/subuid and /etc/subgid."
+fi
 
 if [[ "$dry_run" == true ]]; then
-    echo "Dry run: no apt, snap, stow, or GNOME settings will be changed."
+    echo "Dry run: no apt, snap, user IDs, services, stow, or GNOME settings will be changed."
     if (( ${#missing_packages[@]} )); then
         print_command sudo apt update
         print_command sudo apt install -y "${missing_packages[@]}"
@@ -87,6 +127,16 @@ if [[ "$dry_run" == true ]]; then
     fi
     if [[ "$ghostty_installed" == false ]]; then
         print_command sudo snap install ghostty --classic
+    fi
+    if [[ "$subuids_missing" == true ]]; then
+        print_command sudo usermod --add-subuids "$subid_range" "$user"
+    fi
+    if [[ "$subgids_missing" == true ]]; then
+        print_command sudo usermod --add-subgids "$subid_range" "$user"
+    fi
+    if ! systemctl --user is-enabled --quiet podman.socket 2>/dev/null ||
+       ! systemctl --user is-active --quiet podman.socket 2>/dev/null; then
+        print_command systemctl --user enable --now podman.socket
     fi
     print_command stow --simulate "${stow_args[@]}"
     print_command stow "${stow_args[@]}"
@@ -108,7 +158,7 @@ if [[ "$dry_run" == true ]]; then
     exit 0
 fi
 
-(( EUID != 0 )) || die "Run as your GNOME user, not root; sudo is used only for apt and snap."
+(( EUID != 0 )) || die "Run as your GNOME user, not root; sudo is used only for system setup."
 [[ "${XDG_CURRENT_DESKTOP:-}" == *GNOME* ]] ||
     die "Run inside an active GNOME desktop login (XDG_CURRENT_DESKTOP must include GNOME)."
 [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] ||
@@ -138,6 +188,24 @@ if (( ${#missing_packages[@]} )); then
         die "Package installation failed or is not permitted: ${missing_packages[*]}. Check sudo -l or ask your administrator."
 else
     echo "Required apt packages are already installed; skipping sudo."
+fi
+
+if [[ "$subuids_missing" == true || "$subgids_missing" == true ]]; then
+    command -v sudo >/dev/null 2>&1 || die "Missing sudo; subordinate IDs require administrator access."
+    if [[ "$subuids_missing" == true ]]; then
+        sudo usermod --add-subuids "$subid_range" "$user" ||
+            die "Could not assign subordinate UIDs to $user; ask your administrator to configure /etc/subuid."
+    fi
+    if [[ "$subgids_missing" == true ]]; then
+        sudo usermod --add-subgids "$subid_range" "$user" ||
+            die "Could not assign subordinate GIDs to $user; ask your administrator to configure /etc/subgid."
+    fi
+fi
+if ! systemctl --user is-enabled --quiet podman.socket ||
+   ! systemctl --user is-active --quiet podman.socket; then
+    echo "Enabling the rootless Podman socket for $user..."
+    systemctl --user enable --now podman.socket ||
+        die "Could not start the user Podman socket; check your user systemd session."
 fi
 
 if [[ "$ghostty_installed" == false ]]; then
