@@ -11,6 +11,9 @@ hide_tab_bar_when_single_tab = true
 pane_gaps = true
 pane_outer_borders = true
 
+[ui.sound]
+enabled = false
+
 [keys]
 prefix = "ctrl+b"
 new_tab = ""
