@@ -65,9 +65,15 @@ both set a larger default font size of 18 points and launch Zsh as a login shell
 For the tracked Herdr layout shortcuts, install
 [`iurysza/herdr-pane-layouts`](https://github.com/iurysza/herdr-pane-layouts)
 with `herdr plugin install iurysza/herdr-pane-layouts --yes`.
-Alt+A cycles through even, main-left, main-top, and tiled pane layouts;
+Alt+A cycles through the plugin's pane layouts.
 Alt+Shift+A equalizes pane columns. These rearrange existing panes without
 restarting their processes; unzoom the tab before switching layouts.
+Alt+Shift+O rotates panes through existing layout positions, like tmux's `rotate-window`.
+The last pane moves to the first position without changing the splits or restarting processes.
+Herdr saves recent pane contents and replays them after a reboot.
+This restores visible history, not running programs.
+The history file, `~/.config/herdr/session-history.json`, can contain sensitive terminal output.
+Set `experimental.pane_history = false` in the Herdr configuration to disable this behavior.
 The `bin` package includes `wfetch`, which displays without color if `lolcat`
 is unavailable. Stow keeps directories real rather than linking whole folders,
 so mise settings and downloaded fonts cannot end up inside the checkout.

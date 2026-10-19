@@ -4,6 +4,9 @@ onboarding = false
 default_shell = "/usr/bin/zsh"
 new_cwd = "follow"
 
+[experimental]
+pane_history = true
+
 [ui]
 sidebar_start_collapsed = true
 sidebar_collapsed_mode = "compact"
@@ -36,6 +39,12 @@ key = "alt+a"
 type = "plugin_action"
 command = "layouts.cycle"
 description = "cycle pane layouts"
+
+[[keys.command]]
+key = "alt+shift+o"
+type = "shell"
+command = "python3 ~/.config/herdr/rotate_panes.py"
+description = "rotate panes through existing layout positions"
 
 [[keys.command]]
 key = "alt+shift+a"
