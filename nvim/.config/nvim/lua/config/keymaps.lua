@@ -1,0 +1,4 @@
+-- Keymaps are automatically loaded on the VeryLazy event
+-- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+-- Keep personal keymaps in this file so they remain independent of Omarchy's
+-- generated theme file and are easy to manage through the nvim stow package.
