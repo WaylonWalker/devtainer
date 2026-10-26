@@ -16,6 +16,15 @@ Repository-local `AGENTS.md` files and project configuration take precedence ove
 10. Avoid destructive git operations. Never commit, push, deploy, publish, rewrite history, or make system-wide changes unless explicitly requested.
 11. Report changed files, validation performed, remaining risks, limitations, and intentionally omitted work.
 
+## Git Workspace Rules
+
+- Keep primary checkouts in `~/git` clean. Work from a dedicated worktree under `~/git/worktree/` for each task.
+- Inspect the primary checkout status and existing worktrees first. Never reuse or remove another task's worktree.
+- Commit only task changes from the task worktree. Preserve unrelated user changes.
+- Before landing, return to the primary checkout under `~/git` and pull with fast-forward-only behavior. If it is dirty or cannot be updated safely, stop the landing step and report why; never stash, reset, or overwrite changes.
+- Land the task commit through the repository's normal local workflow. Do not push or publish unless the user asks.
+- Remove the task worktree after landing, verify its removal, and finish from the primary checkout under `~/git`.
+
 ## Delegation
 
 - Solve small and ordinary tasks directly with the primary agent.

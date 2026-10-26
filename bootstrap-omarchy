@@ -48,7 +48,7 @@ done
 repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
 packages=(base-devel curl ffmpeg fzf git git-lfs jq podman podman-compose ripgrep sshfs stow tmux unzip zsh)
 stow_packages=(
-	git zsh tmux nvim bin mise herdr opencode
+	git zsh tmux nvim bin mise herdr opencode codex copilot
 	omarchy omarchy-hypr alacritty foot ghostty kitty
 )
 herdr_plugins=(last-workspace scratch-workspace)

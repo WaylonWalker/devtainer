@@ -161,6 +161,18 @@ devtainer/
 6. **Maintain installer scripts** when adding tools
 7. **Test containers locally** before suggesting deployment
 
+## Git Workspace Rules
+
+These rules apply to Codex, GitHub Copilot, OpenCode, and other coding agents:
+
+1. Keep primary checkouts in `~/git` clean. Do not edit a primary checkout; make a dedicated worktree under `~/git/worktree/` for each task.
+2. Before creating a worktree, inspect the repository status and existing worktrees. Do not reuse or remove another task's worktree.
+3. Make and commit the task changes in its worktree. Do not include unrelated user changes.
+4. Before landing, return to the primary checkout under `~/git` and pull with fast-forward-only behavior. If the checkout is dirty or cannot be updated safely, preserve all changes and report the blocker instead of forcing an update.
+5. Land the task commit using the repository's normal local workflow. Do not push or publish unless the user asks.
+6. Remove the task worktree after landing, verify that it is gone, and finish from the primary checkout under `~/git`.
+7. If a primary checkout already has user changes, leave them untouched and explain that it is not clean. Do not stash, reset, or overwrite them.
+
 ## Troubleshooting
 
 - **`just` not found:** Install via `cargo install just` or mise
