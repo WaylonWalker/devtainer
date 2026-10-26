@@ -89,13 +89,34 @@ just setup-cursors
 ## Omarchy (Hyprland) Hosts
 
 Omarchy-specific and terminal configs live in dedicated stow packages. On a
-fresh Omarchy install, apply them after Omarchy has generated its stock
-configs:
+fresh Omarchy install, clone this repository and run the bootstrap from your
+normal user session:
 
 ```bash
+git clone https://github.com/waylonwalker/devtainer.git ~/devtainer
 cd ~/devtainer
-stow omarchy omarchy-hypr alacritty foot ghostty kitty
+./bootstrap-omarchy --dry-run
+./bootstrap-omarchy
 ```
+
+The script installs missing Arch development packages, checks for Stow
+conflicts before linking settings, stows the packages below along with the
+shell, editor, Git, and development-tool configs, installs tools from the
+mise config, downloads the agent-browser Chrome runtime, prompts you to
+authenticate the GitHub CLI if needed, and enables the rootless Podman socket.
+Run it after Omarchy's first login has created its default configuration. It
+also registers the bundled Herdr plugins and sets Zsh as your login shell. In
+a noninteractive session, run
+`mise exec -- gh auth login` afterward if needed. It automatically saves
+existing files that conflict with repo configs in a timestamped directory
+under `~/.local/state/devtainer/bootstrap-omarchy/backups/` before Stow links
+the repo versions. Directory conflicts stop the script for manual review.
+
+Monitor layouts are machine-specific. The tracked `monitors.lua` loads a
+Git-ignored `omarchy-hypr/.config/hypr/monitors.local.lua` when present; without
+one, it uses a generic preferred-mode layout. The local file in this checkout
+contains the current laptop and external monitor layout and is stowed by the
+bootstrap, but is not committed.
 
 - `omarchy/` → `~/.config/omarchy/` (shell bar, hooks, extensions, branding,
   default agent)

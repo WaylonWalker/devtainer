@@ -1,0 +1,254 @@
+#!/usr/bin/env bash
+
+# Set up an existing Omarchy install for the current user.
+set -euo pipefail
+
+usage() {
+	cat <<'EOF'
+Usage: ./bootstrap-omarchy [--dry-run] [--help]
+
+Run from an Omarchy login as your normal user (not with sudo). Install missing
+Arch development packages, set Zsh as your login shell through sudo, back up
+existing configs that conflict with this repository, stow its settings, then
+install the configured mise tools, authenticate GitHub CLI when needed, and
+register the bundled Herdr plugins.
+Existing configs are saved under
+~/.local/state/devtainer/bootstrap-omarchy/backups/.
+
+  -n, --dry-run  Show planned commands without changing anything.
+  -h, --help     Show this help.
+
+Exit codes: 0 success, 1 setup/environment error, 2 invalid arguments.
+EOF
+}
+
+die() {
+	printf 'bootstrap-omarchy: %s\n' "$1" >&2
+	exit "${2:-1}"
+}
+
+print_command() {
+	printf '+'
+	printf ' %q' "$@"
+	printf '\n'
+}
+
+dry_run=false
+while (($#)); do
+	case "$1" in
+	-n | --dry-run) dry_run=true ;;
+	-h | --help) usage; exit 0 ;;
+	*) die "Unknown argument: $1 (see --help)" 2 ;;
+	esac
+	shift
+done
+
+(( EUID != 0 )) || die 'Run as your Omarchy user, not root; sudo is used for package and shell setup.'
+
+repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
+packages=(base-devel curl ffmpeg fzf git git-lfs jq podman podman-compose ripgrep sshfs stow tmux unzip zsh)
+stow_packages=(
+	git zsh tmux nvim bin mise herdr opencode
+	omarchy omarchy-hypr alacritty foot ghostty kitty
+)
+herdr_plugins=(last-workspace scratch-workspace)
+
+for package in "${stow_packages[@]}"; do
+	[[ -d "$repo_dir/$package" ]] || die "Stow package missing: $repo_dir/$package"
+done
+for plugin in "${herdr_plugins[@]}"; do
+	[[ -f "$repo_dir/herdr/.config/herdr/plugins/$plugin/herdr-plugin.toml" ]] ||
+		die "Herdr plugin missing: $repo_dir/herdr/.config/herdr/plugins/$plugin"
+done
+command -v pacman >/dev/null 2>&1 || die 'This bootstrap requires Arch Linux (pacman was not found).'
+
+missing_packages=()
+for package in "${packages[@]}"; do
+	if ! pacman -Q "$package" >/dev/null 2>&1; then
+		missing_packages+=("$package")
+	fi
+done
+
+# Omarchy creates this relative theme link in the live Neovim config. Leave it
+# in place; the same link in this checkout is not part of the stow operation.
+stow_args=(--no-folding --ignore='theme\.lua$' -d "$repo_dir" -t "$HOME" "${stow_packages[@]}")
+
+collect_stow_conflicts() {
+	stow_conflicts=()
+	stow_directory_conflicts=()
+	for package in "${stow_packages[@]}"; do
+		package_dir="$repo_dir/$package"
+		while IFS= read -r -d '' source_path; do
+			source_prefix="$package_dir/"
+			relative_path="${source_path#"$source_prefix"}"
+			target_path="$HOME/$relative_path"
+			if [[ -e "$target_path" || -L "$target_path" ]]; then
+				if [[ -L "$source_path" && -L "$target_path" ]] &&
+					[[ "$(readlink -- "$source_path")" == "$(readlink -- "$target_path")" ]]; then
+					continue
+				fi
+				if [[ -L "$target_path" ]] &&
+					[[ "$(readlink -f -- "$target_path" 2>/dev/null || true)" == "$(readlink -f -- "$source_path" 2>/dev/null || true)" ]]; then
+					continue
+				fi
+				if [[ -d "$target_path" && ! -L "$target_path" ]]; then
+					stow_directory_conflicts+=("$target_path")
+				else
+					stow_conflicts+=("$target_path")
+				fi
+			fi
+		done < <(find "$package_dir" \( -type f -o -type l \) -print0)
+	done
+}
+
+restore_stow_backups() {
+	local index target backup
+	for ((index = ${#moved_targets[@]} - 1; index >= 0; index--)); do
+		target="${moved_targets[index]}"
+		backup="${backup_targets[index]}"
+		mkdir -p -- "$(dirname -- "$target")"
+		mv -- "$backup" "$target"
+	done
+}
+
+if [[ "$dry_run" == true ]]; then
+	echo 'Dry run: no packages, symlinks, or user services will be changed.'
+	if ((${#missing_packages[@]})); then
+		print_command sudo pacman -S --needed "${missing_packages[@]}"
+	else
+		echo 'Required packages are already installed.'
+	fi
+	collect_stow_conflicts
+	if ((${#stow_conflicts[@]})); then
+		echo "Would back up ${#stow_conflicts[@]} conflicting file(s) before stowing:"
+		printf '  %s\n' "${stow_conflicts[@]}"
+	fi
+	if ((${#stow_directory_conflicts[@]})); then
+		echo 'Directory conflicts need manual review:'
+		printf '  %s\n' "${stow_directory_conflicts[@]}"
+	fi
+	print_command stow --simulate "${stow_args[@]}"
+	print_command stow "${stow_args[@]}"
+	if command -v mise >/dev/null 2>&1; then
+		mise_bin="$(command -v mise)"
+	else
+		mise_bin="$HOME/.local/bin/mise"
+		[[ -x "$mise_bin" ]] || echo '+ curl -fsSL https://mise.run | sh'
+	fi
+	print_command "$mise_bin" -C "$HOME" install
+	print_command "$mise_bin" -C "$HOME" exec -- agent-browser install
+	print_command "$mise_bin" -C "$HOME" exec -- gh auth status
+	echo '+ If GitHub CLI is not authenticated and this is an interactive session:'
+	print_command "$mise_bin" -C "$HOME" exec -- gh auth login
+	for plugin in "${herdr_plugins[@]}"; do
+		print_command "$mise_bin" -C "$HOME" exec -- herdr plugin link \
+			"$repo_dir/herdr/.config/herdr/plugins/$plugin" --enabled
+	done
+	print_command sudo chsh -s "$(command -v zsh || echo /usr/bin/zsh)" "$(id -un)"
+	print_command systemctl --user enable --now podman.socket
+	echo 'Preview only: package installation, backups, mise tools, and user services are not changed.'
+	exit 0
+fi
+
+[[ "${XDG_CURRENT_DESKTOP:-}" == *Hyprland* || -d "$HOME/.config/omarchy" ]] ||
+	die 'Run this from an Omarchy install after its first login has created ~/.config/omarchy.'
+command -v sudo >/dev/null 2>&1 || die 'Missing command: sudo'
+
+if ((${#missing_packages[@]})); then
+	echo "Installing missing Arch packages: ${missing_packages[*]}"
+	sudo pacman -S --needed "${missing_packages[@]}" ||
+		die 'Package installation failed; check network access and sudo permissions.'
+else
+	echo 'Required Arch packages are already installed.'
+fi
+
+for command in stow curl systemctl chsh getent; do
+	command -v "$command" >/dev/null 2>&1 || die "Missing command: $command"
+done
+
+echo 'Checking Stow links for conflicts...'
+collect_stow_conflicts
+if ((${#stow_directory_conflicts[@]})); then
+	echo 'Stow needs to replace these directories, which may contain unrelated files:' >&2
+	printf '  %s\n' "${stow_directory_conflicts[@]}" >&2
+	die 'Move or merge those directories manually, then re-run; no config files were changed.'
+fi
+
+backup_dir=''
+moved_targets=()
+backup_targets=()
+if ((${#stow_conflicts[@]})); then
+	backup_root="${XDG_STATE_HOME:-$HOME/.local/state}/devtainer/bootstrap-omarchy/backups"
+	mkdir -p -- "$backup_root"
+	backup_dir="$(mktemp -d "$backup_root/$(date +%Y%m%d%H%M%S)-XXXXXX")"
+	echo "Backing up ${#stow_conflicts[@]} existing config file(s) to $backup_dir"
+	for target_path in "${stow_conflicts[@]}"; do
+		relative_path="${target_path#"$HOME"/}"
+		backup_path="$backup_dir/$relative_path"
+		mkdir -p -- "$(dirname -- "$backup_path")"
+		if ! mv -- "$target_path" "$backup_path"; then
+			restore_stow_backups
+			die "Could not back up $target_path; restored any earlier files."
+		fi
+		moved_targets+=("$target_path")
+		backup_targets+=("$backup_path")
+	done
+fi
+
+if ! stow --simulate "${stow_args[@]}"; then
+	if ((${#moved_targets[@]})); then
+		restore_stow_backups
+	fi
+	die 'Stow still found conflicts; restored backed-up files and made no config changes.'
+fi
+stow "${stow_args[@]}"
+
+if command -v mise >/dev/null 2>&1; then
+	mise_bin="$(command -v mise)"
+else
+	mise_bin="$HOME/.local/bin/mise"
+	if [[ ! -x "$mise_bin" ]]; then
+		echo 'Installing mise...'
+		curl -fsSL https://mise.run | sh || die 'Mise installation failed; check network access and re-run.'
+		[[ -x "$mise_bin" ]] || die "Mise installer did not create $mise_bin."
+	fi
+fi
+
+echo 'Installing configured mise tools...'
+"$mise_bin" -C "$HOME" install || die 'Mise tool installation failed; resolve the error above and re-run.'
+
+echo 'Installing the agent-browser Chrome runtime...'
+"$mise_bin" -C "$HOME" exec -- agent-browser install ||
+	die 'agent-browser browser installation failed; resolve the error above and re-run.'
+
+echo 'Checking GitHub CLI authentication...'
+if "$mise_bin" -C "$HOME" exec -- gh auth status; then
+	echo 'GitHub CLI is already authenticated.'
+elif [[ -t 0 ]]; then
+	echo 'Starting GitHub CLI login...'
+	"$mise_bin" -C "$HOME" exec -- gh auth login || die 'GitHub CLI login failed; resolve the error above and re-run.'
+else
+	echo 'GitHub CLI is not authenticated. Run `mise exec -- gh auth login` in an interactive terminal.' >&2
+fi
+
+printf '%s\n' 'Registering bundled Herdr plugins...'
+for plugin in "${herdr_plugins[@]}"; do
+	"$mise_bin" -C "$HOME" exec -- herdr plugin link \
+		"$repo_dir/herdr/.config/herdr/plugins/$plugin" --enabled ||
+		die "Herdr plugin registration failed for $plugin; resolve the error above and re-run."
+done
+
+zsh_path="$(command -v zsh)"
+current_shell="$(getent passwd "$(id -un)" | cut -d: -f7)"
+if [[ "$current_shell" != "$zsh_path" ]]; then
+	echo "Setting Zsh as the login shell ($zsh_path)..."
+		sudo chsh -s "$zsh_path" "$(id -un)" || die 'Could not change the login shell; check that Zsh is listed in /etc/shells.'
+else
+	echo 'Zsh is already the login shell.'
+fi
+
+echo 'Starting the rootless Podman socket...'
+systemctl --user enable --now podman.socket ||
+	die 'Could not start the user Podman socket; check your Omarchy systemd session.'
+
+echo 'Done. Restart your terminal or run `omarchy restart shell` to load the new settings.'

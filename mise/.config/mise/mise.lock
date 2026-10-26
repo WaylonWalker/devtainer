@@ -746,6 +746,10 @@ url = "https://nodejs.org/dist/v20.19.6/node-v20.19.6-linux-arm64.tar.gz"
 checksum = "sha256:24344f9f03e3b388a901f8fb5d98e627e6cf74ce44aaf5a0fd6c4b39e4f2adc8"
 url = "https://nodejs.org/dist/v20.19.6/node-v20.19.6-linux-x64.tar.gz"
 
+[[tools."npm:agent-browser"]]
+version = "0.39.2"
+backend = "npm:agent-browser"
+
 [[tools."npm:tailwindcss"]]
 version = "4.3.0"
 backend = "npm:tailwindcss"
