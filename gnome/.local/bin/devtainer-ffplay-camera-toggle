@@ -96,7 +96,7 @@ nohup \
     -video_size "$FFPLAY_CAMERA_VIDEO_SIZE" \
     -input_format "$FFPLAY_CAMERA_INPUT_FORMAT" \
     -window_title "$FFPLAY_CAMERA_WINDOW_TITLE" \
-    -noborder \
+    -alwaysontop \
     "$FFPLAY_CAMERA_DEVICE" \
     >"$LOG_FILE" 2>&1 < /dev/null &
 

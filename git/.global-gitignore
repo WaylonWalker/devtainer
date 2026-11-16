@@ -7,3 +7,5 @@ markout
 .copier-defaults
 .venv*/
 .python-version
+
+**/.claude/settings.local.json

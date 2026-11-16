@@ -73,7 +73,7 @@ while (($#)); do
 done
 
 repo_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
-packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 curl fontconfig snapd
+packages=(git stow zsh tmux jq fzf rofi ffmpeg python3 x11-xserver-utils curl fontconfig snapd
           podman podman-docker uidmap slirp4netns fuse-overlayfs
           gnome-shell libglib2.0-bin gnome-shell-extension-ubuntu-tiling-assistant
           yaru-theme-gtk yaru-theme-icon)

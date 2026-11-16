@@ -381,6 +381,8 @@ fi
 run gsettings set org.gnome.mutter dynamic-workspaces false
 run gsettings set org.gnome.mutter workspaces-only-on-primary "$WORKSPACES_ONLY_ON_PRIMARY"
 run gsettings set org.gnome.desktop.wm.preferences num-workspaces "$WORKSPACE_COUNT"
+set_gsettings_string org.gnome.desktop.wm.preferences mouse-button-modifier "<Super>"
+run gsettings set org.gnome.desktop.wm.preferences resize-with-right-button true
 
 for workspace in $(seq 1 9); do
     if (( workspace <= WORKSPACE_COUNT )); then
@@ -567,7 +569,7 @@ upsert_custom_keybinding \
 
 upsert_custom_keybinding \
     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/devtainer-record-area-toggle/" \
-    "Rectangular Screen Recording Toggle" \
+    "Whole-Screen Recording Toggle" \
     "${LOCAL_BIN}/devtainer-gnome-record-area-toggle" \
     "$RECORD_AREA_BINDING"
 

@@ -108,6 +108,21 @@ Edit `gnome/.config/devtainer/gnome-awesome.conf` to choose other supported
 themes, colors, or wallpaper paths. Atuin runs from mise in new Zsh
 sessions; an existing `~/.atuin/bin/env` still works as a fallback.
 
+The GNOME bootstrap sets Super as the window mouse modifier.
+Hold **Super** and drag with the **left mouse button** to move a window.
+Hold **Super** and drag with the **right mouse button** to resize a window.
+The camera preview uses a title bar because FFplay disables resizing for borderless windows.
+**Super+S** opens or closes the camera preview, which opens always on top.
+**Super+Shift+S** starts or stops a screen recording.
+With one active monitor, recording starts immediately and captures the whole screen.
+With multiple monitors, select a screen from the picker. Press **Escape** to cancel.
+Keep the camera preview on that screen to include it in the recording.
+The recorder requires X11. Bootstrap installs `xrandr` through `x11-xserver-utils`.
+Recordings use WebM (VP8 video and Opus audio) for playback in GNOME Videos.
+The recorder captures the default microphone, not desktop audio.
+Set `RECORD_AREA_AUDIO_SOURCE` in `gnome-awesome.conf` to select another PulseAudio source.
+Recordings appear in `~/Video/recording/`. Press **Super+Shift+S** to stop before opening the file.
+
 The bootstrap does not restore display layout (`~/.config/monitors.xml`),
 installed themes or other third-party extensions, or every desktop preference.
 Review those separately on a new machine. Do not commit a full dconf dump:

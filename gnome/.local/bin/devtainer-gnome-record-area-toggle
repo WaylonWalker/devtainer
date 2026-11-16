@@ -7,6 +7,7 @@ ENV_RECORD_AREA_OUTPUT_DIR="${RECORD_AREA_OUTPUT_DIR-}"
 ENV_RECORD_AREA_FRAMERATE="${RECORD_AREA_FRAMERATE-}"
 ENV_RECORD_AREA_METADATA_TITLE="${RECORD_AREA_METADATA_TITLE-}"
 ENV_RECORD_AREA_GEOMETRY="${RECORD_AREA_GEOMETRY-}"
+ENV_RECORD_AREA_AUDIO_SOURCE="${RECORD_AREA_AUDIO_SOURCE-}"
 
 if [[ -f "$CONFIG_FILE" ]]; then
     # shellcheck disable=SC1090
@@ -17,6 +18,7 @@ RECORD_AREA_OUTPUT_DIR="${ENV_RECORD_AREA_OUTPUT_DIR:-${RECORD_AREA_OUTPUT_DIR:-
 RECORD_AREA_FRAMERATE="${ENV_RECORD_AREA_FRAMERATE:-${RECORD_AREA_FRAMERATE:-30}}"
 RECORD_AREA_METADATA_TITLE="${ENV_RECORD_AREA_METADATA_TITLE:-${RECORD_AREA_METADATA_TITLE:-devtainer-gnome-record-area}}"
 RECORD_AREA_GEOMETRY="${ENV_RECORD_AREA_GEOMETRY:-${RECORD_AREA_GEOMETRY:-}}"
+RECORD_AREA_AUDIO_SOURCE="${ENV_RECORD_AREA_AUDIO_SOURCE:-${RECORD_AREA_AUDIO_SOURCE:-default}}"
 RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}"
 PID_FILE="${RUNTIME_DIR}/devtainer-gnome-record-area.pid"
 LOG_FILE="${RUNTIME_DIR}/devtainer-gnome-record-area.log"
@@ -47,91 +49,56 @@ notify() {
     fi
 }
 
-select_area() {
-    python3 - <<'PY'
+select_screen() {
+    require_command xrandr
+    local monitors screens selection status
+    monitors="$(xrandr --listactivemonitors)" || return 1
+    screens="$(python3 - "$monitors" <<'PY'
+import re
 import sys
-import tkinter as tk
 
-root = tk.Tk()
-root.withdraw()
-root.overrideredirect(True)
-root.attributes("-fullscreen", True)
-root.attributes("-topmost", True)
-root.attributes("-alpha", 0.18)
-root.configure(bg="black")
-
-canvas = tk.Canvas(root, bg="black", highlightthickness=0, cursor="crosshair")
-canvas.pack(fill="both", expand=True)
-
-start_x = 0
-start_y = 0
-rect_id = None
-
-
-def cancel(_event=None):
-    try:
-        root.grab_release()
-    except tk.TclError:
-        pass
-    root.destroy()
-    raise SystemExit(1)
-
-
-def on_press(event):
-    global start_x, start_y, rect_id
-    start_x = event.x_root
-    start_y = event.y_root
-    if rect_id is not None:
-        canvas.delete(rect_id)
-    rect_id = canvas.create_rectangle(
-        event.x,
-        event.y,
-        event.x,
-        event.y,
-        outline="#ff3b30",
-        width=2,
-    )
-
-
-def on_drag(event):
-    if rect_id is None:
-        return
-    canvas.coords(rect_id, start_x, start_y, event.x_root, event.y_root)
-
-
-def on_release(event):
-    end_x = event.x_root
-    end_y = event.y_root
-    x = min(start_x, end_x)
-    y = min(start_y, end_y)
-    width = abs(end_x - start_x)
-    height = abs(end_y - start_y)
-    print(f"{x} {y} {width} {height}", flush=True)
-    try:
-        root.grab_release()
-    except tk.TclError:
-        pass
-    root.destroy()
-
-canvas.create_text(
-    root.winfo_screenwidth() // 2,
-    48,
-    text="Drag to choose a recording area — Esc cancels",
-    fill="white",
-    font=("Sans", 20, "bold"),
-)
-
-canvas.bind_all("<ButtonPress-1>", on_press)
-canvas.bind_all("<B1-Motion>", on_drag)
-canvas.bind_all("<ButtonRelease-1>", on_release)
-root.bind_all("<Escape>", cancel)
-
-root.deiconify()
-root.update_idletasks()
-root.grab_set_global()
-root.focus_force()
-root.mainloop()
+found = False
+for line in sys.argv[1].splitlines()[1:]:
+    fields = line.split()
+    if len(fields) < 3:
+        continue
+    geometry = re.fullmatch(r"(\d+)/\d+x(\d+)/\d+([+-]\d+)([+-]\d+)", fields[2])
+    if geometry is None:
+        raise SystemExit(f"Invalid monitor geometry: {line}")
+    width, height, x, y = map(int, geometry.groups())
+    name = fields[1].lstrip("+*")
+    print(f"{name} ({width}x{height})\t{x} {y} {width} {height}")
+    found = True
+if not found:
+    raise SystemExit("No active monitors found.")
 PY
+    )" || return 1
+
+    local -a screen_rows screen_labels
+    mapfile -t screen_rows <<<"$screens"
+    if [[ "${#screen_rows[@]}" -eq 1 ]]; then
+        printf '%s\n' "${screen_rows[0]#*$'\t'}"
+        return 0
+    fi
+
+    require_command rofi
+    local row
+    for row in "${screen_rows[@]}"; do
+        screen_labels+=("${row%%$'\t'*}")
+    done
+    if selection="$(printf '%s\n' "${screen_labels[@]}" |
+        rofi -dmenu -no-custom -format i -p "Record screen")"; then
+        if [[ ! "$selection" =~ ^[0-9]+$ ]] ||
+            (( selection >= ${#screen_rows[@]} )); then
+            echo "Invalid screen selection: $selection" >&2
+            return 1
+        fi
+        printf '%s\n' "${screen_rows[selection]#*$'\t'}"
+    else
+        status=$?
+        [[ "$status" -eq 1 ]] && return 2
+        return 1
+    fi
 }
 
 is_recording_process() {
@@ -209,7 +176,7 @@ require_command python3
 log_launch
 
 if [[ "${XDG_SESSION_TYPE:-}" != "x11" ]]; then
-    echo "Rectangular recording toggle currently supports GNOME X11 only." >&2
+    echo "Screen recording toggle currently supports GNOME X11 only." >&2
     notify "Screen recording unavailable" "This shortcut currently supports GNOME X11 only."
     exit 1
 fi
@@ -241,16 +208,15 @@ if [[ "${#running_recording_pids[@]}" -gt 0 ]]; then
 fi
 
 mkdir -p "$RECORD_AREA_OUTPUT_DIR"
-notify "Select recording area" "Drag a rectangle to start recording. Press Escape to cancel."
-
 display_target="${DISPLAY}"
 if [[ "$display_target" != *.* ]]; then
     display_target="${display_target}.0"
 fi
 
-output_file="${RECORD_AREA_OUTPUT_DIR}/recording-$(date +%Y%m%d-%H%M%S).mp4"
+output_file="${RECORD_AREA_OUTPUT_DIR}/recording-$(date +%Y%m%d-%H%M%S).webm"
 
 ffmpeg_input_args=(
+    -thread_queue_size 512
     -f x11grab
     -draw_mouse 1
     -framerate "$RECORD_AREA_FRAMERATE"
@@ -259,7 +225,17 @@ ffmpeg_input_args=(
 if [[ -n "$RECORD_AREA_GEOMETRY" ]]; then
     read -r x y width height <<<"$RECORD_AREA_GEOMETRY"
 else
-    read -r x y width height <<<"$(select_area)" || exit 0
+    if geometry="$(select_screen 2>>"$LAUNCH_LOG_FILE")"; then
+        read -r x y width height <<<"$geometry"
+    else
+        selector_status=$?
+        if [[ "$selector_status" -eq 2 ]]; then
+            exit 0
+        fi
+        echo "Recording screen selection failed. Check ${LAUNCH_LOG_FILE}." >&2
+        notify "Screen recording failed" "Screen selection failed. Check ${LAUNCH_LOG_FILE}."
+        exit 1
+    fi
 fi
 
 for value in "$x" "$y" "$width" "$height"; do
@@ -283,11 +259,21 @@ nohup \
     -hide_banner \
     -loglevel error \
     "${ffmpeg_input_args[@]}" \
-    -c:v libx264 \
-    -preset veryfast \
-    -crf 23 \
+    -thread_queue_size 512 \
+    -f pulse \
+    -i "$RECORD_AREA_AUDIO_SOURCE" \
+    -map 0:v:0 \
+    -map 1:a:0 \
+    -c:v libvpx \
+    -deadline realtime \
+    -cpu-used 8 \
+    -threads 8 \
+    -b:v 0 \
+    -crf 10 \
     -pix_fmt yuv420p \
-    -movflags +faststart \
+    -c:a libopus \
+    -b:a 128k \
+    -af aresample=async=1 \
     -metadata "title=${RECORD_AREA_METADATA_TITLE}" \
     "$output_file" \
     >"$LOG_FILE" 2>&1 < /dev/null &
